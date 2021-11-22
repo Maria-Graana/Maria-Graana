@@ -1414,4 +1414,9 @@ export default StaticData = {
       value: 'client',
     },
   ],
+  leadTypes: [
+    { name: 'Wanted', value: 'Wanted' },
+    { name: 'Project', value: 'Project' },
+    { name: 'Buy/Rent', value: 'BuyRent' },
+  ],
 }

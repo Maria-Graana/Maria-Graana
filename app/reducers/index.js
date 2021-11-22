@@ -16,6 +16,11 @@ import Notification from './notification'
 import Instruments from './addInstrument'
 import callMeetingStatus from './callMeetingFeedback'
 
+import slotManagement from './slotManagement'
+
+import diary from './diary'
+
+
 export default combineReducers({
   lead,
   user,
@@ -31,4 +36,9 @@ export default combineReducers({
   Notification,
   Instruments,
   callMeetingStatus,
+
+  slotManagement,
+
+  diary,
+
 })

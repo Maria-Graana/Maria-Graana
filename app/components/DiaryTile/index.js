@@ -37,107 +37,120 @@ class DiaryTile extends React.Component {
       showMenuOptions,
       showMenu,
       setClassification,
-      onLeadLinkPressed,
-      addTask,
-      editTask,
+      handleMenuActions,
+      goToLeadDetails,
+      // addTask,
+      // editTask,
+      screenName,
     } = this.props
-    const { todayDate, selectedTime, showTask, description, active } = this.state
+    //const { todayDate, selectedTime, showTask, description, active } = this.state
     //console.log(diary)
     return (
       <View style={styles.mainContainer}>
         <View style={styles.rowTwo}>
           <View style={styles.timeView}>
+            {screenName === 'overduetasks' ? (
+              <Text style={styles.time}>{moment(diary.start).format('DD MMM')}</Text>
+            ) : null}
             <Text style={styles.time}>{diary.hour}</Text>
             <Text style={styles.duration}>{DiaryHelper.calculateTimeDifference(diary)}</Text>
           </View>
-          <View style={[styles.tileWrap, { borderLeftColor: DiaryHelper.displayTaskColor(diary) }]}>
+          <View
+            style={[
+              styles.tileWrap,
+              {
+                borderLeftColor: DiaryHelper.displayTaskColor(diary),
+                backgroundColor: diary.status === 'completed' ? '#EEEEEE' : '#FFFFFF',
+              },
+            ]}
+          >
             <View style={styles.rowWidth100}>
               <Text numberOfLines={1} style={styles.taskType}>{`${DiaryHelper.showTaskType(
                 diary.taskType
               )}${DiaryHelper.showClientName(diary)}`}</Text>
 
-              <Text
-                numberOfLines={1}
-                onPress={() => setClassification(diary)}
-                style={[styles.classification, { color: DiaryHelper.setLeadCategoryColor(diary) }]}
-              >
-                {DiaryHelper.checkLeadCategory(diary)}
-              </Text>
               <View>
-                <Menu
-                  visible={showMenu && diary.id === selectedDiary.id}
-                  onDismiss={() => hideMenu()}
-                  anchor={
-                    <Ionicons
-                      onPress={() => showMenuOptions(diary)}
-                      name="ellipsis-vertical"
-                      size={22}
-                      color="black"
-                    />
-                  }
-                >
-                  <View>
-                    <Menu.Item
-                      onPress={() => {
-                        console.log('mark as done')
-                        hideMenu()
-                      }}
-                      title="Mark as Done"
-                    />
-
-                    {diary.taskType === 'viewing' && diary.armsLeadId ? (
+                {diary.status !== 'completed' ? (
+                  <Menu
+                    visible={showMenu && diary.id === selectedDiary.id}
+                    onDismiss={() => hideMenu()}
+                    anchor={
+                      <Ionicons
+                        onPress={() => showMenuOptions(diary)}
+                        name="ellipsis-vertical"
+                        size={22}
+                        color="black"
+                      />
+                    }
+                  >
+                    <View>
                       <Menu.Item
                         onPress={() => {
-                          console.log('cancel viewing')
+                          handleMenuActions('mark_as_done')
                           hideMenu()
                         }}
-                        title="Cancel Viewing"
+                        title="Mark as Done"
                       />
-                    ) : null}
 
-                    <Menu.Item
-                      onPress={() => {
-                        console.log('task details')
-                        hideMenu()
-                      }}
-                      title="Task Details"
-                    />
+                      {diary.taskType === 'viewing' && diary.armsLeadId ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('cancel_viewing')
+                            hideMenu()
+                          }}
+                          title="Cancel Viewing"
+                        />
+                      ) : null}
 
-                    <Menu.Item
-                      onPress={() => {
-                        console.log('Edit Task')
-                        hideMenu()
-                      }}
-                      title="Edit Task"
-                    />
-
-                    <Menu.Item
-                      onPress={() => {
-                        console.log('Refer Lead')
-                        hideMenu()
-                      }}
-                      title="Refer Lead"
-                    />
-
-                    <Menu.Item
-                      onPress={() => {
-                        console.log('Reassign Lead')
-                        hideMenu()
-                      }}
-                      title="Reassign Lead"
-                    />
-
-                    {diary.taskType === 'morning meeting' || diary.taskType === 'daily update' ? (
                       <Menu.Item
                         onPress={() => {
-                          console.log('Delete')
+                          handleMenuActions('task_details')
                           hideMenu()
                         }}
-                        title="Delete"
+                        title="Task Details"
                       />
-                    ) : null}
-                  </View>
-                </Menu>
+
+                      <Menu.Item
+                        onPress={() => {
+                          handleMenuActions('edit_task')
+                          hideMenu()
+                        }}
+                        title="Edit Task"
+                      />
+
+                      {diary.taskType !== 'morning_meeting' && diary.taskType !== 'daily_update' ? (
+                        <View>
+                          {!diary.wantedId ? (
+                            <Menu.Item
+                              onPress={() => {
+                                handleMenuActions('refer_lead')
+                                hideMenu()
+                              }}
+                              title="Refer Lead"
+                            />
+                          ) : null}
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('reassign_lead')
+                              hideMenu()
+                            }}
+                            title="Reassign Lead"
+                          />
+                        </View>
+                      ) : null}
+
+                      {diary.taskType === 'morning_meeting' || diary.taskType === 'daily_update' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('delete')
+                            hideMenu()
+                          }}
+                          title="Delete"
+                        />
+                      ) : null}
+                    </View>
+                  </Menu>
+                ) : null}
               </View>
             </View>
             {diary && diary.response ? (
@@ -153,16 +166,34 @@ class DiaryTile extends React.Component {
 
             <View style={styles.rowWidth100}>
               <View style={styles.bottomView}>
-                <Text style={styles.leadId}>
-                  {diary.armsLeadId ? `ID:${diary.armsLeadId}` : `ID:${diary.armsProjectLeadId}`}
+                <Text onPress={() => goToLeadDetails(diary)} style={styles.leadId}>
+                  {DiaryHelper.getLeadId(diary)}
                 </Text>
               </View>
-              <TouchableOpacity
-                style={{ width: '10%' }}
-                onPress={() => console.log('call connect')}
-              >
-                <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
-              </TouchableOpacity>
+              {DiaryHelper.getLeadId(diary) === null ? null : (
+                <>
+                  <Text
+                    numberOfLines={1}
+                    onPress={() => setClassification(diary)}
+                    style={[
+                      styles.classification,
+                      { color: DiaryHelper.setLeadCategoryColor(diary) },
+                    ]}
+                  >
+                    {DiaryHelper.checkLeadCategory(diary)}
+                  </Text>
+                  <TouchableOpacity
+                    style={{ width: '10%' }}
+                    onPress={() => console.log('call connect')}
+                  >
+                    <Ionicons
+                      name="ios-call-outline"
+                      size={24}
+                      color={AppStyles.colors.primaryColor}
+                    />
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           </View>
         </View>

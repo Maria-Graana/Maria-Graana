@@ -99,6 +99,7 @@ class LeadDetail extends React.Component {
       .get(`${url}?id=${lead.id}`)
       .then((res) => {
         let responseData = res.data
+
         let leadType = type
         if (!responseData.paidProject) {
           responseData.paidProject = responseData.project

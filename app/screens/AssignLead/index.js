@@ -219,7 +219,7 @@ class AssignLead extends React.Component {
         >
           <Text style={AppStyles.btnText}>
             {' '}
-            {screen == 'LeadDetail' ? 'ASSIGN LEAD' : 'SHARE LEAD'}{' '}
+            {screen == 'MenuLead' ? 'REFER LEAD' : 'SHARE LEAD'}{' '}
           </Text>
         </TouchableOpacity>
       </View>

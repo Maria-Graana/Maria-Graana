@@ -53,6 +53,9 @@ import Lead from './LeadsNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 
+import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
+import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
+
 const Stack = createStackNavigator()
 
 const landingHeader = {
@@ -89,6 +92,19 @@ function MainStack() {
         })}
       />
 
+
+      {/* ARMS-2180 start */}
+      <Stack.Screen
+        name="TimeSlotManagement"
+        component={TimeSlotManagement}
+        options={({ navigation, route }) => ({
+          title: 'SLOT MANAGEMENT',
+           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
       <Stack.Screen
         name="OverdueTasks"
         component={OverdueTasks}
@@ -101,6 +117,16 @@ function MainStack() {
       />
 
       <Stack.Screen
+        name="ScheduledTasks"
+        component={ScheduledTasks}
+        options={({ navigation, route }) => ({
+          title: 'SCHEDULED TASKS',
+           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+<Stack.Screen
         name="TaskDetails"
         component={TaskDetails}
         options={({ navigation, route }) => ({
@@ -110,6 +136,9 @@ function MainStack() {
           headerTitleAlign: 'center',
         })}
       />
+
+      {/* ARMS-2180 end */}
+
 
       <Stack.Screen
         name="DiaryFilter"
@@ -121,6 +150,7 @@ function MainStack() {
           headerTitleAlign: 'center',
         })}
       />
+
       <Stack.Screen
         name="TeamDiary"
         component={TeamDiary}

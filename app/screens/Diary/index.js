@@ -81,9 +81,36 @@ class Diary extends React.Component {
 
   getDiaries = () => {
     const { agentId, selectedDate } = this.state
+
+    let endPoint = ``
+    this.setState({ loading: true }, () => {
+      endPoint = `/api/diary/all?date[]=${selectedDate}`
+      axios
+        .get(`${endPoint}`)
+        .then((res) => {
+          // console.log(res)
+          this.setState(
+            {
+              diaryData: res.data,
+              loading: false,
+            },
+            () => {
+              // this.showTime()
+            }
+          )
+        })
+        .catch((error) => {
+          console.log(error)
+          this.setState({
+            loading: false,
+          })
+        })
+    })
+
     const { dispatch } = this.props
     dispatch(getDiaryTasks(selectedDate, agentId, false))
     dispatch(getOverdueCount(agentId))
+
   }
 
   setSelectedDate = (date, mode) => {

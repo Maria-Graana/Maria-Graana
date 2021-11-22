@@ -174,7 +174,7 @@ class Diary extends React.Component {
             marginBottom: heightPercentageToDP('10%'),
           }}
           position="bottomRight"
-          onPress={this.props.navigation.navigate('TimeSlotManagement')}
+          onPress={() => console.log('add diary')}
         >
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>

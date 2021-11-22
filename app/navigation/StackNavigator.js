@@ -29,6 +29,7 @@ import Comments from '../screens/Comments'
 import CreateUser from '../screens/CreateUser'
 import Dashboard from '../screens/Dashboard'
 import Diary from '../screens/Diary'
+import DiaryFilter from '../screens/DiaryFilter'
 import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 import Landing from '../screens/Landing/index'
 import LeadAttachments from '../screens/LeadAttachments'
@@ -36,12 +37,14 @@ import LeadDetail from '../screens/LeadDetail'
 import LegalAttachments from '../screens/LegalAttachments'
 import LegalPaymentAttachment from '../screens/LegalPaymentAttachment'
 import MapContainer from '../screens/MapContainer'
+import OverdueTasks from '../screens/OverdueTasks'
 import PropertyDetail from '../screens/PropertyDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
 import RCMAttachment from '../screens/RCMAttachment'
 import RCMReport from '../screens/RCMReport'
 import SingleSelectionPicker from '../screens/SingleSelectionPicker'
 import Targets from '../screens/Targets'
+import TaskDetails from '../screens/TaskDetails'
 import TeamDiary from '../screens/TeamDiary'
 import TeamTargets from '../screens/TeamTargets'
 import CMLeadTabs from './CMTabNavigator'
@@ -89,12 +92,24 @@ function MainStack() {
         })}
       />
 
+
       {/* ARMS-2180 start */}
       <Stack.Screen
         name="TimeSlotManagement"
         component={TimeSlotManagement}
         options={({ navigation, route }) => ({
           title: 'SLOT MANAGEMENT',
+           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="OverdueTasks"
+        component={OverdueTasks}
+        options={({ navigation, route }) => ({
+          title: 'Overdue Tasks',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
@@ -106,12 +121,35 @@ function MainStack() {
         component={ScheduledTasks}
         options={({ navigation, route }) => ({
           title: 'SCHEDULED TASKS',
+           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+<Stack.Screen
+        name="TaskDetails"
+        component={TaskDetails}
+        options={({ navigation, route }) => ({
+          title: 'Task Details',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
       />
+
       {/* ARMS-2180 end */}
+
+
+      <Stack.Screen
+        name="DiaryFilter"
+        component={DiaryFilter}
+        options={({ navigation, route }) => ({
+          title: 'Filters',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
 
       <Stack.Screen
         name="TeamDiary"

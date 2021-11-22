@@ -61,6 +61,7 @@ export function getDiaryTasks(
 
 export function setSelectedDiary(diary) {
   return (dispatch, getsState) => {
+    console.log(diary)
     let lead = null
     if (diary.armsProjectLeadId) {
       lead = { ...diary.armsProjectLead }
@@ -195,7 +196,7 @@ export function setCategory(category, selectedDate = null, agentId) {
   }
 }
 
-export const markDiaryTaskAsDone = (selectedDate, agentId) => {
+export const markDiaryTaskAsDone = (selectedDate, agentId, overdue) => {
   return (dispatch, getsState) => {
     const { selectedDiary } = getsState().diary.diary
     let endPoint = ``
@@ -206,7 +207,7 @@ export const markDiaryTaskAsDone = (selectedDate, agentId) => {
       })
       .then(function (response) {
         if (response.status == 200) {
-          dispatch(getDiaryTasks(selectedDate, agentId))
+          dispatch(getDiaryTasks(selectedDate, agentId, overdue))
           helper.successToast(`Task completed`)
           //helper.deleteLocalNotification(data.id)
         }
@@ -214,7 +215,7 @@ export const markDiaryTaskAsDone = (selectedDate, agentId) => {
   }
 }
 
-export const deleteDiaryTask = (selectedDate, agentId) => {
+export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
   return (dispatch, getsState) => {
     const { selectedDiary } = getsState().diary.diary
     let endPoint = ``
@@ -224,7 +225,7 @@ export const deleteDiaryTask = (selectedDate, agentId) => {
       .then(function (response) {
         if (response.status === 200) {
           helper.successToast('TASK DELETED SUCCESSFULLY!')
-          dispatch(getDiaryTasks(selectedDate, agentId))
+          dispatch(getDiaryTasks(selectedDate, agentId, overdue))
           // helper.deleteLocalNotification(data.id)
         }
       })

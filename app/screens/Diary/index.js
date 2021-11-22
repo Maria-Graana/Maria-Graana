@@ -124,7 +124,7 @@ class Diary extends React.Component {
     const { selectedDiary } = diary
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone(selectedDate, agentId))
+      dispatch(markDiaryTaskAsDone(selectedDate, agentId, false))
     } else if (action === 'cancel_viewing') {
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
@@ -139,7 +139,10 @@ class Diary extends React.Component {
         'Are you sure you want to delete this task ?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask(selectedDate, agentId)) },
+          {
+            text: 'Delete',
+            onPress: () => dispatch(deleteDiaryTask(selectedDate, agentId, false)),
+          },
         ],
         { cancelable: false }
       )

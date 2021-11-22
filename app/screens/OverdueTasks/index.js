@@ -20,7 +20,17 @@ import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
-import { getDiaryTasks } from '../../actions/diary'
+import {
+  deleteDiaryTask,
+  getDiaryTasks,
+  increasePageCount,
+  markDiaryTaskAsDone,
+  setCategory,
+  setClassificationModal,
+  setOnEndReachedLoader,
+  setSelectedDiary,
+} from '../../actions/diary'
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 
 class OverdueTasks extends React.Component {
   constructor(props) {
@@ -36,9 +46,74 @@ class OverdueTasks extends React.Component {
     const { navigation, dispatch, route } = this.props
     const { count, agentId } = route.params
     navigation.setOptions({ title: `Overdue Tasks(${count})` })
-    this._unsubscribe = navigation.addListener('focus', () => {
-      this.getDiaries()
+    this.getDiaries()
+  }
+
+  handleMenuActions = (action) => {
+    const { navigation, diary, dispatch } = this.props
+    const { selectedDiary } = diary
+    const { agentId } = this.state
+    if (action === 'mark_as_done') {
+      dispatch(markDiaryTaskAsDone(null, agentId, true))
+    } else if (action === 'cancel_viewing') {
+    } else if (action === 'task_details') {
+      navigation.navigate('TaskDetails', { diary: selectedDiary })
+    } else if (action === 'edit_task') {
+    } else if (action === 'refer_lead') {
+      this.navigateToReferAssignLead('refer')
+    } else if (action === 'reassign_lead') {
+      this.navigateToReferAssignLead('reassign')
+    } else if (action === 'delete') {
+      Alert.alert(
+        'Delete Task',
+        'Are you sure you want to delete this task ?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask(null, agentId, true)) },
+        ],
+        { cancelable: false }
+      )
+    }
+  }
+
+  navigateToReferAssignLead = (mode) => {
+    const { navigation } = this.props
+    const { selectedLead, selectedDiary } = this.props.diary
+    let type = null
+    if (selectedDiary.armsProjectLeadId) {
+      type = 'investment'
+    } else if (selectedDiary.armsLeadId) {
+      type = selectedLead.purpose
+    }
+    navigation.navigate('AssignLead', {
+      leadId: selectedLead.id,
+      type: type,
+      purpose: mode,
+      screenName: 'Diary',
     })
+  }
+
+  navigateToLeadDetail = (data) => {
+    const { navigation } = this.props
+    let lead = null
+    let purposeTab = null
+    if (data.armsProjectLeadId) {
+      lead = { ...data.armsProjectLead }
+      purposeTab = 'invest'
+    } else if (data.armsLeadId) {
+      lead = { ...data.armsLead }
+      purposeTab = lead.purpose
+    } else if (data.wantedId) {
+      lead = { ...data.wanted }
+      purposeTab = lead.purpose
+    }
+    navigation.navigate('LeadDetail', { lead, purposeTab })
+  }
+
+  navigateToFiltersScreen = () => {
+    const { navigation } = this.props
+    const { agentId, selectedDate } = this.state
+    navigation.navigate('DiaryFilter', { agentId, isOverdue: true, selectedDate })
   }
 
   getDiaries = () => {
@@ -48,55 +123,45 @@ class OverdueTasks extends React.Component {
   }
 
   showMenuOptions = (data) => {
-    this.setState({ selectedDiary: data, showMenu: true })
+    const { dispatch } = this.props
+    dispatch(setSelectedDiary(data))
+    this.setState({ showMenu: true })
   }
 
   hideMenu = () => {
-    this.setState({ selectedDiary: null, showMenu: false })
+    this.setState({ showMenu: false })
   }
 
-  onCategorySelected = (value) => {
-    // const { lead, fetchLead } = this.props
-    const { selectedDiary } = this.state
-    let body = {
-      leadCategory: value,
-    }
-    // var leadId = []
-    // leadId.push(selectedDiary.id)
-    this.setState({ isLeadCategoryModalVisible: false }, () => {
-      helper.successToast(`Lead Category added`)
-    })
-    // axios
-    //   .patch(`/api/leads/project`, body, { params: { id: leadId } })
-    //   .then((res) => {
-    //     this.setState({ isLeadCategoryModalVisible: false }, () => {
-    //       helper.successToast(`Lead Category added`)
-    //     })
-    //   })
-    //   .catch((error) => {
-    //     console.log('/api/leads/project - Error', error)
-    //     helper.errorToast('Closed lead API failed!!')
-    //   })
-  }
   render() {
-    const { selectedDiary, showMenu, isLeadCategoryModalVisible } = this.state
-    const { diaries, loading } = this.props.diary
+    const { selectedDate, showMenu, agentId } = this.state
+    const { diary, dispatch } = this.props
+    const {
+      diaries,
+      loading,
+      selectedDiary,
+      selectedLead,
+      showClassificationModal,
+      onEndReachedLoader,
+    } = diary
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal
-          visible={isLeadCategoryModalVisible}
+          visible={showClassificationModal}
           toggleCategoryModal={(value) => {
-            this.setState({ isLeadCategoryModalVisible: value })
+            dispatch(setClassificationModal(value))
           }}
-          onCategorySelected={(value) => this.onCategorySelected(value)}
+          onCategorySelected={(value) => dispatch(setCategory(value, selectedDate, agentId))}
           selectedCategory={
-            selectedDiary && selectedDiary.leadCategory ? selectedDiary.leadCategory : null
+            selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
         />
 
         <View style={styles.rowOne}>
           <View style={styles.filterSortView}>
-            <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+            <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
+              <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+            </TouchableOpacity>
+
             <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
           </View>
         </View>
@@ -111,6 +176,12 @@ class OverdueTasks extends React.Component {
                 diary={item}
                 showMenu={showMenu}
                 showMenuOptions={(value) => this.showMenuOptions(value)}
+                handleMenuActions={(action) => this.handleMenuActions(action)}
+                setClassification={(diary) => {
+                  dispatch(setSelectedDiary(diary))
+                  dispatch(setClassificationModal(true))
+                }}
+                goToLeadDetails={this.navigateToLeadDetail}
                 selectedDiary={selectedDiary}
                 screenName={'overduetasks'}
                 hideMenu={() => this.hideMenu()}
@@ -123,8 +194,17 @@ class OverdueTasks extends React.Component {
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}
+            onEndReached={() => {
+              if (diaries.rows.length < diaries.count) {
+                dispatch(increasePageCount())
+                dispatch(setOnEndReachedLoader())
+              }
+            }}
+            onEndReachedThreshold={0.5}
+            keyExtractor={(item, index) => item.id.toString()}
           />
         )}
+        {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
       </SafeAreaView>
     )
   }
@@ -159,6 +239,10 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     diary: store.diary.diary,
+    selectedDiary: store.diary.selectedDiary,
+    selectedLead: store.diary.selectedLead,
+    page: store.diary.page,
+    pageSize: store.diary.pageSize,
   }
 }
 

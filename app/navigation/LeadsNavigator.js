@@ -130,6 +130,7 @@ function LeadsNavigator(props) {
           ),
         }}
         component={InvestLeads}
+        initialParams={{ screen: props.route.params.screen, isBooking: props.route.params.isBooking }}
       />
     </Tab.Navigator>
   )

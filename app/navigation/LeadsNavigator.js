@@ -112,7 +112,7 @@ function LeadsNavigator(props) {
         }}
         initialParams={{
           screen: props.route.params?.screen,
-          isBooking: props.route.params?.isBooking,
+          hasBooking: props.route.params?.hasBooking,
         }}
         component={RentLeads}
       />
@@ -120,7 +120,7 @@ function LeadsNavigator(props) {
         name="Buy"
         initialParams={{
           screen: props.route.params?.screen,
-          isBooking: props.route.params?.isBooking,
+          hasBooking: props.route.params?.hasBooking,
         }}
         options={{
           tabBarIcon: (props) => (
@@ -139,10 +139,13 @@ function LeadsNavigator(props) {
         }}
         initialParams={{
           screen: props.route.params?.screen,
-          isBooking: props.route.params?.isBooking,
+          hasBooking: props.route.params?.hasBooking,
         }}
         component={InvestLeads}
-        initialParams={{ screen: props.route.params.screen, isBooking: props.route.params.isBooking }}
+        initialParams={{
+          screen: props.route.params.screen,
+          hasBooking: props.route.params.hasBooking,
+        }}
       />
     </Tab.Navigator>
   )

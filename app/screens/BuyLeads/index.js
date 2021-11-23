@@ -153,18 +153,18 @@ class BuyLeads extends React.Component {
       statusFilterType,
     } = this.state
     this.setState({ loading: true })
-    const { isBooking } = this.props.route.params
+    const { hasBooking } = this.props.route.params
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
+        query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
+        query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
+        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&isBooking=${isBooking}`
+      query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
     }
     axios
       .get(`${query}`)

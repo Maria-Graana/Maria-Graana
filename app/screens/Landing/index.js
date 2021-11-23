@@ -195,17 +195,14 @@ class Landing extends React.Component {
     } else if (screenName === 'Leads') {
       navigation.navigate('Leads', {
         screen: screenName,
-        isBooking: false,
+        hasBooking: false,
       })
-    } 
-    else if (screenName === 'MyDeals') {
+    } else if (screenName === 'MyDeals') {
       navigation.navigate('Leads', {
-         screen: screenName,
-          isBooking : true
-         },
-      )
-    }
-     else {
+        screen: screenName,
+        hasBooking: true,
+      })
+    } else {
       navigation.navigate(name, { screen: screenName })
     }
   }

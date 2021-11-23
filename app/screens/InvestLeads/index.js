@@ -106,7 +106,6 @@ class InvestLeads extends React.Component {
     this.setState({
       isMenuVisible: value,
     })
-
   }
   getServerTime = () => {
     axios
@@ -151,19 +150,19 @@ class InvestLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
-    const { isBooking } = this.props.route.params
+    const { hasBooking } = this.props.route.params
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${isBooking}`
+        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${isBooking}`
+        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${isBooking}`
+        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${isBooking}`
+      query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
     }
     axios
       .get(`${query}`)
@@ -227,13 +226,11 @@ class InvestLeads extends React.Component {
   }
   navigateFromMenu = (data, name) => {
     this.props.dispatch(setlead(data))
-    console.log(setlead(data).payload, "===> L")
-    this.props.navigation.navigate(name, { lead: data, purposeTab: 'invest', screen: "MenuLead" })
+    console.log(setlead(data).payload, '===> L')
+    this.props.navigation.navigate(name, { lead: data, purposeTab: 'invest', screen: 'MenuLead' })
     console.log(this.lead)
     this.setIsMenuVisible(false, data)
-
   }
-
 
   handleLongPress = (val) => {
     ActionSheet.show(
@@ -488,7 +485,7 @@ class InvestLeads extends React.Component {
       statusFilterType,
       comment,
       newActionModal,
-      isMenuVisible
+      isMenuVisible,
     } = this.state
     const { user, lead, navigation } = this.props
     const screen = this.props.route.params.screen
@@ -585,7 +582,6 @@ class InvestLeads extends React.Component {
                 setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
                 checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
                 navigateToShareScreen={(data) => this.navigateToShareScreen(data)}
-
               />
             )}
             onEndReached={() => {
@@ -672,8 +668,8 @@ class InvestLeads extends React.Component {
             modalMode === 'call'
               ? StaticData.commentsFeedbackCall
               : modalMode === 'meeting'
-                ? StaticData.commentsFeedbackMeeting
-                : StaticData.leadClosedCommentsFeedback
+              ? StaticData.commentsFeedbackMeeting
+              : StaticData.leadClosedCommentsFeedback
           }
           modalMode={modalMode}
           rejectLead={(body) => this.rejectLead(body)}
@@ -689,7 +685,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
-    lead: store.lead.lead
+    lead: store.lead.lead,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

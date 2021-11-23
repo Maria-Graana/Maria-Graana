@@ -24,3 +24,35 @@ export function setSlotDiaryData(selectedDate) {
       })
   }
 }
+
+export function setTimeSlots() {
+  const dataSlots = (res, dispatch) => {
+    var x = new Array(24)
+    for (var i = 0; i < 24; i++) {
+      x[i] = new Array(11)
+    }
+    addData(res, x, dispatch)
+  }
+
+  const addData = (res, x, dispatch) => {
+    var r = 0
+    for (var i = 0; i < x.length; i++) {
+      for (var j = 0; j < x[i].length; j++, r++) {
+        x[i][j] = res[r]
+      }
+    }
+    dispatch({
+      type: types.SET_TIME_SLOTS,
+      payload: x,
+    })
+  }
+  return (dispatch, getsState) => {
+    axios
+      .get('api/slotManagement/slot')
+      .then((response) => dataSlots(response.data, dispatch))
+      .catch((error) => {
+        console.log('api/slotManagement/slot')
+        console.log('error', error)
+      })
+  }
+}

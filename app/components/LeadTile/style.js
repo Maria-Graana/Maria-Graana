@@ -125,6 +125,6 @@ export default styles = StyleSheet.create({
     color: '#000'
   },
   sharedLead:{
-    paddingVertical:5
+    paddingVertical:0 
   }
 });

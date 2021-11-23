@@ -99,6 +99,7 @@ class LeadDetail extends React.Component {
       .get(`${url}?id=${lead.id}`)
       .then((res) => {
         let responseData = res.data
+
         let leadType = type
         if (!responseData.paidProject) {
           responseData.paidProject = responseData.project
@@ -290,13 +291,12 @@ class LeadDetail extends React.Component {
     const { lead } = this.state
     if (lead.origin) {
       if (lead.origin === 'arms') {
-        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${
-          lead.creator
+        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${lead.creator
             ? `(${helper.capitalize(lead.creator.firstName)} ${helper.capitalize(
-                lead.creator.lastName
-              )})`
+              lead.creator.lastName
+            )})`
             : ''
-        }`
+          }`
       } else {
         return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`
       }
@@ -346,6 +346,7 @@ class LeadDetail extends React.Component {
       this.state
     const { user, route } = this.props
     const { purposeTab } = route.params
+    const { screen } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
     const leadSource = this.checkLeadSource()
     const regex = /(<([^>]+)>)/gi
@@ -402,8 +403,8 @@ class LeadDetail extends React.Component {
             <View style={styles.cardItemGrey}>
               <Text style={styles.headingText}>Price Range </Text>
               {!lead.projectId &&
-              (lead.min_price !== null || lead.min_price !== undefined) &&
-              (lead.price !== null || lead.price !== undefined) ? (
+                (lead.min_price !== null || lead.min_price !== undefined) &&
+                (lead.price !== null || lead.price !== undefined) ? (
                 <Text style={styles.labelText}>
                   {helper.convertPriceToStringLead(
                     lead.min_price,
@@ -413,8 +414,8 @@ class LeadDetail extends React.Component {
                 </Text>
               ) : null}
               {lead.projectId &&
-              (lead.minPrice !== null || lead.minPrice !== undefined) &&
-              (lead.maxPrice !== null || lead.maxPrice !== undefined) ? (
+                (lead.minPrice !== null || lead.minPrice !== undefined) &&
+                (lead.maxPrice !== null || lead.maxPrice !== undefined) ? (
                 <Text style={styles.labelText}>
                   {helper.convertPriceToStringLead(
                     lead.minPrice,
@@ -434,15 +435,15 @@ class LeadDetail extends React.Component {
               ) : (
                 <Text style={styles.labelText}>
                   {!lead.projectId &&
-                  lead.armsLeadAreas &&
-                  lead.armsLeadAreas.length &&
-                  lead.armsLeadAreas[0].area
+                    lead.armsLeadAreas &&
+                    lead.armsLeadAreas.length &&
+                    lead.armsLeadAreas[0].area
                     ? lead.armsLeadAreas[0].area &&
-                      // lead.armsLeadAreas[0].area.name
-                      lead.armsLeadAreas.map((item, index) => {
-                        var comma = index > 0 ? ', ' : ''
-                        return comma + item.area.name
-                      })
+                    // lead.armsLeadAreas[0].area.name
+                    lead.armsLeadAreas.map((item, index) => {
+                      var comma = index > 0 ? ', ' : ''
+                      return comma + item.area.name
+                    })
                     : 'Area not specified'}
                   {!lead.projectId && lead.city && ' - ' + lead.city.name}
                 </Text>
@@ -594,8 +595,8 @@ class LeadDetail extends React.Component {
             </View>
 
             {lead.shared_with_armsuser_id &&
-            user.id !== lead.shared_with_armsuser_id &&
-            lead.shareUser ? (
+              user.id !== lead.shared_with_armsuser_id &&
+              lead.shareUser ? (
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Shared with</Text>
                 <Text style={styles.labelTextTypeTwo}>
@@ -609,8 +610,8 @@ class LeadDetail extends React.Component {
             ) : null}
 
             {lead.shared_with_armsuser_id &&
-            user.id === lead.shared_with_armsuser_id &&
-            lead.armsuser ? (
+              user.id === lead.shared_with_armsuser_id &&
+              lead.armsuser ? (
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Shared by</Text>
                 <Text style={styles.labelTextTypeTwo}>
@@ -668,16 +669,18 @@ class LeadDetail extends React.Component {
             </View>
           </View>
         </ScrollView>
-        <View style={styles.bottom}>
-          <Button
-            onPress={() => {
-              fromScreen ? this.goBack() : this.navigateTo()
-            }}
-            style={[AppStyles.formBtn, styles.btn1]}
-          >
-            <Text style={AppStyles.btnText}>{mainButtonText}</Text>
-          </Button>
-        </View>
+        {(screen === "MenuLead") ? null : (
+          <View style={styles.bottom}>
+            <Button
+              onPress={() => {
+                fromScreen ? this.goBack() : this.navigateTo()
+              }}
+              style={[AppStyles.formBtn, styles.btn1]}
+            >
+              <Text style={AppStyles.btnText}>{mainButtonText}</Text>
+            </Button>
+          </View>
+        )}
       </View>
     ) : (
       <Loader loading={loading} />

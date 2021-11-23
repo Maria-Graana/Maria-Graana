@@ -5,6 +5,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import moment from 'moment'
+import AppStyles from '../../AppStyles'
 
 const DateControl = ({
   selectedDate,
@@ -22,7 +23,12 @@ const DateControl = ({
         }}
         disabled={loading}
       >
-        <Ionicons name="md-chevron-back" size={24} color="black" style={styles.icon} />
+        <Ionicons
+          name="md-chevron-back"
+          size={24}
+          color={AppStyles.colors.primaryColor}
+          style={styles.icon}
+        />
       </TouchableOpacity>
 
       <Text
@@ -60,7 +66,12 @@ const DateControl = ({
         }}
         disabled={loading}
       >
-        <Ionicons name="md-chevron-forward" size={24} style={styles.icon} />
+        <Ionicons
+          name="md-chevron-forward"
+          size={24}
+          style={styles.icon}
+          color={AppStyles.colors.primaryColor}
+        />
       </TouchableOpacity>
     </View>
   )
@@ -77,18 +88,20 @@ const styles = StyleSheet.create({
     width: '70%',
   },
   dateSelected: {
-    backgroundColor: '#d9f1ff',
+    backgroundColor: AppStyles.colors.primaryColor,
     borderWidth: 0.5,
-    borderColor: AppStyles.colors.textColor,
+    borderColor: AppStyles.colors.subTextColor,
+    // borderRadius: 4,
     padding: 5,
-    color: AppStyles.colors.textColor,
+    color: '#ffffff',
     minWidth: wp('15%'),
     textAlign: 'center',
     fontFamily: AppStyles.fonts.defaultFont,
   },
   dateUnselected: {
     borderWidth: 0.5,
-    borderColor: AppStyles.colors.textColor,
+    borderColor: AppStyles.colors.subTextColor,
+    // borderRadius: 4,
     padding: 5,
     color: AppStyles.colors.textColor,
     minWidth: wp('15%'),

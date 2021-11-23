@@ -1,6 +1,20 @@
 /** @format */
 
 export default StaticData = {
+  diaryTasks: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+  ],
   taskValues: [
     {
       name: 'Task',

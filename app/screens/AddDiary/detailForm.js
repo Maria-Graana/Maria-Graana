@@ -1,8 +1,8 @@
 /** @format */
 
 import React, { Component } from 'react'
-import { View, Text, TextInput, Platform } from 'react-native'
-import { Button, Toast, Textarea } from 'native-base'
+import { View, Text, TextInput, Platform, TouchableOpacity } from 'react-native'
+import { Button, Toast, Textarea, CheckBox } from 'native-base'
 import PickerComponent from '../../components/Picker/index'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
@@ -12,6 +12,8 @@ import ErrorMessage from '../../components/ErrorMessage'
 import DateTimePicker from '../../components/DatePicker'
 import TouchableButton from '../../components/TouchableButton'
 import Ability from '../../hoc/Ability'
+import TouchableInput from '../../components/TouchableInput'
+import styles from './style.js'
 
 class DetailForm extends Component {
   constructor(props) {
@@ -25,9 +27,10 @@ class DetailForm extends Component {
         date: '',
         notes: '',
         status: 'pending',
+        isRecurring: false,
         taskCategory: null,
       },
-      buttonText: 'ADD',
+      buttonText: 'ADD TASK',
     }
   }
 
@@ -50,7 +53,7 @@ class DetailForm extends Component {
     newObject.taskType = data.taskType
     newObject.status = data.status
     newObject.taskCategory = data.taskCategory
-    this.setState({ formData: newObject, buttonText: 'UPDATE' })
+    this.setState({ formData: newObject, buttonText: 'UPDATE TASK' })
   }
 
   handleForm = (value, name) => {
@@ -60,7 +63,7 @@ class DetailForm extends Component {
   }
 
   render() {
-    const { taskType, date, startTime, endTime, subject, notes } = this.state.formData
+    const { taskType, date, startTime, endTime, subject, notes, isRecurring } = this.state.formData
     const { formData, buttonText } = this.state
     const {
       formSubmit,
@@ -71,39 +74,19 @@ class DetailForm extends Component {
       user,
       screenName,
       editableData,
+      goToSlotManagement,
     } = this.props
     return (
       <View>
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                { backgroundColor: formData.status === 'pending' ? '#fff' : '#ddd' },
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-              ]}
-              placeholder={'Subject/Title'}
-              value={subject}
-              editable={formData.status === 'pending'}
-              onChangeText={(text) => this.handleForm(text, 'subject')}
-            />
-          </View>
-          {checkValidation === true && formData.subject === '' && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
-        </View>
-
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
             <PickerComponent
-              enabled={
-                formData.status === 'pending' &&
-                (formData.taskCategory === 'simpleTask' || formData.taskCategory === null)
-                  ? true
-                  : false
-              }
+              // enabled={
+              //   formData.status === 'pending' &&
+              //   (formData.taskCategory === 'simpleTask' || formData.taskCategory === null)
+              //     ? true
+              //     : false
+              // }
               onValueChange={this.handleForm}
               selectedItem={taskType}
               data={taskValues}
@@ -115,40 +98,27 @@ class DetailForm extends Component {
             <ErrorMessage errorMessage={'Required'} />
           )}
         </View>
-        <DateTimePicker
-          placeholderLabel={'Select Date'}
-          disabled={formData.status !== 'pending'}
-          name={'date'}
-          mode={'date'}
-          showError={checkValidation === true && date === ''}
-          errorMessage={'Required'}
+        <TouchableInput
+          placeholder="Book Slot"
           iconSource={require('../../../assets/img/calendar.png')}
-          date={date ? new Date(date) : new Date()}
-          selectedValue={date ? moment(date).format(moment.HTML5_FMT.DATE) : ''}
-          handleForm={(value, name) => this.handleForm(value, name)}
+          showIconOrImage={true}
+          showDropDownIcon={false}
+          iconMarginHorizontal={15}
+          onPress={() => goToSlotManagement()}
         />
-        <DateTimePicker
-          placeholderLabel={'Select Start Time'}
-          disabled={formData.status !== 'pending'}
-          name={'startTime'}
-          mode={'time'}
-          showError={checkValidation === true && startTime === ''}
-          errorMessage={'Required'}
-          iconSource={require('../../../assets/img/clock.png')}
-          date={startTime ? new Date(startTime) : new Date()}
-          selectedValue={startTime ? moment(startTime).format('hh:mm a') : ''}
-          handleForm={(value, name) => this.handleForm(value, name)}
-        />
-        <DateTimePicker
-          placeholderLabel={'Select End Time'}
-          name={'endTime'}
-          disabled={formData.status !== 'pending' || startTime === '' ? true : false}
-          mode={'time'}
-          iconSource={require('../../../assets/img/clock.png')}
-          date={endTime ? new Date(endTime) : new Date()}
-          selectedValue={endTime ? moment(endTime).format('hh:mm a') : ''}
-          handleForm={(value, name) => this.handleForm(value, name)}
-        />
+
+        <TouchableOpacity
+          onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
+          style={styles.checkBoxRow}
+        >
+          <CheckBox
+            color={AppStyles.colors.primaryColor}
+            checked={isRecurring}
+            style={styles.checkBox}
+            onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
+          />
+          <Text style={styles.checkBoxText}>Recurring</Text>
+        </TouchableOpacity>
 
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea
@@ -164,9 +134,9 @@ class DetailForm extends Component {
               },
             ]}
             rowSpan={5}
-            placeholder="Description"
+            placeholder="Comment"
             onChangeText={(text) => this.handleForm(text, 'notes')}
-            disabled={formData.status === 'pending' ? false : true}
+            // disabled={formData.status === 'pending' ? false : true}
             value={notes}
           />
         </View>
@@ -182,7 +152,7 @@ class DetailForm extends Component {
           </View>
         )}
 
-        {Ability.canEdit(user.subRole, screenName) &&
+        {/* {Ability.canEdit(user.subRole, screenName) &&
         editableData &&
         formData.status !== 'completed' &&
         formData.taskCategory === 'simpleTask' ? (
@@ -199,7 +169,7 @@ class DetailForm extends Component {
               disabled={formData.status == 'completed'}
             />
           </View>
-        ) : null}
+        ) : null} */}
       </View>
     )
   }

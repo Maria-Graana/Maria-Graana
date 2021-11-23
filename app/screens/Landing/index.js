@@ -198,6 +198,7 @@ class Landing extends React.Component {
         isBooking: false,
       })
     } else if (screenName === 'MyDeals') {
+      //added my deals flow
       navigation.navigate('Leads', {
         screen: screenName,
         isBooking: true,

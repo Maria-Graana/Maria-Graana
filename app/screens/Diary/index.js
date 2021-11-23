@@ -217,6 +217,11 @@ class Diary extends React.Component {
     navigation.navigate('DiaryFilter', { agentId, isOverdue: false, selectedDate })
   }
 
+  goToAddEditDiaryScreen = () => {
+    const { navigation } = this.props
+    navigation.navigate('AddDiary', { update: false })
+  }
+
   render() {
     const { selectedDate, isCalendarVisible, showMenu, agentId } = this.state
     const { overdueCount, diary, dispatch } = this.props
@@ -238,7 +243,7 @@ class Diary extends React.Component {
             marginBottom: heightPercentageToDP('10%'),
           }}
           position="bottomRight"
-          onPress={() => console.log('add diary')}
+          onPress={() => this.goToAddEditDiaryScreen()}
         >
           <Ionicons name="md-add" color="#ffffff" />
         </Fab>

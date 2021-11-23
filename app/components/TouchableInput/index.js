@@ -19,6 +19,7 @@ const TouchableInput = ({
   showIconOrImage = true,
   disabled = false,
   isFromDateFilter = false,
+  iconMarginHorizontal = 6,
 }) => {
   return (
     <View>
@@ -54,7 +55,10 @@ const TouchableInput = ({
                 color={AppStyles.colors.subTextColor}
               />
             ) : (
-              <Image style={{ width: 26, height: 26, marginHorizontal: 6 }} source={iconSource} />
+              <Image
+                style={{ width: 26, height: 26, marginHorizontal: iconMarginHorizontal }}
+                source={iconSource}
+              />
             )
           ) : null}
         </View>

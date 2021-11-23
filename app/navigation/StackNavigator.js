@@ -92,18 +92,29 @@ function MainStack() {
         })}
       />
 
-
       {/* ARMS-2180 start */}
       <Stack.Screen
         name="TimeSlotManagement"
         component={TimeSlotManagement}
         options={({ navigation, route }) => ({
           title: 'SLOT MANAGEMENT',
-           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
       />
+
+      <Stack.Screen
+        name="ScheduledTasks"
+        component={ScheduledTasks}
+        options={({ navigation, route }) => ({
+          title: 'SCHEDULED TASKS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      {/* ARMS-2180 end */}
 
       <Stack.Screen
         name="OverdueTasks"
@@ -117,16 +128,6 @@ function MainStack() {
       />
 
       <Stack.Screen
-        name="ScheduledTasks"
-        component={ScheduledTasks}
-        options={({ navigation, route }) => ({
-          title: 'SCHEDULED TASKS',
-           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
-          headerTitleAlign: 'center',
-        })}
-      />
-<Stack.Screen
         name="TaskDetails"
         component={TaskDetails}
         options={({ navigation, route }) => ({
@@ -136,9 +137,6 @@ function MainStack() {
           headerTitleAlign: 'center',
         })}
       />
-
-      {/* ARMS-2180 end */}
-
 
       <Stack.Screen
         name="DiaryFilter"

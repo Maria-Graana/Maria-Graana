@@ -12,6 +12,16 @@ const slotDiaryData = (state = '', action) => {
   }
 }
 
+const timeSlots = (state = '', action) => {
+  switch (action.type) {
+    case types.SET_TIME_SLOTS:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   slotDiaryData,
+  timeSlots,
 })

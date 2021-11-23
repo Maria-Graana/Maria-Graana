@@ -1,7 +1,6 @@
 /** @format */
 
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ScrollView, Text, TouchableHighlight, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
@@ -14,7 +13,7 @@ import { connect } from 'react-redux'
 import { setSlotDiaryData } from '../../actions/slotManagement'
 
 function TimeSlotManagement(props) {
-  const [data, setData] = useState(null)
+  const data = props.timeSlots
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
   const [selectedDate, setSelectedDate] = useState(_today)
   const [loading, setLoading] = useState(true)
@@ -35,24 +34,6 @@ function TimeSlotManagement(props) {
     setIsCalendarVisible(value)
   }
 
-  const dataSlots = (res) => {
-    var x = new Array(24)
-    for (var i = 0; i < 24; i++) {
-      x[i] = new Array(11)
-    }
-    addData(res, x)
-  }
-
-  const addData = (res, x) => {
-    var r = 0
-    for (var i = 0; i < x.length; i++) {
-      for (var j = 0; j < x[i].length; j++, r++) {
-        x[i][j] = res[r]
-      }
-    }
-    setData(x)
-  }
-
   const diaryData = (res, e) => {
     for (var i = 0; i < res.length; i++) {
       if (res[i].slotId == e.id) {
@@ -69,14 +50,6 @@ function TimeSlotManagement(props) {
 
     diaryData(props.slotDiary, e)
   }
-
-  useEffect(() => {
-    let url = 'api/slotManagement/slot'
-    axios
-      .get(`${url}`)
-      .then((res) => dataSlots(res.data))
-      .catch((err) => console.log(err))
-  }, [])
 
   return (
     <View style={styles.container}>
@@ -169,6 +142,7 @@ function TimeSlotManagement(props) {
 mapStateToProps = (store) => {
   return {
     slotDiary: store.slotManagement.slotDiaryData,
+    timeSlots: store.slotManagement.timeSlots,
   }
 }
 

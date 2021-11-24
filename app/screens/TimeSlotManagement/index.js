@@ -11,8 +11,7 @@ import CalendarComponent from '../../components/CalendarComponent'
 import { minArray, hourArray, _format, _dayAfterTomorrow, _today, _tomorrow } from './constants'
 import { connect } from 'react-redux'
 import { setSlotDiaryData, setSlotData, setScheduledTasks } from '../../actions/slotManagement'
-
-import { formatDateAndTime } from '../../helper'
+import moment from 'moment'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -20,7 +19,6 @@ function TimeSlotManagement(props) {
   const [selectedDate, setSelectedDate] = useState(_today)
   const [loading, setLoading] = useState(true)
   const [disabled, setDisabled] = useState(true)
-  const [diary, setDiary] = useState(null)
   const [slots, setSlots] = useState([])
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
@@ -43,6 +41,10 @@ function TimeSlotManagement(props) {
         dispatch(setScheduledTasks(res[i]))
       }
     }
+  }
+
+  const formatDateAndTime = (date, time) => {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ')
   }
 
   const showDetail = (e) => {
@@ -129,7 +131,7 @@ function TimeSlotManagement(props) {
 
       <View style={styles.buttonInputWrap}>
         <TouchableButton
-          containerStyle={styles.timePageBtn}
+          containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
           containerBackgroundColor="white"
           textColor="#0f73ee"
           borderColor="#0f73ee"
@@ -137,17 +139,15 @@ function TimeSlotManagement(props) {
           label="Show Details"
           disabled={disabled}
           onPress={() => props.navigation.navigate('ScheduledTasks')}
-          // loading={imageLoading || loading}
         />
         <TouchableButton
-          containerStyle={styles.timePageBtn}
+          containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
           label="Done"
           borderColor="white"
           containerBackgroundColor="#0f73ee"
           borderWidth={1}
           disabled={disabled}
           onPress={() => props.navigation.goBack()}
-          // loading={imageLoading || loading}
         />
       </View>
     </View>

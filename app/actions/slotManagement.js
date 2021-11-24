@@ -74,3 +74,20 @@ export function setScheduledTasks(payload) {
     })
   }
 }
+
+export function getTimeShifts() {
+  return (dispatch, getsState) => {
+    axios
+      .get('api/slotManagement/user-shifts')
+      .then((response) =>
+        dispatch({
+          type: types.SET_TIME_SHIFT,
+          payload: response,
+        })
+      )
+      .catch((error) => {
+        console.log('api/slotManagement/user-shifts')
+        console.log('error', error)
+      })
+  }
+}

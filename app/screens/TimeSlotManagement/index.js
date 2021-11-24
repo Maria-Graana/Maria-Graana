@@ -17,15 +17,18 @@ function TimeSlotManagement(props) {
   const data = props.timeSlots
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
   const [selectedDate, setSelectedDate] = useState(_today)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
   const [slots, setSlots] = useState([])
+  const [dayName, setDayName] = useState(moment(_today).format('dddd'))
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
     setSelectedDate(date), setIsCalendarVisible(mode === 'month' ? isCalendarVisible : false)
-    setLoading(true)
+
+    const dayN = moment(date).format('dddd')
+    setDayName(dayN)
 
     const { dispatch } = props
     dispatch(setSlotDiaryData(date))
@@ -49,7 +52,6 @@ function TimeSlotManagement(props) {
 
   const showDetail = (e) => {
     const { dispatch } = props
-    dispatch(setSlotDiaryData(selectedDate))
 
     const date = selectedDate
     const startTime = formatDateAndTime(selectedDate, e.startTime)
@@ -66,11 +68,6 @@ function TimeSlotManagement(props) {
 
     dispatch(setSlotData(date, startTime, endTime, slots))
   }
-
-  // useEffect(() => {
-  //   const { dispatch } = props
-  //   console.log(props.slotsData)
-  // }, [props])
 
   return (
     <View style={styles.container}>

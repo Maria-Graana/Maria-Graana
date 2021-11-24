@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from 'react'
 import { FlatList, View } from 'react-native'
+import { connect } from 'react-redux'
 import DiaryTile from '../../components/DiaryTile'
 import style from './style'
 
-export default function ScheduledTasks({ route }) {
-  const diaryData = route.params.diary
+function ScheduledTasks(props) {
+  const diaryData = props.scheduledTasks !== '' ? props.scheduledTasks : null
   const [selectedDiary, setSelectedDiary] = useState(null)
   const [showMenu, setshowMenu] = useState(null)
 
-  // useEffect(() => {
-  //   const { params } = route
-  //   console.log(params.diary)
-  // }, [])
+  useEffect(() => {
+    console.log(diaryData)
+  }, [])
 
   const showMenuOptions = (data) => {
     setSelectedDiary(data)
@@ -47,3 +47,11 @@ export default function ScheduledTasks({ route }) {
     </View>
   )
 }
+
+mapStateToProps = (store) => {
+  return {
+    scheduledTasks: store.slotManagement.setScheduled,
+  }
+}
+
+export default connect(mapStateToProps)(ScheduledTasks)

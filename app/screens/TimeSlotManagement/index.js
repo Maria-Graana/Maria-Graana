@@ -10,7 +10,7 @@ import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
 import { minArray, hourArray, _format, _dayAfterTomorrow, _today, _tomorrow } from './constants'
 import { connect } from 'react-redux'
-import { setSlotDiaryData, setSlotData } from '../../actions/slotManagement'
+import { setSlotDiaryData, setSlotData, setScheduledTasks } from '../../actions/slotManagement'
 
 import { formatDateAndTime } from '../../helper'
 
@@ -37,10 +37,10 @@ function TimeSlotManagement(props) {
     setIsCalendarVisible(value)
   }
 
-  const diaryData = (res, e) => {
+  const diaryData = (res, e, dispatch) => {
     for (var i = 0; i < res.length; i++) {
       if (res[i].slotId == e.id) {
-        setDiary(res[i])
+        dispatch(setScheduledTasks(res[i]))
       }
     }
   }
@@ -57,7 +57,7 @@ function TimeSlotManagement(props) {
       slots.pop(e.id)
     } else {
       slots.push(e.id)
-      diaryData(props.slotDiary, e)
+      diaryData(props.slotDiary, e, dispatch)
     }
 
     setDisabled(false)

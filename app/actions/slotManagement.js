@@ -65,3 +65,12 @@ export function setSlotData(date, startTime, endTime, slots) {
     })
   }
 }
+
+export function setScheduledTasks(payload) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_SCHEDULED_TASKS,
+      payload: payload,
+    })
+  }
+}

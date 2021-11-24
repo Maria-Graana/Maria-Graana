@@ -9,7 +9,7 @@ const config = {
     channel: 'development',
   },
   staging: {
-    apiPath: 'https://api.stage.realtor.agency21.rocks',
+    apiPath: 'https://stage.arms.graana.rocks',
     graanaUrl: 'https://ssr.staging.graana.rocks',
     channel: 'staging',
   },
@@ -25,9 +25,9 @@ if (Constants.manifest.releaseChannel === undefined) {
 } else if (Constants.manifest.releaseChannel.indexOf('production') !== -1) {
   module.exports = config['production']
 } else if (Constants.manifest.releaseChannel.indexOf('staging') !== -1) {
-  module.exports = config['staging']
+  module.exports = config['cta-staging']
 } else if (Constants.manifest.releaseChannel.indexOf('development') !== -1) {
-  module.exports = config['development']
+  module.exports = config['cta-dev']
 } else {
   module.exports = config['development']
 }

@@ -240,7 +240,6 @@ class Diary extends React.Component {
           containerStyle={{ zIndex: 20 }}
           style={{
             backgroundColor: AppStyles.colors.primaryColor,
-            marginBottom: heightPercentageToDP('10%'),
           }}
           position="bottomRight"
           onPress={() => this.goToAddEditDiaryScreen()}

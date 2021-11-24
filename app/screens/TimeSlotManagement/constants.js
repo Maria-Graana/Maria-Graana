@@ -33,14 +33,14 @@ export const hourArray = [
   '9:00PM',
   '10:00PM',
   '11:00PM',
-  '12:00PM',
-  '1:00PM',
-  '2:00PM',
-  '3:00PM',
-  '4:00PM',
-  '5:00PM',
-  '6:00PM',
-  '7:00PM',
+  '12:00AM',
+  '1:00AM',
+  '2:00AM',
+  '3:00AM',
+  '4:00AM',
+  '5:00AM',
+  '6:00AM',
+  '7:00AM',
 ]
 
 export const _format = 'YYYY-MM-DD'

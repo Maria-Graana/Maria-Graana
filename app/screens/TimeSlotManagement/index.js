@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ScrollView, Text, TouchableHighlight, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
@@ -10,7 +10,9 @@ import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
 import { minArray, hourArray, _format, _dayAfterTomorrow, _today, _tomorrow } from './constants'
 import { connect } from 'react-redux'
-import { setSlotDiaryData } from '../../actions/slotManagement'
+import { setSlotDiaryData, setSlotData } from '../../actions/slotManagement'
+
+import { formatDateAndTime } from '../../helper'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -19,6 +21,7 @@ function TimeSlotManagement(props) {
   const [loading, setLoading] = useState(true)
   const [disabled, setDisabled] = useState(true)
   const [diary, setDiary] = useState(null)
+  const [slots, setSlots] = useState([])
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -46,10 +49,26 @@ function TimeSlotManagement(props) {
     const { dispatch } = props
     dispatch(setSlotDiaryData(selectedDate))
 
+    const date = selectedDate
+    const startTime = formatDateAndTime(selectedDate, e.startTime)
+    const endTime = formatDateAndTime(selectedDate, e.endTime)
+
+    if (slots.includes(e.id)) {
+      slots.pop(e.id)
+    } else {
+      slots.push(e.id)
+      diaryData(props.slotDiary, e)
+    }
+
     setDisabled(false)
 
-    diaryData(props.slotDiary, e)
+    dispatch(setSlotData(date, startTime, endTime, slots))
   }
+
+  useEffect(() => {
+    const { dispatch } = props
+    console.log(props.slotsData)
+  }, [props])
 
   return (
     <View style={styles.container}>
@@ -143,6 +162,7 @@ mapStateToProps = (store) => {
   return {
     slotDiary: store.slotManagement.slotDiaryData,
     timeSlots: store.slotManagement.timeSlots,
+    slotsData: store.slotManagement.slotsPayload,
   }
 }
 

@@ -218,6 +218,7 @@ class Diary extends React.Component {
   }
 
   goToAddEditDiaryScreen = () => {
+    console.log('addd')
     const { navigation } = this.props
     navigation.navigate('AddDiary', { update: false })
   }
@@ -240,7 +241,7 @@ class Diary extends React.Component {
           containerStyle={{ zIndex: 20 }}
           style={{
             backgroundColor: AppStyles.colors.primaryColor,
-            marginBottom: heightPercentageToDP('10%'),
+            // marginBottom: heightPercentageToDP('10%'),
           }}
           position="bottomRight"
           onPress={() => this.goToAddEditDiaryScreen()}

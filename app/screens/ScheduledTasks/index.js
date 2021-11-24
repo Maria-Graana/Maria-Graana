@@ -6,6 +6,7 @@ import DiaryTile from '../../components/DiaryTile'
 import style from './style'
 
 export default function ScheduledTasks({ route }) {
+  const diaryData = route.params.diary
   const [selectedDiary, setSelectedDiary] = useState(null)
   const [showMenu, setshowMenu] = useState(null)
 
@@ -26,21 +27,23 @@ export default function ScheduledTasks({ route }) {
 
   return (
     <View style={style.container}>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={route.params.diary.diary}
-        renderItem={({ item, index }) => (
-          <DiaryTile
-            diary={item}
-            showMenu={showMenu}
-            showMenuOptions={(value) => showMenuOptions(value)}
-            selectedDiary={selectedDiary}
-            hideMenu={() => hideMenu()}
-            setClassification={(value) => setSelectedDiary(value)}
-          />
-        )}
-        keyExtractor={(item, index) => item.id.toString()}
-      />
+      {diaryData && (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={diaryData.diary}
+          renderItem={({ item, index }) => (
+            <DiaryTile
+              diary={item}
+              showMenu={showMenu}
+              showMenuOptions={(value) => showMenuOptions(value)}
+              selectedDiary={selectedDiary}
+              hideMenu={() => hideMenu()}
+              setClassification={(value) => setSelectedDiary(value)}
+            />
+          )}
+          keyExtractor={(item, index) => item.id.toString()}
+        />
+      )}
     </View>
   )
 }

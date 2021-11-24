@@ -1236,11 +1236,17 @@ class LeadPropsure extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   // ************ Function for Reject modal ************

@@ -65,10 +65,10 @@ function TimeSlotManagement(props) {
     dispatch(setSlotData(date, startTime, endTime, slots))
   }
 
-  useEffect(() => {
-    const { dispatch } = props
-    console.log(props.slotsData)
-  }, [props])
+  // useEffect(() => {
+  //   const { dispatch } = props
+  //   console.log(props.slotsData)
+  // }, [props])
 
   return (
     <View style={styles.container}>
@@ -136,11 +136,7 @@ function TimeSlotManagement(props) {
           borderWidth={1}
           label="Show Details"
           disabled={disabled}
-          onPress={() =>
-            props.navigation.navigate('ScheduledTasks', {
-              diary: diary,
-            })
-          }
+          onPress={() => props.navigation.navigate('ScheduledTasks')}
           // loading={imageLoading || loading}
         />
         <TouchableButton
@@ -150,7 +146,7 @@ function TimeSlotManagement(props) {
           containerBackgroundColor="#0f73ee"
           borderWidth={1}
           disabled={disabled}
-          // onPress={() => formSubmit()}
+          onPress={() => props.navigation.goBack()}
           // loading={imageLoading || loading}
         />
       </View>

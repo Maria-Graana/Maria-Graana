@@ -37,7 +37,7 @@ import {
   setSelectedDiary,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import { getTimeShifts, setTimeSlots } from '../../actions/slotManagement'
+import { getTimeShifts, setSlotDiaryData, setTimeSlots } from '../../actions/slotManagement'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -58,6 +58,7 @@ class Diary extends React.Component {
     const { navigation, dispatch } = this.props
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
     const { route, user } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       let { selectedDate } = this.state

@@ -52,7 +52,6 @@ function TimeSlotManagement(props) {
 
   const showDetail = (e) => {
     const { dispatch } = props
-    dispatch(setSlotDiaryData(selectedDate))
 
     const date = selectedDate
     const startTime = formatDateAndTime(selectedDate, e.startTime)
@@ -69,10 +68,6 @@ function TimeSlotManagement(props) {
 
     dispatch(setSlotData(date, startTime, endTime, slots))
   }
-
-  // useEffect(() => {
-  //   console.log(dayName)
-  // }, [])
 
   return (
     <View style={styles.container}>

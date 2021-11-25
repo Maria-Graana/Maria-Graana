@@ -34,8 +34,6 @@ import * as RootNavigation from './app/navigation/RootNavigation'
 import { navigationRef } from './app/navigation/RootNavigation'
 import { persistor, store } from './app/store'
 
-console.disableYellowBox = true
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,

@@ -329,6 +329,9 @@ const helper = {
       'YYYY-MM-DDTHH:mm:ssZ'
     )
   },
+  formatDateTime(date, time) {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+  },
   createContactPayload(customer) {
     let payload = []
     let primaryBol = false

@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState } from 'react'
-import { ScrollView, Text, TouchableHighlight, View } from 'react-native'
+import { Alert, ScrollView, Text, TouchableHighlight, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
 import styles from './style'
@@ -12,6 +12,7 @@ import { minArray, hourArray, _format, _dayAfterTomorrow, _today, _tomorrow } fr
 import { connect } from 'react-redux'
 import { setSlotDiaryData, setSlotData, setScheduledTasks } from '../../actions/slotManagement'
 import moment from 'moment'
+import _ from 'underscore'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -21,6 +22,7 @@ function TimeSlotManagement(props) {
   const [disabled, setDisabled] = useState(true)
   const [slots, setSlots] = useState([])
   const [dayName, setDayName] = useState(moment(_today).format('dddd'))
+  const [slotsData, setSlotsData] = useState([])
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -50,23 +52,49 @@ function TimeSlotManagement(props) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ')
   }
 
-  const showDetail = (e) => {
+  const verifyDetail = (e) => {
     const { dispatch } = props
+    diaryData(props.slotDiary, e, dispatch)
+
+    const sortedAray = _.sortBy(slotsData, 'id')
 
     const date = selectedDate
-    const startTime = formatDateAndTime(selectedDate, e.startTime)
-    const endTime = formatDateAndTime(selectedDate, e.endTime)
-
-    if (slots.includes(e.id)) {
-      slots.pop(e.id)
-    } else {
-      slots.push(e.id)
-      diaryData(props.slotDiary, e, dispatch)
-    }
+    const startTime = formatDateAndTime(selectedDate, sortedAray && sortedAray[0].startTime)
+    const endTime = formatDateAndTime(
+      selectedDate,
+      sortedAray && sortedAray[sortedAray.length - 1].endTime
+    )
 
     setDisabled(false)
 
     dispatch(setSlotData(date, startTime, endTime, slots))
+  }
+
+  const showDetail = (e) => {
+    slotsData.push(e)
+    slots.push(e.id)
+
+    const tempAray = _.sortBy(slotsData, 'id')
+
+    if (tempAray[1] == undefined) {
+      verifyDetail(e)
+    } else {
+      for (var i = 0; i < tempAray.length - 1; i++) {
+        if (tempAray[i].id != tempAray[i + 1].id - 1) {
+          if (tempAray[i] == e) {
+            Alert.alert('Already selected', '', [{ text: 'OK' }])
+            slotsData.pop(e)
+            slots.pop(e.id)
+          } else {
+            Alert.alert('Sorry', 'You cannot skip a slot', [{ text: 'OK' }])
+            slotsData.pop(e)
+            slots.pop(e.id)
+          }
+        } else {
+          verifyDetail(e)
+        }
+      }
+    }
   }
 
   return (

@@ -123,12 +123,12 @@ class Diary extends React.Component {
       }
     }
 
-    if (array.length == 2) {
+    if (array && array.length == 2) {
       const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
       const end = formatDateTime(nextDay, array[1].armsShift.endTime)
 
       this.setStatsData(start, end)
-    } else if (array.length == 3) {
+    } else if (array && array.length == 3) {
       const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
       const end = formatDateTime(
         array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
@@ -137,10 +137,10 @@ class Diary extends React.Component {
 
       this.setStatsData(start, end)
     } else {
-      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+      const start = formatDateTime(selectedDate, array && array[0].armsShift.startTime)
       const end = formatDateTime(
-        array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
-        array[0].armsShift.endTime
+        array && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
+        array && array[0].armsShift.endTime
       )
 
       this.setStatsData(start, end)

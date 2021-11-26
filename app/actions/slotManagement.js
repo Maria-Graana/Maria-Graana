@@ -29,7 +29,7 @@ export function setTimeSlots() {
   const dataSlots = (res, dispatch) => {
     var x = new Array(24)
     for (var i = 0; i < 24; i++) {
-      x[i] = new Array(11)
+      x[i] = new Array(12)
     }
     addData(res, x, dispatch)
   }

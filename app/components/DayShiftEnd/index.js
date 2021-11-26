@@ -27,8 +27,6 @@ export default function DayShiftEnd({
   const shiftStartDate = moment(startTime).format('YYYY-MM-DD')
   const shiftEndDate = moment(endTime).format('YYYY-MM-DD')
 
-  console.log(todayDate, '  ', shiftEndDate, '  ', shiftStartDate)
-
   const emailStats = () => {
     let endpoint = `/api/diary/emailstats?userId=${user.id}&day=${day}&startTime=${startTime}&endTime=${endTime}`
     axios

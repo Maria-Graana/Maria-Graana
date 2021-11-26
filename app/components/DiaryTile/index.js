@@ -52,7 +52,7 @@ class DiaryTile extends React.Component {
             {screenName === 'overduetasks' ? (
               <Text style={styles.time}>{moment(diary.start).format('DD MMM')}</Text>
             ) : null}
-            <Text style={styles.time}>{diary.hour}</Text>
+            <Text style={styles.time}>{moment(diary.start).format('hh:mm a')}</Text>
             <Text style={styles.duration}>{DiaryHelper.calculateTimeDifference(diary)}</Text>
           </View>
           <View

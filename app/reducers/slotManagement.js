@@ -41,9 +41,19 @@ const setScheduled = (state = '', action) => {
   }
 }
 
+const userTimeShifts = (state = '', action) => {
+  switch (action.type) {
+    case types.SET_TIME_SHIFT:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   slotDiaryData,
   timeSlots,
   slotsPayload,
   setScheduled,
+  userTimeShifts,
 })

@@ -234,3 +234,23 @@ export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
       })
   }
 }
+
+// ARMS-2448 start
+export const getDiaryStats = (userId, day, startTime, endTime) => {
+  return (dispatch, getsState) => {
+    let endPoint = `/api/diary/stats?userId=${userId}&day=${day}&startTime=${startTime}&endTime=${endTime}`
+    axios
+      .get(endPoint)
+      .then((response) =>
+        dispatch({
+          type: types.GET_DIARY_STATS,
+          payload: response.data,
+        })
+      )
+      .catch((error) => {
+        console.log(endPoint)
+        console.log('error', error)
+      })
+  }
+}
+// ARMS-2448 end

@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons'
+import { Ionicons, FontAwesome5, Entypo } from '@expo/vector-icons'
 import AppStyles from '../../AppStyles'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
@@ -22,11 +22,12 @@ import moment from 'moment'
 import DiaryTile from '../../components/DiaryTile'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import axios from 'axios'
-import helper from '../../helper.js'
+import helper, { formatDateTime } from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
   deleteDiaryTask,
+  getDiaryStats,
   getDiaryTasks,
   getOverdueCount,
   increasePageCount,
@@ -38,6 +39,9 @@ import {
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import { getTimeShifts, setSlotDiaryData, setTimeSlots } from '../../actions/slotManagement'
+
+import DayShiftEnd from '../../components/DayShiftEnd'
+import { Menu } from 'react-native-paper'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -52,6 +56,12 @@ class Diary extends React.Component {
       selectedDate: _today,
       isCalendarVisible: false,
       showMenu: false,
+      showDayEnd: false,
+      dayName: moment(_today).format('dddd').toLowerCase(),
+      nextDay: moment(_today, _format).add(1, 'days').format(_format),
+      startTime: '',
+      endTime: '',
+      isMenuVisible: false,
     }
   }
   componentDidMount() {
@@ -59,6 +69,7 @@ class Diary extends React.Component {
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
     dispatch(setSlotDiaryData(_today))
+    this.getDiariesStats()
     const { route, user } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       let { selectedDate } = this.state
@@ -81,6 +92,70 @@ class Diary extends React.Component {
         })
       }
     })
+  }
+
+  getDiariesStats = () => {
+    const { selectedDate, dayName, nextDay } = this.state
+    const data = this.props.userShifts
+    const array = []
+
+    for (var i = 0; i < data.length; i++) {
+      if (dayName == data[i].dayName && dayName == 'sunday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'monday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'tuesday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'wednesday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'thursday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'friday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'saturday') {
+        array.push(data[i])
+      }
+    }
+
+    if (array.length == 2) {
+      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+      const end = formatDateTime(nextDay, array[1].armsShift.endTime)
+
+      this.setStatsData(start, end)
+    } else if (array.length == 3) {
+      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+      const end = formatDateTime(
+        array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
+        array[2].armsShift.endTime
+      )
+
+      this.setStatsData(start, end)
+    } else {
+      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+      const end = formatDateTime(
+        array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
+        array[0].armsShift.endTime
+      )
+
+      this.setStatsData(start, end)
+    }
+  }
+
+  setStatsData = (start, end) => {
+    this.setState({
+      startTime: start,
+      endTime: end,
+    })
+
+    const { dayName } = this.state
+    const { dispatch, user } = this.props
+    dispatch(getDiaryStats(user.id, dayName, start, end))
   }
 
   getDiaries = () => {
@@ -122,9 +197,12 @@ class Diary extends React.Component {
       {
         selectedDate: date,
         isCalendarVisible: mode === 'month' ? isCalendarVisible : false,
+        dayName: moment(date).format('dddd').toLowerCase(),
+        nextDay: moment(date, _format).add(1, 'days').format(_format),
       },
       () => {
         this.getDiaries()
+        this.getDiariesStats()
       }
     )
   }
@@ -224,9 +302,23 @@ class Diary extends React.Component {
     navigation.navigate('AddDiary', { update: false })
   }
 
+  setShowDayEnd = (display) => {
+    this.setState({ showDayEnd: display })
+  }
+
   render() {
-    const { selectedDate, isCalendarVisible, showMenu, agentId } = this.state
-    const { overdueCount, diary, dispatch } = this.props
+    const {
+      selectedDate,
+      isCalendarVisible,
+      showMenu,
+      agentId,
+      showDayEnd,
+      startTime,
+      endTime,
+      dayName,
+      isMenuVisible,
+    } = this.state
+    const { overdueCount, diary, dispatch, navigation, diaryStat, user } = this.props
     const {
       diaries,
       loading,
@@ -260,6 +352,17 @@ class Diary extends React.Component {
           }
         />
 
+        <DayShiftEnd
+          navigation={navigation}
+          setVisible={this.setShowDayEnd}
+          visible={showDayEnd}
+          diaryStat={diaryStat}
+          user={user}
+          startTime={startTime}
+          endTime={endTime}
+          day={dayName}
+        />
+
         <CalendarComponent
           showCalendar={isCalendarVisible}
           startDate={selectedDate}
@@ -285,6 +388,27 @@ class Diary extends React.Component {
             </TouchableOpacity>
 
             <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
+
+            <Menu
+              visible={isMenuVisible}
+              onDismiss={() => this.setState({ isMenuVisible: false })}
+              anchor={
+                <View style={styles.menuView}>
+                  <Entypo
+                    onPress={() => this.setState({ isMenuVisible: true })}
+                    name="dots-three-vertical"
+                    size={24}
+                  />
+                </View>
+              }
+            >
+              <Menu.Item
+                onPress={() => {
+                  this.setShowDayEnd(!showDayEnd), this.setState({ isMenuVisible: false })
+                }}
+                title="Day/Shift End Report"
+              />
+            </Menu>
           </View>
         </View>
         {loading ? (
@@ -362,6 +486,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  menuView: {
+    marginLeft: 10,
+    marginRight: 40,
+  },
 })
 
 mapStateToProps = (store) => {
@@ -373,6 +501,8 @@ mapStateToProps = (store) => {
     overdueCount: store.diary.overdueCount,
     page: store.diary.page,
     pageSize: store.diary.pageSize,
+    userShifts: store.slotManagement.userTimeShifts,
+    diaryStat: store.diary.diaryStats,
   }
 }
 

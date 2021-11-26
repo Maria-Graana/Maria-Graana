@@ -82,8 +82,18 @@ const filters = (state = filtersData, action) => {
   }
 }
 
+const diaryStats = (state = '', action) => {
+  switch (action.type) {
+    case types.GET_DIARY_STATS:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   diary,
   overdueCount,
   filters,
+  diaryStats,
 })

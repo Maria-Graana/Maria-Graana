@@ -82,7 +82,7 @@ export function getTimeShifts() {
       .then((response) =>
         dispatch({
           type: types.SET_TIME_SHIFT,
-          payload: response,
+          payload: response.data,
         })
       )
       .catch((error) => {

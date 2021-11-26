@@ -61,7 +61,6 @@ export function getDiaryTasks(
 
 export function setSelectedDiary(diary) {
   return (dispatch, getsState) => {
-    console.log(diary)
     let lead = null
     if (diary.armsProjectLeadId) {
       lead = { ...diary.armsProjectLead }

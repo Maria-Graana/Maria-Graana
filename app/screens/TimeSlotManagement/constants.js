@@ -17,7 +17,6 @@ export const minArray = [
 ]
 
 export const hourArray = [
-  '8:00AM',
   '9:00AM',
   '10:00AM',
   '11:00AM',
@@ -41,6 +40,7 @@ export const hourArray = [
   '5:00AM',
   '6:00AM',
   '7:00AM',
+  '8:00AM',
 ]
 
 export const _format = 'YYYY-MM-DD'

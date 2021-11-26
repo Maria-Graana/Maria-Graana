@@ -66,6 +66,14 @@ export function setSlotData(date, startTime, endTime, slots) {
   }
 }
 
+export function clearSlotData() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SLOT_DIARY_DATA,
+    })
+  }
+}
+
 export function setScheduledTasks(payload) {
   return (dispatch, getsState) => {
     dispatch({

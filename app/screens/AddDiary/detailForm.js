@@ -20,7 +20,7 @@ class DetailForm extends Component {
     super(props)
     this.state = {
       formData: {
-        subject: '',
+        subject: 'Scheduled task',
         taskType: '',
         startTime: '',
         endTime: '',
@@ -29,6 +29,8 @@ class DetailForm extends Component {
         status: 'pending',
         isRecurring: false,
         taskCategory: null,
+        slots: [],
+        addedBy: 'self',
       },
       buttonText: 'ADD TASK',
     }
@@ -75,6 +77,7 @@ class DetailForm extends Component {
       screenName,
       editableData,
       goToSlotManagement,
+      slotsData,
     } = this.props
     return (
       <View>
@@ -105,6 +108,13 @@ class DetailForm extends Component {
           showDropDownIcon={false}
           iconMarginHorizontal={15}
           onPress={() => goToSlotManagement()}
+          value={
+            slotsData
+              ? `${slotsData.date} (${helper.formatTime(slotsData.startTime)} - ${helper.formatTime(
+                  slotsData.endTime
+                )})`
+              : ``
+          }
         />
 
         <TouchableOpacity
@@ -151,25 +161,6 @@ class DetailForm extends Component {
             />
           </View>
         )}
-
-        {/* {Ability.canEdit(user.subRole, screenName) &&
-        editableData &&
-        formData.status !== 'completed' &&
-        formData.taskCategory === 'simpleTask' ? (
-          <View style={{ marginVertical: 10 }}>
-            <TouchableButton
-              containerStyle={AppStyles.formBtn}
-              label={'Mark Task as Done'}
-              containerBackgroundColor={
-                formData.status == 'completed' ? '#8baaef' : AppStyles.colors.primaryColor
-              }
-              onPress={() => {
-                performTaskActions('completed')
-              }}
-              disabled={formData.status == 'completed'}
-            />
-          </View>
-        ) : null} */}
       </View>
     )
   }

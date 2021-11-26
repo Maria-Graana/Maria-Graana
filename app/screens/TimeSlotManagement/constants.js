@@ -14,6 +14,7 @@ export const minArray = [
   '45min',
   '50min',
   '55min',
+  '60min',
 ]
 
 export const hourArray = [

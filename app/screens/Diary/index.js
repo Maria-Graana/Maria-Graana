@@ -393,11 +393,11 @@ class Diary extends React.Component {
               visible={isMenuVisible}
               onDismiss={() => this.setState({ isMenuVisible: false })}
               anchor={
-                <View>
+                <View style={styles.menuView}>
                   <Entypo
                     onPress={() => this.setState({ isMenuVisible: true })}
                     name="dots-three-vertical"
-                    size={22}
+                    size={24}
                   />
                 </View>
               }
@@ -408,12 +408,6 @@ class Diary extends React.Component {
                 }}
                 title="Day/Shift End Report"
               />
-              {/* <Menu.Item
-                onPress={() => {
-                  navigateFromMenu(data, 'LeadDetail')
-                }}
-                title="Details"
-              /> */}
             </Menu>
           </View>
         </View>
@@ -491,6 +485,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  menuView: {
+    marginLeft: 10,
+    marginRight: 40,
   },
 })
 

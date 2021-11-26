@@ -28,7 +28,12 @@ class AddDiary extends Component {
 
   componentDidMount() {
     const { route, navigation } = this.props
-    const { tasksList = StaticData.diaryTasks } = route.params
+    let { tasksList = StaticData.diaryTasks } = route.params
+    if (rcmLeadId) {
+      tasksList = StaticData.diaryTasksRCM
+    } else if (cmLeadId) {
+      tasksList = StaticData.diaryTasksCM
+    }
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT TASK' })
     }
@@ -127,7 +132,6 @@ class AddDiary extends Component {
     const { route, navigation } = this.props
     const { rcmLeadId, cmLeadId } = route.params
     let diary = this.generatePayload(data)
-    console.log(diary)
     if (rcmLeadId || cmLeadId) {
       // create task for lead
       axios

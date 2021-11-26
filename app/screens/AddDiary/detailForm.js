@@ -74,7 +74,6 @@ class DetailForm extends Component {
       loading,
       performTaskActions,
       user,
-      screenName,
       editableData,
       goToSlotManagement,
       slotsData,

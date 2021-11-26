@@ -643,7 +643,6 @@ class LeadMatch extends React.Component {
       update: false,
       rcmLeadId: lead.id,
       agentId: user.id,
-      addedBy: 'self',
       screenName: 'Diary',
     })
   }

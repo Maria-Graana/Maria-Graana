@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState } from 'react'
-import { Alert, ScrollView, Text, TouchableHighlight, View } from 'react-native'
+import { Alert, ScrollView, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
 import styles from './style'
@@ -21,7 +21,7 @@ function TimeSlotManagement(props) {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
   const [slots, setSlots] = useState([])
-  const [dayName, setDayName] = useState(moment(_today).format('dddd'))
+  const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
   const [slotsData, setSlotsData] = useState([])
   const [slotsDiary, setSlotsDiary] = useState(props.slotDiary)
 
@@ -98,6 +98,52 @@ function TimeSlotManagement(props) {
     }
   }
 
+  const setShift = (e) => {
+    const data = props.userShifts
+    const array = []
+
+    for (var i = 0; i < data.length; i++) {
+      if (dayName == data[i].dayName && dayName == 'sunday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'monday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'tuesday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'wednesday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'thursday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'friday') {
+        array.push(data[i])
+      }
+      if (dayName == data[i].dayName && dayName == 'saturday') {
+        array.push(data[i])
+      }
+    }
+
+    if (array && array.length == 2) {
+      const start = array[0].armsShift.startTime
+      const end = array[1].armsShift.endTime
+
+      if (e.startTime < start && e.endTime > end) return false
+    } else if (array && array.length == 3) {
+      const start = array[0].armsShift.startTime
+      const end = array[2].armsShift.endTime
+
+      if (e.startTime < start && e.endTime > end) return false
+    } else {
+      const start = array[0] && array[0].armsShift.startTime
+      const end = array[0] && array[0].armsShift.endTime
+
+      if (e.startTime < start && e.endTime > end) return false
+    }
+  }
+
   const setColor = (e) => {
     let color = slotsDiary.filter((diary) => diary.slotId == e.id)
 
@@ -158,12 +204,7 @@ function TimeSlotManagement(props) {
                   </View>
                   {o.map((e, i) => {
                     return (
-                      <TouchableHighlight
-                        activeOpacity={0.1}
-                        underlayColor="grey"
-                        onPress={() => showDetail(e)}
-                        key={i}
-                      >
+                      <TouchableOpacity activeOpacity={0.1} onPress={() => showDetail(e)} key={i}>
                         <View
                           style={[
                             styles.hourRow,
@@ -183,6 +224,8 @@ function TimeSlotManagement(props) {
                                   ? '#fff1c5'
                                   : setColor(e) == 'closed'
                                   ? '#e6e6e6'
+                                  : setShift(e) == false
+                                  ? '#d6d6d6'
                                   : 'white',
                             },
                           ]}
@@ -194,7 +237,7 @@ function TimeSlotManagement(props) {
                             </View>
                           )}
                         </View>
-                      </TouchableHighlight>
+                      </TouchableOpacity>
                     )
                   })}
                 </View>
@@ -233,6 +276,7 @@ mapStateToProps = (store) => {
     slotDiary: store.slotManagement.slotDiaryData,
     timeSlots: store.slotManagement.timeSlots,
     slotsData: store.slotManagement.slotsPayload,
+    userShifts: store.slotManagement.userTimeShifts,
   }
 }
 

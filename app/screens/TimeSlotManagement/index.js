@@ -162,6 +162,7 @@ function TimeSlotManagement(props) {
                         activeOpacity={0.1}
                         underlayColor="grey"
                         onPress={() => showDetail(e)}
+                        key={i}
                       >
                         <View
                           style={[

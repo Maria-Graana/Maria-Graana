@@ -23,6 +23,7 @@ function TimeSlotManagement(props) {
   const [slots, setSlots] = useState([])
   const [dayName, setDayName] = useState(moment(_today).format('dddd'))
   const [slotsData, setSlotsData] = useState([])
+  const [slotsDiary, setSlotsDiary] = useState(props.slotDiary)
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -97,6 +98,19 @@ function TimeSlotManagement(props) {
     }
   }
 
+  const setColor = (e) => {
+    let color = slotsDiary.filter((diary) => diary.slotId == e.id)
+
+    if (color[0] && color[0].diary) {
+      if (color[0].diary.length > 1) {
+        return color[0].diary.length
+      } else {
+        const str = color[0].diary[0].taskType.replace(/[_ ]+/g, '').toLowerCase()
+        return str
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <CalendarComponent
@@ -117,7 +131,12 @@ function TimeSlotManagement(props) {
           initialDayAfterTomorrow={_dayAfterTomorrow}
           loading={loading}
         />
-        <FontAwesome name="calendar" size={25} color="#0f73ee" />
+        <FontAwesome
+          name="calendar"
+          size={25}
+          color="#0f73ee"
+          onPress={(value) => setCalendarVisible(value)}
+        />
       </View>
       <ScrollView horizontal={true}>
         <ScrollView>
@@ -125,7 +144,7 @@ function TimeSlotManagement(props) {
             {hourArray.map((o, i) => {
               return (
                 <View style={styles.hourCol} key={i}>
-                  <Text>{o}</Text>
+                  <Text style={styles.timeText}>{o}</Text>
                 </View>
               )
             })}
@@ -135,7 +154,7 @@ function TimeSlotManagement(props) {
               return (
                 <View style={styles.viewMinCol} key={i}>
                   <View style={styles.minCol}>
-                    <Text>{minArray[i]}</Text>
+                    <Text style={styles.timeText}>{minArray[i]}</Text>
                   </View>
                   {o.map((e, i) => {
                     return (
@@ -144,7 +163,36 @@ function TimeSlotManagement(props) {
                         underlayColor="grey"
                         onPress={() => showDetail(e)}
                       >
-                        <View style={styles.hourRow} key={i} />
+                        <View
+                          style={[
+                            styles.hourRow,
+                            {
+                              backgroundColor:
+                                setColor(e) == 'dailyupdate'
+                                  ? '#dcf0ff'
+                                  : setColor(e) == 'morningmeeting'
+                                  ? '#dcf0ff'
+                                  : setColor(e) == 'connect'
+                                  ? '#deecd7'
+                                  : setColor(e) == 'meeting'
+                                  ? '#bedafb'
+                                  : setColor(e) == 'meetingwithpp'
+                                  ? '#bedafb'
+                                  : setColor(e) == 'followup'
+                                  ? '#fff1c5'
+                                  : setColor(e) == 'closed'
+                                  ? '#e6e6e6'
+                                  : 'white',
+                            },
+                          ]}
+                          key={i}
+                        >
+                          {typeof setColor(e) == 'number' && (
+                            <View style={styles.taskLengthView}>
+                              <Text style={{ color: 'black' }}>{`+${setColor(e)}`}</Text>
+                            </View>
+                          )}
+                        </View>
                       </TouchableHighlight>
                     )
                   })}

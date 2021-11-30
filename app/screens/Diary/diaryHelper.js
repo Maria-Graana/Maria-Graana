@@ -17,6 +17,9 @@ const DiaryHelper = {
   showTaskType(val) {
     let finalValue = ''
     if (val) {
+      if (val === 'meeting_with_pp') {
+        val = 'Meeting with PP'
+      }
       finalValue = DiaryHelper.removeUnderscore(val)
       return finalValue
     } else {
@@ -161,6 +164,8 @@ const DiaryHelper = {
       } else if (taskType === 'daily_update') {
         return '#73C2FE'
       } else if (taskType === 'morning_meeting') {
+        return '#73C2FE'
+      } else if (taskType === 'meeting_with_pp') {
         return '#73C2FE'
       }
     }

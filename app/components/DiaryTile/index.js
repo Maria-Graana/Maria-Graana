@@ -118,7 +118,9 @@ class DiaryTile extends React.Component {
                         title="Edit Task"
                       />
 
-                      {diary.taskType !== 'morning_meeting' && diary.taskType !== 'daily_update' ? (
+                      {diary.taskType !== 'morning_meeting' &&
+                      diary.taskType !== 'daily_update' &&
+                      diary.taskType !== 'meeting_with_pp' ? (
                         <View>
                           {!diary.wantedId ? (
                             <Menu.Item
@@ -139,7 +141,9 @@ class DiaryTile extends React.Component {
                         </View>
                       ) : null}
 
-                      {diary.taskType === 'morning_meeting' || diary.taskType === 'daily_update' ? (
+                      {diary.taskType === 'morning_meeting' ||
+                      diary.taskType === 'daily_update' ||
+                      diary.taskType === 'meeting_with_pp' ? (
                         <Menu.Item
                           onPress={() => {
                             handleMenuActions('delete')

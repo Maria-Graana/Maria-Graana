@@ -60,16 +60,6 @@ class AddDiary extends Component {
         this.createDiary(copyInitialPayload)
       })
     }
-
-    // if (!data.taskType || !data.date || !data.startTime || !data.subject) {
-    //   this.setState({
-    //     checkValidation: true,
-    //   })
-    // } else {
-    //   this.setState({ loading: true }, () => {
-    //     this.createDiary(data)
-    //   })
-    // }
   }
 
   generatePayload = (data) => {

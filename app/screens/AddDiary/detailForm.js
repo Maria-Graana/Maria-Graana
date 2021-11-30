@@ -74,7 +74,6 @@ class DetailForm extends Component {
       loading,
       performTaskActions,
       user,
-      editableData,
       goToSlotManagement,
       slotsData,
     } = this.props

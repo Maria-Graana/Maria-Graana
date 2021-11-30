@@ -237,6 +237,8 @@ class Diary extends React.Component {
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {
+      console.log(selectedDiary)
+      this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')
     } else if (action === 'reassign_lead') {
@@ -297,9 +299,9 @@ class Diary extends React.Component {
     navigation.navigate('DiaryFilter', { agentId, isOverdue: false, selectedDate })
   }
 
-  goToAddEditDiaryScreen = () => {
+  goToAddEditDiaryScreen = (update, data = null) => {
     const { navigation } = this.props
-    navigation.navigate('AddDiary', { update: false })
+    navigation.navigate('AddDiary', { update, data })
   }
 
   setShowDayEnd = (display) => {

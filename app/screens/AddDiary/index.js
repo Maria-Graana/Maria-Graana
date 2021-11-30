@@ -28,7 +28,7 @@ class AddDiary extends Component {
 
   componentDidMount() {
     const { route, navigation } = this.props
-    let { tasksList = StaticData.diaryTasks } = route.params
+    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId } = route.params
     if (rcmLeadId) {
       tasksList = StaticData.diaryTasksRCM
     } else if (cmLeadId) {

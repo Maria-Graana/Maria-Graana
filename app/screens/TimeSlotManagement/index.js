@@ -24,6 +24,7 @@ function TimeSlotManagement(props) {
   const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
   const [slotsData, setSlotsData] = useState([])
   const [slotsDiary, setSlotsDiary] = useState(props.slotDiary)
+  const [isSelected, setIsSelected] = useState([])
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -74,7 +75,7 @@ function TimeSlotManagement(props) {
   const showDetail = (e) => {
     slotsData.push(e)
     slots.push(e.id)
-
+    isSelected.push(e.id)
     const tempAray = _.sortBy(slotsData, 'id')
 
     if (tempAray[1] == undefined) {
@@ -83,13 +84,39 @@ function TimeSlotManagement(props) {
       for (var i = 0; i < tempAray.length - 1; i++) {
         if (tempAray[i].id != tempAray[i + 1].id - 1) {
           if (tempAray[i] == e) {
-            Alert.alert('Already selected', '', [{ text: 'OK' }])
+            Alert.alert(
+              'Already selected',
+              'Please clear current selection if you want to continue',
+              [
+                { text: 'OK' },
+                {
+                  text: 'Clear',
+                  onPress: () => {
+                    setSlotsData([]), setSlots([]), setIsSelected([])
+                  },
+                },
+              ]
+            )
             slotsData.pop(e)
             slots.pop(e.id)
+            isSelected.pop(e.id)
           } else {
-            Alert.alert('Sorry', 'You cannot skip a slot', [{ text: 'OK' }])
+            Alert.alert(
+              'Sorry',
+              'You cannot skip a slot\nPlease clear current selection if you want to continue',
+              [
+                { text: 'OK' },
+                {
+                  text: 'Clear',
+                  onPress: () => {
+                    setSlotsData([]), setSlots([]), setIsSelected([])
+                  },
+                },
+              ]
+            )
             slotsData.pop(e)
             slots.pop(e.id)
+            isSelected.pop(e.id)
           }
         } else {
           verifyDetail(e)
@@ -227,6 +254,8 @@ function TimeSlotManagement(props) {
                                   : setShift(e) == false
                                   ? '#d6d6d6'
                                   : 'white',
+
+                              opacity: isSelected.includes(e.id) ? 0.1 : 1,
                             },
                           ]}
                           key={i}

@@ -249,7 +249,9 @@ function TimeSlotManagement(props) {
                             styles.hourRow,
                             {
                               backgroundColor:
-                                setColor(e) == 'dailyupdate'
+                                setShift(e) == false
+                                  ? '#d6d6d6'
+                                  : setColor(e) == 'dailyupdate'
                                   ? '#dcf0ff'
                                   : setColor(e) == 'morningmeeting'
                                   ? '#dcf0ff'
@@ -263,11 +265,10 @@ function TimeSlotManagement(props) {
                                   ? '#fff1c5'
                                   : setColor(e) == 'closed'
                                   ? '#e6e6e6'
-                                  : setShift(e) == false
-                                  ? '#d6d6d6'
                                   : 'white',
 
-                              opacity: isSelected.includes(e.id) ? 0.1 : 1,
+                              borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
+                              borderWidth: isSelected.includes(e.id) ? 1.5 : 0.6,
                             },
                           ]}
                           key={i}

@@ -28,10 +28,14 @@ import {
   setCategory,
   setClassificationModal,
   setOnEndReachedLoader,
+  setPageCount,
   setSelectedDiary,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import moment from 'moment'
 
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
 class OverdueTasks extends React.Component {
   constructor(props) {
     super(props)
@@ -47,6 +51,12 @@ class OverdueTasks extends React.Component {
     const { count, agentId } = route.params
     navigation.setOptions({ title: `Overdue Tasks(${count})` })
     this.getDiaries()
+  }
+
+  componentWillUnmount() {
+    const { navigation, dispatch, route } = this.props
+    const { agentId } = route.params
+    dispatch(getDiaryTasks(_today, agentId, false))
   }
 
   handleMenuActions = (action) => {
@@ -142,6 +152,7 @@ class OverdueTasks extends React.Component {
       selectedLead,
       showClassificationModal,
       onEndReachedLoader,
+      page,
     } = diary
     return (
       <SafeAreaView style={styles.container}>
@@ -196,8 +207,10 @@ class OverdueTasks extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
-                dispatch(increasePageCount())
+                //console.log(diaries.count, diaries.rows.length)
                 dispatch(setOnEndReachedLoader())
+                dispatch(setPageCount(page + 1))
+                dispatch(getDiaryTasks(null, agentId, true, false))
               }
             }}
             onEndReachedThreshold={0.5}

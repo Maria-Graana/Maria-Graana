@@ -13,7 +13,8 @@ export function getDiaryTasks(
 ) {
   return (dispatch, getsState) => {
     let endPoint = ``
-    const { page, pageSize } = getsState().diary.diary
+    let diaryRows = []
+    const { page, pageSize, diaries } = getsState().diary.diary
 
     if (isFilterApplied) {
       // if filter is applied
@@ -24,27 +25,36 @@ export function getDiaryTasks(
         endPoint = `/api/diary/all?overdue=${overdue}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
         endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&page=${page}&pageSize=${pageSize}`
+        console.log('endpoint=>', endPoint)
       }
     } else {
       if (overdue) {
         endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        // console.log('overdue=>', endPoint)
       } else {
         endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        // console.log(endPoint)
       }
     }
 
-    dispatch({
-      type: types.SET_DIARY_LOADER,
-      payload: true,
-    })
+    if (page === 1) {
+      dispatch({
+        type: types.SET_DIARY_LOADER,
+        payload: true,
+      })
+    }
 
     axios
       .get(`${endPoint}`)
       .then((res) => {
         if (res.data) {
+          diaryRows = page === 1 ? res.data.rows : [...diaries.rows, ...res.data.rows]
           dispatch({
             type: types.GET_DIARIES,
-            payload: res.data,
+            payload: {
+              rows: diaryRows,
+              count: res.data.count,
+            },
           })
         }
       })
@@ -87,12 +97,11 @@ export function setOnEndReachedLoader() {
   }
 }
 
-export function increasePageCount() {
+export function setPageCount(count) {
   return (dispatch, getsState) => {
-    const { page } = getsState().diary.diary
     dispatch({
       type: types.SET_DIARY_PAGE_COUNT,
-      payload: page + 1,
+      payload: count,
     })
   }
 }

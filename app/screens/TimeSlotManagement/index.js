@@ -169,17 +169,17 @@ function TimeSlotManagement(props) {
       const start = array[0].armsShift.startTime
       const end = array[1].armsShift.endTime
 
-      if (e.startTime < start && e.endTime > end) return false
+      if (e.startTime < start || e.endTime > end) return false
     } else if (array && array.length == 3) {
       const start = array[0].armsShift.startTime
       const end = array[2].armsShift.endTime
 
-      if (e.startTime < start && e.endTime > end) return false
+      if (e.startTime < start || e.endTime > end) return false
     } else {
       const start = array[0] && array[0].armsShift.startTime
       const end = array[0] && array[0].armsShift.endTime
 
-      if (e.startTime < start && e.endTime > end) return false
+      if (e.startTime < start || e.endTime > end) return false
     }
   }
 

@@ -10,7 +10,12 @@ import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
 import { minArray, hourArray, _format, _dayAfterTomorrow, _today, _tomorrow } from './constants'
 import { connect } from 'react-redux'
-import { setSlotDiaryData, setSlotData, setScheduledTasks } from '../../actions/slotManagement'
+import {
+  setSlotDiaryData,
+  setSlotData,
+  setScheduledTasks,
+  setDataSlotsArray,
+} from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
 
@@ -20,11 +25,11 @@ function TimeSlotManagement(props) {
   const [selectedDate, setSelectedDate] = useState(_today)
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
-  const [slots, setSlots] = useState([])
+  const [slots, setSlots] = useState(props.slotData ? props.slotData.slots : [])
   const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
-  const [slotsData, setSlotsData] = useState([])
+  const [slotsData, setSlotsData] = useState(props.slotsDataArray ? props.slotsDataArray : [])
   const [slotsDiary, setSlotsDiary] = useState(props.slotDiary)
-  const [isSelected, setIsSelected] = useState([])
+  const [isSelected, setIsSelected] = useState(props.slotData ? props.slotData.slots : [])
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -41,6 +46,12 @@ function TimeSlotManagement(props) {
   const setCalendarVisible = (value) => {
     setIsCalendarVisible(value)
   }
+
+  useEffect(() => {
+    if (props.slotData) {
+      setDisabled(false)
+    }
+  }, [])
 
   const diaryData = (res, e, dispatch) => {
     for (var i = 0; i < res.length; i++) {
@@ -70,6 +81,7 @@ function TimeSlotManagement(props) {
     setDisabled(false)
 
     dispatch(setSlotData(date, startTime, endTime, slots))
+    dispatch(setDataSlotsArray(slotsData))
   }
 
   const showDetail = (e) => {
@@ -157,17 +169,17 @@ function TimeSlotManagement(props) {
       const start = array[0].armsShift.startTime
       const end = array[1].armsShift.endTime
 
-      if (e.startTime < start && e.endTime > end) return false
+      if (e.startTime < start || e.endTime > end) return false
     } else if (array && array.length == 3) {
       const start = array[0].armsShift.startTime
       const end = array[2].armsShift.endTime
 
-      if (e.startTime < start && e.endTime > end) return false
+      if (e.startTime < start || e.endTime > end) return false
     } else {
       const start = array[0] && array[0].armsShift.startTime
       const end = array[0] && array[0].armsShift.endTime
 
-      if (e.startTime < start && e.endTime > end) return false
+      if (e.startTime < start || e.endTime > end) return false
     }
   }
 
@@ -237,7 +249,9 @@ function TimeSlotManagement(props) {
                             styles.hourRow,
                             {
                               backgroundColor:
-                                setColor(e) == 'dailyupdate'
+                                setShift(e) == false
+                                  ? '#d6d6d6'
+                                  : setColor(e) == 'dailyupdate'
                                   ? '#dcf0ff'
                                   : setColor(e) == 'morningmeeting'
                                   ? '#dcf0ff'
@@ -251,11 +265,10 @@ function TimeSlotManagement(props) {
                                   ? '#fff1c5'
                                   : setColor(e) == 'closed'
                                   ? '#e6e6e6'
-                                  : setShift(e) == false
-                                  ? '#d6d6d6'
                                   : 'white',
 
-                              opacity: isSelected.includes(e.id) ? 0.1 : 1,
+                              borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
+                              borderWidth: isSelected.includes(e.id) ? 1.5 : 0.6,
                             },
                           ]}
                           key={i}
@@ -304,8 +317,9 @@ mapStateToProps = (store) => {
   return {
     slotDiary: store.slotManagement.slotDiaryData,
     timeSlots: store.slotManagement.timeSlots,
-    slotsData: store.slotManagement.slotsPayload,
+    slotData: store.slotManagement.slotsPayload,
     userShifts: store.slotManagement.userTimeShifts,
+    slotsDataArray: store.slotManagement.slotsDataPayload,
   }
 }
 

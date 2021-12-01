@@ -14,7 +14,7 @@ let diaryData = {
   selectedLead: null,
   showClassificationModal: false,
   page: 1,
-  pageSize: 20,
+  pageSize: 50,
   onEndReachedLoader: false,
 }
 

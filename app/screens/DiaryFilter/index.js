@@ -36,8 +36,6 @@ class DiaryFilter extends React.Component {
     this.getFeedbackReasons()
   }
 
-  componentWillUnmount() {}
-
   clearFilter = () => {
     const { dispatch, route, navigation } = this.props
     const { agentId, isOverdue } = route.params
@@ -84,7 +82,7 @@ class DiaryFilter extends React.Component {
 
   onSearchPressed = () => {
     const { navigation, route, dispatch } = this.props
-    const { agentId, isOverdue = false } = route.params
+    const { agentId, isOverdue = false, screenName } = route.params
     dispatch(getDiaryTasks(null, agentId, isOverdue, true))
     navigation.goBack()
   }

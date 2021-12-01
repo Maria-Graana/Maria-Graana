@@ -30,7 +30,7 @@ import {
   getDiaryStats,
   getDiaryTasks,
   getOverdueCount,
-  increasePageCount,
+  setPageCount,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
@@ -66,32 +66,34 @@ class Diary extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch } = this.props
+    const { route, user } = this.props
+
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
     dispatch(setSlotDiaryData(_today))
     this.getDiariesStats()
-    const { route, user } = this.props
-    this._unsubscribe = navigation.addListener('focus', () => {
-      let { selectedDate } = this.state
-      let dateSelected = selectedDate
-      if ('openDate' in route.params) {
-        const { openDate } = route.params
-        dateSelected = moment(openDate).format(_format)
-      }
-      if (route.params !== undefined && 'agentId' in route.params) {
-        navigation.setOptions({ title: `${route.params.name} Diary` })
-        this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
-          this.getDiaries()
-          // Team Diary View
-        })
-      } else {
-        navigation.setOptions({ title: 'My Diary' })
-        this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
-          // Personal Diary
-          this.getDiaries()
-        })
-      }
-    })
+    // this._unsubscribe = navigation.addListener('focus', () => {
+    let { selectedDate } = this.state
+    let dateSelected = selectedDate
+    if ('openDate' in route.params) {
+      const { openDate } = route.params
+      dateSelected = moment(openDate).format(_format)
+    }
+    if (route.params !== undefined && 'agentId' in route.params) {
+      navigation.setOptions({ title: `${route.params.name} Diary` })
+      this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
+        this.getDiaries()
+        // Team Diary View
+      })
+    } else {
+      navigation.setOptions({ title: 'My Diary' })
+      this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
+        // Personal Diary
+        this.getDiaries()
+      })
+    }
+    //}
+    //})
   }
 
   getDiariesStats = () => {
@@ -193,6 +195,8 @@ class Diary extends React.Component {
 
   setSelectedDate = (date, mode) => {
     const { isCalendarVisible } = this.state
+    const { dispatch, diary } = this.props
+    const { page } = diary
     this.setState(
       {
         selectedDate: date,
@@ -201,6 +205,7 @@ class Diary extends React.Component {
         nextDay: moment(date, _format).add(1, 'days').format(_format),
       },
       () => {
+        dispatch(setPageCount(1))
         this.getDiaries()
         this.getDiariesStats()
       }
@@ -296,7 +301,11 @@ class Diary extends React.Component {
   navigateToFiltersScreen = () => {
     const { navigation } = this.props
     const { agentId, selectedDate } = this.state
-    navigation.navigate('DiaryFilter', { agentId, isOverdue: false, selectedDate })
+    navigation.navigate('DiaryFilter', {
+      agentId,
+      isOverdue: false,
+      selectedDate,
+    })
   }
 
   goToAddEditDiaryScreen = (update, data = null) => {
@@ -328,6 +337,7 @@ class Diary extends React.Component {
       selectedLead,
       showClassificationModal,
       onEndReachedLoader,
+      page,
     } = diary
     return (
       <SafeAreaView style={styles.container}>
@@ -437,8 +447,9 @@ class Diary extends React.Component {
             )}
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
-                dispatch(increasePageCount())
                 dispatch(setOnEndReachedLoader())
+                dispatch(setPageCount(page + 1))
+                dispatch(getDiaryTasks(selectedDate, agentId, false, false))
               }
             }}
             onEndReachedThreshold={0.5}

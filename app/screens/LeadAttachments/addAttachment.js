@@ -7,7 +7,7 @@ import AppStyles from '../../AppStyles'
 import AttachmentTile from '../../components/AttachmentTile'
 
 const AddAttachment = (props) => {
-  const { showDeleteDialog, signedServiceFile, downloadFile, workflow } = props
+  const { showDeleteDialog, signedServiceFile, downloadFile, workflow, attachementData } = props
   return (
     <View style={[AppStyles.mainInputWrap, { marginTop: 0 }]}>
       {props.signedServiceFile && workflow === 'rcm' && (
@@ -29,14 +29,16 @@ const AddAttachment = (props) => {
           <Text style={AppStyles.btnText}>ADD SIGNED SERVICES AGREEMENT</Text>
         </Button>
       )} */}
-      <Button
-        style={[AppStyles.formBtn, { marginTop: 10, marginHorizontal: 15 }]}
-        onPress={() => {
-          props.onPress('attachment')
-        }}
-      >
-        <Text style={AppStyles.btnText}>ADD ATTACHMENT</Text>
-      </Button>
+      {!attachementData[0] && (
+        <Button
+          style={[AppStyles.formBtn, { marginTop: 10, marginHorizontal: 15 }]}
+          onPress={() => {
+            props.onPress('attachment')
+          }}
+        >
+          <Text style={AppStyles.btnText}>ADD ATTACHMENT</Text>
+        </Button>
+      )}
     </View>
   )
 }

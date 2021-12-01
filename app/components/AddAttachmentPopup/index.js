@@ -1,6 +1,6 @@
 /** @format */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, Modal, SafeAreaView, TextInput, TouchableOpacity } from 'react-native'
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import styles from './styles'
@@ -19,7 +19,14 @@ const AddAttachmentPopup = (props) => {
     getAttachmentFromStorage,
     setTitle,
     doneLoading,
+    navigation,
+    scaDoc,
   } = props
+  useEffect(() => {
+    if (scaDoc) {
+      setTitle('Service Charge Agreement Document')
+    }
+  }, [])
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView
@@ -27,7 +34,7 @@ const AddAttachmentPopup = (props) => {
       >
         <AntDesign
           style={styles.closeStyle}
-          onPress={closeModal}
+          onPress={(closeModal, () => navigation.goBack())}
           name="close"
           size={26}
           color={AppStyles.colors.textColor}
@@ -38,11 +45,11 @@ const AddAttachmentPopup = (props) => {
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]}
-                placeholder={'Subject/Title'}
+                placeholder={scaDoc ? 'Service Charge Agreement Document' : 'Subject/Title'}
                 onChangeText={(text) => setTitle(text)}
               />
             </View>
-            {checkValidation === true && formData.title === '' && (
+            {checkValidation === true && !scaDoc && formData.title === '' && (
               <ErrorMessage errorMessage={'Required'} />
             )}
           </View>
@@ -99,7 +106,7 @@ const AddAttachmentPopup = (props) => {
             <TouchableButton
               label={'DONE'}
               loading={doneLoading}
-              onPress={formSubmit}
+              onPress={(formSubmit, scaDoc && closeModal)}
               containerStyle={styles.button}
             />
           </View>

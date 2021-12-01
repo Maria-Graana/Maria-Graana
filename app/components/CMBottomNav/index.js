@@ -351,6 +351,7 @@ class CMBottomNav extends React.Component {
       goToFollowUp,
       goToRejectForm,
       closedLeadEdit,
+      goToAttachments,
       lead,
     } = this.props
     const {
@@ -408,6 +409,16 @@ class CMBottomNav extends React.Component {
               </TouchableOpacity>
             }
           >
+            <Menu.Item
+              onPress={() => {
+                if (closedLeadEdit) {
+                  goToAttachments()
+                  this.openMenu(false)
+                } else helper.leadClosedToast()
+              }}
+              icon={require('../../../assets/img/properties-icon-l.png')}
+              title="Add SCA Document"
+            />
             {lead.projectId ? (
               <Menu.Item
                 onPress={() => {

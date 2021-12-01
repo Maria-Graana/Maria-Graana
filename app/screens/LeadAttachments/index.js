@@ -55,7 +55,7 @@ class LeadAttachments extends Component {
 
   fetchAttachments = () => {
     const { route } = this.props
-    const { workflow } = route.params
+    const { workflow, scaDoc } = route.params
     let url = ``
     if (workflow === 'rcm' || workflow === 'propertyLeads') {
       const { rcmLeadId } = route.params
@@ -76,12 +76,14 @@ class LeadAttachments extends Component {
         })
         this.setState({
           loading: false,
-          isVisible: false,
+          isVisible: scaDoc ? true : false,
           attachmentsData: res.data,
           signedServiceFile: signedFile,
           doneLoading: false,
         })
       })
+      .then(() => this.setState({ isVisible: this.state.attachmentsData[0] && scaDoc && false }))
+      .catch((err) => console.log(err))
       .catch((error) => {
         console.log(error)
       })
@@ -279,8 +281,8 @@ class LeadAttachments extends Component {
       showAction,
       doneLoading,
     } = this.state
-    const { route } = this.props
-    const { workflow } = route.params
+    const { route, navigation } = this.props
+    const { workflow, scaDoc } = route.params
     return (
       <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
         <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
@@ -294,6 +296,8 @@ class LeadAttachments extends Component {
           getAttachmentFromStorage={this.toggleActionSheet}
           closeModal={() => this.closeModal()}
           doneLoading={doneLoading}
+          navigation={navigation}
+          scaDoc={scaDoc}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
         {!loading ? (
@@ -322,6 +326,7 @@ class LeadAttachments extends Component {
                 showDeleteDialog={this.showDeleteDialog}
                 signedServiceFile={signedServiceFile}
                 workflow={workflow}
+                attachementData={attachmentsData}
               />
             }
             keyExtractor={(item, index) => index.toString()}

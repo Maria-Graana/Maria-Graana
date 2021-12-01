@@ -99,3 +99,12 @@ export function getTimeShifts() {
       })
   }
 }
+
+export function setDataSlotsArray(dataSlots) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_SLOTS_DATA_PAYLOAD,
+      payload: dataSlots,
+    })
+  }
+}

@@ -121,7 +121,6 @@ class AddDiary extends Component {
   addDiary = (data) => {
     const { route, navigation } = this.props
     let diary = this.generatePayload(data)
-    console.log(diary)
     axios
       .post(`/api/leads/task`, diary)
       .then((res) => {
@@ -149,33 +148,33 @@ class AddDiary extends Component {
       })
   }
 
-  // updateDiary = (data) => {
-  //   let diary = this.generatePayload(data)
-  //   axios
-  //     .patch(`/api/diary/update?id=${diary.id}`, diary)
-  //     .then((res) => {
-  //       helper.successToast('TASK UPDATED SUCCESSFULLY!')
-  //       let start = new Date(res.data.start)
-  //       let end = new Date(res.data.end)
-  //       let data = {
-  //         id: res.data.id,
-  //         title: res.data.subject,
-  //         body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
-  //       }
-  //       helper.deleteAndUpdateNotification(data, start, res.data.id)
-  //       this.props.navigation.navigate('Diary', {
-  //         update: false,
-  //         agentId: this.props.route.params.agentId,
-  //       })
-  //     })
-  //     .catch((error) => {
-  //       helper.errorToast('ERROR: UPDATING TASK')
-  //       console.log(error)
-  //     })
-  //     .finally(() => {
-  //       this.setState({ loading: false })
-  //     })
-  // }
+  updateDiary = (data) => {
+    let diary = this.generatePayload(data)
+    axios
+      .patch(`/api/diary/update?id=${diary.id}`, diary)
+      .then((res) => {
+        helper.successToast('TASK UPDATED SUCCESSFULLY!')
+        let start = new Date(res.data.start)
+        let end = new Date(res.data.end)
+        let data = {
+          id: res.data.id,
+          title: res.data.subject,
+          body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
+        }
+        helper.deleteAndUpdateNotification(data, start, res.data.id)
+        this.props.navigation.navigate('Diary', {
+          update: false,
+          agentId: this.props.route.params.agentId,
+        })
+      })
+      .catch((error) => {
+        helper.errorToast('ERROR: UPDATING TASK')
+        console.log(error)
+      })
+      .finally(() => {
+        this.setState({ loading: false })
+      })
+  }
 
   goToSlotManagement = () => {
     const { navigation } = this.props

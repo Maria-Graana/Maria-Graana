@@ -76,18 +76,14 @@ class DetailForm extends Component {
       user,
       goToSlotManagement,
       slotsData,
+      editableData,
     } = this.props
     return (
       <View>
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
             <PickerComponent
-              // enabled={
-              //   formData.status === 'pending' &&
-              //   (formData.taskCategory === 'simpleTask' || formData.taskCategory === null)
-              //     ? true
-              //     : false
-              // }
+              enabled={editableData === null}
               onValueChange={this.handleForm}
               selectedItem={taskType}
               data={taskValues}
@@ -115,18 +111,20 @@ class DetailForm extends Component {
           }
         />
 
-        <TouchableOpacity
-          onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
-          style={styles.checkBoxRow}
-        >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={isRecurring}
-            style={styles.checkBox}
+        {editableData === null && formData.leadCategory === 'simpleTask' ? (
+          <TouchableOpacity
             onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
-          />
-          <Text style={styles.checkBoxText}>Recurring</Text>
-        </TouchableOpacity>
+            style={styles.checkBoxRow}
+          >
+            <CheckBox
+              color={AppStyles.colors.primaryColor}
+              checked={isRecurring}
+              style={styles.checkBox}
+              onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
+            />
+            <Text style={styles.checkBoxText}>Recurring</Text>
+          </TouchableOpacity>
+        ) : null}
 
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea

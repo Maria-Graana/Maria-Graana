@@ -675,8 +675,8 @@ class LeadMatch extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 

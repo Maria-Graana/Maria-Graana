@@ -8,6 +8,7 @@ import dots from '../../../assets/img/dots.png'
 import moment from 'moment'
 import StaticData from '../../StaticData'
 import helper from '../../helper'
+import DiaryHelper from "../../screens/Diary/diaryHelper"
 
 class MeetingTile extends React.Component {
   constructor(props) {
@@ -33,7 +34,7 @@ class MeetingTile extends React.Component {
                 {data.taskType === 'called' && (data.calledOn === 'phone' || data.calledOn === null)
                   ? 'Called'
                   : ''}
-                {data.taskType !== 'called' ? data.taskType : ''}
+                {data.taskType !== 'called' ? DiaryHelper.removeUnderscore(data.taskType) : ''}
                 {data.calledNumber ? ` (${data.calledNumber})` : null}
               </Text>
               <Text style={[styles.fontBold]}>

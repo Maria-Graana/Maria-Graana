@@ -780,7 +780,6 @@ const helper = {
         if (item.status !== 'cleared' && item.paymentCategory === 'legal_payment')
           legalServicesCheck = false
       })
-
       if (
         paymentCheck &&
         propsureCheck &&
@@ -788,7 +787,7 @@ const helper = {
         propsureOutstandingPayment <= 0 &&
         cleared === commissionsLength &&
         legalPaymentCleared === legalServicesCount &&
-        Number(legalDocCount) >= legalCount
+        Number(legalDocCount) === Number(legalCount)
       )
         check = true
       return check

@@ -20,10 +20,11 @@ const AddAttachmentPopup = (props) => {
     setTitle,
     doneLoading,
     navigation,
-    scaDoc,
+    workflow,
+    purpose,
   } = props
   useEffect(() => {
-    if (scaDoc) {
+    if (purpose == 'addSCA') {
       setTitle('Service Charge Agreement Document')
     }
   }, [])
@@ -34,7 +35,9 @@ const AddAttachmentPopup = (props) => {
       >
         <AntDesign
           style={styles.closeStyle}
-          onPress={(closeModal, () => navigation.goBack())}
+          onPress={() => {
+            closeModal(), purpose == 'addSCA' && navigation.goBack()
+          }}
           name="close"
           size={26}
           color={AppStyles.colors.textColor}
@@ -45,11 +48,13 @@ const AddAttachmentPopup = (props) => {
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]}
-                placeholder={scaDoc ? 'Service Charge Agreement Document' : 'Subject/Title'}
+                placeholder={
+                  purpose == 'addSCA' ? 'Service Charge Agreement Document' : 'Subject/Title'
+                }
                 onChangeText={(text) => setTitle(text)}
               />
             </View>
-            {checkValidation === true && !scaDoc && formData.title === '' && (
+            {checkValidation === true && purpose != 'addSCA' && formData.title === '' && (
               <ErrorMessage errorMessage={'Required'} />
             )}
           </View>
@@ -106,7 +111,9 @@ const AddAttachmentPopup = (props) => {
             <TouchableButton
               label={'DONE'}
               loading={doneLoading}
-              onPress={(formSubmit, scaDoc && closeModal)}
+              onPress={() => {
+                formSubmit(), purpose == 'addSCA' && closeModal()
+              }}
               containerStyle={styles.button}
             />
           </View>

@@ -423,9 +423,9 @@ class CMPayment extends Component {
   }
 
   // **************** Bottom Nav Functions Start *******************
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { navigation, route, lead } = this.props
-    navigation.navigate('LeadAttachments', { cmLeadId: lead.id, workflow: 'cm' })
+    navigation.navigate('LeadAttachments', { cmLeadId: lead.id, workflow: 'cm', purpose: purpose })
   }
 
   goToPayAttachments = () => {

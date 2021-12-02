@@ -55,7 +55,8 @@ class LeadAttachments extends Component {
 
   fetchAttachments = () => {
     const { route } = this.props
-    const { workflow, scaDoc } = route.params
+    const { workflow, purpose } = route.params
+    console.log(purpose)
     let url = ``
     if (workflow === 'rcm' || workflow === 'propertyLeads') {
       const { rcmLeadId } = route.params
@@ -76,13 +77,17 @@ class LeadAttachments extends Component {
         })
         this.setState({
           loading: false,
-          isVisible: scaDoc ? true : false,
+          isVisible: purpose == 'addSCA' ? true : false,
           attachmentsData: res.data,
           signedServiceFile: signedFile,
           doneLoading: false,
         })
       })
-      .then(() => this.setState({ isVisible: this.state.attachmentsData[0] && scaDoc && false }))
+      .then(() =>
+        this.setState({
+          isVisible: this.state.attachmentsData[0] || purpose == 'view' ? false : true,
+        })
+      )
       .catch((err) => console.log(err))
       .catch((error) => {
         console.log(error)
@@ -282,7 +287,7 @@ class LeadAttachments extends Component {
       doneLoading,
     } = this.state
     const { route, navigation } = this.props
-    const { workflow, scaDoc } = route.params
+    const { workflow, purpose } = route.params
     return (
       <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
         <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
@@ -291,13 +296,14 @@ class LeadAttachments extends Component {
           formData={formData}
           title={title}
           setTitle={(title) => this.setState({ title: title })}
-          formSubmit={this.formSubmit}
+          formSubmit={() => this.formSubmit()}
           checkValidation={checkValidation}
           getAttachmentFromStorage={this.toggleActionSheet}
           closeModal={() => this.closeModal()}
           doneLoading={doneLoading}
           navigation={navigation}
-          scaDoc={scaDoc}
+          workflow={workflow}
+          purpose={purpose}
         />
         <ViewDocs isVisible={showDoc} closeModal={this.closeDocsModal} url={docUrl} />
         {!loading ? (
@@ -326,6 +332,7 @@ class LeadAttachments extends Component {
                 showDeleteDialog={this.showDeleteDialog}
                 signedServiceFile={signedServiceFile}
                 workflow={workflow}
+                purpose={purpose}
                 attachementData={attachmentsData}
               />
             }

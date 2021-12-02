@@ -409,15 +409,27 @@ class CMBottomNav extends React.Component {
               </TouchableOpacity>
             }
           >
+            {!lead.projectId ? (
+              <Menu.Item
+                onPress={() => {
+                  if (closedLeadEdit) {
+                    goToAttachments('addSCA')
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
+                }}
+                icon={require('../../../assets/img/properties-icon-l.png')}
+                title={'Add SCA Document'}
+              />
+            ) : null}
             <Menu.Item
               onPress={() => {
                 if (closedLeadEdit) {
-                  goToAttachments()
+                  goToAttachments('view')
                   this.openMenu(false)
                 } else helper.leadClosedToast()
               }}
               icon={require('../../../assets/img/properties-icon-l.png')}
-              title="Add SCA Document"
+              title={'View Attachment'}
             />
             {lead.projectId ? (
               <Menu.Item

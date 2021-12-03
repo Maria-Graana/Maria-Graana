@@ -34,9 +34,9 @@ const DiaryHelper = {
       diary.armsProjectLead &&
       diary.armsProjectLead.customer
     ) {
-      return `-${diary.armsProjectLead.customer.first_name} ${diary.armsProjectLead.customer.last_name}`
+      return ` - ${diary.armsProjectLead.customer.first_name} ${diary.armsProjectLead.customer.last_name}`
     } else if (diary && diary.armsLeadId && diary.armsLead && diary.armsLead.customer) {
-      return `-${diary.armsLead.customer.first_name} ${diary.armsLead.customer.last_name}`
+      return ` - ${diary.armsLead.customer.first_name} ${diary.armsLead.customer.last_name}`
     } else {
       return ''
     }
@@ -96,9 +96,9 @@ const DiaryHelper = {
     const { armsProjectLeadId, armsLeadId, armsLead, armsProjectLead, wantedId, wanted } = diary
     if (diary && armsProjectLeadId) {
       if (armsProjectLead && armsProjectLead.projectType) {
-        return `${armsProjectLead.projectType} in ${armsProjectLead.projectName}`
+        return `-${armsProjectLead.projectType} in ${armsProjectLead.projectName}`
       } else if (armsProjectLead && armsProjectLead.projectId && armsProjectLead.projectName) {
-        return `${armsProjectLead.projectName}`
+        return `-${armsProjectLead.projectName}`
       } else {
         return ''
       }

@@ -179,11 +179,13 @@ class DiaryTile extends React.Component {
                 <Text style={styles.taskResponse}>{diary.response}</Text>
               </View>
             ) : null}
-            <View style={styles.rowWidth100}>
-              <Text numberOfLines={1} style={styles.requirements}>{`${DiaryHelper.checkLeadType(
-                diary
-              )} - ${DiaryHelper.showRequirements(diary)}`}</Text>
-            </View>
+            {DiaryHelper.checkLeadType(diary) ? (
+              <View style={styles.rowWidth100}>
+                <Text numberOfLines={1} style={styles.requirements}>{`${DiaryHelper.checkLeadType(
+                  diary
+                )}${DiaryHelper.showRequirements(diary)}`}</Text>
+              </View>
+            ) : null}
 
             <View style={styles.rowWidth100}>
               <View style={styles.bottomView}>

@@ -315,7 +315,7 @@ class Landing extends React.Component {
               style={styles.btnStyle}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>PIF</Text>
+              <Text style={styles.font}>PRF</Text>
             </TouchableOpacity>
           ) : null}
           {Ability.canAdd(user.subRole, 'Client') ? (
@@ -326,7 +326,7 @@ class Landing extends React.Component {
               style={[styles.btnStyle, { marginLeft: 5 }]}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>CIF</Text>
+              <Text style={styles.font}>CRF</Text>
             </TouchableOpacity>
           ) : null}
         </View>

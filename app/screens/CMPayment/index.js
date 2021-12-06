@@ -65,6 +65,8 @@ class CMPayment extends Component {
       allUnits: [],
       pickerUnits: [],
       firstFormData: {
+        customerId: '',
+        clientName: '',
         project:
           lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
         floor: '',
@@ -88,7 +90,26 @@ class CMPayment extends Component {
       },
       unitPearlDetailsData: {},
       oneUnitData: {},
+      RCMFormData: {
+        type: '',
+        subtype: '',
+        leadAreas: [],
+        customerId: '',
+        city_id: '',
+        size_unit: 'marla',
+        description: '',
+        org: '',
+        bed: null,
+        maxBed: null,
+        bath: null,
+        maxBath: null,
+        size: StaticData.sizeMarla[0],
+        maxSize: StaticData.sizeMarla[StaticData.sizeMarla.length - 1],
+        minPrice: 0,
+        maxPrice: 0,
+      },
       unitDetailModal: false,
+      checkValidation: false,
       pearlUnit: false,
       checkPaymentPlan: {
         years:
@@ -154,14 +175,18 @@ class CMPayment extends Component {
       tableHeaderTitle: [],
       tableData: [],
       isPrimary: false,
+      selectedClient: null
     }
   }
 
   componentDidMount = () => {
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+    const { navigation } = this.props
+    this._unsubscribe = navigation.addListener('focus', () => {
+      const { route } = this.props
       const { firstForm, secondForm } = this.state
       const { lead } = this.props
       const { paidProject, project } = lead
+      if (route.params) this.setClient()
       if (firstForm) {
         let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
         if ((paidProject && paidProject.id) || (project && project.id)) {
@@ -181,6 +206,7 @@ class CMPayment extends Component {
       this.setdefaultFields(this.props.lead)
       this.validateCnic(lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null)
     })
+
   }
 
   componentWillUnmount = () => {
@@ -188,6 +214,33 @@ class CMPayment extends Component {
     this.clearReduxAndStateValues()
     dispatch(clearInstrumentInformation())
     dispatch(clearInstrumentsList())
+  }
+  clearParmas = () => {
+    const { navigation } = this.props
+    navigation.setParams({ client: null, name: null })
+  }
+  setClient = () => {
+    const { client, name } = this.props.route.params
+    this.setState(
+      { clientName: name, selectedClient: client },
+      () => {
+        this.clearParmas()
+      }
+    )
+  }
+  handleClientClick = () => {
+    const { navigation } = this.props
+    const { firstFormData } = this.state
+    let copyObject = Object.assign({}, firstFormData)
+    this.setState({
+      firstFormData: copyObject
+    })
+    const { selectedClient } = this.state
+    navigation.navigate('Client', {
+      isFromDropDown: true,
+      selectedClient,
+      screenName: 'Payments',
+    })
   }
 
   fetchProducts = (lead) => {
@@ -640,9 +693,9 @@ class CMPayment extends Component {
       payment && payment.officeLocationId
         ? payment.officeLocationId
         : user && user.officeLocation
-        ? user.officeLocation.id
-        : null
-    if (officeLocations && officeLocations.length === 1) {
+          ? user.officeLocation.id
+          : null
+    if (officeLocations[0] && officeLocations.length === 1) {
       locationId = officeLocations[0].value
     }
     dispatch(
@@ -672,7 +725,7 @@ class CMPayment extends Component {
     const { CMPayment, user, lead, dispatch } = this.props
     const { officeLocations } = this.state
     if (lead.project && lead.project.externalProject === true && officeLocations) {
-      defaultOfficeLocation = officeLocations[0].value
+      defaultOfficeLocation = officeLocations[0] && officeLocations[0]?.value
     } else {
       defaultOfficeLocation = user.officeLocationId
     }
@@ -820,8 +873,8 @@ class CMPayment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = CMPayment.paymentAttachments
           ? _.filter(CMPayment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -978,6 +1031,8 @@ class CMPayment extends Component {
   // **************** First Screen Starts *******************
 
   setdefaultFields = (lead) => {
+    const { route } = this.props
+    const { firstFormData } = this.state
     const { checkPaymentPlan, firstForm } = this.state
     const { cmProgressBar } = StaticData
     const { paidProject, project } = lead
@@ -996,38 +1051,23 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-          firstFormData: {
-            project:
-              lead.paidProject != null ? lead.paidProject.id : lead.project ? lead.project.id : '',
-            floor: '',
-            unitType: '',
-            pearl: '',
-            unit: lead.unit != null ? lead.unit.id : '',
-            unitPrice: 0,
-            cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
-            paymentPlan: 'no',
-            approvedDiscount: 0,
-            approvedDiscountPrice: 0,
-            finalPrice: 0,
-            fullPaymentDiscountPrice: 0,
-            pearlName: 'New Pearl',
+      ; (newcheckPaymentPlan['rental'] =
+        lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
+        this.setState(
+          {
+            checkPaymentPlan: newcheckPaymentPlan,
+            firstFormData
           },
-        },
-        () => {
-          const { checkPaymentPlan } = this.state
-          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-          this.setState({
-            progressValue: cmProgressBar[lead.status] || 0,
-            paymentPlan: paymentArray,
-            editable: false,
-          })
-        }
-      )
+          () => {
+            const { checkPaymentPlan } = this.state
+            let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+            this.setState({
+              progressValue: cmProgressBar[lead.status] || 0,
+              paymentPlan: paymentArray,
+              editable: false,
+            })
+          }
+        )
   }
 
   callAgain = () => {
@@ -1354,25 +1394,28 @@ class CMPayment extends Component {
   firstFormApiCall = (unitId) => {
     const { lead, CMPayment, addInstrument } = this.props
     const { noProduct } = lead
-    const { firstFormData, oneProductData, isPrimary } = this.state
+    const { firstFormData, oneProductData, isPrimary, selectedClient } = this.state
+    console.log('selectedClient: ', selectedClient)
     let body = noProduct
       ? PaymentHelper.generateApiPayload(
-          firstFormData,
-          lead,
-          unitId,
-          CMPayment,
-          addInstrument,
-          isPrimary
-        )
+        firstFormData,
+        lead,
+        unitId,
+        CMPayment,
+        addInstrument,
+        isPrimary,
+        selectedClient
+      )
       : PaymentHelper.generateProductApiPayload(
-          firstFormData,
-          lead,
-          unitId,
-          CMPayment,
-          oneProductData,
-          addInstrument,
-          isPrimary
-        )
+        firstFormData,
+        lead,
+        unitId,
+        CMPayment,
+        oneProductData,
+        addInstrument,
+        isPrimary,
+        selectedClient
+      )
     let leadId = []
     body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
@@ -1524,7 +1567,7 @@ class CMPayment extends Component {
 
   fetchScheduleData = () => {
     const { lead, CMPayment, addInstrument, user } = this.props
-    const { firstFormData, oneProductData, secondForm, pearlUnitPrice, unitPearlDetailsData } =
+    const { firstFormData, oneProductData, secondForm, pearlUnitPrice, unitPearlDetailsData, selectedClient, isPrimary } =
       this.state
     if (secondForm) {
       axios
@@ -1552,7 +1595,8 @@ class CMPayment extends Component {
           pearlUnitPrice,
           unitPearlDetailsData,
           oneProductData,
-          CMPayment
+          CMPayment,
+          selectedClient
         )
         downPayment = body.down_payment
         possessionCharges = body.possession_charges
@@ -1567,7 +1611,9 @@ class CMPayment extends Component {
           unitId,
           CMPayment,
           oneProductData,
-          addInstrument
+          addInstrument,
+          isPrimary,
+          selectedClient
         )
         downPayment = PaymentMethods.calculateDownPayment(
           oneProductData,
@@ -1662,6 +1708,7 @@ class CMPayment extends Component {
         console.log('error----->', error)
       })
   }
+
 
   downloadBufferFile = async (buff, doc) => {
     let fileUri = FileSystem.documentDirectory + `${doc.fileName}.pdf`
@@ -1774,6 +1821,9 @@ class CMPayment extends Component {
       toggleUnitsTable,
       tableHeaderTitle,
       tableData,
+      clientName,
+      checkValidation,
+      selectedClient
     } = this.state
     const { lead, navigation, contacts } = this.props
     return (
@@ -1838,6 +1888,7 @@ class CMPayment extends Component {
               pearlUnitPrice={pearlUnitPrice}
               oneProductData={oneProductData}
               submitFirstForm={this.firstFormValidateModal}
+              selectedClient={selectedClient}
             />
           ) : null}
           <LeadRCMPaymentPopup
@@ -1885,7 +1936,7 @@ class CMPayment extends Component {
             showHideModal={(val) => this.showHideDeletePayment(val)}
           />
           <KeyboardAvoidingView>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
               <View style={{ flex: 1, marginBottom: 60 }}>
                 {firstForm && (
                   <CMFirstForm
@@ -1920,6 +1971,9 @@ class CMPayment extends Component {
                     installmentFrequency={installmentFrequency}
                     lead={lead}
                     openUnitsTable={this.openUnitsTable}
+                    clientName={clientName}
+                    checkValidation={checkValidation}
+                    handleClientClick={this.handleClientClick}
                   />
                 )}
                 {secondForm && (
@@ -1960,8 +2014,8 @@ class CMPayment extends Component {
               modalMode === 'call'
                 ? StaticData.commentsFeedbackCall
                 : modalMode === 'meeting'
-                ? StaticData.commentsFeedbackMeeting
-                : StaticData.leadClosedCommentsFeedback
+                  ? StaticData.commentsFeedbackMeeting
+                  : StaticData.leadClosedCommentsFeedback
             }
             modalMode={modalMode}
             rejectLead={(body) => this.rejectLead(body)}
@@ -1997,8 +2051,8 @@ class CMPayment extends Component {
               leadType={'CM'}
               navigation={navigation}
               customer={lead.customer}
-              goToHistory={() => {}}
-              getCallHistory={() => {}}
+              goToHistory={() => { }}
+              getCallHistory={() => { }}
               onHandleCloseLead={this.onHandleCloseLead}
               fetchLead={this.fetchLead}
             />

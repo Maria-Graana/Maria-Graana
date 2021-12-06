@@ -5,18 +5,13 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 
-export function getDiaryTasks(
-  selectedDate,
-  agentId = null,
-  overdue = false,
-  isFilterApplied = false
-) {
+export function getDiaryTasks(selectedDate, agentId = null, overdue = false, isFiltered = false) {
   return (dispatch, getsState) => {
     let endPoint = ``
     let diaryRows = []
     const { page, pageSize, diaries } = getsState().diary.diary
 
-    if (isFilterApplied) {
+    if (isFiltered) {
       // if filter is applied
       const { filters } = getsState().diary
       if (overdue) delete filters.date
@@ -25,7 +20,7 @@ export function getDiaryTasks(
         endPoint = `/api/diary/all?overdue=${overdue}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
         endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&page=${page}&pageSize=${pageSize}`
-        console.log('endpoint=>', endPoint)
+        //console.log('endPoint=>', endPoint)
       }
     } else {
       if (overdue) {

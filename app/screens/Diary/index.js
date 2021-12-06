@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
-import { Ionicons, FontAwesome5, Entypo } from '@expo/vector-icons'
+import { Ionicons, FontAwesome5, Entypo, Fontisto } from '@expo/vector-icons'
 import AppStyles from '../../AppStyles'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
@@ -227,9 +227,10 @@ class Diary extends React.Component {
   }
 
   goToOverdueTasks = () => {
-    const { navigation, overdueCount } = this.props
+    const { navigation, overdueCount, route } = this.props
+    const { name = null } = route.params
     const { agentId } = this.state
-    navigation.navigate('OverdueTasks', { count: overdueCount, agentId })
+    navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name })
   }
 
   handleMenuActions = (action) => {
@@ -305,6 +306,7 @@ class Diary extends React.Component {
       agentId,
       isOverdue: false,
       selectedDate,
+      screenName: 'Diary',
     })
   }
 
@@ -329,7 +331,7 @@ class Diary extends React.Component {
       dayName,
       isMenuVisible,
     } = this.state
-    const { overdueCount, diary, dispatch, navigation, diaryStat, user } = this.props
+    const { overdueCount, diary, dispatch, navigation, diaryStat, user, route } = this.props
     const {
       diaries,
       loading,
@@ -339,6 +341,7 @@ class Diary extends React.Component {
       onEndReachedLoader,
       page,
     } = diary
+    const { isFilterApplied = false } = route?.params
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -396,7 +399,14 @@ class Diary extends React.Component {
 
           <View style={styles.filterSortView}>
             <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
-              <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+              <Image
+                source={
+                  !isFilterApplied
+                    ? require('../../../assets/img/filter.png')
+                    : require('../../../assets/img/filter_blue.png')
+                }
+                style={styles.filterImg}
+              />
             </TouchableOpacity>
 
             <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
@@ -460,7 +470,7 @@ class Diary extends React.Component {
 
         <TouchableOpacity
           style={{
-            backgroundColor: 'white',
+            backgroundColor: overdueCount > 0 ? 'red' : 'white',
             height: 50,
             justifyContent: 'center',
             alignItems: 'center',
@@ -468,7 +478,10 @@ class Diary extends React.Component {
           onPress={() => this.goToOverdueTasks()}
         >
           <Text
-            style={{ fontFamily: AppStyles.fonts.semiBoldFont }}
+            style={{
+              fontFamily: AppStyles.fonts.semiBoldFont,
+              color: overdueCount > 0 ? 'white' : AppStyles.colors.textColor,
+            }}
           >{`Overdue Tasks(${overdueCount})`}</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -491,7 +504,7 @@ const styles = StyleSheet.create({
   filterImg: {
     resizeMode: 'contain',
     width: 24,
-    marginHorizontal: 20,
+    marginHorizontal: 15,
   },
   filterSortView: {
     width: '30%',

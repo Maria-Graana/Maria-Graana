@@ -11,13 +11,7 @@ import axios from 'axios'
 import Loader from '../../components/loader'
 import _ from 'underscore'
 import StaticData from '../../StaticData'
-import {
-  clearDiaryFilter,
-  getDiaryTasks,
-  setDiaryFilter,
-  setDiarySearch,
-  setFiltersSearch,
-} from '../../actions/diary'
+import { clearDiaryFilter, getDiaryTasks, setDiaryFilter } from '../../actions/diary'
 import moment from 'moment'
 import { connect } from 'react-redux'
 
@@ -38,10 +32,10 @@ class DiaryFilter extends React.Component {
 
   clearFilter = () => {
     const { dispatch, route, navigation } = this.props
-    const { agentId, isOverdue } = route.params
+    const { agentId, isOverdue, screenName } = route.params
     dispatch(clearDiaryFilter())
     dispatch(getDiaryTasks(_today, agentId, isOverdue))
-    navigation.goBack()
+    navigation.navigate(screenName, { isFilterApplied: false })
   }
 
   getFeedbackReasons = () => {
@@ -84,7 +78,7 @@ class DiaryFilter extends React.Component {
     const { navigation, route, dispatch } = this.props
     const { agentId, isOverdue = false, screenName } = route.params
     dispatch(getDiaryTasks(null, agentId, isOverdue, true))
-    navigation.goBack()
+    navigation.navigate(screenName, { isFilterApplied: true })
   }
 
   handleForm = (value, name) => {

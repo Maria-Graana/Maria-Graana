@@ -20,7 +20,7 @@ let diaryData = {
 
 let filtersData = {
   date: null,
-  feedbacksId: null,
+  feedbackId: null,
   leadType: null,
   wantedId: null,
   projectId: null,

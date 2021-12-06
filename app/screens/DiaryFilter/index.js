@@ -15,6 +15,7 @@ import {
   clearDiaryFilter,
   getDiaryTasks,
   setDiaryFilter,
+  setDiaryIsFilterApplied,
   setDiarySearch,
   setFiltersSearch,
 } from '../../actions/diary'
@@ -83,7 +84,8 @@ class DiaryFilter extends React.Component {
   onSearchPressed = () => {
     const { navigation, route, dispatch } = this.props
     const { agentId, isOverdue = false, screenName } = route.params
-    dispatch(getDiaryTasks(null, agentId, isOverdue, true))
+    dispatch(setDiaryIsFilterApplied(true))
+    dispatch(getDiaryTasks(null, agentId, isOverdue))
     navigation.goBack()
   }
 

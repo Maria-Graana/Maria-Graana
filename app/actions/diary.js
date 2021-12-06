@@ -5,16 +5,11 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 
-export function getDiaryTasks(
-  selectedDate,
-  agentId = null,
-  overdue = false,
-  isFilterApplied = false
-) {
+export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
   return (dispatch, getsState) => {
     let endPoint = ``
     let diaryRows = []
-    const { page, pageSize, diaries } = getsState().diary.diary
+    const { page, pageSize, diaries, isFilterApplied } = getsState().diary.diary
 
     if (isFilterApplied) {
       // if filter is applied
@@ -93,6 +88,15 @@ export function setOnEndReachedLoader() {
   return (dispatch, getsState) => {
     dispatch({
       type: types.SET_DIARY_ON_END_REACHED_LOADER,
+    })
+  }
+}
+
+export function setDiaryIsFilterApplied(value) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_DIARY_FILTER_APPLIED,
+      payload: value,
     })
   }
 }

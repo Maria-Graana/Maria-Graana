@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
-import { Ionicons, FontAwesome5, Entypo } from '@expo/vector-icons'
+import { Ionicons, FontAwesome5, Entypo, Fontisto } from '@expo/vector-icons'
 import AppStyles from '../../AppStyles'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
@@ -339,6 +339,7 @@ class Diary extends React.Component {
       showClassificationModal,
       onEndReachedLoader,
       page,
+      isFilterApplied,
     } = diary
     return (
       <SafeAreaView style={styles.container}>
@@ -396,6 +397,13 @@ class Diary extends React.Component {
           />
 
           <View style={styles.filterSortView}>
+            {/* <Fontisto
+              onPress={() => this.navigateToFiltersScreen()}
+              name="equalizer"
+              size={26}
+              style={styles.filterImg}
+              color={isFilterApplied ? AppStyles.colors.primaryColor : 'black'}
+            /> */}
             <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
               <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
             </TouchableOpacity>
@@ -495,7 +503,7 @@ const styles = StyleSheet.create({
   filterImg: {
     resizeMode: 'contain',
     width: 24,
-    marginHorizontal: 20,
+    marginHorizontal: 15,
   },
   filterSortView: {
     width: '30%',

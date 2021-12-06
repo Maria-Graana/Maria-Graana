@@ -306,6 +306,7 @@ class Diary extends React.Component {
       agentId,
       isOverdue: false,
       selectedDate,
+      screenName: 'Diary',
     })
   }
 
@@ -330,7 +331,7 @@ class Diary extends React.Component {
       dayName,
       isMenuVisible,
     } = this.state
-    const { overdueCount, diary, dispatch, navigation, diaryStat, user } = this.props
+    const { overdueCount, diary, dispatch, navigation, diaryStat, user, route } = this.props
     const {
       diaries,
       loading,
@@ -339,8 +340,8 @@ class Diary extends React.Component {
       showClassificationModal,
       onEndReachedLoader,
       page,
-      isFilterApplied,
     } = diary
+    const { isFilterApplied = false } = route?.params
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -397,15 +398,15 @@ class Diary extends React.Component {
           />
 
           <View style={styles.filterSortView}>
-            {/* <Fontisto
-              onPress={() => this.navigateToFiltersScreen()}
-              name="equalizer"
-              size={26}
-              style={styles.filterImg}
-              color={isFilterApplied ? AppStyles.colors.primaryColor : 'black'}
-            /> */}
             <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
-              <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+              <Image
+                source={
+                  !isFilterApplied
+                    ? require('../../../assets/img/filter.png')
+                    : require('../../../assets/img/filter_blue.png')
+                }
+                style={styles.filterImg}
+              />
             </TouchableOpacity>
 
             <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />

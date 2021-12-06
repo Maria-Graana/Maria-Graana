@@ -16,12 +16,11 @@ let diaryData = {
   page: 1,
   pageSize: 50,
   onEndReachedLoader: false,
-  isFilterApplied: false,
 }
 
 let filtersData = {
   date: null,
-  feedbacksId: null,
+  feedbackId: null,
   leadType: null,
   wantedId: null,
   projectId: null,
@@ -57,11 +56,6 @@ const diary = (state = diaryData, action) => {
       return {
         ...state,
         onEndReachedLoader: action.payload,
-      }
-    case types.SET_DIARY_FILTER_APPLIED:
-      return {
-        ...state,
-        isFilterApplied: action.payload,
       }
     default:
       return state

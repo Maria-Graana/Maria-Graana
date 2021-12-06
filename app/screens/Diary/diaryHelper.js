@@ -106,13 +106,13 @@ const DiaryHelper = {
       if (armsLead) {
         return `${armsLead.size} ${helper.capitalize(armsLead.size_unit)} ${helper.capitalize(
           armsLead.subtype
-        )} in ${armsLead.city.name}`
+        )} in ${armsLead.city?.name}`
       }
     } else if (wantedId) {
       if (wanted) {
         return `${wanted.size} ${helper.capitalize(wanted.size_unit)} ${helper.capitalize(
           wanted.subtype
-        )} in ${wanted.city.name}`
+        )} in ${wanted.city?.name}`
       }
     } else {
       return ''

@@ -21,6 +21,16 @@ class MeetingTile extends React.Component {
     data.taskType === 'meeting'
       ? (taskTypeData = StaticData.meetingStatus)
       : (taskTypeData = StaticData.callStatus)
+    const d = new Date(data.createdAt);
+    const weekday = new Array(7);
+    weekday[0] = "Sun";
+    weekday[1] = "Mon";
+    weekday[2] = "Tue";
+    weekday[3] = "Wed";
+    weekday[4] = "Thu";
+    weekday[5] = "Fri";
+    weekday[6] = "Sat";
+    let day = weekday[d.getDay()];
 
     let response = data && data.response != null && data.response.replace(/_+/g, ' ')
 
@@ -37,9 +47,11 @@ class MeetingTile extends React.Component {
                 {data.taskType !== 'called' ? DiaryHelper.removeUnderscore(data.taskType) : ''}
                 {data.calledNumber ? ` (${data.calledNumber})` : null}
               </Text>
-              <Text style={[styles.fontBold]}>
-                @ {`${helper.formatTime(data.start)} ${moment(data.date).format('MMM DD')}`}{' '}
-              </Text>
+              <View style={styles.DayAndTime}>
+                <Text style={[styles.fontBold], { color: "grey" }}>
+                  {` ${day} ${moment(data.date).format('MMM DD')},${helper.formatTime(data.start).replace("pm", "PM").replace("am" , "AM")}`}{' '}
+                </Text>
+              </View>
             </View>
           </View>
           <View>

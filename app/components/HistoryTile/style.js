@@ -25,7 +25,7 @@ export default styles = StyleSheet.create({
   },
   meetingCon: {
     fontSize: 14,
-    color: '#0D73EE',
+    color: 'black',
     textTransform: 'capitalize'
   },
   border: {
@@ -53,7 +53,7 @@ export default styles = StyleSheet.create({
     color: AppStyles.colors.subTextColor,
     position: 'relative',
     fontSize: 14,
-    marginTop:5,
+    marginTop: 5,
   },
   uperCase: {
     textTransform: 'capitalize'
@@ -79,4 +79,12 @@ export default styles = StyleSheet.create({
   blueColor: {
     color: '#333',
   },
+  DayAndTime: {
+    position: "absolute",
+    right: 5,
+    borderWidth: 1,
+    borderColor: "#D3D3D3",
+    padding: 3,
+    borderRadius: 15
+  }
 });

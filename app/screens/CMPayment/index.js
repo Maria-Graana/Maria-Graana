@@ -25,6 +25,7 @@ import CMPaymentModal from '../../components/CMPaymentModal'
 import CMSecondForm from '../../components/CMSecondForm'
 import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
+import HistoryModal from '../../components/HistoryModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
@@ -58,11 +59,13 @@ class CMPayment extends Component {
       bookingModal: false,
       unitDetailModal: false,
       deletePaymentVisible: false,
+      callModal : false ,
       allProjects: [],
       pickerProjects: [],
       allFloors: [],
       pickerFloors: [],
       allUnits: [],
+      meetings: [] ,
       pickerUnits: [],
       firstFormData: {
         customerId: '',
@@ -290,6 +293,7 @@ class CMPayment extends Component {
         if (!responseData.paidProject) responseData.paidProject = responseData.project
         this.props.dispatch(setlead(responseData))
         this.fetchProducts(responseData)
+        this.getCallHistory()
         this.setdefaultFields(responseData)
         if (secondForm) {
           this.calculatePayments(responseData, functionCallingFor)
@@ -657,6 +661,18 @@ class CMPayment extends Component {
       totalReportPrice: 0,
       checkFirstFormToken: false,
       assignToAccountsLoading: false,
+    })
+  }
+  goToHistory = () => {
+    const { callModal } = this.state
+    this.setState({ callModal: !callModal })
+  }
+
+  getCallHistory = () => {
+    const { lead } = this.props
+    axios.get(`/api/leads/tasks?cmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data})
+
     })
   }
 
@@ -1823,7 +1839,9 @@ class CMPayment extends Component {
       tableData,
       clientName,
       checkValidation,
-      selectedClient
+      selectedClient,
+      callModal,
+      meetings,
     } = this.state
     const { lead, navigation, contacts } = this.props
     return (
@@ -2022,6 +2040,13 @@ class CMPayment extends Component {
             setNewActionModal={(value) => this.setNewActionModal(value)}
             leadType={'CM'}
           />
+          <HistoryModal
+                getCallHistory={this.getCallHistory}
+                navigation={navigation}
+                data={meetings}
+                closePopup={this.goToHistory}
+                openPopup={callModal}
+              />
 
           <MeetingFollowupModal
             closeModal={() => this.closeMeetingFollowupModal()}
@@ -2051,8 +2076,7 @@ class CMPayment extends Component {
               leadType={'CM'}
               navigation={navigation}
               customer={lead.customer}
-              goToHistory={() => { }}
-              getCallHistory={() => { }}
+              goToHistory={this.goToHistory}
               onHandleCloseLead={this.onHandleCloseLead}
               fetchLead={this.fetchLead}
             />

@@ -29,7 +29,7 @@ export function setTimeSlots() {
   const dataSlots = (res, dispatch) => {
     var x = new Array(24)
     for (var i = 0; i < 24; i++) {
-      x[i] = new Array(11)
+      x[i] = new Array(12)
     }
     addData(res, x, dispatch)
   }
@@ -66,6 +66,14 @@ export function setSlotData(date, startTime, endTime, slots) {
   }
 }
 
+export function clearSlotData() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SLOT_DIARY_DATA,
+    })
+  }
+}
+
 export function setScheduledTasks(payload) {
   return (dispatch, getsState) => {
     dispatch({
@@ -82,12 +90,21 @@ export function getTimeShifts() {
       .then((response) =>
         dispatch({
           type: types.SET_TIME_SHIFT,
-          payload: response,
+          payload: response.data,
         })
       )
       .catch((error) => {
         console.log('api/slotManagement/user-shifts')
         console.log('error', error)
       })
+  }
+}
+
+export function setDataSlotsArray(dataSlots) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_SLOTS_DATA_PAYLOAD,
+      payload: dataSlots,
+    })
   }
 }

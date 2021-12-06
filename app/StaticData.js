@@ -15,42 +15,20 @@ export default StaticData = {
       value: 'meeting_with_pp',
     },
   ],
-  taskValues: [
-    {
-      name: 'Task',
-      value: 'task',
-    },
+  diaryTasksCM: [
     {
       name: 'Meeting',
       value: 'meeting',
     },
-  ],
-  taskValuesCMLead: [
     {
-      name: 'Task',
-      value: 'task',
-    },
-  ],
-  allTaskValues: [
-    {
-      name: 'Task',
-      value: 'task',
-    },
-    {
-      name: 'Follow Up',
+      name: 'Follow up',
       value: 'follow_up',
     },
+  ],
+  diaryTasksRCM: [
     {
-      name: 'Meeting',
-      value: 'meeting',
-    },
-    {
-      name: 'Meeting with PP',
-      value: 'meeting_with_pp',
-    },
-    {
-      name: 'Morning Meeting',
-      value: 'morning_meeting',
+      name: 'Follow up',
+      value: 'follow_up',
     },
   ],
   oneToTen: [

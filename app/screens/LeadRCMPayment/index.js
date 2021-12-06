@@ -1043,8 +1043,8 @@ class LeadRCMPayment extends React.Component {
       leadObject = lead
     }
     if (leadObject) {
-      axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
-        this.setState({ meetings: res.data.rows })
+      axios.get(`/api/leads/tasks?rcmLeadId=${leadObject.id}`).then((res) => {
+        this.setState({ meetings: res.data})
       })
     }
   }

@@ -9,13 +9,13 @@ export default styles = StyleSheet.create({
     marginVertical: 10,
   },
   timeView: {
-    width: '15%',
+    width: '17%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   time: {
     fontFamily: AppStyles.fonts.semiBoldFont,
-    fontSize: 14,
+    fontSize: 12,
     textAlign: 'right',
   },
   duration: {
@@ -38,7 +38,7 @@ export default styles = StyleSheet.create({
     // borderTopWidth: 0.5,
     // borderEndWidth: 0.5,
     // borderBottomWidth: 0.5,
-    width: '90%',
+    width: '87%',
     marginHorizontal: 5,
     // minHeight: 80,
   },

@@ -30,7 +30,6 @@ class FirstScreenConfirmModal extends React.Component {
       lead,
       selectedClient
     } = this.props
-    console.log(selectedClient , "SELECTED CLIENt")
     var project =
       getAllProject &&
       getAllProject.find((item) => {

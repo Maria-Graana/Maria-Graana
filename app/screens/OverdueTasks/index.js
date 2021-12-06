@@ -48,8 +48,10 @@ class OverdueTasks extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch, route } = this.props
-    const { count, agentId } = route.params
-    navigation.setOptions({ title: `Overdue Tasks(${count})` })
+    const { count, agentId, agentName } = route.params
+    navigation.setOptions({
+      title: agentName ? `${agentName} Overdue Tasks(${count})` : `Overdue Tasks(${count})`,
+    })
     this.getDiaries()
   }
 

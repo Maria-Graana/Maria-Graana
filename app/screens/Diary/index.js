@@ -227,9 +227,10 @@ class Diary extends React.Component {
   }
 
   goToOverdueTasks = () => {
-    const { navigation, overdueCount } = this.props
+    const { navigation, overdueCount, route } = this.props
+    const { name = null } = route.params
     const { agentId } = this.state
-    navigation.navigate('OverdueTasks', { count: overdueCount, agentId })
+    navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name })
   }
 
   handleMenuActions = (action) => {
@@ -460,7 +461,7 @@ class Diary extends React.Component {
 
         <TouchableOpacity
           style={{
-            backgroundColor: 'white',
+            backgroundColor: overdueCount > 0 ? 'red' : 'white',
             height: 50,
             justifyContent: 'center',
             alignItems: 'center',
@@ -468,7 +469,10 @@ class Diary extends React.Component {
           onPress={() => this.goToOverdueTasks()}
         >
           <Text
-            style={{ fontFamily: AppStyles.fonts.semiBoldFont }}
+            style={{
+              fontFamily: AppStyles.fonts.semiBoldFont,
+              color: overdueCount > 0 ? 'white' : AppStyles.colors.textColor,
+            }}
           >{`Overdue Tasks(${overdueCount})`}</Text>
         </TouchableOpacity>
       </SafeAreaView>

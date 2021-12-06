@@ -268,7 +268,7 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
-        {isShowKPIs ? (
+        {/* {isShowKPIs ? (
           <TouchableOpacity
             onPress={() => {
               this.toggleStats()
@@ -304,7 +304,7 @@ class Landing extends React.Component {
               </View>
             ) : null}
           </TouchableOpacity>
-        ) : null}
+        ) : null} */}
 
         <View style={styles.btnView}>
           {Ability.canAdd(user.subRole, 'InventoryTabs') ? (

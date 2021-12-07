@@ -30,7 +30,7 @@ class Landing extends React.Component {
         'Leads',
         'My Deals',
         'Diary',
-        'Dashboard',
+        // 'Dashboard',
         'Team Diary',
         'Targets',
       ],
@@ -161,12 +161,13 @@ class Landing extends React.Component {
       let label = tile
       tile = tile.replace(/ /g, '')
       if (Ability.canView(user.subRole, tile)) {
-        if (label === 'InventoryTabs') label = 'Property Leads'
+        if (label === 'InventoryTabs') label = 'Properties'
         let oneTilee = {
           screenName: tile,
         }
         if (label === 'Team Diary') label = "Team's Diary"
-        if (tile === 'Leads') label = 'My Leads'
+        if (tile === 'Leads') label = 'Leads'
+        if (tile === 'MyDeals') label = 'Deals'
         let oneTile = {
           id: counter,
           label: label,
@@ -315,7 +316,7 @@ class Landing extends React.Component {
               style={styles.btnStyle}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>PRF</Text>
+              <Text style={styles.font}>PIF</Text>
             </TouchableOpacity>
           ) : null}
           {Ability.canAdd(user.subRole, 'Client') ? (
@@ -326,7 +327,7 @@ class Landing extends React.Component {
               style={[styles.btnStyle, { marginLeft: 5 }]}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>CRF</Text>
+              <Text style={styles.font}>CIF</Text>
             </TouchableOpacity>
           ) : null}
         </View>

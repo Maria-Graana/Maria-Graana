@@ -1,7 +1,7 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import AppStyles from '../AppStyles'
 import BuyLeads from '../screens/BuyLeads/index'
@@ -23,6 +23,12 @@ const TabBarBadge = ({ count, color }) => {
 }
 
 function LeadsNavigator(props) {
+
+  useEffect(()=>{
+    const { navigation, route } = props;
+    if(route.params.screen == "MyDeals"){
+        navigation.setOptions({title: "DEALS"})}     
+  } , [])
   const { count, user } = props
   return user.subRole === 'business_centre_manager' ||
     user.subRole === 'business_centre_agent' ||

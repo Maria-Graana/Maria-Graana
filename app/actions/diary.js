@@ -17,17 +17,17 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false, isF
       if (overdue) delete filters.date
       let urlValue = mapFiltersToQuery(filters)
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
+        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
-        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&status=pending&page=${page}&pageSize=${pageSize}`
         //console.log('endPoint=>', endPoint)
       }
     } else {
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
         // console.log('overdue=>', endPoint)
       } else {
-        endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?date[]=${selectedDate}&status=pending&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
         // console.log(endPoint)
       }
     }

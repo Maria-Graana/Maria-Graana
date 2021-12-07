@@ -28,7 +28,7 @@ class DetailForm extends Component {
         notes: '',
         status: 'pending',
         isRecurring: false,
-        taskCategory: null,
+        taskCategory: 'simpleTask',
         slots: [],
         addedBy: 'self',
       },
@@ -55,6 +55,7 @@ class DetailForm extends Component {
     newObject.taskType = data.taskType
     newObject.status = data.status
     newObject.taskCategory = data.taskCategory
+    newObject.isRecurring = data.isRecurring
     this.setState({ formData: newObject, buttonText: 'UPDATE TASK' })
   }
 
@@ -65,14 +66,14 @@ class DetailForm extends Component {
   }
 
   render() {
-    const { taskType, date, startTime, endTime, subject, notes, isRecurring } = this.state.formData
+    const { taskType, date, startTime, endTime, subject, notes, isRecurring, taskCategory } =
+      this.state.formData
     const { formData, buttonText } = this.state
     const {
       formSubmit,
       checkValidation,
       taskValues,
       loading,
-      performTaskActions,
       user,
       goToSlotManagement,
       slotsData,
@@ -111,7 +112,7 @@ class DetailForm extends Component {
           }
         />
 
-        {editableData === null && formData.leadCategory === 'simpleTask' ? (
+        {editableData === null && taskCategory == 'simpleTask' ? (
           <TouchableOpacity
             onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
             style={styles.checkBoxRow}

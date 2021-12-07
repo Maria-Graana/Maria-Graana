@@ -38,7 +38,12 @@ import {
   setSelectedDiary,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import { getTimeShifts, setSlotDiaryData, setTimeSlots } from '../../actions/slotManagement'
+import {
+  getTimeShifts,
+  setSlotData,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
 
 import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
@@ -311,7 +316,10 @@ class Diary extends React.Component {
   }
 
   goToAddEditDiaryScreen = (update, data = null) => {
-    const { navigation } = this.props
+    const { navigation, dispatch } = this.props
+    if (data) {
+      dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
+    }
     navigation.navigate('AddDiary', { update, data })
   }
 

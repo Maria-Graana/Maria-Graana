@@ -15,6 +15,7 @@ import {
   setSlotData,
   setScheduledTasks,
   setDataSlotsArray,
+  alltimeSlots,
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
@@ -36,7 +37,7 @@ function TimeSlotManagement(props) {
   const setSelectedDateData = (date, mode) => {
     setSelectedDate(date), setIsCalendarVisible(mode === 'month' ? isCalendarVisible : false)
 
-    const dayN = moment(date).format('dddd')
+    const dayN = moment(date).format('dddd').toLowerCase()
     setDayName(dayN)
 
     const { dispatch } = props
@@ -48,10 +49,47 @@ function TimeSlotManagement(props) {
   }
 
   useEffect(() => {
+    const { dispatch } = props
     if (props.slotData) {
       setDisabled(false)
     }
+    // console.log(isTimeBetween('22:30:00', '3:00:00', '00:00:00'))
+
+    if (props.slotData) {
+      dispatch(alltimeSlots())
+      const temp = props.slotData
+      const start = moment(temp.startTime).format('H:mm:ss')
+      const end = moment(temp.endTime).format('H:mm:ss')
+
+      onEditSlots(start, end)
+    }
   }, [])
+
+  const onEditSlots = (start, end) => {
+    const allSlots = props.allTimeSlot
+
+    for (var i = 0; i < allSlots.length; i++) {
+      if (isTimeBetween(start, end, allSlots[i].startTime)) {
+        // console.log(allSlots[i].id)
+        slotsData.push(allSlots[i])
+        slots.push(allSlots[i].id)
+        isSelected.push(allSlots[i].id)
+      }
+    }
+  }
+
+  const isTimeBetween = function (startTime, endTime, serverTime) {
+    let start = moment(startTime, 'H:mm:ss')
+    let end = moment(endTime, 'H:mm:ss')
+    let server = moment(serverTime, 'H:mm:ss')
+    if (end < start) {
+      return (
+        (server >= start && server <= moment('23:59:59', 'h:mm:ss')) ||
+        (server >= moment('0:00:00', 'h:mm:ss') && server < end)
+      )
+    }
+    return server >= start && server < end
+  }
 
   const diaryData = (res, e, dispatch) => {
     for (var i = 0; i < res.length; i++) {
@@ -137,30 +175,215 @@ function TimeSlotManagement(props) {
     }
   }
 
-  const setShift = (e) => {
+  const fortyPercent = () => {
     const data = props.userShifts
-    const array = []
+    let array = []
+    const slotsShift = slotsData
+    const sSlots = slotsShift.length
+    const slotFirst = slotsShift[0].startTime
+    const slotEnd = slotsShift[slotsShift.length - 1].endTime
 
     for (var i = 0; i < data.length; i++) {
-      if (dayName == data[i].dayName && dayName == 'sunday') {
+      if (dayName == data[i].dayName) {
         array.push(data[i])
       }
-      if (dayName == data[i].dayName && dayName == 'monday') {
-        array.push(data[i])
+    }
+
+    if (array && array.length == 1) {
+      const startFirst = array[0].armsShift.startTime
+      const endFirst = array[0].armsShift.endTime
+      const shiftFirst = array[0].armsShift.name.toLowerCase()
+      if (slotFirst > startFirst && slotEnd < endFirst) {
+        shiftsInFirst(sSlots, shiftFirst)
       }
-      if (dayName == data[i].dayName && dayName == 'tuesday') {
-        array.push(data[i])
+    }
+
+    if (array && array.length == 2) {
+      const startFirst = array[0].armsShift.startTime
+      const endFirst = array[0].armsShift.endTime
+      const startSecond = array[1].armsShift.startTime
+      const endSecond = array[1].armsShift.endTime
+      const shiftFirst = array[0].armsShift.name.toLowerCase()
+      const shiftSecond = array[1].armsShift.name.toLowerCase()
+
+      if (slotFirst > startFirst && slotEnd < endFirst) {
+        shiftsInFirst(sSlots, shiftFirst)
+      } else if (slotFirst > startSecond && slotEnd < endSecond) {
+        shiftsInSecond(sSlots, shiftSecond)
       }
-      if (dayName == data[i].dayName && dayName == 'wednesday') {
-        array.push(data[i])
+    }
+
+    if (array && array.length == 3) {
+      const startFirst = array[0].armsShift.startTime
+      const endFirst = array[0].armsShift.endTime
+      const startSecond = array[1].armsShift.startTime
+      const endSecond = array[1].armsShift.endTime
+      const startThird = array[1].armsShift.startTime
+      const endThird = array[1].armsShift.endTime
+      const shiftFirst = array[0].armsShift.name.toLowerCase()
+      const shiftSecond = array[1].armsShift.name.toLowerCase()
+      const shiftThird = array[2].armsShift.name.toLowerCase()
+
+      if (slotFirst > startFirst && slotEnd < endFirst) {
+        shiftsInFirst(sSlots, shiftFirst)
+      } else if (slotFirst > startSecond && slotEnd < endSecond) {
+        shiftsInSecond(sSlots, shiftSecond)
+      } else if (slotFirst > startThird && slotEnd < endThird) {
+        shiftsInThird(sSlots, shiftThird)
       }
-      if (dayName == data[i].dayName && dayName == 'thursday') {
-        array.push(data[i])
+    }
+  }
+
+  const shiftsInFirst = (sSlots, shiftFirst) => {
+    if (shiftFirst == 'evening') {
+      const nSlots = 8 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
       }
-      if (dayName == data[i].dayName && dayName == 'friday') {
-        array.push(data[i])
+    }
+    if (shiftFirst == 'morning') {
+      const nSlots = 9 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
       }
-      if (dayName == data[i].dayName && dayName == 'saturday') {
+    }
+    if (shiftFirst == 'night') {
+      const nSlots = 7 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
+      }
+    }
+  }
+
+  const shiftsInSecond = (sSlots, shiftSecond) => {
+    if (shiftSecond == 'evening') {
+      const nSlots = 8 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
+      }
+    }
+    if (shiftSecond == 'morning') {
+      const nSlots = 9 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
+      }
+    }
+    if (shiftSecond == 'night') {
+      const nSlots = 7 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
+      }
+    }
+  }
+
+  const shiftsInThird = (sSlots, shiftThird) => {
+    if (shiftThird == 'evening') {
+      const nSlots = 8 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
+      }
+    }
+    if (shiftThird == 'morning') {
+      const nSlots = 9 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
+      }
+    }
+    if (shiftThird == 'night') {
+      const nSlots = 7 * 12
+      const forSlots = nSlots * 0.4
+      if (sSlots > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([])
+            },
+          },
+        ])
+      }
+    }
+  }
+
+  const setShift = (e) => {
+    const data = props.userShifts
+    let array = []
+
+    for (var i = 0; i < data.length; i++) {
+      if (dayName == data[i].dayName) {
         array.push(data[i])
       }
     }
@@ -169,17 +392,22 @@ function TimeSlotManagement(props) {
       const start = array[0].armsShift.startTime
       const end = array[1].armsShift.endTime
 
-      if (e.startTime < start || e.endTime > end) return false
+      if (isTimeBetween(start, end, e.startTime)) return true
+      else return false
     } else if (array && array.length == 3) {
       const start = array[0].armsShift.startTime
       const end = array[2].armsShift.endTime
 
-      if (e.startTime < start || e.endTime > end) return false
-    } else {
-      const start = array[0] && array[0].armsShift.startTime
-      const end = array[0] && array[0].armsShift.endTime
+      if (isTimeBetween(start, end, e.startTime)) return true
+      else return false
+    } else if (array && array.length == 1) {
+      const start = array[0].armsShift.startTime
+      const end = array[0].armsShift.endTime
 
-      if (e.startTime < start || e.endTime > end) return false
+      if (isTimeBetween(start, end, e.startTime)) return true
+      else return false
+    } else {
+      return false
     }
   }
 
@@ -249,9 +477,7 @@ function TimeSlotManagement(props) {
                             styles.hourRow,
                             {
                               backgroundColor:
-                                setShift(e) == false
-                                  ? '#d6d6d6'
-                                  : setColor(e) == 'dailyupdate'
+                                setColor(e) == 'dailyupdate'
                                   ? '#dcf0ff'
                                   : setColor(e) == 'morningmeeting'
                                   ? '#dcf0ff'
@@ -265,6 +491,8 @@ function TimeSlotManagement(props) {
                                   ? '#fff1c5'
                                   : setColor(e) == 'closed'
                                   ? '#e6e6e6'
+                                  : setShift(e) == false
+                                  ? '#f1f1f1'
                                   : 'white',
 
                               borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
@@ -320,6 +548,7 @@ mapStateToProps = (store) => {
     slotData: store.slotManagement.slotsPayload,
     userShifts: store.slotManagement.userTimeShifts,
     slotsDataArray: store.slotManagement.slotsDataPayload,
+    allTimeSlot: store.slotManagement.allTimeSlots,
   }
 }
 

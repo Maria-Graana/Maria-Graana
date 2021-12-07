@@ -96,7 +96,7 @@ class FirstScreenConfirmModal extends React.Component {
                 {formatPrice(data.finalPrice ? data.finalPrice : '')}
               </Text>
             </Text>
-            {(selectedClient.firstName) ? <Text style={styles.noramlText}>
+            {(selectedClient) ? <Text style={styles.noramlText}>
               Booking For: <Text style={styles.mainTextLarge}>{selectedClient && selectedClient.firstName} {selectedClient && selectedClient.lastName}</Text>
             </Text> : null}
           </View>

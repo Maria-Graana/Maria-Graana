@@ -32,6 +32,11 @@ function TimeSlotManagement(props) {
   const [slotsDiary, setSlotsDiary] = useState(props.slotDiary)
   const [isSelected, setIsSelected] = useState(props.slotData ? props.slotData.slots : [])
 
+  const [tempDate, setTempDate] = useState(null)
+  const [tempStartTime, setTempStartTime] = useState(null)
+  const [tempEndTime, setTempEndTime] = useState(null)
+  const [tempSlot, setTempSlot] = useState(null)
+
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
@@ -117,9 +122,17 @@ function TimeSlotManagement(props) {
     )
 
     setDisabled(false)
+    setTempDate(date)
+    setTempEndTime(endTime)
+    setTempStartTime(startTime)
+    setTempSlot(slots)
+  }
 
-    dispatch(setSlotData(date, startTime, endTime, slots))
+  const onDone = () => {
+    const { dispatch, navigation } = props
+    dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
     dispatch(setDataSlotsArray(slotsData))
+    navigation.goBack()
   }
 
   const showDetail = (e) => {
@@ -534,7 +547,7 @@ function TimeSlotManagement(props) {
           containerBackgroundColor="#0f73ee"
           borderWidth={1}
           disabled={disabled}
-          onPress={() => props.navigation.goBack()}
+          onPress={() => onDone()}
         />
       </View>
     </View>

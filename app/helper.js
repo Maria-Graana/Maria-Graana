@@ -193,45 +193,7 @@ const helper = {
       }
     }
   },
-  checkStatusColor(val, todayDate) {
-    let taskDate = moment(val.date).format('YYYY-MM-DD')
-    if (val.taskCategory === 'simpleTask' || val.taskCategory === 'leadTask') {
-      if (taskDate > todayDate && val.status !== 'completed') {
-        return 'red'
-      }
-      if (taskDate < todayDate && val.status !== 'completed') {
-        return AppStyles.colors.subTextColor
-      } else if (val.status === 'completed') {
-        return 'green'
-      } else if (val.status === 'pending') {
-        return 'red'
-      } else {
-        return 'black'
-      }
-    } else if (val.taskType === 'viewing') {
-      if (val.status === 'completed') {
-        return 'green'
-      } else {
-        return 'red'
-      }
-    } else {
-      // THIS IS DONE SPECIFICALLY FOR MEETING ADDED FROM INVESTMENT LEAD
-      if (val.response) {
-        switch (val.response) {
-          case 'visited':
-            return 'green'
-          case 'deal_expected':
-            return '#FDD835'
-          case 'deal_signed':
-            return 'green'
-          default:
-            break
-        }
-      } else {
-        return 'red'
-      }
-    }
-  },
+
   tileImage(tile) {
     if (tile) {
       switch (tile) {
@@ -249,6 +211,8 @@ const helper = {
           return TargetsImg
         case 'Dashboard':
           return DashboardImg
+        case 'MyDeals':
+          return ClientsImg
         default:
           break
       }
@@ -364,6 +328,9 @@ const helper = {
     return moment(date + moment(time).format('hh:mm a'), 'YYYY-MM-DDLT').format(
       'YYYY-MM-DDTHH:mm:ssZ'
     )
+  },
+  formatDateTime(date, time) {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
   },
   createContactPayload(customer) {
     let payload = []

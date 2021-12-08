@@ -29,12 +29,12 @@ class AssignLead extends React.Component {
 
   componentDidMount() {
     const { route, navigation } = this.props
-    const { screen } = route.params
-    if (screen == 'LeadDetail') {
+    const { screen, purpose } = route.params
+    if (purpose === 'reassign') {
       // for Lead Assigning this function is used
       navigation.setOptions({ title: 'SELECT TEAM MEMBER' })
       this.fetchTeam()
-    } else {
+    } else if (purpose === 'refer') {
       // For lead sharing we call this function
       navigation.setOptions({ title: 'SELECT AGENT' })
       this.fetchShareTeam()
@@ -46,7 +46,7 @@ class AssignLead extends React.Component {
     const { searchBy } = this.state
     const { type } = route.params
     const url =
-      type === 'Investment'
+      type === 'investment'
         ? `/api/user/agents?leads=${true}&searchBy=${searchBy}`
         : `/api/user/agents?leads=${true}&rcm=${true}&searchBy=${searchBy}`
     axios
@@ -71,7 +71,7 @@ class AssignLead extends React.Component {
   assignLeadToSelectedMember = () => {
     const { navigation, route } = this.props
     const { selectedId } = this.state
-    const { leadId, type } = route.params
+    const { leadId, type, screenName } = route.params
     let body = {
       userId: selectedId,
       leadId: [leadId],
@@ -82,7 +82,7 @@ class AssignLead extends React.Component {
       .then((response) => {
         if (response.status === 200) {
           helper.successToast('LEAD ASSIGNED SUCCESSFULLY')
-          navigation.navigate('Leads')
+          navigation.navigate(screenName)
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }
@@ -113,10 +113,10 @@ class AssignLead extends React.Component {
     const { navigation, route } = this.props
     const { user } = this.props
     const { selectedId } = this.state
-    const { leadId, type } = route.params
+    const { leadId, type, screenName } = route.params
     var leadid = []
     leadid.push(leadId)
-    const url = type == 'Investment' ? `/api/leads/project/shareLead` : `/api/leads/shareLead`
+    const url = type == 'investment' ? `/api/leads/project/shareLead` : `/api/leads/shareLead`
     const body = {
       sharedAt: new Date(),
       userId: selectedId,
@@ -128,7 +128,7 @@ class AssignLead extends React.Component {
       .then((res) => {
         if (res.data) {
           helper.successToast('LEAD SHARED SUCCESSFULLY')
-          navigation.navigate('Leads')
+          navigation.navigate(screenName)
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }
@@ -159,7 +159,7 @@ class AssignLead extends React.Component {
   render() {
     const { teamMembers, loading, selected, selectedId, searchBy, searchText } = this.state
     const { user, route } = this.props
-    const { screen } = route.params
+    const { screen, purpose } = route.params
     let data = []
     if (searchText !== '' && data && data.length === 0) {
       data = fuzzy.filter(searchText, teamMembers, {
@@ -172,11 +172,11 @@ class AssignLead extends React.Component {
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <Search
-          placeholder={screen === 'LeadDetail' ? 'Search team members here' : 'Search Agents here'}
+          placeholder={purpose === 'reassign' ? 'Search team members here' : 'Search Agents here'}
           searchText={searchText}
           setSearchText={(value) => this.setState({ searchText: value })}
         />
-        {screen === 'LeadDetail' && (user.role === 'admin 3' || user.role === 'sub_admin 1') ? (
+        {user.role === 'admin 3' || user.role === 'sub_admin 1' ? (
           <View style={styles.pickerMain}>
             <PickerComponent
               placeholder={'Search By'}
@@ -213,13 +213,13 @@ class AssignLead extends React.Component {
         <TouchableOpacity
           disabled={!selected}
           onPress={() =>
-            screen == 'LeadDetail' ? this.assignLeadToSelectedMember() : this.shareLead()
+            purpose == 'reassign' ? this.assignLeadToSelectedMember() : this.shareLead()
           }
           style={styles.assignButtonStyle}
         >
           <Text style={AppStyles.btnText}>
             {' '}
-            {screen == 'LeadDetail' ? 'ASSIGN LEAD' : 'SHARE LEAD'}{' '}
+            {screen == 'MenuLead' ? 'REFER LEAD' : 'SHARE LEAD'}{' '}
           </Text>
         </TouchableOpacity>
       </View>

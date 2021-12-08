@@ -25,7 +25,15 @@ class Landing extends React.Component {
     super(props)
     this.state = {
       tiles: [],
-      tileNames: ['InventoryTabs', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
+      tileNames: [
+        'InventoryTabs',
+        'Leads',
+        'My Deals',
+        'Diary',
+        // 'Dashboard',
+        'Team Diary',
+        'Targets',
+      ],
       loading: true,
       userStatistics: null,
       toggleStatsTile: true,
@@ -153,12 +161,13 @@ class Landing extends React.Component {
       let label = tile
       tile = tile.replace(/ /g, '')
       if (Ability.canView(user.subRole, tile)) {
-        if (label === 'InventoryTabs') label = 'Property Leads'
+        if (label === 'InventoryTabs') label = 'Properties'
         let oneTilee = {
           screenName: tile,
         }
         if (label === 'Team Diary') label = "Team's Diary"
-        if (tile === 'Leads') label = 'Client Leads'
+        if (tile === 'Leads') label = 'Leads'
+        if (tile === 'MyDeals') label = 'Deals'
         let oneTile = {
           id: counter,
           label: label,
@@ -183,6 +192,16 @@ class Landing extends React.Component {
       navigation.navigate('InventoryTabs', {
         screen: 'ARMS',
         params: { screen: screenName },
+      })
+    } else if (screenName === 'Leads') {
+      navigation.navigate('Leads', {
+        screen: screenName,
+        hasBooking: false,
+      })
+    } else if (screenName === 'MyDeals') {
+      navigation.navigate('Leads', {
+        screen: screenName,
+        hasBooking: true,
       })
     } else {
       navigation.navigate(name, { screen: screenName })
@@ -250,7 +269,7 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
-        {isShowKPIs ? (
+        {/* {isShowKPIs ? (
           <TouchableOpacity
             onPress={() => {
               this.toggleStats()
@@ -286,7 +305,7 @@ class Landing extends React.Component {
               </View>
             ) : null}
           </TouchableOpacity>
-        ) : null}
+        ) : null} */}
 
         <View style={styles.btnView}>
           {Ability.canAdd(user.subRole, 'InventoryTabs') ? (

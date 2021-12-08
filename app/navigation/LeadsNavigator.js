@@ -1,7 +1,7 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
 import AppStyles from '../AppStyles'
 import BuyLeads from '../screens/BuyLeads/index'
@@ -23,117 +23,137 @@ const TabBarBadge = ({ count, color }) => {
 }
 
 function LeadsNavigator(props) {
+
+  useEffect(()=>{
+    const { navigation, route } = props;
+    if(route.params.screen == "MyDeals"){
+        navigation.setOptions({title: "DEALS"})}     
+  } , [])
   const { count, user } = props
-  return (
-    user.subRole === 'business_centre_manager'
-      || user.subRole === 'business_centre_agent'
-      || user.subRole === 'call_centre_manager'
-      || user.subRole === 'call_centre_warrior'
-      || user.subRole === 'call_centre_agent'
-      ?
-      <Tab.Navigator
-        tabBarOptions={{
-          scrollEnabled: false,
-          labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
-          activeTintColor: AppStyles.colors.primaryColor,
-          inactiveTintColor: AppStyles.colors.subTextColor,
-          showIcon: true,
-          iconStyle: { margin: -5 },
-          // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
-          tabStyle: {
-            paddingLeft: 0,
-            paddingRight: 0,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-          indicatorStyle: {
-            borderBottomColor: '#ffffff',
-            borderBottomWidth: 2,
-          },
+  return user.subRole === 'business_centre_manager' ||
+    user.subRole === 'business_centre_agent' ||
+    user.subRole === 'call_centre_manager' ||
+    user.subRole === 'call_centre_warrior' ||
+    user.subRole === 'call_centre_agent' ? (
+    <Tab.Navigator
+      tabBarOptions={{
+        scrollEnabled: false,
+        labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
+        activeTintColor: AppStyles.colors.primaryColor,
+        inactiveTintColor: AppStyles.colors.subTextColor,
+        showIcon: true,
+        iconStyle: { margin: -5 },
+        // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
+        tabStyle: {
+          paddingLeft: 0,
+          paddingRight: 0,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        indicatorStyle: {
+          borderBottomColor: '#ffffff',
+          borderBottomWidth: 2,
+        },
+      }}
+    >
+      <Tab.Screen
+        name="Invest"
+        options={{
+          tabBarIcon: (props) => (
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
+          ),
         }}
-      >
-        <Tab.Screen
-          name="Invest"
-          options={{
-            tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
-            ),
-          }}
-          component={InvestLeads}
-        />
-        <Tab.Screen
-          name="Rent"
-          options={{
-            tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
-            ),
-          }}
-          component={RentLeads}
-        />
-        <Tab.Screen
-          name="Buy"
-          component={BuyLeads}
-          options={{
-            tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
-            ),
-          }}
-        />
-        <Tab.Screen name="Sell/Rent Out" component={PropertyLead} />
-      </Tab.Navigator>
-      :
-      <Tab.Navigator
-        tabBarOptions={{
-          scrollEnabled: false,
-          labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
-          activeTintColor: AppStyles.colors.primaryColor,
-          inactiveTintColor: AppStyles.colors.subTextColor,
-          showIcon: true,
-          iconStyle: { margin: -5 },
-          // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
-          tabStyle: {
-            paddingLeft: 0,
-            paddingRight: 0,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-          indicatorStyle: {
-            borderBottomColor: '#ffffff',
-            borderBottomWidth: 2,
-          },
+        component={InvestLeads}
+      />
+      <Tab.Screen
+        name="Rent"
+        options={{
+          tabBarIcon: (props) => (
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
+          ),
         }}
-      >
-        <Tab.Screen
-          name="Rent"
-          options={{
-            tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
-            ),
-          }}
-          component={RentLeads}
-        />
-        <Tab.Screen
-          name="Buy"
-          component={BuyLeads}
-          options={{
-            tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
-            ),
-          }}
-        />
-        <Tab.Screen name="Sell/Rent Out" component={PropertyLead} />
-        <Tab.Screen
-          name="Invest"
-          options={{
-            tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
-            ),
-          }}
-          component={InvestLeads}
-        />
-      </Tab.Navigator>
+        component={RentLeads}
+      />
+      <Tab.Screen
+        name="Buy"
+        component={BuyLeads}
+        options={{
+          tabBarIcon: (props) => (
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+          ),
+        }}
+      />
+      {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
+    </Tab.Navigator>
+  ) : (
+    <Tab.Navigator
+      tabBarOptions={{
+        scrollEnabled: false,
+        labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
+        activeTintColor: AppStyles.colors.primaryColor,
+        inactiveTintColor: AppStyles.colors.subTextColor,
+        showIcon: true,
+        iconStyle: { margin: -5 },
+        // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
+        tabStyle: {
+          paddingLeft: 0,
+          paddingRight: 0,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        indicatorStyle: {
+          borderBottomColor: '#ffffff',
+          borderBottomWidth: 2,
+        },
+      }}
+    >
+      <Tab.Screen
+        name="Rent"
+        options={{
+          tabBarIcon: (props) => (
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
+          ),
+        }}
+        initialParams={{
+          screen: props.route.params?.screen,
+          hasBooking: props.route.params?.hasBooking,
+        }}
+        component={RentLeads}
+      />
+      <Tab.Screen
+        name="Buy"
+        initialParams={{
+          screen: props.route.params?.screen,
+          hasBooking: props.route.params?.hasBooking,
+        }}
+        options={{
+          tabBarIcon: (props) => (
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+          ),
+        }}
+        component={BuyLeads}
+      />
+      {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
+      <Tab.Screen
+        name="Invest"
+        options={{
+          tabBarIcon: (props) => (
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
+          ),
+        }}
+        initialParams={{
+          screen: props.route.params?.screen,
+          hasBooking: props.route.params?.hasBooking,
+        }}
+        component={InvestLeads}
+        initialParams={{
+          screen: props.route.params.screen,
+          hasBooking: props.route.params.hasBooking,
+        }}
+      />
+    </Tab.Navigator>
   )
 }
 

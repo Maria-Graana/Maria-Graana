@@ -150,17 +150,18 @@ class RentLeads extends React.Component {
       statusFilterType,
     } = this.state
     this.setState({ loading: true })
+    const { hasBooking } = this.props.route.params
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads?purpose=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
     }
     axios
       .get(`${query}`)
@@ -208,7 +209,9 @@ class RentLeads extends React.Component {
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
     let page = ''
-    if (data.readAt === null) {
+    if (this.props.route.params?.screen === 'MyDeals') {
+      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
+    } else if (data.readAt === null) {
       this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
     } else {
       if (data.status === 'open') {
@@ -646,6 +649,7 @@ class RentLeads extends React.Component {
       newActionModal,
     } = this.state
     const { user, navigation } = this.props
+
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter

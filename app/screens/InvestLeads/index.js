@@ -69,6 +69,7 @@ class InvestLeads extends React.Component {
       statusFilterType: 'id',
       comment: null,
       newActionModal: false,
+      isMenuVisible: false,
     }
   }
 
@@ -99,7 +100,13 @@ class InvestLeads extends React.Component {
       })
     }
   }
-
+  setIsMenuVisible = (value, data) => {
+    const { dispatch } = this.props
+    dispatch(setlead(data))
+    this.setState({
+      isMenuVisible: value,
+    })
+  }
   getServerTime = () => {
     axios
       .get(`/api/user/serverTime?fullTime=true`)
@@ -143,18 +150,19 @@ class InvestLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
+    const { hasBooking } = this.props.route.params
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
     }
     axios
       .get(`${query}`)
@@ -216,6 +224,13 @@ class InvestLeads extends React.Component {
       })
     }
   }
+  navigateFromMenu = (data, name) => {
+    this.props.dispatch(setlead(data))
+    console.log(setlead(data).payload, '===> L')
+    this.props.navigation.navigate(name, { lead: data, purposeTab: 'invest', screen: 'MenuLead' })
+    console.log(this.lead)
+    this.setIsMenuVisible(false, data)
+  }
 
   handleLongPress = (val) => {
     ActionSheet.show(
@@ -255,7 +270,7 @@ class InvestLeads extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: 'Investment',
-            screen: 'InvestLeads',
+            screen: 'MenuLead',
           })
         }
       } else {
@@ -470,8 +485,10 @@ class InvestLeads extends React.Component {
       statusFilterType,
       comment,
       newActionModal,
+      isMenuVisible,
     } = this.state
-    const { user, lead } = this.props
+    const { user, lead, navigation } = this.props
+    const screen = this.props.route.params.screen
     let buyRentFilterType = StaticData.buyRentFilterType
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
@@ -556,9 +573,15 @@ class InvestLeads extends React.Component {
                 user={user}
                 data={item}
                 navigateTo={this.navigateTo}
+                navigateFromMenu={this.navigateFromMenu}
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
+                screen={screen}
+                isMenuVisible={isMenuVisible}
+                setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
+                checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
+                navigateToShareScreen={(data) => this.navigateToShareScreen(data)}
               />
             )}
             onEndReached={() => {
@@ -662,6 +685,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    lead: store.lead.lead,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

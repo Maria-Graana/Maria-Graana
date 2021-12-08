@@ -1,42 +1,34 @@
 /** @format */
 
 export default StaticData = {
-  taskValues: [
+  diaryTasks: [
     {
-      name: 'Task',
-      value: 'task',
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
     },
     {
-      name: 'Meeting',
-      value: 'meeting',
-    },
-  ],
-  taskValuesCMLead: [
-    {
-      name: 'Task',
-      value: 'task',
-    },
-  ],
-  allTaskValues: [
-    {
-      name: 'Task',
-      value: 'task',
-    },
-    {
-      name: 'Follow Up',
-      value: 'follow_up',
-    },
-    {
-      name: 'Meeting',
-      value: 'meeting',
+      name: 'Daily Update',
+      value: 'daily_update',
     },
     {
       name: 'Meeting with PP',
       value: 'meeting_with_pp',
     },
+  ],
+  diaryTasksCM: [
     {
-      name: 'Morning Meeting',
-      value: 'morning_meeting',
+      name: 'Meeting',
+      value: 'meeting',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+  ],
+  diaryTasksRCM: [
+    {
+      name: 'Follow up',
+      value: 'follow_up',
     },
   ],
   oneToTen: [
@@ -1077,38 +1069,38 @@ export default StaticData = {
     },
   ],
   actionListItems: [
+    // {
+    //   id: 1,
+    //   title: 'Call',
+    //   image: require('../assets/img/call.png'),
+    // },
+    // {
+    //   id: 2,
+    //   title: 'Whatsapp',
+    //   image: require('../assets/img/whatsapp.png'),
+    // },
     {
       id: 1,
-      title: 'Call',
-      image: require('../assets/img/call.png'),
-    },
-    {
-      id: 2,
-      title: 'Whatsapp',
-      image: require('../assets/img/whatsapp.png'),
-    },
-    {
-      id: 3,
       title: 'Add Diary Task',
       image: require('../assets/img/diary-task.png'),
     },
+    // {
+    //   id: 4,
+    //   title: 'Add Comment',
+    //   image: require('../assets/img/comment.png'),
+    // },
+    // {
+    //   id: 5,
+    //   title: 'Add Attachment',
+    //   image: require('../assets/img/Path-20.png'),
+    // },
     {
-      id: 4,
-      title: 'Add Comment',
-      image: require('../assets/img/comment.png'),
-    },
-    {
-      id: 5,
-      title: 'Add Attachment',
-      image: require('../assets/img/Path-20.png'),
-    },
-    {
-      id: 6,
-      title: 'Share',
+      id: 2,
+      title: 'Refer',
       image: require('../assets/img/share-lead-with-agent.png'),
     },
     {
-      id: 7,
+      id: 3,
       title: 'ReAssign',
       image: require('../assets/img/reassign.png'),
     },
@@ -1413,5 +1405,10 @@ export default StaticData = {
       name: 'Client is getting external Services',
       value: 'client',
     },
+  ],
+  leadTypes: [
+    { name: 'Wanted', value: 'Wanted' },
+    { name: 'Project', value: 'Project' },
+    { name: 'Buy/Rent', value: 'BuyRent' },
   ],
 }

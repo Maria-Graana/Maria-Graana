@@ -4,12 +4,12 @@ import reducers from './reducers'
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { persistStore, persistReducer } from 'redux-persist'
-import { AsyncStorage } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: ['loading'],
+  blacklist: ['loading', 'diary'],
 }
 
 const persistedReducer = persistReducer(persistConfig, reducers)

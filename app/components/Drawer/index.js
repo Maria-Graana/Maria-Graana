@@ -54,14 +54,14 @@ class CustomDrawerContent extends React.Component {
             </View>
           </View>
           <View style={styles.underLine} />
-          {Ability.canView(subRole, 'Dashboard') && (
+          {/* {Ability.canView(subRole, 'Dashboard') && (
             <DrawerItem
               screen={'Dashboard'}
               navigateTo={() => {
                 this.navigateTo('Dashboard')
               }}
             />
-          )}
+          )} */}
           {Ability.canView(subRole, 'Diary') && (
             <DrawerIconItem
               screen={'Diary'}
@@ -82,11 +82,11 @@ class CustomDrawerContent extends React.Component {
           {Ability.canView(subRole, 'Leads') && (
             <DrawerIconItem
               screen={
-                user && user.organization && user.organization.isPP ? 'Leads' : 'Client Leads'
+                user && user.organization && user.organization.isPP ? 'Leads' : 'Leads'
               }
               badges={count.leads}
               navigateTo={() => {
-                this.navigateTo('Leads')
+                this.navigateTo('Leads', {params:{screen : "Leads"}})
               }}
             />
           )}
@@ -98,7 +98,7 @@ class CustomDrawerContent extends React.Component {
               screen={
                 user && user.organization && user.organization.isPP
                   ? 'Properties'
-                  : 'Property Leads'
+                  : 'Properties'
               }
               badges={count.inventory}
               navigateTo={() => {
@@ -133,7 +133,7 @@ class CustomDrawerContent extends React.Component {
 
           {Ability.canView(subRole, 'AvailableInventory') && (
             <DrawerItem
-              screen={'Available Inventories'}
+              screen={'Available Inventory'}
               navigateTo={() => {
                 this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
               }}

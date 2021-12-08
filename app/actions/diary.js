@@ -5,46 +5,51 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 
-export function getDiaryTasks(
-  selectedDate,
-  agentId = null,
-  overdue = false,
-  isFilterApplied = false
-) {
+export function getDiaryTasks(selectedDate, agentId = null, overdue = false, isFiltered = false) {
   return (dispatch, getsState) => {
     let endPoint = ``
-    const { page, pageSize } = getsState().diary.diary
+    let diaryRows = []
+    const { page, pageSize, diaries } = getsState().diary.diary
 
-    if (isFilterApplied) {
+    if (isFiltered) {
       // if filter is applied
       const { filters } = getsState().diary
       if (overdue) delete filters.date
       let urlValue = mapFiltersToQuery(filters)
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
+        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
-        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&status=pending&page=${page}&pageSize=${pageSize}`
+        //console.log('endPoint=>', endPoint)
       }
     } else {
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        // console.log('overdue=>', endPoint)
       } else {
-        endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?date[]=${selectedDate}&status=pending&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        // console.log(endPoint)
       }
     }
 
-    dispatch({
-      type: types.SET_DIARY_LOADER,
-      payload: true,
-    })
+    if (page === 1) {
+      dispatch({
+        type: types.SET_DIARY_LOADER,
+        payload: true,
+      })
+    }
 
     axios
       .get(`${endPoint}`)
       .then((res) => {
         if (res.data) {
+          diaryRows = page === 1 ? res.data.rows : [...diaries.rows, ...res.data.rows]
           dispatch({
             type: types.GET_DIARIES,
-            payload: res.data,
+            payload: {
+              rows: diaryRows,
+              count: res.data.count,
+            },
           })
         }
       })
@@ -87,12 +92,11 @@ export function setOnEndReachedLoader() {
   }
 }
 
-export function increasePageCount() {
+export function setPageCount(count) {
   return (dispatch, getsState) => {
-    const { page } = getsState().diary.diary
     dispatch({
       type: types.SET_DIARY_PAGE_COUNT,
-      payload: page + 1,
+      payload: count,
     })
   }
 }

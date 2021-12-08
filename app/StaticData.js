@@ -21,13 +21,13 @@ export default StaticData = {
       value: 'meeting',
     },
     {
-      name: 'Followup',
+      name: 'Follow up',
       value: 'follow_up',
     },
   ],
   diaryTasksRCM: [
     {
-      name: 'Followup',
+      name: 'Follow up',
       value: 'follow_up',
     },
   ],

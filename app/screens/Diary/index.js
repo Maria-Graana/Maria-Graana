@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
-import { Ionicons, FontAwesome5, Entypo } from '@expo/vector-icons'
+import { Ionicons, FontAwesome5, Entypo, Fontisto } from '@expo/vector-icons'
 import AppStyles from '../../AppStyles'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
@@ -30,7 +30,7 @@ import {
   getDiaryStats,
   getDiaryTasks,
   getOverdueCount,
-  increasePageCount,
+  setPageCount,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
@@ -38,7 +38,12 @@ import {
   setSelectedDiary,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import { getTimeShifts, setSlotDiaryData, setTimeSlots } from '../../actions/slotManagement'
+import {
+  getTimeShifts,
+  setSlotData,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
 
 import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
@@ -66,32 +71,34 @@ class Diary extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch } = this.props
+    const { route, user } = this.props
+
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
     dispatch(setSlotDiaryData(_today))
     this.getDiariesStats()
-    const { route, user } = this.props
-    this._unsubscribe = navigation.addListener('focus', () => {
-      let { selectedDate } = this.state
-      let dateSelected = selectedDate
-      if ('openDate' in route.params) {
-        const { openDate } = route.params
-        dateSelected = moment(openDate).format(_format)
-      }
-      if (route.params !== undefined && 'agentId' in route.params) {
-        navigation.setOptions({ title: `${route.params.name} Diary` })
-        this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
-          this.getDiaries()
-          // Team Diary View
-        })
-      } else {
-        navigation.setOptions({ title: 'My Diary' })
-        this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
-          // Personal Diary
-          this.getDiaries()
-        })
-      }
-    })
+    // this._unsubscribe = navigation.addListener('focus', () => {
+    let { selectedDate } = this.state
+    let dateSelected = selectedDate
+    if ('openDate' in route.params) {
+      const { openDate } = route.params
+      dateSelected = moment(openDate).format(_format)
+    }
+    if (route.params !== undefined && 'agentId' in route.params) {
+      navigation.setOptions({ title: `${route.params.name} Diary` })
+      this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
+        this.getDiaries()
+        // Team Diary View
+      })
+    } else {
+      navigation.setOptions({ title: 'My Diary' })
+      this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
+        // Personal Diary
+        this.getDiaries()
+      })
+    }
+    //}
+    //})
   }
 
   getDiariesStats = () => {
@@ -193,6 +200,8 @@ class Diary extends React.Component {
 
   setSelectedDate = (date, mode) => {
     const { isCalendarVisible } = this.state
+    const { dispatch, diary } = this.props
+    const { page } = diary
     this.setState(
       {
         selectedDate: date,
@@ -201,6 +210,7 @@ class Diary extends React.Component {
         nextDay: moment(date, _format).add(1, 'days').format(_format),
       },
       () => {
+        dispatch(setPageCount(1))
         this.getDiaries()
         this.getDiariesStats()
       }
@@ -222,9 +232,10 @@ class Diary extends React.Component {
   }
 
   goToOverdueTasks = () => {
-    const { navigation, overdueCount } = this.props
+    const { navigation, overdueCount, route } = this.props
+    const { name = null } = route.params
     const { agentId } = this.state
-    navigation.navigate('OverdueTasks', { count: overdueCount, agentId })
+    navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name })
   }
 
   handleMenuActions = (action) => {
@@ -237,6 +248,8 @@ class Diary extends React.Component {
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {
+      console.log(selectedDiary)
+      this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')
     } else if (action === 'reassign_lead') {
@@ -294,12 +307,20 @@ class Diary extends React.Component {
   navigateToFiltersScreen = () => {
     const { navigation } = this.props
     const { agentId, selectedDate } = this.state
-    navigation.navigate('DiaryFilter', { agentId, isOverdue: false, selectedDate })
+    navigation.navigate('DiaryFilter', {
+      agentId,
+      isOverdue: false,
+      selectedDate,
+      screenName: 'Diary',
+    })
   }
 
-  goToAddEditDiaryScreen = () => {
-    const { navigation } = this.props
-    navigation.navigate('AddDiary', { update: false })
+  goToAddEditDiaryScreen = (update, data = null) => {
+    const { navigation, dispatch } = this.props
+    if (data) {
+      dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
+    }
+    navigation.navigate('AddDiary', { update, data })
   }
 
   setShowDayEnd = (display) => {
@@ -318,7 +339,7 @@ class Diary extends React.Component {
       dayName,
       isMenuVisible,
     } = this.state
-    const { overdueCount, diary, dispatch, navigation, diaryStat, user } = this.props
+    const { overdueCount, diary, dispatch, navigation, diaryStat, user, route } = this.props
     const {
       diaries,
       loading,
@@ -326,7 +347,9 @@ class Diary extends React.Component {
       selectedLead,
       showClassificationModal,
       onEndReachedLoader,
+      page,
     } = diary
+    const { isFilterApplied = false } = route?.params
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -384,7 +407,14 @@ class Diary extends React.Component {
 
           <View style={styles.filterSortView}>
             <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
-              <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+              <Image
+                source={
+                  !isFilterApplied
+                    ? require('../../../assets/img/filter.png')
+                    : require('../../../assets/img/filter_blue.png')
+                }
+                style={styles.filterImg}
+              />
             </TouchableOpacity>
 
             <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
@@ -435,8 +465,9 @@ class Diary extends React.Component {
             )}
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
-                dispatch(increasePageCount())
                 dispatch(setOnEndReachedLoader())
+                dispatch(setPageCount(page + 1))
+                dispatch(getDiaryTasks(selectedDate, agentId, false, false))
               }
             }}
             onEndReachedThreshold={0.5}
@@ -447,7 +478,7 @@ class Diary extends React.Component {
 
         <TouchableOpacity
           style={{
-            backgroundColor: 'white',
+            backgroundColor: overdueCount > 0 ? 'red' : 'white',
             height: 50,
             justifyContent: 'center',
             alignItems: 'center',
@@ -455,7 +486,10 @@ class Diary extends React.Component {
           onPress={() => this.goToOverdueTasks()}
         >
           <Text
-            style={{ fontFamily: AppStyles.fonts.semiBoldFont }}
+            style={{
+              fontFamily: AppStyles.fonts.semiBoldFont,
+              color: overdueCount > 0 ? 'white' : AppStyles.colors.textColor,
+            }}
           >{`Overdue Tasks(${overdueCount})`}</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -478,7 +512,7 @@ const styles = StyleSheet.create({
   filterImg: {
     resizeMode: 'contain',
     width: 24,
-    marginHorizontal: 20,
+    marginHorizontal: 15,
   },
   filterSortView: {
     width: '30%',

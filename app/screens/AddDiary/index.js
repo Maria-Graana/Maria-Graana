@@ -60,16 +60,6 @@ class AddDiary extends Component {
         this.createDiary(copyInitialPayload)
       })
     }
-
-    // if (!data.taskType || !data.date || !data.startTime || !data.subject) {
-    //   this.setState({
-    //     checkValidation: true,
-    //   })
-    // } else {
-    //   this.setState({ loading: true }, () => {
-    //     this.createDiary(data)
-    //   })
-    // }
   }
 
   generatePayload = (data) => {
@@ -130,93 +120,61 @@ class AddDiary extends Component {
 
   addDiary = (data) => {
     const { route, navigation } = this.props
-    const { rcmLeadId, cmLeadId } = route.params
     let diary = this.generatePayload(data)
-    if (rcmLeadId || cmLeadId) {
-      // create task for lead
-      axios
-        .post(`/api/leads/task`, diary)
-        .then((res) => {
-          if (res.status === 200) {
-            helper.successToast('TASK ADDED SUCCESSFULLY!')
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
-            }
-            TimerNotification(data, start)
-            navigation.goBack()
-          } else {
-            helper.errorToast('ERROR: SOMETHING WENT WRONG')
+    axios
+      .post(`/api/leads/task`, diary)
+      .then((res) => {
+        if (res.status === 200) {
+          helper.successToast('TASK ADDED SUCCESSFULLY!')
+          let start = new Date(res.data.start)
+          let end = new Date(res.data.end)
+          let data = {
+            id: res.data.id,
+            title: res.data.subject,
+            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
           }
-        })
-        .catch((error) => {
-          helper.errorToast('ERROR: ADDING DIARY')
-          console.log('error', error.message)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
-    } else {
-      axios
-        .post(`/api/diary/create`, diary)
-        .then((res) => {
-          if (res.status === 200) {
-            helper.successToast('TASK ADDED SUCCESSFULLY!')
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
-            }
-            TimerNotification(data, start)
-            navigation.navigate('Diary', {
-              agentId: this.props.route.params.agentId,
-            })
-          } else {
-            helper.errorToast('ERROR: SOMETHING WENT WRONG')
-          }
-        })
-        .catch((error) => {
-          helper.errorToast('ERROR: ADDING TASK')
-          console.log('error', error.message)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
-    }
+          TimerNotification(data, start)
+          navigation.goBack()
+        } else {
+          helper.errorToast('ERROR: SOMETHING WENT WRONG')
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('ERROR: ADDING DIARY')
+        console.log('error', error.message)
+      })
+      .finally(() => {
+        this.setState({ loading: false })
+      })
   }
 
-  // updateDiary = (data) => {
-  //   let diary = this.generatePayload(data)
-  //   axios
-  //     .patch(`/api/diary/update?id=${diary.id}`, diary)
-  //     .then((res) => {
-  //       helper.successToast('TASK UPDATED SUCCESSFULLY!')
-  //       let start = new Date(res.data.start)
-  //       let end = new Date(res.data.end)
-  //       let data = {
-  //         id: res.data.id,
-  //         title: res.data.subject,
-  //         body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
-  //       }
-  //       helper.deleteAndUpdateNotification(data, start, res.data.id)
-  //       this.props.navigation.navigate('Diary', {
-  //         update: false,
-  //         agentId: this.props.route.params.agentId,
-  //       })
-  //     })
-  //     .catch((error) => {
-  //       helper.errorToast('ERROR: UPDATING TASK')
-  //       console.log(error)
-  //     })
-  //     .finally(() => {
-  //       this.setState({ loading: false })
-  //     })
-  // }
+  updateDiary = (data) => {
+    let diary = this.generatePayload(data)
+    axios
+      .patch(`/api/diary/update?id=${diary.id}`, diary)
+      .then((res) => {
+        helper.successToast('TASK UPDATED SUCCESSFULLY!')
+        let start = new Date(res.data.start)
+        let end = new Date(res.data.end)
+        let data = {
+          id: res.data.id,
+          title: res.data.subject,
+          body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
+        }
+        helper.deleteAndUpdateNotification(data, start, res.data.id)
+        this.props.navigation.navigate('Diary', {
+          update: false,
+          agentId: this.props.route.params.agentId,
+        })
+      })
+      .catch((error) => {
+        helper.errorToast('ERROR: UPDATING TASK')
+        console.log(error)
+      })
+      .finally(() => {
+        this.setState({ loading: false })
+      })
+  }
 
   goToSlotManagement = () => {
     const { navigation } = this.props

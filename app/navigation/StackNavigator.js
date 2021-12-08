@@ -470,7 +470,7 @@ function MainStack() {
         name="AvailableInventory"
         component={AvailableInventory}
         options={({ navigation, route }) => ({
-          title: 'AVAILABLE INVENTORIES',
+          title: 'AVAILABLE INVENTORY',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

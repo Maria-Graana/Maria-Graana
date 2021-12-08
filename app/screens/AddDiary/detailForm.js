@@ -28,7 +28,7 @@ class DetailForm extends Component {
         notes: '',
         status: 'pending',
         isRecurring: false,
-        taskCategory: null,
+        taskCategory: 'simpleTask',
         slots: [],
         addedBy: 'self',
       },
@@ -55,6 +55,7 @@ class DetailForm extends Component {
     newObject.taskType = data.taskType
     newObject.status = data.status
     newObject.taskCategory = data.taskCategory
+    newObject.isRecurring = data.isRecurring
     this.setState({ formData: newObject, buttonText: 'UPDATE TASK' })
   }
 
@@ -65,30 +66,25 @@ class DetailForm extends Component {
   }
 
   render() {
-    const { taskType, date, startTime, endTime, subject, notes, isRecurring } = this.state.formData
+    const { taskType, date, startTime, endTime, subject, notes, isRecurring, taskCategory } =
+      this.state.formData
     const { formData, buttonText } = this.state
     const {
       formSubmit,
       checkValidation,
       taskValues,
       loading,
-      performTaskActions,
       user,
-      editableData,
       goToSlotManagement,
       slotsData,
+      editableData,
     } = this.props
     return (
       <View>
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
             <PickerComponent
-              // enabled={
-              //   formData.status === 'pending' &&
-              //   (formData.taskCategory === 'simpleTask' || formData.taskCategory === null)
-              //     ? true
-              //     : false
-              // }
+              enabled={editableData === null}
               onValueChange={this.handleForm}
               selectedItem={taskType}
               data={taskValues}
@@ -116,18 +112,20 @@ class DetailForm extends Component {
           }
         />
 
-        <TouchableOpacity
-          onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
-          style={styles.checkBoxRow}
-        >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={isRecurring}
-            style={styles.checkBox}
+        {editableData === null && taskCategory == 'simpleTask' ? (
+          <TouchableOpacity
             onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
-          />
-          <Text style={styles.checkBoxText}>Recurring</Text>
-        </TouchableOpacity>
+            style={styles.checkBoxRow}
+          >
+            <CheckBox
+              color={AppStyles.colors.primaryColor}
+              checked={isRecurring}
+              style={styles.checkBox}
+              onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
+            />
+            <Text style={styles.checkBoxText}>Recurring</Text>
+          </TouchableOpacity>
+        ) : null}
 
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea

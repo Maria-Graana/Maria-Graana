@@ -28,10 +28,14 @@ import {
   setCategory,
   setClassificationModal,
   setOnEndReachedLoader,
+  setPageCount,
   setSelectedDiary,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import moment from 'moment'
 
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
 class OverdueTasks extends React.Component {
   constructor(props) {
     super(props)
@@ -44,9 +48,17 @@ class OverdueTasks extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch, route } = this.props
-    const { count, agentId } = route.params
-    navigation.setOptions({ title: `Overdue Tasks(${count})` })
+    const { count, agentId, agentName } = route.params
+    navigation.setOptions({
+      title: agentName ? `${agentName} Overdue Tasks(${count})` : `Overdue Tasks(${count})`,
+    })
     this.getDiaries()
+  }
+
+  componentWillUnmount() {
+    const { navigation, dispatch, route } = this.props
+    const { agentId } = route.params
+    dispatch(getDiaryTasks(_today, agentId, false))
   }
 
   handleMenuActions = (action) => {
@@ -113,7 +125,12 @@ class OverdueTasks extends React.Component {
   navigateToFiltersScreen = () => {
     const { navigation } = this.props
     const { agentId, selectedDate } = this.state
-    navigation.navigate('DiaryFilter', { agentId, isOverdue: true, selectedDate })
+    navigation.navigate('DiaryFilter', {
+      agentId,
+      isOverdue: true,
+      selectedDate,
+      screenName: 'OverdueTasks',
+    })
   }
 
   getDiaries = () => {
@@ -134,7 +151,7 @@ class OverdueTasks extends React.Component {
 
   render() {
     const { selectedDate, showMenu, agentId } = this.state
-    const { diary, dispatch } = this.props
+    const { diary, dispatch, route } = this.props
     const {
       diaries,
       loading,
@@ -142,7 +159,9 @@ class OverdueTasks extends React.Component {
       selectedLead,
       showClassificationModal,
       onEndReachedLoader,
+      page,
     } = diary
+    const { isFilterApplied = false } = route?.params
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal
@@ -159,7 +178,14 @@ class OverdueTasks extends React.Component {
         <View style={styles.rowOne}>
           <View style={styles.filterSortView}>
             <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
-              <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+              <Image
+                source={
+                  !isFilterApplied
+                    ? require('../../../assets/img/filter.png')
+                    : require('../../../assets/img/filter_blue.png')
+                }
+                style={styles.filterImg}
+              />
             </TouchableOpacity>
 
             <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
@@ -196,8 +222,10 @@ class OverdueTasks extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
-                dispatch(increasePageCount())
+                //console.log(diaries.count, diaries.rows.length)
                 dispatch(setOnEndReachedLoader())
+                dispatch(setPageCount(page + 1))
+                dispatch(getDiaryTasks(null, agentId, true, false))
               }
             }}
             onEndReachedThreshold={0.5}

@@ -11,13 +11,7 @@ import axios from 'axios'
 import Loader from '../../components/loader'
 import _ from 'underscore'
 import StaticData from '../../StaticData'
-import {
-  clearDiaryFilter,
-  getDiaryTasks,
-  setDiaryFilter,
-  setDiarySearch,
-  setFiltersSearch,
-} from '../../actions/diary'
+import { clearDiaryFilter, getDiaryTasks, setDiaryFilter } from '../../actions/diary'
 import moment from 'moment'
 import { connect } from 'react-redux'
 
@@ -36,14 +30,12 @@ class DiaryFilter extends React.Component {
     this.getFeedbackReasons()
   }
 
-  componentWillUnmount() {}
-
   clearFilter = () => {
     const { dispatch, route, navigation } = this.props
-    const { agentId, isOverdue } = route.params
+    const { agentId, isOverdue, screenName } = route.params
     dispatch(clearDiaryFilter())
     dispatch(getDiaryTasks(_today, agentId, isOverdue))
-    navigation.goBack()
+    navigation.navigate(screenName, { isFilterApplied: false })
   }
 
   getFeedbackReasons = () => {
@@ -84,9 +76,9 @@ class DiaryFilter extends React.Component {
 
   onSearchPressed = () => {
     const { navigation, route, dispatch } = this.props
-    const { agentId, isOverdue = false } = route.params
+    const { agentId, isOverdue = false, screenName } = route.params
     dispatch(getDiaryTasks(null, agentId, isOverdue, true))
-    navigation.goBack()
+    navigation.navigate(screenName, { isFilterApplied: true })
   }
 
   handleForm = (value, name) => {
@@ -119,132 +111,144 @@ class DiaryFilter extends React.Component {
     return loading ? (
       <Loader loading={loading} />
     ) : (
-      <ScrollView style={styles.container}>
-        {isOverdue ? null : (
-          <DateTimePicker
-            placeholderLabel={'Select Date'}
-            name={'date'}
-            mode={'date'}
-            // showError={checkValidation === true && formData.date === ''}
-            errorMessage={'Required'}
-            iconSource={require('../../../assets/img/calendar.png')}
-            date={new Date()}
-            selectedValue={filters.date ? helper.formatDate(filters.date) : ''}
-            handleForm={(value, name) => this.handleForm(helper.formatDate(value), name)}
-            // disabled={currentMeeting && currentMeeting.status === 'completed'}
-          />
-        )}
+      <View style={styles.container}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {isOverdue ? null : (
+            <>
+              <Text style={styles.headingText}>Date:</Text>
+              <DateTimePicker
+                placeholderLabel={'Select Date'}
+                name={'date'}
+                mode={'date'}
+                // showError={checkValidation === true && formData.date === ''}
+                errorMessage={'Required'}
+                iconSource={require('../../../assets/img/calendar.png')}
+                date={new Date()}
+                selectedValue={filters.date ? helper.formatDate(filters.date) : ''}
+                handleForm={(value, name) => this.handleForm(helper.formatDate(value), name)}
+                // disabled={currentMeeting && currentMeeting.status === 'completed'}
+              />
+            </>
+          )}
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent
-              onValueChange={this.handleForm}
-              selectedItem={feedbacksId ? feedbacksId : ''}
-              data={feedbackReasons}
-              name={'feedbacksId'}
-              formatObject={true}
-              placeholder="Select Reason"
-              customIconStyle={{ marginRight: -6 }}
-            />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Reason:</Text>
+              <PickerComponent
+                onValueChange={this.handleForm}
+                selectedItem={feedbacksId ? feedbacksId : ''}
+                data={feedbackReasons}
+                name={'feedbacksId'}
+                formatObject={true}
+                placeholder="Select Reason"
+                customIconStyle={{ marginRight: -6 }}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent
-              onValueChange={this.handleForm}
-              selectedItem={filters.leadType}
-              data={StaticData.leadTypes}
-              name={'leadType'}
-              placeholder="Lead Type"
-              customIconStyle={{ marginRight: -6 }}
-            />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Lead Type:</Text>
+              <PickerComponent
+                onValueChange={this.handleForm}
+                selectedItem={filters.leadType}
+                data={StaticData.leadTypes}
+                name={'leadType'}
+                placeholder="Lead Type"
+                customIconStyle={{ marginRight: -6 }}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-              ]}
-              placeholder={'Project Lead ID'}
-              keyboardType={'numeric'}
-              value={filters.projectId}
-              onChangeText={(text) => this.handleForm(text, 'projectId')}
-            />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Project Lead ID:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Project Lead ID'}
+                keyboardType={'numeric'}
+                value={filters.projectId}
+                onChangeText={(text) => this.handleForm(text, 'projectId')}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-              ]}
-              placeholder={'Buy/Rent Lead ID'}
-              keyboardType={'numeric'}
-              value={filters.buyrentId}
-              onChangeText={(text) => this.handleForm(text, 'buyrentId')}
-            />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Buy/Rent Lead ID:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Buy/Rent Lead ID'}
+                keyboardType={'numeric'}
+                value={filters.buyrentId}
+                onChangeText={(text) => this.handleForm(text, 'buyrentId')}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-              ]}
-              placeholder={'Wanted Lead ID'}
-              value={filters.wantedId}
-              onChangeText={(text) => this.handleForm(text, 'wantedId')}
-            />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Wanted Lead ID:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Wanted Lead ID'}
+                value={filters.wantedId}
+                onChangeText={(text) => this.handleForm(text, 'wantedId')}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-              ]}
-              placeholder={'Client Name'}
-              value={filters.customerName}
-              // editable={formData.status === 'pending'}
-              onChangeText={(text) => this.handleForm(text, 'customerName')}
-            />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Client Name:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Client Name'}
+                value={filters.customerName}
+                // editable={formData.status === 'pending'}
+                onChangeText={(text) => this.handleForm(text, 'customerName')}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-              ]}
-              placeholder={'Client Contact'}
-              value={filters.customerPhoneNumber}
-              // editable={formData.status === 'pending'}
-              onChangeText={(text) => this.handleForm(text, 'customerPhoneNumber')}
-            />
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Client Contact:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Client Contact'}
+                value={filters.customerPhoneNumber}
+                // editable={formData.status === 'pending'}
+                onChangeText={(text) => this.handleForm(text, 'customerPhoneNumber')}
+              />
+            </View>
           </View>
-        </View>
+        </ScrollView>
         <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
@@ -264,7 +268,7 @@ class DiaryFilter extends React.Component {
             // disabled={currentMeeting && currentMeeting.status === 'completed'}
           />
         </View>
-      </ScrollView>
+      </View>
     )
   }
 }
@@ -273,6 +277,11 @@ const styles = StyleSheet.create({
     padding: 15,
     flex: 1,
     backgroundColor: '#e7ecf0',
+  },
+  headingText: {
+    fontSize: 14,
+    fontFamily: AppStyles.fonts.defaultFont,
+    color: AppStyles.colors.textColor,
   },
 })
 

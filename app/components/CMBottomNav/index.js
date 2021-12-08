@@ -435,11 +435,11 @@ class CMBottomNav extends React.Component {
               <Menu.Item
                 onPress={() => {
                   if (closedLeadEdit) {
+                    goToHistory()
                     this.openMenu(false)
-                    this.setState({ isLeadCategoryModalVisible: true })
                   } else helper.leadClosedToast()
                 }}
-                title="Set Classification"
+                title="Activity History"
               />
             ) : null}
 
@@ -463,8 +463,8 @@ class CMBottomNav extends React.Component {
                     this.openMenu(false)
                   } else helper.leadClosedToast()
                 }}
-                icon={require('../../../assets/img/callIcon.png')}
-                title="Call History"
+                // icon={require('../../../assets/img/callIcon.png')}
+                title="Activity History"
               />
             ) : null}
             {!callButton && !lead.projectId ? <Menu.Item title="No Option" /> : null}

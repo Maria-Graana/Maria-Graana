@@ -36,6 +36,7 @@ function TimeSlotManagement(props) {
   const [tempStartTime, setTempStartTime] = useState(null)
   const [tempEndTime, setTempEndTime] = useState(null)
   const [tempSlot, setTempSlot] = useState(null)
+  const [sSlots, setSSlots] = useState([])
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -141,6 +142,8 @@ function TimeSlotManagement(props) {
     isSelected.push(e.id)
     const tempAray = _.sortBy(slotsData, 'id')
 
+    fortyPercent(e)
+
     if (tempAray[1] == undefined) {
       verifyDetail(e)
     } else {
@@ -155,7 +158,7 @@ function TimeSlotManagement(props) {
                 {
                   text: 'Clear',
                   onPress: () => {
-                    setSlotsData([]), setSlots([]), setIsSelected([])
+                    setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
                   },
                 },
               ]
@@ -163,6 +166,7 @@ function TimeSlotManagement(props) {
             slotsData.pop(e)
             slots.pop(e.id)
             isSelected.pop(e.id)
+            sSlots.pop(e)
           } else {
             Alert.alert(
               'Sorry',
@@ -172,7 +176,7 @@ function TimeSlotManagement(props) {
                 {
                   text: 'Clear',
                   onPress: () => {
-                    setSlotsData([]), setSlots([]), setIsSelected([])
+                    setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
                   },
                 },
               ]
@@ -180,6 +184,7 @@ function TimeSlotManagement(props) {
             slotsData.pop(e)
             slots.pop(e.id)
             isSelected.pop(e.id)
+            sSlots.pop(e)
           }
         } else {
           verifyDetail(e)
@@ -188,13 +193,15 @@ function TimeSlotManagement(props) {
     }
   }
 
-  const fortyPercent = () => {
+  const fortyPercent = (e) => {
     const data = props.userShifts
     let array = []
-    const slotsShift = slotsData
-    const sSlots = slotsShift.length
+    const slotsShift = _.sortBy(slotsData, 'id')
     const slotFirst = slotsShift[0].startTime
     const slotEnd = slotsShift[slotsShift.length - 1].endTime
+    const currentTime = moment().format('H:mm:ss')
+    const tempCurrent = currentTime.split(':')
+    const currentMin = parseInt(tempCurrent[0]) * 60 + parseInt(tempCurrent[1])
 
     for (var i = 0; i < data.length; i++) {
       if (dayName == data[i].dayName) {
@@ -205,9 +212,33 @@ function TimeSlotManagement(props) {
     if (array && array.length == 1) {
       const startFirst = array[0].armsShift.startTime
       const endFirst = array[0].armsShift.endTime
+      const tempSFirst = startFirst.split(':')
+      const tempEFirst = endFirst.split(':')
+      const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
+      const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
+
       const shiftFirst = array[0].armsShift.name.toLowerCase()
-      if (slotFirst > startFirst && slotEnd < endFirst) {
-        shiftsInFirst(sSlots, shiftFirst)
+
+      if (isTimeBetween(startFirst, endFirst, currentTime)) {
+        if (e.startTime >= currentTime && e.startTime < endFirst) {
+          sSlots.push(e)
+          if (endMin < startMin) {
+            const p = 1440 - (endMin + startMin)
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          } else {
+            const p = endMin - startMin
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          }
+        }
+      } else {
+        if (slotFirst >= startFirst && slotEnd <= endFirst) {
+          sSlots.push(e)
+          shiftsSlotsEval(sSlots.length, shiftFirst, e)
+        }
       }
     }
 
@@ -219,10 +250,10 @@ function TimeSlotManagement(props) {
       const shiftFirst = array[0].armsShift.name.toLowerCase()
       const shiftSecond = array[1].armsShift.name.toLowerCase()
 
-      if (slotFirst > startFirst && slotEnd < endFirst) {
-        shiftsInFirst(sSlots, shiftFirst)
-      } else if (slotFirst > startSecond && slotEnd < endSecond) {
-        shiftsInSecond(sSlots, shiftSecond)
+      if (slotFirst >= startFirst && slotEnd <= endFirst) {
+        shiftsSlotsEval(sSlots, shiftFirst, e)
+      } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
+        shiftsSlotsEval(sSlots, shiftSecond, e)
       }
     }
 
@@ -231,162 +262,79 @@ function TimeSlotManagement(props) {
       const endFirst = array[0].armsShift.endTime
       const startSecond = array[1].armsShift.startTime
       const endSecond = array[1].armsShift.endTime
-      const startThird = array[1].armsShift.startTime
-      const endThird = array[1].armsShift.endTime
+      const startThird = array[2].armsShift.startTime
+      const endThird = array[2].armsShift.endTime
       const shiftFirst = array[0].armsShift.name.toLowerCase()
       const shiftSecond = array[1].armsShift.name.toLowerCase()
       const shiftThird = array[2].armsShift.name.toLowerCase()
 
-      if (slotFirst > startFirst && slotEnd < endFirst) {
-        shiftsInFirst(sSlots, shiftFirst)
-      } else if (slotFirst > startSecond && slotEnd < endSecond) {
-        shiftsInSecond(sSlots, shiftSecond)
-      } else if (slotFirst > startThird && slotEnd < endThird) {
-        shiftsInThird(sSlots, shiftThird)
+      if (slotFirst >= startFirst && slotEnd <= endFirst) {
+        shiftsSlotsEval(sSlots, shiftFirst, e)
+      } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
+        shiftsSlotsEval(sSlots, shiftSecond, e)
+      } else if (slotFirst >= startThird && slotEnd <= endThird) {
+        shiftsSlotsEval(sSlots, shiftThird, e)
       }
     }
   }
 
-  const shiftsInFirst = (sSlots, shiftFirst) => {
-    if (shiftFirst == 'evening') {
-      const nSlots = 8 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
+  const shiftsSlotsEval = (sSlotsLen, shift, e, r) => {
+    if (shift == 'evening') {
+      const nSlots = r ? r : 8 * 12
+      const forSlots = nSlots * 0.6
+      if (sSlotsLen > forSlots) {
         Alert.alert('Excessive Selection', '', [
           { text: 'OK' },
           {
             text: 'Clear',
             onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
+              setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
             },
           },
         ])
+        slotsData.pop(e)
+        slots.pop(e.id)
+        isSelected.pop(e.id)
+        sSlots.pop(e)
       }
     }
-    if (shiftFirst == 'morning') {
-      const nSlots = 9 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
+    if (shift == 'morning') {
+      const nSlots = r ? r : 9 * 12
+      const forSlots = nSlots * 0.6
+      if (sSlotsLen > forSlots) {
         Alert.alert('Excessive Selection', '', [
           { text: 'OK' },
           {
             text: 'Clear',
             onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
+              setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
             },
           },
         ])
+        slotsData.pop(e)
+        slots.pop(e.id)
+        isSelected.pop(e.id)
+        sSlots.pop(e)
       }
     }
-    if (shiftFirst == 'night') {
-      const nSlots = 7 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
+    if (shift == 'night') {
+      const nSlots = r ? r : 7 * 12
+      const forSlots = nSlots * 0.6
+      console.log(forSlots, nSlots, sSlotsLen)
+      if (sSlotsLen > forSlots) {
         Alert.alert('Excessive Selection', '', [
           { text: 'OK' },
           {
             text: 'Clear',
             onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
+              setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
             },
           },
         ])
-      }
-    }
-  }
-
-  const shiftsInSecond = (sSlots, shiftSecond) => {
-    if (shiftSecond == 'evening') {
-      const nSlots = 8 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
-        Alert.alert('Excessive Selection', '', [
-          { text: 'OK' },
-          {
-            text: 'Clear',
-            onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
-            },
-          },
-        ])
-      }
-    }
-    if (shiftSecond == 'morning') {
-      const nSlots = 9 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
-        Alert.alert('Excessive Selection', '', [
-          { text: 'OK' },
-          {
-            text: 'Clear',
-            onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
-            },
-          },
-        ])
-      }
-    }
-    if (shiftSecond == 'night') {
-      const nSlots = 7 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
-        Alert.alert('Excessive Selection', '', [
-          { text: 'OK' },
-          {
-            text: 'Clear',
-            onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
-            },
-          },
-        ])
-      }
-    }
-  }
-
-  const shiftsInThird = (sSlots, shiftThird) => {
-    if (shiftThird == 'evening') {
-      const nSlots = 8 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
-        Alert.alert('Excessive Selection', '', [
-          { text: 'OK' },
-          {
-            text: 'Clear',
-            onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
-            },
-          },
-        ])
-      }
-    }
-    if (shiftThird == 'morning') {
-      const nSlots = 9 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
-        Alert.alert('Excessive Selection', '', [
-          { text: 'OK' },
-          {
-            text: 'Clear',
-            onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
-            },
-          },
-        ])
-      }
-    }
-    if (shiftThird == 'night') {
-      const nSlots = 7 * 12
-      const forSlots = nSlots * 0.4
-      if (sSlots > forSlots) {
-        Alert.alert('Excessive Selection', '', [
-          { text: 'OK' },
-          {
-            text: 'Clear',
-            onPress: () => {
-              setSlotsData([]), setSlots([]), setIsSelected([])
-            },
-          },
-        ])
+        slotsData.pop(e)
+        slots.pop(e.id)
+        isSelected.pop(e.id)
+        sSlots.pop(e)
       }
     }
   }

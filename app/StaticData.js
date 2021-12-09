@@ -1411,4 +1411,9 @@ export default StaticData = {
     { name: 'Project', value: 'Project' },
     { name: 'Buy/Rent', value: 'BuyRent' },
   ],
+  diarySortValues: [
+    { name: 'Time Based', value: '' },
+    { name: 'Task Type', value: 'type' },
+    { name: 'Classification', value: 'class' },
+  ],
 }

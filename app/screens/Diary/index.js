@@ -36,6 +36,7 @@ import {
   setClassificationModal,
   setOnEndReachedLoader,
   setSelectedDiary,
+  setSortValue,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -47,6 +48,7 @@ import {
 
 import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
+import { DiarySortModal } from '../../components/DiarySortModal'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -67,6 +69,7 @@ class Diary extends React.Component {
       startTime: '',
       endTime: '',
       isMenuVisible: false,
+      isSortModalVisible: false,
     }
   }
   componentDidMount() {
@@ -97,8 +100,6 @@ class Diary extends React.Component {
         this.getDiaries()
       })
     }
-    //}
-    //})
   }
 
   getDiariesStats = () => {
@@ -136,7 +137,7 @@ class Diary extends React.Component {
 
       this.setStatsData(start, end)
     } else if (array[0] && array.length == 3) {
-      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+      const start = formatDateTime(selectedDate, array[0]?.armsShift.startTime)
       const end = formatDateTime(
         array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
         array[2].armsShift.endTime
@@ -144,7 +145,7 @@ class Diary extends React.Component {
 
       this.setStatsData(start, end)
     } else {
-      const start = formatDateTime(selectedDate, array[0] && array[0].armsShift.startTime)
+      const start = formatDateTime(selectedDate, array[0] && array[0]?.armsShift.startTime)
       const end = formatDateTime(
         array[0] && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
         array[0] && array[0].armsShift.endTime
@@ -167,32 +168,6 @@ class Diary extends React.Component {
 
   getDiaries = () => {
     const { agentId, selectedDate } = this.state
-
-    let endPoint = ``
-    this.setState({ loading: true }, () => {
-      endPoint = `/api/diary/all?date[]=${selectedDate}`
-      axios
-        .get(`${endPoint}`)
-        .then((res) => {
-          // console.log(res)
-          this.setState(
-            {
-              diaryData: res.data,
-              loading: false,
-            },
-            () => {
-              // this.showTime()
-            }
-          )
-        })
-        .catch((error) => {
-          console.log(error)
-          this.setState({
-            loading: false,
-          })
-        })
-    })
-
     const { dispatch } = this.props
     dispatch(getDiaryTasks(selectedDate, agentId, false))
     dispatch(getOverdueCount(agentId))
@@ -232,9 +207,10 @@ class Diary extends React.Component {
   }
 
   goToOverdueTasks = () => {
-    const { navigation, overdueCount, route } = this.props
+    const { navigation, overdueCount, route, dispatch } = this.props
     const { name = null } = route.params
     const { agentId } = this.state
+    dispatch(setSortValue(''))
     navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name })
   }
 
@@ -327,6 +303,10 @@ class Diary extends React.Component {
     this.setState({ showDayEnd: display })
   }
 
+  showSortModalVisible = (value) => {
+    this.setState({ isSortModalVisible: value })
+  }
+
   render() {
     const {
       selectedDate,
@@ -338,17 +318,20 @@ class Diary extends React.Component {
       endTime,
       dayName,
       isMenuVisible,
+      isSortModalVisible,
     } = this.state
-    const { overdueCount, diary, dispatch, navigation, diaryStat, user, route } = this.props
     const {
-      diaries,
-      loading,
-      selectedDiary,
-      selectedLead,
-      showClassificationModal,
+      overdueCount,
+      diary,
+      dispatch,
+      navigation,
+      diaryStat,
+      user,
+      route,
+      sortValue,
       onEndReachedLoader,
-      page,
-    } = diary
+    } = this.props
+    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     const { isFilterApplied = false } = route?.params
     return (
       <SafeAreaView style={styles.container}>
@@ -386,6 +369,16 @@ class Diary extends React.Component {
           day={dayName}
         />
 
+        <DiarySortModal
+          isSortModalVisible={isSortModalVisible}
+          isOverdue={false}
+          isFiltered={isFilterApplied}
+          selectedDate={selectedDate}
+          agentId={agentId}
+          sortValue={sortValue}
+          showSortModalVisible={(value) => this.showSortModalVisible(value)}
+        />
+
         <CalendarComponent
           showCalendar={isCalendarVisible}
           startDate={selectedDate}
@@ -417,7 +410,12 @@ class Diary extends React.Component {
               />
             </TouchableOpacity>
 
-            <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
+            <FontAwesome5
+              name="sort-amount-down-alt"
+              size={24}
+              color={sortValue === '' ? 'black' : AppStyles.colors.primaryColor}
+              onPress={() => this.showSortModalVisible(true)}
+            />
 
             <Menu
               visible={isMenuVisible}
@@ -465,7 +463,7 @@ class Diary extends React.Component {
             )}
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
-                dispatch(setOnEndReachedLoader())
+                dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
                 dispatch(getDiaryTasks(selectedDate, agentId, false, false))
               }
@@ -537,6 +535,8 @@ mapStateToProps = (store) => {
     pageSize: store.diary.pageSize,
     userShifts: store.slotManagement.userTimeShifts,
     diaryStat: store.diary.diaryStats,
+    sortValue: store.diary.sort,
+    onEndReachedLoader: store.diary.onEndReachedLoader,
   }
 }
 

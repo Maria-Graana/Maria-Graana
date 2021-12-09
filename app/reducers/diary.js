@@ -15,7 +15,6 @@ let diaryData = {
   showClassificationModal: false,
   page: 1,
   pageSize: 50,
-  onEndReachedLoader: false,
 }
 
 let filtersData = {
@@ -52,11 +51,7 @@ const diary = (state = diaryData, action) => {
         ...state,
         page: action.payload,
       }
-    case types.SET_DIARY_ON_END_REACHED_LOADER:
-      return {
-        ...state,
-        onEndReachedLoader: action.payload,
-      }
+
     default:
       return state
   }
@@ -65,6 +60,24 @@ const diary = (state = diaryData, action) => {
 const overdueCount = (state = 0, action) => {
   switch (action.type) {
     case types.SET_DIARY_OVERDUE_COUNT:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+const sort = (state = '', action) => {
+  switch (action.type) {
+    case types.SET_DIARY_SORT:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+const onEndReachedLoader = (state = false, action) => {
+  switch (action.type) {
+    case types.SET_DIARY_ON_END_REACHED_LOADER:
       return action.payload
     default:
       return state
@@ -96,4 +109,6 @@ export default combineReducers({
   overdueCount,
   filters,
   diaryStats,
+  sort,
+  onEndReachedLoader,
 })

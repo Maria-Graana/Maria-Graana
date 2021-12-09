@@ -1,36 +1,40 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   mainTileView: {
     backgroundColor: '#fff',
-    padding: 15,
+    paddingVertical: 15,
     position: 'relative',
     marginBottom: 15,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
+    flexDirection: "row"
   },
   tileIndex: {
     zIndex: 10,
   },
   contentView: {
     position: 'relative',
-    paddingRight: 15,
+    paddingLeft: 10,
   },
   fontBold: {
-    fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 13,
+    color: "grey"
   },
   meetingCon: {
-    fontSize: 14,
+    fontSize: 16,
     color: 'black',
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
+    fontWeight: 'bold',
   },
   border: {
     width: '99%',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   dotsWrap: {
     zIndex: 20,
@@ -39,9 +43,14 @@ export default styles = StyleSheet.create({
     top: -3,
   },
   dotsImg: {
-    width: 14,
-    height: 24,
-    resizeMode: 'contain'
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
+  doneImg: {
+    width: 15,
+    height: 15,
+    resizeMode: 'contain',
   },
   doneBtn: {
     position: 'relative',
@@ -56,7 +65,7 @@ export default styles = StyleSheet.create({
     marginTop: 5,
   },
   uperCase: {
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
   },
   dropDownMain: {
     zIndex: 10,
@@ -80,11 +89,11 @@ export default styles = StyleSheet.create({
     color: '#333',
   },
   DayAndTime: {
-    position: "absolute",
-    right: 5,
-    borderWidth: 1,
-    borderColor: "#D3D3D3",
-    padding: 3,
-    borderRadius: 15
-  }
-});
+    flexDirection: "row", 
+
+  },
+  textWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+})

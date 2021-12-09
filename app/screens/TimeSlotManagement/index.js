@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState } from 'react'
-import { Alert, ScrollView, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
 import styles from './style'
@@ -15,7 +15,6 @@ import {
   setSlotData,
   setScheduledTasks,
   setDataSlotsArray,
-  alltimeSlots,
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
@@ -26,6 +25,7 @@ function TimeSlotManagement(props) {
   const [selectedDate, setSelectedDate] = useState(_today)
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
+  const [check, setCheck] = useState(false)
   const [slots, setSlots] = useState(props.slotData ? props.slotData.slots : [])
   const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
   const [slotsData, setSlotsData] = useState(props.slotsDataArray ? props.slotsDataArray : [])
@@ -61,7 +61,6 @@ function TimeSlotManagement(props) {
     }
 
     if (props.slotData) {
-      dispatch(alltimeSlots())
       const temp = props.slotData
       const start = moment(temp.startTime).format('H:mm:ss')
       const end = moment(temp.endTime).format('H:mm:ss')
@@ -120,6 +119,7 @@ function TimeSlotManagement(props) {
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
+    setCheck(true)
     setDisabled(false)
     setTempDate(date)
     setTempEndTime(endTime)
@@ -129,8 +129,10 @@ function TimeSlotManagement(props) {
 
   const onDone = () => {
     const { dispatch, navigation } = props
-    dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
-    dispatch(setDataSlotsArray(slotsData))
+    if (check) {
+      dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
+      dispatch(setDataSlotsArray(slotsData))
+    }
     navigation.goBack()
   }
 

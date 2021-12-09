@@ -26,7 +26,7 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false, isF
     } else {
       if (overdue) {
         endPoint = `/api/diary/all?overdue=${overdue}&status=pending&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
-        console.log('overdue=>', endPoint)
+        // console.log('overdue=>', endPoint)
       } else {
         endPoint = `/api/diary/all?date[]=${selectedDate}&status=pending&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         // console.log(endPoint)

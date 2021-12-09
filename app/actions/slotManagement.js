@@ -108,3 +108,20 @@ export function setDataSlotsArray(dataSlots) {
     })
   }
 }
+
+export function alltimeSlots() {
+  return (dispatch, getsState) => {
+    axios
+      .get('api/slotManagement/slot')
+      .then((response) =>
+        dispatch({
+          type: types.ALL_TIME_SLOTS,
+          payload: response.data,
+        })
+      )
+      .catch((error) => {
+        console.log('api/slotManagement/slot')
+        console.log('error', error)
+      })
+  }
+}

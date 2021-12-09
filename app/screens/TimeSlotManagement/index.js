@@ -1,7 +1,7 @@
 /** @format */
 
 import React, { useEffect, useState } from 'react'
-import { Alert, ScrollView, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
 import styles from './style'
@@ -25,18 +25,25 @@ function TimeSlotManagement(props) {
   const [selectedDate, setSelectedDate] = useState(_today)
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
+  const [check, setCheck] = useState(false)
   const [slots, setSlots] = useState(props.slotData ? props.slotData.slots : [])
   const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
   const [slotsData, setSlotsData] = useState(props.slotsDataArray ? props.slotsDataArray : [])
   const [slotsDiary, setSlotsDiary] = useState(props.slotDiary)
   const [isSelected, setIsSelected] = useState(props.slotData ? props.slotData.slots : [])
 
+  const [tempDate, setTempDate] = useState(null)
+  const [tempStartTime, setTempStartTime] = useState(null)
+  const [tempEndTime, setTempEndTime] = useState(null)
+  const [tempSlot, setTempSlot] = useState(null)
+  const [sSlots, setSSlots] = useState([])
+
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
     setSelectedDate(date), setIsCalendarVisible(mode === 'month' ? isCalendarVisible : false)
 
-    const dayN = moment(date).format('dddd')
+    const dayN = moment(date).format('dddd').toLowerCase()
     setDayName(dayN)
 
     const { dispatch } = props
@@ -48,10 +55,44 @@ function TimeSlotManagement(props) {
   }
 
   useEffect(() => {
+    const { dispatch } = props
     if (props.slotData) {
       setDisabled(false)
     }
+
+    if (props.slotData) {
+      const temp = props.slotData
+      const start = moment(temp.startTime).format('H:mm:ss')
+      const end = moment(temp.endTime).format('H:mm:ss')
+
+      onEditSlots(start, end)
+    }
   }, [])
+
+  const onEditSlots = (start, end) => {
+    const allSlots = props.allTimeSlot
+
+    for (var i = 0; i < allSlots.length; i++) {
+      if (isTimeBetween(start, end, allSlots[i].startTime)) {
+        slotsData.push(allSlots[i])
+        slots.push(allSlots[i].id)
+        isSelected.push(allSlots[i].id)
+      }
+    }
+  }
+
+  const isTimeBetween = function (startTime, endTime, serverTime) {
+    let start = moment(startTime, 'H:mm:ss')
+    let end = moment(endTime, 'H:mm:ss')
+    let server = moment(serverTime, 'H:mm:ss')
+    if (end < start) {
+      return (
+        (server >= start && server <= moment('23:59:59', 'h:mm:ss')) ||
+        (server >= moment('0:00:00', 'h:mm:ss') && server < end)
+      )
+    }
+    return server >= start && server < end
+  }
 
   const diaryData = (res, e, dispatch) => {
     for (var i = 0; i < res.length; i++) {
@@ -78,10 +119,21 @@ function TimeSlotManagement(props) {
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
+    setCheck(true)
     setDisabled(false)
+    setTempDate(date)
+    setTempEndTime(endTime)
+    setTempStartTime(startTime)
+    setTempSlot(slots)
+  }
 
-    dispatch(setSlotData(date, startTime, endTime, slots))
-    dispatch(setDataSlotsArray(slotsData))
+  const onDone = () => {
+    const { dispatch, navigation } = props
+    if (check) {
+      dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
+      dispatch(setDataSlotsArray(slotsData))
+    }
+    navigation.goBack()
   }
 
   const showDetail = (e) => {
@@ -89,6 +141,8 @@ function TimeSlotManagement(props) {
     slots.push(e.id)
     isSelected.push(e.id)
     const tempAray = _.sortBy(slotsData, 'id')
+
+    fortyPercent(e)
 
     if (tempAray[1] == undefined) {
       verifyDetail(e)
@@ -104,7 +158,7 @@ function TimeSlotManagement(props) {
                 {
                   text: 'Clear',
                   onPress: () => {
-                    setSlotsData([]), setSlots([]), setIsSelected([])
+                    setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
                   },
                 },
               ]
@@ -112,6 +166,7 @@ function TimeSlotManagement(props) {
             slotsData.pop(e)
             slots.pop(e.id)
             isSelected.pop(e.id)
+            sSlots.pop(e)
           } else {
             Alert.alert(
               'Sorry',
@@ -121,7 +176,7 @@ function TimeSlotManagement(props) {
                 {
                   text: 'Clear',
                   onPress: () => {
-                    setSlotsData([]), setSlots([]), setIsSelected([])
+                    setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
                   },
                 },
               ]
@@ -129,6 +184,7 @@ function TimeSlotManagement(props) {
             slotsData.pop(e)
             slots.pop(e.id)
             isSelected.pop(e.id)
+            sSlots.pop(e)
           }
         } else {
           verifyDetail(e)
@@ -137,30 +193,266 @@ function TimeSlotManagement(props) {
     }
   }
 
-  const setShift = (e) => {
+  const fortyPercent = (e) => {
     const data = props.userShifts
-    const array = []
+    let array = []
+    const slotsShift = _.sortBy(slotsData, 'id')
+    const slotFirst = slotsShift[0].startTime
+    const slotEnd = slotsShift[slotsShift.length - 1].endTime
+    const currentTime = moment().format('H:mm:ss')
+    const tempCurrent = currentTime.split(':')
+    const currentMin = parseInt(tempCurrent[0]) * 60 + parseInt(tempCurrent[1])
 
     for (var i = 0; i < data.length; i++) {
-      if (dayName == data[i].dayName && dayName == 'sunday') {
+      if (dayName == data[i].dayName) {
         array.push(data[i])
       }
-      if (dayName == data[i].dayName && dayName == 'monday') {
-        array.push(data[i])
+    }
+
+    if (array && array.length == 1) {
+      const startFirst = array[0].armsShift.startTime
+      const endFirst = array[0].armsShift.endTime
+      const tempSFirst = startFirst.split(':')
+      const tempEFirst = endFirst.split(':')
+      const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
+      const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
+
+      const shiftFirst = array[0].armsShift.name.toLowerCase()
+
+      if (isTimeBetween(startFirst, endFirst, currentTime)) {
+        if (e.startTime >= currentTime && e.startTime < endFirst) {
+          sSlots.push(e)
+          if (endMin < startMin) {
+            const p = 1440 - (endMin + startMin)
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          } else {
+            const p = endMin - startMin
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          }
+        }
+      } else {
+        if (slotFirst >= startFirst && slotEnd <= endFirst) {
+          sSlots.push(e)
+          shiftsSlotsEval(sSlots.length, shiftFirst, e)
+        }
       }
-      if (dayName == data[i].dayName && dayName == 'tuesday') {
-        array.push(data[i])
+    }
+
+    if (array && array.length == 2) {
+      const startFirst = array[0].armsShift.startTime
+      const endFirst = array[0].armsShift.endTime
+      const tempSFirst = startFirst.split(':')
+      const tempEFirst = endFirst.split(':')
+      const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
+      const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
+
+      const startSecond = array[1].armsShift.startTime
+      const endSecond = array[1].armsShift.endTime
+      const tempSSecond = startSecond.split(':')
+      const tempESecond = endSecond.split(':')
+      const startMinS = parseInt(tempSSecond[0]) * 60 + parseInt(tempSSecond[1])
+      const endMinS = parseInt(tempESecond[0]) * 60 + parseInt(tempESecond[1])
+
+      const shiftFirst = array[0].armsShift.name.toLowerCase()
+      const shiftSecond = array[1].armsShift.name.toLowerCase()
+
+      if (isTimeBetween(startFirst, endFirst, currentTime)) {
+        if (e.startTime >= currentTime && e.startTime < endFirst) {
+          sSlots.push(e)
+          if (endMin < startMin) {
+            const p = 1440 - (endMin + startMin)
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          } else {
+            const p = endMin - startMin
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          }
+        }
+      } else if (isTimeBetween(startSecond, endSecond, currentTime)) {
+        if (e.startTime >= currentTime && e.startTime < endSecond) {
+          sSlots.push(e)
+          if (endMinS < startMinS) {
+            const p = 1440 - (endMinS + startMinS)
+            const x = currentMin - startMinS
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+          } else {
+            const p = endMinS - startMinS
+            const x = currentMin - startMinS
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+          }
+        }
+      } else {
+        if (slotFirst >= startFirst && slotEnd <= endFirst) {
+          sSlots.push(e)
+          shiftsSlotsEval(sSlots, shiftFirst, e)
+        } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
+          sSlots.push(e)
+          shiftsSlotsEval(sSlots, shiftSecond, e)
+        }
       }
-      if (dayName == data[i].dayName && dayName == 'wednesday') {
-        array.push(data[i])
+    }
+
+    if (array && array.length == 3) {
+      const startFirst = array[0].armsShift.startTime
+      const endFirst = array[0].armsShift.endTime
+      const tempSFirst = startFirst.split(':')
+      const tempEFirst = endFirst.split(':')
+      const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
+      const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
+
+      const startSecond = array[1].armsShift.startTime
+      const endSecond = array[1].armsShift.endTime
+      const tempSSecond = startSecond.split(':')
+      const tempESecond = endSecond.split(':')
+      const startMinS = parseInt(tempSSecond[0]) * 60 + parseInt(tempSSecond[1])
+      const endMinS = parseInt(tempESecond[0]) * 60 + parseInt(tempESecond[1])
+
+      const startThird = array[2].armsShift.startTime
+      const endThird = array[2].armsShift.endTime
+      const tempSThird = startThird.split(':')
+      const tempEThird = endThird.split(':')
+      const startMinT = parseInt(tempSThird[0]) * 60 + parseInt(tempSThird[1])
+      const endMinT = parseInt(tempEThird[0]) * 60 + parseInt(tempEThird[1])
+
+      const shiftFirst = array[0].armsShift.name.toLowerCase()
+      const shiftSecond = array[1].armsShift.name.toLowerCase()
+      const shiftThird = array[2].armsShift.name.toLowerCase()
+
+      if (isTimeBetween(startFirst, endFirst, currentTime)) {
+        if (e.startTime >= currentTime && e.startTime < endFirst) {
+          sSlots.push(e)
+          if (endMin < startMin) {
+            const p = 1440 - (endMin + startMin)
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          } else {
+            const p = endMin - startMin
+            const x = currentMin - startMin
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+          }
+        }
+      } else if (isTimeBetween(startSecond, endSecond, currentTime)) {
+        if (e.startTime >= currentTime && e.startTime < endSecond) {
+          sSlots.push(e)
+          if (endMinS < startMinS) {
+            const p = 1440 - (endMinS + startMinS)
+            const x = currentMin - startMinS
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+          } else {
+            const p = endMinS - startMinS
+            const x = currentMin - startMinS
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+          }
+        }
+      } else if (isTimeBetween(startThird, endThird, currentTime)) {
+        if (e.startTime >= currentTime && e.startTime < endThird) {
+          sSlots.push(e)
+          if (endMinT < startMinT) {
+            const p = 1440 - (endMinT + startMinT)
+            const x = currentMin - startMinT
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftThird, e, r)
+          } else {
+            const p = endMinT - startMinT
+            const x = currentMin - startMinT
+            const r = (p - x) / 5
+            shiftsSlotsEval(sSlots.length, shiftThird, e, r)
+          }
+        }
+      } else {
+        if (slotFirst >= startFirst && slotEnd <= endFirst) {
+          sSlots.push(e)
+          shiftsSlotsEval(sSlots, shiftFirst, e)
+        } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
+          sSlots.push(e)
+          shiftsSlotsEval(sSlots, shiftSecond, e)
+        } else if (slotFirst >= startThird && slotEnd <= endThird) {
+          sSlots.push(e)
+          shiftsSlotsEval(sSlots, shiftThird, e)
+        }
       }
-      if (dayName == data[i].dayName && dayName == 'thursday') {
-        array.push(data[i])
+    }
+  }
+
+  const shiftsSlotsEval = (sSlotsLen, shift, e, r) => {
+    if (shift == 'evening') {
+      const nSlots = r ? r : 8 * 12
+      const forSlots = nSlots * 0.6
+      if (sSlotsLen > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
+            },
+          },
+        ])
+        slotsData.pop(e)
+        slots.pop(e.id)
+        isSelected.pop(e.id)
+        sSlots.pop(e)
       }
-      if (dayName == data[i].dayName && dayName == 'friday') {
-        array.push(data[i])
+    }
+    if (shift == 'morning') {
+      const nSlots = r ? r : 9 * 12
+      const forSlots = nSlots * 0.6
+      if (sSlotsLen > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
+            },
+          },
+        ])
+        slotsData.pop(e)
+        slots.pop(e.id)
+        isSelected.pop(e.id)
+        sSlots.pop(e)
       }
-      if (dayName == data[i].dayName && dayName == 'saturday') {
+    }
+    if (shift == 'night') {
+      const nSlots = r ? r : 7 * 12
+      const forSlots = nSlots * 0.6
+      if (sSlotsLen > forSlots) {
+        Alert.alert('Excessive Selection', '', [
+          { text: 'OK' },
+          {
+            text: 'Clear',
+            onPress: () => {
+              setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
+            },
+          },
+        ])
+        slotsData.pop(e)
+        slots.pop(e.id)
+        isSelected.pop(e.id)
+        sSlots.pop(e)
+      }
+    }
+  }
+
+  const setShift = (e) => {
+    const data = props.userShifts
+    let array = []
+
+    for (var i = 0; i < data.length; i++) {
+      if (dayName == data[i].dayName) {
         array.push(data[i])
       }
     }
@@ -169,17 +461,22 @@ function TimeSlotManagement(props) {
       const start = array[0].armsShift.startTime
       const end = array[1].armsShift.endTime
 
-      if (e.startTime < start || e.endTime > end) return false
+      if (isTimeBetween(start, end, e.startTime)) return true
+      else return false
     } else if (array && array.length == 3) {
       const start = array[0].armsShift.startTime
       const end = array[2].armsShift.endTime
 
-      if (e.startTime < start || e.endTime > end) return false
-    } else {
-      const start = array[0] && array[0].armsShift.startTime
-      const end = array[0] && array[0].armsShift.endTime
+      if (isTimeBetween(start, end, e.startTime)) return true
+      else return false
+    } else if (array && array.length == 1) {
+      const start = array[0].armsShift.startTime
+      const end = array[0].armsShift.endTime
 
-      if (e.startTime < start || e.endTime > end) return false
+      if (isTimeBetween(start, end, e.startTime)) return true
+      else return false
+    } else {
+      return false
     }
   }
 
@@ -249,9 +546,7 @@ function TimeSlotManagement(props) {
                             styles.hourRow,
                             {
                               backgroundColor:
-                                setShift(e) == false
-                                  ? '#d6d6d6'
-                                  : setColor(e) == 'dailyupdate'
+                                setColor(e) == 'dailyupdate'
                                   ? '#dcf0ff'
                                   : setColor(e) == 'morningmeeting'
                                   ? '#dcf0ff'
@@ -265,6 +560,8 @@ function TimeSlotManagement(props) {
                                   ? '#fff1c5'
                                   : setColor(e) == 'closed'
                                   ? '#e6e6e6'
+                                  : setShift(e) == false
+                                  ? '#f1f1f1'
                                   : 'white',
 
                               borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
@@ -306,7 +603,7 @@ function TimeSlotManagement(props) {
           containerBackgroundColor="#0f73ee"
           borderWidth={1}
           disabled={disabled}
-          onPress={() => props.navigation.goBack()}
+          onPress={() => onDone()}
         />
       </View>
     </View>
@@ -320,6 +617,7 @@ mapStateToProps = (store) => {
     slotData: store.slotManagement.slotsPayload,
     userShifts: store.slotManagement.userTimeShifts,
     slotsDataArray: store.slotManagement.slotsDataPayload,
+    allTimeSlot: store.slotManagement.allTimeSlots,
   }
 }
 

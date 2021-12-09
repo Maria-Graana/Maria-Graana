@@ -40,6 +40,7 @@ import {
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
+  alltimeSlots,
   getTimeShifts,
   setSlotData,
   setSlotDiaryData,
@@ -75,7 +76,7 @@ class Diary extends React.Component {
   componentDidMount() {
     const { navigation, dispatch } = this.props
     const { route, user } = this.props
-
+    dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
     dispatch(setSlotDiaryData(_today))

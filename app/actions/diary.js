@@ -5,30 +5,31 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 
-export function getDiaryTasks(selectedDate, agentId = null, overdue = false, isFiltered = false) {
+export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
   return (dispatch, getsState) => {
     let endPoint = ``
     let diaryRows = []
     const { page, pageSize, diaries } = getsState().diary.diary
+    const { sort, isFilterApplied } = getsState().diary
 
-    if (isFiltered) {
+    if (isFilterApplied) {
       // if filter is applied
       const { filters } = getsState().diary
       if (overdue) delete filters.date
       let urlValue = mapFiltersToQuery(filters)
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
+        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&orderBy=${sort}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
-        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&status=pending&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         //console.log('endPoint=>', endPoint)
       }
     } else {
       if (overdue) {
-        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
+        endPoint = `/api/diary/all?overdue=${overdue}&status=pending&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         // console.log('overdue=>', endPoint)
       } else {
-        endPoint = `/api/diary/all?date[]=${selectedDate}&status=pending&agentId=${agentId}&page=${page}&pageSize=${pageSize}`
-        // console.log(endPoint)
+        endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
+        //console.log(endPoint)
       }
     }
 
@@ -61,6 +62,9 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false, isF
           payload: false,
         })
       })
+      .finally(() => {
+        dispatch(setOnEndReachedLoader(false))
+      })
   }
 }
 
@@ -84,11 +88,22 @@ export function setSelectedDiary(diary) {
   }
 }
 
-export function setOnEndReachedLoader() {
+export function setOnEndReachedLoader(value) {
   return (dispatch, getsState) => {
     dispatch({
       type: types.SET_DIARY_ON_END_REACHED_LOADER,
+      payload: value,
     })
+  }
+}
+
+export function setDairyFilterApplied(value) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_DAIRY_FILTER_APPLIED,
+      payload: value,
+    })
+    return Promise.resolve(true)
   }
 }
 
@@ -166,6 +181,16 @@ export const setClassificationModal = (value) => {
       type: types.SET_CLASSIFICATION_MODAL,
       payload: value,
     })
+  }
+}
+
+export const setSortValue = (value) => {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_DIARY_SORT,
+      payload: value,
+    })
+    return Promise.resolve(true)
   }
 }
 

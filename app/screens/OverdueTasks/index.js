@@ -21,18 +21,22 @@ import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
+  clearDiaryFilter,
   deleteDiaryTask,
   getDiaryTasks,
   increasePageCount,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
+  setDairyFilterApplied,
   setOnEndReachedLoader,
   setPageCount,
   setSelectedDiary,
+  setSortValue,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import moment from 'moment'
+import { DiarySortModal } from '../../components/DiarySortModal'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -44,6 +48,7 @@ class OverdueTasks extends React.Component {
       agentId: '',
       showMenu: false,
       selectedDiary: null,
+      isSortModalVisible: false,
     }
   }
   componentDidMount() {
@@ -58,7 +63,11 @@ class OverdueTasks extends React.Component {
   componentWillUnmount() {
     const { navigation, dispatch, route } = this.props
     const { agentId } = route.params
-    dispatch(getDiaryTasks(_today, agentId, false))
+    dispatch(setDairyFilterApplied(false))
+    dispatch(clearDiaryFilter())
+    dispatch(setSortValue('')).then((result) => {
+      dispatch(getDiaryTasks(_today, agentId, false))
+    })
   }
 
   handleMenuActions = (action) => {
@@ -129,7 +138,6 @@ class OverdueTasks extends React.Component {
       agentId,
       isOverdue: true,
       selectedDate,
-      screenName: 'OverdueTasks',
     })
   }
 
@@ -149,19 +157,14 @@ class OverdueTasks extends React.Component {
     this.setState({ showMenu: false })
   }
 
+  showSortModalVisible = (value) => {
+    this.setState({ isSortModalVisible: value })
+  }
+
   render() {
-    const { selectedDate, showMenu, agentId } = this.state
-    const { diary, dispatch, route } = this.props
-    const {
-      diaries,
-      loading,
-      selectedDiary,
-      selectedLead,
-      showClassificationModal,
-      onEndReachedLoader,
-      page,
-    } = diary
-    const { isFilterApplied = false } = route?.params
+    const { selectedDate, showMenu, agentId, isSortModalVisible } = this.state
+    const { diary, dispatch, route, onEndReachedLoader, sortValue, isFilterApplied } = this.props
+    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal
@@ -173,6 +176,16 @@ class OverdueTasks extends React.Component {
           selectedCategory={
             selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
+        />
+
+        <DiarySortModal
+          isSortModalVisible={isSortModalVisible}
+          isOverdue={true}
+          isFiltered={isFilterApplied}
+          selectedDate={selectedDate}
+          agentId={agentId}
+          sortValue={sortValue}
+          showSortModalVisible={(value) => this.showSortModalVisible(value)}
         />
 
         <View style={styles.rowOne}>
@@ -188,7 +201,12 @@ class OverdueTasks extends React.Component {
               />
             </TouchableOpacity>
 
-            <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
+            <FontAwesome5
+              name="sort-amount-down-alt"
+              size={24}
+              color={sortValue === '' ? 'black' : AppStyles.colors.primaryColor}
+              onPress={() => this.showSortModalVisible(true)}
+            />
           </View>
         </View>
         {loading ? (
@@ -223,7 +241,7 @@ class OverdueTasks extends React.Component {
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
                 //console.log(diaries.count, diaries.rows.length)
-                dispatch(setOnEndReachedLoader())
+                dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
                 dispatch(getDiaryTasks(null, agentId, true, false))
               }
@@ -271,6 +289,9 @@ mapStateToProps = (store) => {
     selectedLead: store.diary.selectedLead,
     page: store.diary.page,
     pageSize: store.diary.pageSize,
+    sortValue: store.diary.sort,
+    onEndReachedLoader: store.diary.onEndReachedLoader,
+    isFilterApplied: store.diary.isFilterApplied,
   }
 }
 

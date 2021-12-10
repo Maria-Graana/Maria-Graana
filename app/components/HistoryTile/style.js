@@ -30,7 +30,7 @@ export default styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
     textTransform: 'capitalize',
-    fontWeight: 'bold',
+    fontWeight: "700",
   },
   border: {
     width: '99%',
@@ -48,8 +48,8 @@ export default styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   doneImg: {
-    width: 15,
-    height: 15,
+    width: 16,
+    height: 16,
     resizeMode: 'contain',
   },
   doneBtn: {

@@ -75,7 +75,7 @@ class MeetingTile extends React.Component {
                       <View
                         style={[
                           styles.DayAndTime,
-                          data.status !== 'completed' ? { marginLeft: 85 } : { marginLeft: 70 },
+                          data.status !== 'completed' ? { marginLeft: 90 } : { marginLeft: 75 },
                         ]}
                       >
                         <Text style={styles.fontBold}>
@@ -87,7 +87,7 @@ class MeetingTile extends React.Component {
                       </View>
                     </View>
                     {data.reasonTag && data.status !== 'completed' && (
-                      <View style={{ flexDirection: 'row', marginTop: 10, marginLeft: 35 }}>
+                      <View style={{ flexDirection: 'row', marginTop: 8, marginLeft: 35 }}>
                         <Text>Reason :</Text>
                         <View
                           style={{
@@ -104,8 +104,7 @@ class MeetingTile extends React.Component {
                         </View>
                       </View>
                     )}
-                    {data.feedbackTag && (
-                      <View>
+                    {data.feedbackTag === data.response ? (
                         <View
                           style={{
                             padding: 3,
@@ -115,11 +114,28 @@ class MeetingTile extends React.Component {
                         >
                           <Text style={{ color: '#006FF2', fontSize: 15 }}>{data.feedbackTag}</Text>
                         </View>
+                    ) : (
+                      <View>
+                        {data.feedbackTag && (
+                          <View>
+                            <View
+                              style={{
+                                padding: 3,
+                                marginLeft: 30,
+                                paddingTop: 5,
+                              }}
+                            >
+                              <Text style={{ color: '#006FF2', fontSize: 15 }}>
+                                {data.feedbackTag}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
+                        <View style={{ paddingLeft: 15, marginTop: 3, marginLeft: 18 }}>
+                          <Text>{data.response}</Text>
+                        </View>
                       </View>
                     )}
-                    <View style={{ paddingLeft: 15, marginTop: 3, marginLeft: 18 }}>
-                      <Text>{data.response}</Text>
-                    </View>
                   </View>
                 </View>
               </View>

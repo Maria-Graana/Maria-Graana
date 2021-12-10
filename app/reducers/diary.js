@@ -18,7 +18,7 @@ let diaryData = {
 }
 
 let filtersData = {
-  date: null,
+  date: _today,
   feedbackId: null,
   leadType: null,
   wantedId: null,
@@ -75,6 +75,15 @@ const sort = (state = '', action) => {
   }
 }
 
+const isFilterApplied = (state = false, action) => {
+  switch (action.type) {
+    case types.SET_DAIRY_FILTER_APPLIED:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 const onEndReachedLoader = (state = false, action) => {
   switch (action.type) {
     case types.SET_DIARY_ON_END_REACHED_LOADER:
@@ -111,4 +120,5 @@ export default combineReducers({
   diaryStats,
   sort,
   onEndReachedLoader,
+  isFilterApplied,
 })

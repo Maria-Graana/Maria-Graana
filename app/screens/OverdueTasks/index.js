@@ -21,12 +21,14 @@ import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
+  clearDiaryFilter,
   deleteDiaryTask,
   getDiaryTasks,
   increasePageCount,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
+  setDairyFilterApplied,
   setOnEndReachedLoader,
   setPageCount,
   setSelectedDiary,
@@ -61,6 +63,8 @@ class OverdueTasks extends React.Component {
   componentWillUnmount() {
     const { navigation, dispatch, route } = this.props
     const { agentId } = route.params
+    dispatch(setDairyFilterApplied(false))
+    dispatch(clearDiaryFilter())
     dispatch(setSortValue('')).then((result) => {
       dispatch(getDiaryTasks(_today, agentId, false))
     })
@@ -134,7 +138,6 @@ class OverdueTasks extends React.Component {
       agentId,
       isOverdue: true,
       selectedDate,
-      screenName: 'OverdueTasks',
     })
   }
 
@@ -160,9 +163,8 @@ class OverdueTasks extends React.Component {
 
   render() {
     const { selectedDate, showMenu, agentId, isSortModalVisible } = this.state
-    const { diary, dispatch, route, onEndReachedLoader, sortValue } = this.props
+    const { diary, dispatch, route, onEndReachedLoader, sortValue, isFilterApplied } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
-    const { isFilterApplied = false } = route?.params
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal
@@ -289,6 +291,7 @@ mapStateToProps = (store) => {
     pageSize: store.diary.pageSize,
     sortValue: store.diary.sort,
     onEndReachedLoader: store.diary.onEndReachedLoader,
+    isFilterApplied: store.diary.isFilterApplied,
   }
 }
 

@@ -174,9 +174,16 @@ class DiaryTile extends React.Component {
                 </Menu>
               </View>
             </View>
-            {diary && diary.response ? (
+            {diary && diary.reasonTag ? (
               <View style={styles.taskResponseView}>
-                <Text style={styles.taskResponse}>{diary.response}</Text>
+                <Text
+                  style={[
+                    styles.taskResponse,
+                    { backgroundColor: diary.reason ? diary.reason.colorCode : 'transparent' },
+                  ]}
+                >
+                  {diary.reasonTag}
+                </Text>
               </View>
             ) : null}
             {DiaryHelper.checkLeadType(diary) ? (

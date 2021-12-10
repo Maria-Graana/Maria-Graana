@@ -11,7 +11,12 @@ import axios from 'axios'
 import Loader from '../../components/loader'
 import _ from 'underscore'
 import StaticData from '../../StaticData'
-import { clearDiaryFilter, getDiaryTasks, setDiaryFilter } from '../../actions/diary'
+import {
+  clearDiaryFilter,
+  getDiaryTasks,
+  setDairyFilterApplied,
+  setDiaryFilter,
+} from '../../actions/diary'
 import moment from 'moment'
 import { connect } from 'react-redux'
 
@@ -32,10 +37,11 @@ class DiaryFilter extends React.Component {
 
   clearFilter = () => {
     const { dispatch, route, navigation } = this.props
-    const { agentId, isOverdue, screenName } = route.params
+    const { agentId, isOverdue } = route.params
+    dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     dispatch(getDiaryTasks(_today, agentId, isOverdue))
-    navigation.navigate(screenName, { isFilterApplied: false })
+    navigation.goBack()
   }
 
   getFeedbackReasons = () => {
@@ -76,9 +82,10 @@ class DiaryFilter extends React.Component {
 
   onSearchPressed = () => {
     const { navigation, route, dispatch } = this.props
-    const { agentId, isOverdue = false, screenName } = route.params
-    dispatch(getDiaryTasks(null, agentId, isOverdue, true))
-    navigation.navigate(screenName, { isFilterApplied: true })
+    const { agentId, isOverdue = false } = route.params
+    dispatch(setDairyFilterApplied(true))
+    dispatch(getDiaryTasks(null, agentId, isOverdue))
+    navigation.goBack()
   }
 
   handleForm = (value, name) => {

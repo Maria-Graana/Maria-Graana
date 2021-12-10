@@ -37,6 +37,8 @@ import {
   setOnEndReachedLoader,
   setSelectedDiary,
   setSortValue,
+  clearDiaryFilter,
+  setDairyFilterApplied,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -178,6 +180,7 @@ class Diary extends React.Component {
     const { isCalendarVisible } = this.state
     const { dispatch, diary } = this.props
     const { page } = diary
+    dispatch(clearDiaryFilter())
     this.setState(
       {
         selectedDate: date,
@@ -204,6 +207,8 @@ class Diary extends React.Component {
   }
 
   setCalendarVisible = (value) => {
+    const { dispatch } = this.props
+    dispatch(clearDiaryFilter())
     this.setState({ isCalendarVisible: value })
   }
 
@@ -211,6 +216,8 @@ class Diary extends React.Component {
     const { navigation, overdueCount, route, dispatch } = this.props
     const { name = null } = route.params
     const { agentId } = this.state
+    dispatch(setDairyFilterApplied(false))
+    dispatch(clearDiaryFilter())
     dispatch(setSortValue(''))
     navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name })
   }
@@ -282,13 +289,11 @@ class Diary extends React.Component {
   }
 
   navigateToFiltersScreen = () => {
-    const { navigation } = this.props
-    const { agentId, selectedDate } = this.state
+    const { navigation, isFilterApplied, dispatch } = this.props
+    const { agentId } = this.state
     navigation.navigate('DiaryFilter', {
       agentId,
       isOverdue: false,
-      selectedDate,
-      screenName: 'Diary',
     })
   }
 
@@ -331,9 +336,9 @@ class Diary extends React.Component {
       route,
       sortValue,
       onEndReachedLoader,
+      isFilterApplied,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
-    const { isFilterApplied = false } = route?.params
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -538,6 +543,7 @@ mapStateToProps = (store) => {
     diaryStat: store.diary.diaryStats,
     sortValue: store.diary.sort,
     onEndReachedLoader: store.diary.onEndReachedLoader,
+    isFilterApplied: store.diary.isFilterApplied,
   }
 }
 

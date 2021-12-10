@@ -10,6 +10,7 @@ import {
   Image,
   SafeAreaView,
   TouchableHighlight,
+  TouchableOpacity,
 } from 'react-native'
 import _ from 'underscore'
 import { Fab } from 'native-base'
@@ -41,6 +42,7 @@ class AvailableInventory extends Component {
       loading: true,
       showFilterModal: false,
       status: '',
+      projectData: null,
     }
   }
 
@@ -62,6 +64,7 @@ class AvailableInventory extends Component {
             pickerProjects: projectArray,
             allProjects: res.data.items,
             selectedProject: projectArray && projectArray.length > 0 ? projectArray[0].value : null,
+            projectData: projectArray && projectArray.length > 0 ? projectArray[0] : null,
           },
           () => {
             this.getFloors(this.state.selectedProject)
@@ -203,9 +206,20 @@ class AvailableInventory extends Component {
   }
 
   handleProjectChange = (item) => {
+    const { pickerProjects } = this.state
     this.setState({ selectedProject: item, selectedFloor: null, loading: true }, () => {
       this.getFloors(this.state.selectedProject)
     })
+
+    this.setProjectData(item, pickerProjects)
+  }
+
+  setProjectData = (item, pickerProjects) => {
+    for (var i = 0; i < pickerProjects.length; i++) {
+      if (item == pickerProjects[i].value) {
+        this.setState({ projectData: pickerProjects[i] })
+      }
+    }
   }
 
   handleFloorChange = (item) => {
@@ -249,7 +263,7 @@ class AvailableInventory extends Component {
       showFilterModal,
       status,
     } = this.state
-
+    const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -366,18 +380,42 @@ class AvailableInventory extends Component {
 
                       <ScrollView style={styles.dataWrapper}>
                         <Table borderStyle={styles.tableBorder}>
-                          {tableData.map((rowData, index) => (
-                            <Row
-                              key={index}
-                              data={rowData}
-                              widthArr={widthArr}
-                              style={[
-                                styles.row,
-                                { backgroundColor: helper.setBookingStatusColor(rowData) },
-                              ]}
-                              textStyle={styles.text}
-                            />
-                          ))}
+                          {tableData.map((rowData, index) =>
+                            rowData[5] == 'Available' ? (
+                              <TouchableOpacity
+                                activeOpacity={0.6}
+                                onPress={() =>
+                                  navigation.navigate('Client', {
+                                    isUnitBooking: true,
+                                    screenName: 'Leads',
+                                    projectData: this.state.projectData,
+                                  })
+                                }
+                              >
+                                <Row
+                                  key={index}
+                                  data={rowData}
+                                  widthArr={widthArr}
+                                  style={[
+                                    styles.row,
+                                    { backgroundColor: helper.setBookingStatusColor(rowData) },
+                                  ]}
+                                  textStyle={styles.text}
+                                />
+                              </TouchableOpacity>
+                            ) : (
+                              <Row
+                                key={index}
+                                data={rowData}
+                                widthArr={widthArr}
+                                style={[
+                                  styles.row,
+                                  { backgroundColor: helper.setBookingStatusColor(rowData) },
+                                ]}
+                                textStyle={styles.text}
+                              />
+                            )
+                          )}
                         </Table>
                       </ScrollView>
                     </View>

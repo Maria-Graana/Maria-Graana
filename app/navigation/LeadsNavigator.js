@@ -23,12 +23,12 @@ const TabBarBadge = ({ count, color }) => {
 }
 
 function LeadsNavigator(props) {
-
-  useEffect(()=>{
-    const { navigation, route } = props;
-    if(route.params.screen == "MyDeals"){
-        navigation.setOptions({title: "DEALS"})}     
-  } , [])
+  useEffect(() => {
+    const { navigation, route } = props
+    if (route.params.screen == 'MyDeals') {
+      navigation.setOptions({ title: 'DEALS' })
+    }
+  }, [])
   const { count, user } = props
   return user.subRole === 'business_centre_manager' ||
     user.subRole === 'business_centre_agent' ||

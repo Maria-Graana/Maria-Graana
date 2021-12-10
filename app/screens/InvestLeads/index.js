@@ -74,16 +74,45 @@ class InvestLeads extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      dispatch(getListingsCount())
-      this.getServerTime()
-      this.onFocus()
-    })
+    const { dispatch, route } = this.props
+    const { client } = route.params
+
+    if (client) {
+      this.fetchAddedLeads(client)
+    } else {
+      this._unsubscribe = this.props.navigation.addListener('focus', () => {
+        dispatch(getListingsCount())
+        this.getServerTime()
+        this.onFocus()
+      })
+    }
   }
 
   componentWillUnmount() {
     this.clearStateValues()
+  }
+
+  fetchAddedLeads = (client) => {
+    const { page, leadsData, statusFilter } = this.state
+    this.setState({ loading: true })
+    axios
+      .get(
+        `/api/leads/projects?web=true&hasBooking=null&customerId=${client.id}&customerLeads=true`
+      )
+      .then((res) => {
+        this.setState({
+          leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+          loading: false,
+          onEndReachedLoader: false,
+          totalLeads: res.data.count,
+          statusFilter: statusFilter,
+        })
+      })
+      .catch((res) => {
+        this.setState({
+          loading: false,
+        })
+      })
   }
 
   onFocus = async () => {

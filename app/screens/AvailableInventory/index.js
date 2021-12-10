@@ -251,6 +251,28 @@ class AvailableInventory extends Component {
     this.setState({ showFilterModal: value })
   }
 
+  fetchOneUnit = (unit) => {
+    const { allUnits } = this.state
+    let oneUnit = {}
+    if (allUnits && allUnits.length) {
+      oneUnit = allUnits.find((item) => {
+        return item.name == unit && item
+      })
+    }
+    return oneUnit
+  }
+
+  onRowSelect = (val) => {
+    const { navigation } = this.props
+    const unit = this.fetchOneUnit(val)
+    navigation.navigate('Client', {
+      isUnitBooking: true,
+      screenName: 'Leads',
+      projectData: this.state.projectData,
+      unit: unit,
+    })
+  }
+
   render() {
     const {
       pickerProjects,
@@ -384,13 +406,7 @@ class AvailableInventory extends Component {
                             rowData[5] == 'Available' ? (
                               <TouchableOpacity
                                 activeOpacity={0.6}
-                                onPress={() =>
-                                  navigation.navigate('Client', {
-                                    isUnitBooking: true,
-                                    screenName: 'Leads',
-                                    projectData: this.state.projectData,
-                                  })
-                                }
+                                onPress={() => this.onRowSelect(rowData[0])}
                               >
                                 <Row
                                   key={index}

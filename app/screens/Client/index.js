@@ -125,7 +125,7 @@ class Client extends React.Component {
         })
       }
     } else if (isUnitBooking) {
-      const { projectData } = route.params
+      const { projectData, unit } = route.params
       axios
         .get(
           `/api/leads/projects?web=true&hasBooking=null&customerId=${data.id}&customerLeads=true`
@@ -134,11 +134,16 @@ class Client extends React.Component {
           const res = response.data
           if (res.count > 0) {
             navigation.navigate(screenName, {
-              client: data,
-              name: data.firstName + ' ' + data.lastName,
+              screen: 'Invest',
+              params: {
+                client: data,
+                name: data.firstName + ' ' + data.lastName,
+                leadsData: res.rows,
+                unitData: unit,
+              },
             })
           } else {
-            this.leadCreation(data, projectData, navigation)
+            this.leadCreation(data, projectData, navigation, data, unit)
           }
         })
     } else {
@@ -147,7 +152,7 @@ class Client extends React.Component {
     }
   }
 
-  leadCreation = async (client, project, navigation) => {
+  leadCreation = async (client, project, navigation, data, unit) => {
     const phones =
       client && client.customerContacts && client.customerContacts.map((item) => item.phone)
     const payload = {
@@ -155,14 +160,21 @@ class Client extends React.Component {
       cityId: 3,
       projectId: project.value,
       projectName: project.name,
-      projectType: '',
-      description: '',
+      projectType: unit.project.type,
+      description: unit.name,
       phones: phones,
     }
     await axios
       .post(`/api/leads/project`, payload)
       .then((response) => {
-        navigation.navigate('CMLeadTabs', { params: { lead: response.data.leadId } })
+        navigation.navigate('CMLeadTabs', {
+          params: {
+            lead: response.data.leadId,
+            client: data,
+            name: data.firstName + ' ' + data.lastName,
+            unitData: unit,
+          },
+        })
       })
       .catch((error) => {
         console.log('/api/leads/project', error)

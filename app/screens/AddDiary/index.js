@@ -14,6 +14,7 @@ import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
 import { clearSlotData } from '../../actions/slotManagement'
+import { getDiaryTasks } from '../../actions/diary'
 
 class AddDiary extends Component {
   constructor(props) {
@@ -71,7 +72,7 @@ class AddDiary extends Component {
       payload = Object.assign({}, data)
       payload.date = data.startTime
       payload.time = data.startTime
-      payload.userId = route.params.agentId
+      payload.userId = user.id
       payload.diaryTime = data.startTime
       payload.start = data.startTime
       payload.end = data.endTime
@@ -119,7 +120,7 @@ class AddDiary extends Component {
   }
 
   addDiary = (data) => {
-    const { route, navigation } = this.props
+    const { route, navigation, dispatch } = this.props
     let diary = this.generatePayload(data)
     axios
       .post(`/api/leads/task`, diary)
@@ -134,6 +135,7 @@ class AddDiary extends Component {
             body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
           }
           TimerNotification(data, start)
+          dispatch(getDiaryTasks(moment(diary.date).format('YYYY-MM-DD'), diary.userId, false))
           navigation.goBack()
         } else {
           helper.errorToast('ERROR: SOMETHING WENT WRONG')
@@ -150,6 +152,7 @@ class AddDiary extends Component {
 
   updateDiary = (data) => {
     let diary = this.generatePayload(data)
+    const { dispatch, navigation } = this.props
     axios
       .patch(`/api/diary/update?id=${diary.id}`, diary)
       .then((res) => {
@@ -162,7 +165,8 @@ class AddDiary extends Component {
           body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
         }
         helper.deleteAndUpdateNotification(data, start, res.data.id)
-        this.props.navigation.navigate('Diary', {
+        dispatch(getDiaryTasks(moment(diary.date).format('YYYY-MM-DD'), diary.userId, false))
+        navigation.navigate('Diary', {
           update: false,
           agentId: this.props.route.params.agentId,
         })

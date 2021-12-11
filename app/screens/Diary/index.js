@@ -39,6 +39,7 @@ import {
   setSortValue,
   clearDiaryFilter,
   setDairyFilterApplied,
+  cancelDiaryViewing,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -229,6 +230,7 @@ class Diary extends React.Component {
     if (action === 'mark_as_done') {
       dispatch(markDiaryTaskAsDone(selectedDate, agentId, false))
     } else if (action === 'cancel_viewing') {
+      dispatch(cancelDiaryViewing(selectedDate, agentId, false))
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {

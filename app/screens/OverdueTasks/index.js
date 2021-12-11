@@ -21,6 +21,7 @@ import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
+  cancelDiaryViewing,
   clearDiaryFilter,
   deleteDiaryTask,
   getDiaryTasks,
@@ -77,6 +78,7 @@ class OverdueTasks extends React.Component {
     if (action === 'mark_as_done') {
       dispatch(markDiaryTaskAsDone(null, agentId, true))
     } else if (action === 'cancel_viewing') {
+      dispatch(cancelDiaryViewing(null, agentId, true))
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {

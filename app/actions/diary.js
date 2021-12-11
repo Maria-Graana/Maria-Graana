@@ -266,7 +266,7 @@ export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
 export const cancelDiaryViewing = (selectedDate, agentId, overdue) => {
   return (dispatch, getsState) => {
     const { selectedDiary, selectedLead } = getsState().diary.diary
-    if (selectedDiary.propertyId && selectedDiary.status === 'pending') {
+    if (selectedDiary.propertyId) {
       axios
         .delete(
           `/api/diary/delete?id=${selectedDiary.id}&propertyId=${selectedDiary.id}&leadId=${selectedLead.id}`
@@ -280,6 +280,20 @@ export const cancelDiaryViewing = (selectedDate, agentId, overdue) => {
           console.log(error)
         })
     }
+  }
+}
+
+export const cancelDiaryMeeting = (selectedDate, agentId, overdue) => {
+  return (dispatch, getsState) => {
+    const { selectedDiary, selectedLead } = getsState().diary.diary
+    axios
+      .delete(`/api/diary/delete?id=${selectedDiary.id}&cmLeadId=${selectedLead.id}`)
+      .then((res) => {
+        dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 }
 

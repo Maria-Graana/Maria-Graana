@@ -13,7 +13,7 @@ import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
-import { clearSlotData } from '../../actions/slotManagement'
+import { clearSlotData, setSlotDiaryData } from '../../actions/slotManagement'
 import { getDiaryTasks } from '../../actions/diary'
 
 class AddDiary extends Component {
@@ -28,7 +28,7 @@ class AddDiary extends Component {
   }
 
   componentDidMount() {
-    const { route, navigation } = this.props
+    const { route, navigation, dispatch } = this.props
     let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId } = route.params
     if (rcmLeadId) {
       tasksList = StaticData.diaryTasksRCM
@@ -39,6 +39,9 @@ class AddDiary extends Component {
       navigation.setOptions({ title: 'EDIT TASK' })
     }
     this.setState({ taskValues: tasksList })
+    if (route.params.selectedDate) {
+      dispatch(setSlotDiaryData(route.params.selectedDate))
+    }
   }
 
   componentWillUnmount() {

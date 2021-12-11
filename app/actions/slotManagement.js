@@ -74,11 +74,27 @@ export function clearSlotData() {
   }
 }
 
+export function clearSlotDiaryData() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SLOT_DATA_DIARY,
+    })
+  }
+}
+
 export function setScheduledTasks(payload) {
   return (dispatch, getsState) => {
     dispatch({
       type: types.SET_SCHEDULED_TASKS,
       payload: payload,
+    })
+  }
+}
+
+export function clearScheduledTasks() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SCHEDULED_TASKS,
     })
   }
 }

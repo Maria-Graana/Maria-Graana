@@ -41,6 +41,7 @@ import {
   clearDiaryFilter,
   setDairyFilterApplied,
   cancelDiaryViewing,
+  cancelDiaryMeeting,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -196,6 +197,7 @@ class Diary extends React.Component {
     const { isCalendarVisible } = this.state
     const { dispatch, diary } = this.props
     const { page } = diary
+    dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     this.setState(
       {
@@ -224,6 +226,7 @@ class Diary extends React.Component {
 
   setCalendarVisible = (value) => {
     const { dispatch } = this.props
+    dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     this.setState({ isCalendarVisible: value })
   }
@@ -246,10 +249,11 @@ class Diary extends React.Component {
       dispatch(markDiaryTaskAsDone(selectedDate, agentId, false))
     } else if (action === 'cancel_viewing') {
       dispatch(cancelDiaryViewing(selectedDate, agentId, false))
+    } else if (action === 'cancel_meeting') {
+      dispatch(cancelDiaryMeeting(selectedDate, agentId, false))
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {
-      console.log(selectedDiary)
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')

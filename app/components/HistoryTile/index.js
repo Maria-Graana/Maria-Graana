@@ -33,7 +33,7 @@ class MeetingTile extends React.Component {
               <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
                 <View style={styles.border}>
                   <View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={styles.taskTypeWrap}>
                       {data.taskType === 'meeting' && (
                         <Image
                           source={require('../../../assets/img/meeting2.png')}
@@ -58,7 +58,7 @@ class MeetingTile extends React.Component {
                           style={styles.dotsImg}
                         />
                       )}
-                      <View style={{ paddingLeft: 10, flexDirection: 'row', alignItems: 'center' }}>
+                      <View style={styles.taskType}>
                         <Text style={[AppStyles.mrTen, styles.meetingCon]}>
                           {`${DiaryHelper.removeUnderscore(data.taskType)
                             .replace('Meeting', 'Meeting ')
@@ -87,50 +87,31 @@ class MeetingTile extends React.Component {
                       </View>
                     </View>
                     {data.reasonTag && data.status !== 'completed' && (
-                      <View style={{ flexDirection: 'row', marginTop: 8, marginLeft: 40 }}>
+                      <View style={styles.reasonWrap}>
                         <Text>Reason :</Text>
-                        <View
-                          style={{
-                            borderWidth: 2,
-                            borderColor: data.reason.colorCode,
-                            padding: 3,
-                            paddingHorizontal: 5,
-                            borderRadius: 15,
-                            marginTop: -3,
-                            marginLeft: 5,
-                          }}
-                        >
+                        <View style={[styles.reasonTag, { borderColor: data.reason.colorCode }]}>
                           <Text> {data.reasonTag}</Text>
                         </View>
                       </View>
                     )}
                     {data.feedbackTag === data.response ? (
-                        <View style={{ paddingLeft: 15, marginTop: 3, marginLeft: 22 }}>
+                      <View style={styles.responseWrap}>
                         <Text>{data.response}</Text>
                       </View>
                     ) : (
                       <View>
                         {data.feedbackTag && (
                           <View>
-                            <View
-                              style={{
-                                padding: 3,
-                                marginLeft: 35,
-                                paddingTop: 5,
-                              }}
-                            >
-                              <Text style={{ color: '#006FF2', fontSize: 15 }}>
-                                {data.feedbackTag}
-                              </Text>
+                            <View style={styles.feedbackTag}>
+                              <Text style={styles.blueColor}>{data.feedbackTag}</Text>
                             </View>
                           </View>
                         )}
                         {data.response && (
-                          <View style={{ paddingLeft: 15, marginTop: 3, marginLeft: 22 }}>
-                          <Text>{data.response}</Text>
-                        </View>
+                          <View style={styles.outcomeWrap}>
+                            <Text>{data.response}</Text>
+                          </View>
                         )}
-                        
                       </View>
                     )}
                   </View>

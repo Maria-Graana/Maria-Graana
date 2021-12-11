@@ -13,7 +13,7 @@ export default styles = StyleSheet.create({
     shadowOffset: { width: 5, height: 5 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
-    flexDirection: "row"
+    flexDirection: 'row',
   },
   tileIndex: {
     zIndex: 10,
@@ -24,13 +24,13 @@ export default styles = StyleSheet.create({
   },
   fontBold: {
     fontSize: 13,
-    color: "grey"
+    color: 'grey',
   },
   meetingCon: {
     fontSize: 16,
     color: 'black',
     textTransform: 'capitalize',
-    fontWeight: "700",
+    fontWeight: '700',
   },
   border: {
     width: '99%',
@@ -67,6 +67,10 @@ export default styles = StyleSheet.create({
   uperCase: {
     textTransform: 'capitalize',
   },
+  taskTypeWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   dropDownMain: {
     zIndex: 10,
     position: 'absolute',
@@ -86,14 +90,47 @@ export default styles = StyleSheet.create({
     marginTop: 7,
   },
   blueColor: {
-    color: '#333',
+    color: '#006FF2',
+    fontSize: 15,
   },
   DayAndTime: {
-    flexDirection: "row", 
-
+    flexDirection: 'row',
   },
   textWrap: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  taskType: {
+    paddingLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  reasonWrap: {
+    flexDirection: 'row',
+    marginTop: 8,
+    marginLeft: 40,
+  },
+  reasonTag: {
+    borderWidth: 2,
+    padding: 3,
+    paddingHorizontal: 5,
+    borderRadius: 15,
+    marginTop: -3,
+    marginLeft: 5,
+  },
+  responseWrap: {
+    paddingLeft: 15,
+    marginTop: 3,
+    marginLeft: 22,
+  },
+  feedbackTag: {
+    padding: 3,
+    marginLeft: 35,
+    paddingTop: 5,
+  },
+  outcomeWrap: {
+    paddingLeft: 15,
+    marginTop: 3,
+    marginLeft: 22,
   },
 })

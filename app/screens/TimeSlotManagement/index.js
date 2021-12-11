@@ -15,6 +15,7 @@ import {
   setSlotData,
   setScheduledTasks,
   setDataSlotsArray,
+  clearScheduledTasks,
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
@@ -56,6 +57,8 @@ function TimeSlotManagement(props) {
 
   useEffect(() => {
     const { dispatch } = props
+    dispatch(setSlotDiaryData(_today))
+
     if (props.slotData) {
       setDisabled(false)
     }
@@ -95,6 +98,7 @@ function TimeSlotManagement(props) {
   }
 
   const diaryData = (res, e, dispatch) => {
+    dispatch(clearScheduledTasks())
     for (var i = 0; i < res.length; i++) {
       if (res[i].slotId == e.id) {
         dispatch(setScheduledTasks(res[i]))
@@ -553,9 +557,9 @@ function TimeSlotManagement(props) {
                                   : setColor(e) == 'connect'
                                   ? '#deecd7'
                                   : setColor(e) == 'meeting'
-                                  ? '#bedafb'
+                                  ? '#dcf0ff'
                                   : setColor(e) == 'meetingwithpp'
-                                  ? '#bedafb'
+                                  ? '#dcf0ff'
                                   : setColor(e) == 'followup'
                                   ? '#fff1c5'
                                   : setColor(e) == 'closed'

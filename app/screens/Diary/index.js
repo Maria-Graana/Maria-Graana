@@ -45,6 +45,7 @@ import {
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
   alltimeSlots,
+  clearSlotDiaryData,
   getTimeShifts,
   setSlotData,
   setSlotDiaryData,
@@ -262,7 +263,10 @@ class Diary extends React.Component {
           { text: 'Cancel', style: 'cancel' },
           {
             text: 'Delete',
-            onPress: () => dispatch(deleteDiaryTask(selectedDate, agentId, false)),
+            onPress: () => {
+              dispatch(deleteDiaryTask(selectedDate, agentId, false))
+              dispatch(setSlotDiaryData(selectedDate))
+            },
           },
         ],
         { cancelable: false }

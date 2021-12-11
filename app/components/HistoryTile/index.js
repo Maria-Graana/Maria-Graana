@@ -87,7 +87,7 @@ class MeetingTile extends React.Component {
                       </View>
                     </View>
                     {data.reasonTag && data.status !== 'completed' && (
-                      <View style={{ flexDirection: 'row', marginTop: 8, marginLeft: 35 }}>
+                      <View style={{ flexDirection: 'row', marginTop: 8, marginLeft: 40 }}>
                         <Text>Reason :</Text>
                         <View
                           style={{
@@ -105,15 +105,9 @@ class MeetingTile extends React.Component {
                       </View>
                     )}
                     {data.feedbackTag === data.response ? (
-                        <View
-                          style={{
-                            padding: 3,
-                            marginLeft: 30,
-                            paddingTop: 10,
-                          }}
-                        >
-                          <Text style={{ color: '#006FF2', fontSize: 15 }}>{data.feedbackTag}</Text>
-                        </View>
+                        <View style={{ paddingLeft: 15, marginTop: 3, marginLeft: 22 }}>
+                        <Text>{data.response}</Text>
+                      </View>
                     ) : (
                       <View>
                         {data.feedbackTag && (
@@ -121,7 +115,7 @@ class MeetingTile extends React.Component {
                             <View
                               style={{
                                 padding: 3,
-                                marginLeft: 30,
+                                marginLeft: 35,
                                 paddingTop: 5,
                               }}
                             >
@@ -131,9 +125,12 @@ class MeetingTile extends React.Component {
                             </View>
                           </View>
                         )}
-                        <View style={{ paddingLeft: 15, marginTop: 3, marginLeft: 18 }}>
+                        {data.response && (
+                          <View style={{ paddingLeft: 15, marginTop: 3, marginLeft: 22 }}>
                           <Text>{data.response}</Text>
                         </View>
+                        )}
+                        
                       </View>
                     )}
                   </View>

@@ -196,6 +196,7 @@ class Diary extends React.Component {
     const { isCalendarVisible } = this.state
     const { dispatch, diary } = this.props
     const { page } = diary
+    dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     this.setState(
       {
@@ -224,6 +225,7 @@ class Diary extends React.Component {
 
   setCalendarVisible = (value) => {
     const { dispatch } = this.props
+    dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     this.setState({ isCalendarVisible: value })
   }

@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native'
+import { StackActions, CommonActions } from '@react-navigation/native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
 import { Ionicons, FontAwesome5, Entypo, Fontisto } from '@expo/vector-icons'
@@ -63,7 +64,7 @@ class Diary extends React.Component {
     super(props)
     this.state = {
       startDate: _today,
-      agentId: '',
+      agentId: null,
       selectedDate: _today,
       isCalendarVisible: false,
       showMenu: false,
@@ -79,31 +80,44 @@ class Diary extends React.Component {
   componentDidMount() {
     const { navigation, dispatch } = this.props
     const { route, user } = this.props
+    const { agentId } = route.params
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
     dispatch(setSlotDiaryData(_today))
     this.getDiariesStats()
-    // this._unsubscribe = navigation.addListener('focus', () => {
-    let { selectedDate } = this.state
-    let dateSelected = selectedDate
-    if ('openDate' in route.params) {
-      const { openDate } = route.params
-      dateSelected = moment(openDate).format(_format)
-    }
-    if (route.params !== undefined && 'agentId' in route.params) {
-      navigation.setOptions({ title: `${route.params.name} Diary` })
-      this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
-        this.getDiaries()
+    this._unsubscribe = navigation.addListener('focus', () => {
+      let { selectedDate } = this.state
+      let dateSelected = selectedDate
+      if ('openDate' in route.params) {
+        const { openDate } = route.params
+        dateSelected = moment(openDate).format(_format)
+      }
+      if (route.params !== undefined && agentId) {
         // Team Diary View
-      })
-    } else {
-      navigation.setOptions({ title: 'My Diary' })
-      this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
+        this.getTeamDiary(dateSelected)
+      } else {
         // Personal Diary
-        this.getDiaries()
-      })
-    }
+        this.getMyDiary(dateSelected)
+      }
+    })
+  }
+
+  getMyDiary = (dateSelected) => {
+    const { route, user, navigation } = this.props
+    navigation.setOptions({ title: 'My Diary' })
+    this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
+      // Personal Diary
+      this.getDiaries()
+    })
+  }
+
+  getTeamDiary = (dateSelected) => {
+    const { route, user, navigation } = this.props
+    navigation.setOptions({ title: `${route.params.name} Diary` })
+    this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
+      this.getDiaries()
+    })
   }
 
   getDiariesStats = () => {
@@ -341,6 +355,7 @@ class Diary extends React.Component {
       isFilterApplied,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
+    const { name = null } = route.params
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -395,6 +410,7 @@ class Diary extends React.Component {
           selectedDate={selectedDate}
           onPress={() => this.setCalendarVisible(!isCalendarVisible)}
         />
+
         <View style={styles.rowOne}>
           <DateControl
             selectedDate={selectedDate}
@@ -444,9 +460,38 @@ class Diary extends React.Component {
                 }}
                 title="Day/Shift End Report"
               />
+
+              <Menu.Item
+                onPress={() => {
+                  navigation.replace('TeamDiary'), this.setState({ isMenuVisible: false })
+                }}
+                title="View Team Diary"
+              />
             </Menu>
           </View>
         </View>
+
+        {agentId !== user.id && name ? (
+          <View style={styles.teamViewIndicator}>
+            <Image
+              source={require('../../../assets/img/alert_diary.png')}
+              style={styles.teamViewImageAlert}
+            />
+            <Text style={styles.teamViewText}>
+              {`You are viewing ${name} Diary, Click`}
+              <Text
+                style={{ color: AppStyles.colors.primaryColor }}
+                onPress={() => {
+                  navigation.replace('Diary', { agentId: null })
+                }}
+              >
+                {` here `}
+              </Text>
+              to see your Diary
+            </Text>
+          </View>
+        ) : null}
+
         {loading ? (
           <Loader loading={loading} />
         ) : (
@@ -529,6 +574,27 @@ const styles = StyleSheet.create({
   menuView: {
     marginLeft: 10,
     marginRight: 40,
+  },
+  teamViewIndicator: {
+    margin: 10,
+    backgroundColor: '#FFFCE3',
+    borderColor: '#FDD835',
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  teamViewImageAlert: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+  teamViewText: {
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 12,
+    padding: 5,
   },
 })
 

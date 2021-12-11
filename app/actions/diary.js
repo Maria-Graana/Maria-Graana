@@ -263,6 +263,26 @@ export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
   }
 }
 
+export const cancelDiaryViewing = (selectedDate, agentId, overdue) => {
+  return (dispatch, getsState) => {
+    const { selectedDiary, selectedLead } = getsState().diary.diary
+    if (selectedDiary.propertyId && selectedDiary.status === 'pending') {
+      axios
+        .delete(
+          `/api/diary/delete?id=${selectedDiary.id}&propertyId=${selectedDiary.id}&leadId=${selectedLead.id}`
+        )
+        .then((res) => {
+          dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+          //helper.deleteLocalNotification(property.diaries[0].id)
+          //this.fetchProperties()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+  }
+}
+
 // ARMS-2448 start
 export const getDiaryStats = (userId, day, startTime, endTime) => {
   return (dispatch, getsState) => {

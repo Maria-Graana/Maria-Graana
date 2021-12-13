@@ -77,6 +77,7 @@ class Diary extends React.Component {
       endTime: '',
       isMenuVisible: false,
       isSortModalVisible: false,
+      isDelete: false,
     }
   }
   componentDidMount() {
@@ -90,6 +91,7 @@ class Diary extends React.Component {
     this.getDiariesStats()
     this._unsubscribe = navigation.addListener('focus', () => {
       let { selectedDate } = this.state
+      dispatch(setSlotDiaryData(_today))
       let dateSelected = selectedDate
       if ('openDate' in route.params) {
         const { openDate } = route.params
@@ -103,6 +105,14 @@ class Diary extends React.Component {
         this.getMyDiary(dateSelected)
       }
     })
+  }
+
+  componentDidUpdate() {
+    const { dispatch } = this.props
+    if (this.state.isDelete) {
+      dispatch(setSlotDiaryData(_today))
+      this.setState({ isDelete: false })
+    }
   }
 
   getMyDiary = (dateSelected) => {
@@ -128,25 +138,7 @@ class Diary extends React.Component {
     const array = []
 
     for (var i = 0; i < data.length; i++) {
-      if (dayName == data[i].dayName && dayName == 'sunday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'monday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'tuesday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'wednesday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'thursday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'friday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'saturday') {
+      if (dayName == data[i].dayName) {
         array.push(data[i])
       }
     }
@@ -269,7 +261,9 @@ class Diary extends React.Component {
             text: 'Delete',
             onPress: () => {
               dispatch(deleteDiaryTask(selectedDate, agentId, false))
+              dispatch(clearSlotDiaryData())
               dispatch(setSlotDiaryData(selectedDate))
+              this.setState({ isDelete: true })
             },
           },
         ],
@@ -323,10 +317,11 @@ class Diary extends React.Component {
 
   goToAddEditDiaryScreen = (update, data = null) => {
     const { navigation, dispatch } = this.props
+    const { selectedDate } = this.state
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
-    navigation.navigate('AddDiary', { update, data })
+    navigation.navigate('AddDiary', { update, data, selectedDate })
   }
 
   setShowDayEnd = (display) => {
@@ -620,6 +615,7 @@ mapStateToProps = (store) => {
     sortValue: store.diary.sort,
     onEndReachedLoader: store.diary.onEndReachedLoader,
     isFilterApplied: store.diary.isFilterApplied,
+    slotDiary: store.slotManagement.slotDiaryData,
   }
 }
 

@@ -14,6 +14,7 @@ import TouchableButton from '../../components/TouchableButton'
 import Ability from '../../hoc/Ability'
 import TouchableInput from '../../components/TouchableInput'
 import styles from './style.js'
+import DiaryHelper from '../Diary/diaryHelper.js'
 
 class DetailForm extends Component {
   constructor(props) {
@@ -81,27 +82,56 @@ class DetailForm extends Component {
     } = this.props
     return (
       <View>
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PickerComponent
-              enabled={editableData === null}
-              onValueChange={this.handleForm}
-              selectedItem={taskType}
-              data={taskValues}
-              name={'taskType'}
-              placeholder="Task Type"
-            />
+        {editableData ? (
+          <View style={styles.editViewContainer}>
+            <Text style={styles.headingText}> Task Type: </Text>
+            <Text style={styles.labelText}> {`${DiaryHelper.showTaskType(taskType)}`} </Text>
           </View>
-          {checkValidation === true && taskType === '' && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
-        </View>
+        ) : (
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <PickerComponent
+                enabled={editableData === null}
+                onValueChange={this.handleForm}
+                selectedItem={taskType}
+                data={taskValues}
+                name={'taskType'}
+                placeholder="Task Type"
+              />
+            </View>
+            {checkValidation === true && taskType === '' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
+        )}
+
+        {editableData && editableData.taskType === 'follow_up' ? (
+          <View style={styles.editViewContainer}>
+            <Text style={styles.headingText}> Reason: </Text>
+            <View style={{ alignSelf: 'flex-start', marginVertical: 10 }}>
+              <Text
+                style={[
+                  styles.taskResponse,
+                  {
+                    borderColor: editableData.reason
+                      ? editableData.reason.colorCode
+                      : 'transparent',
+                  },
+                ]}
+              >
+                {editableData.reasonTag}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
         <TouchableInput
           placeholder="Book Slot"
           iconSource={require('../../../assets/img/calendar.png')}
           showIconOrImage={true}
           showDropDownIcon={false}
           iconMarginHorizontal={15}
+          disabled={formData.status === 'completed'}
           onPress={() => goToSlotManagement()}
           value={
             slotsData
@@ -141,9 +171,10 @@ class DetailForm extends Component {
               },
             ]}
             rowSpan={5}
-            placeholder="Comment"
+            placeholder="Description"
+            maxLength={1000}
             onChangeText={(text) => this.handleForm(text, 'notes')}
-            // disabled={formData.status === 'pending' ? false : true}
+            disabled={formData.status === 'pending' ? false : true}
             value={notes}
           />
         </View>

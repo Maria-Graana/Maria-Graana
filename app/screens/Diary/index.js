@@ -244,7 +244,18 @@ class Diary extends React.Component {
     } else if (action === 'cancel_meeting') {
       dispatch(cancelDiaryMeeting(selectedDate, agentId, false))
     } else if (action === 'task_details') {
-      navigation.navigate('TaskDetails', { diary: selectedDiary })
+      const { selectedDate } = this.state
+      if (selectedDiary) {
+        dispatch(
+          setSlotData(
+            moment(selectedDiary.date).format('YYYY-MM-DD'),
+            selectedDiary.start,
+            selectedDiary.end,
+            []
+          )
+        )
+      }
+      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {

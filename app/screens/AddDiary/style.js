@@ -26,4 +26,30 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headingText: {
+    fontSize: 14,
+    paddingVertical: 5,
+    paddingBottom: 0,
+    fontFamily: AppStyles.fonts.defaultFont,
+  },
+  labelText: {
+    fontSize: 14,
+    paddingVertical: 5,
+    fontFamily: AppStyles.fonts.semiBoldFont,
+  },
+  taskResponse: {
+    paddingHorizontal: 10,
+    fontFamily: AppStyles.fonts.semiBoldFont,
+    fontSize: 14,
+    paddingVertical: 2,
+    borderRadius: 12,
+    borderWidth: 0.5,
+    borderColor: '#FFC61B',
+  },
+  editViewContainer: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 4,
+    marginVertical: 10,
+  },
 })

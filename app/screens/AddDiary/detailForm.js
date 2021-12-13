@@ -29,7 +29,7 @@ class DetailForm extends Component {
         notes: '',
         status: 'pending',
         isRecurring: false,
-        taskCategory: 'simpleTask',
+        taskCategory: null,
         slots: [],
         addedBy: 'self',
       },
@@ -39,6 +39,7 @@ class DetailForm extends Component {
 
   componentDidMount() {
     const { editableData, props } = this.props
+    console.log(editableData)
     if (editableData != null) {
       this.setFormValues(editableData)
     }
@@ -142,7 +143,10 @@ class DetailForm extends Component {
           }
         />
 
-        {editableData === null && taskCategory == 'simpleTask' ? (
+        {editableData === null &&
+        (taskType === 'morning_meeting' ||
+          taskType === 'daily_update' ||
+          taskType === 'meeting_with_pp') ? (
           <TouchableOpacity
             onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
             style={styles.checkBoxRow}

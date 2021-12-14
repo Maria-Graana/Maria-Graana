@@ -10,12 +10,18 @@ export function setSlotDiaryData(selectedDate) {
       .get(
         `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
       )
-      .then((response) =>
-        dispatch({
-          type: types.SET_SLOT_DIARY_DATA,
-          payload: response.data,
-        })
-      )
+      .then((response) => {
+        if (response.data[0] == undefined) {
+          dispatch({
+            type: types.CLEAR_SLOT_DATA_DIARY,
+          })
+        } else {
+          dispatch({
+            type: types.SET_SLOT_DIARY_DATA,
+            payload: response.data,
+          })
+        }
+      })
       .catch((error) => {
         console.log(
           `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`

@@ -59,7 +59,7 @@ function TimeSlotManagement(props) {
 
   useEffect(() => {
     const { dispatch, route } = props
-    console.log('dsd', route.params.taskType)
+
     dispatch(setSlotDiaryData(selectedDate))
 
     if (props.slotData) {
@@ -492,7 +492,7 @@ function TimeSlotManagement(props) {
   }
 
   const setColor = (e) => {
-    let color = slotsDiary && slotsDiary.filter((diary) => diary.slotId == e.id)
+    let color = props.slotDiary && props.slotDiary.filter((diary) => diary.slotId == e.id)
     if (props.slotDiary == null) {
       return null
     } else {

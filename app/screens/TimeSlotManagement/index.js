@@ -16,6 +16,7 @@ import {
   setScheduledTasks,
   setDataSlotsArray,
   clearScheduledTasks,
+  clearSlotDiaryData,
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
@@ -30,7 +31,7 @@ function TimeSlotManagement(props) {
   const [slots, setSlots] = useState(props.slotData ? props.slotData.slots : [])
   const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
   const [slotsData, setSlotsData] = useState(props.slotsDataArray ? props.slotsDataArray : [])
-  const [slotsDiary, setSlotsDiary] = useState(props.slotDiary)
+  const [slotsDiary, setSlotsDiary] = useState(props.slotDiary ? props.slotDiary : [])
   const [isSelected, setIsSelected] = useState(props.slotData ? props.slotData.slots : [])
 
   const [tempDate, setTempDate] = useState(null)
@@ -42,12 +43,13 @@ function TimeSlotManagement(props) {
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
+    const { dispatch } = props
+    dispatch(clearSlotDiaryData())
     setSelectedDate(date), setIsCalendarVisible(mode === 'month' ? isCalendarVisible : false)
 
     const dayN = moment(date).format('dddd').toLowerCase()
     setDayName(dayN)
 
-    const { dispatch } = props
     dispatch(setSlotDiaryData(date))
   }
 
@@ -56,8 +58,9 @@ function TimeSlotManagement(props) {
   }
 
   useEffect(() => {
-    const { dispatch } = props
-    dispatch(setSlotDiaryData(_today))
+    const { dispatch, route } = props
+    console.log('dsd', route.params.taskType)
+    dispatch(setSlotDiaryData(selectedDate))
 
     if (props.slotData) {
       setDisabled(false)
@@ -70,7 +73,7 @@ function TimeSlotManagement(props) {
 
       onEditSlots(start, end)
     }
-  }, [])
+  }, [selectedDate, dayName])
 
   const onEditSlots = (start, end) => {
     const allSlots = props.allTimeSlot
@@ -112,7 +115,11 @@ function TimeSlotManagement(props) {
 
   const verifyDetail = (e) => {
     const { dispatch } = props
-    diaryData(props.slotDiary, e, dispatch)
+    if (props.slotDiary == null) {
+      diaryData([], e, dispatch)
+    } else {
+      diaryData(props.slotDiary, e, dispatch)
+    }
 
     const sortedAray = _.sortBy(slotsData, 'id')
 
@@ -485,15 +492,37 @@ function TimeSlotManagement(props) {
   }
 
   const setColor = (e) => {
-    let color = slotsDiary.filter((diary) => diary.slotId == e.id)
-
-    if (color[0] && color[0].diary) {
-      if (color[0].diary.length > 1) {
-        return color[0].diary.length
-      } else {
-        const str = color[0].diary[0].taskType.replace(/[_ ]+/g, '').toLowerCase()
-        return str
+    let color = slotsDiary && slotsDiary.filter((diary) => diary.slotId == e.id)
+    if (props.slotDiary == null) {
+      return null
+    } else {
+      if (color[0] && color[0].diary) {
+        if (color[0].diary.length > 1) {
+          return color[0].diary.length
+        } else {
+          const str = color[0].diary[0].taskType.replace(/[_ ]+/g, '').toLowerCase()
+          return str
+        }
       }
+    }
+  }
+
+  const setSelectedColor = () => {
+    const { route } = props
+    const task = route.params.taskType.replace(/[_ ]+/g, '').toLowerCase()
+    if (
+      task == 'dailyupdate' ||
+      task == 'morningmeeting' ||
+      task == 'meetingwithpp' ||
+      task == 'meeting'
+    ) {
+      return '#dcf0ff'
+    } else if (task == 'followup') {
+      return '#fff1c5'
+    } else if (task == 'connect') {
+      return '#deecd7'
+    } else if (task == 'closed') {
+      return '#e6e6e6'
     }
   }
 
@@ -549,27 +578,28 @@ function TimeSlotManagement(props) {
                           style={[
                             styles.hourRow,
                             {
-                              backgroundColor:
-                                setColor(e) == 'dailyupdate'
-                                  ? '#dcf0ff'
-                                  : setColor(e) == 'morningmeeting'
-                                  ? '#dcf0ff'
-                                  : setColor(e) == 'connect'
-                                  ? '#deecd7'
-                                  : setColor(e) == 'meeting'
-                                  ? '#dcf0ff'
-                                  : setColor(e) == 'meetingwithpp'
-                                  ? '#dcf0ff'
-                                  : setColor(e) == 'followup'
-                                  ? '#fff1c5'
-                                  : setColor(e) == 'closed'
-                                  ? '#e6e6e6'
-                                  : setShift(e) == false
-                                  ? '#f1f1f1'
-                                  : 'white',
+                              backgroundColor: isSelected.includes(e.id)
+                                ? setSelectedColor()
+                                : setColor(e) == 'dailyupdate'
+                                ? '#dcf0ff'
+                                : setColor(e) == 'morningmeeting'
+                                ? '#dcf0ff'
+                                : setColor(e) == 'connect'
+                                ? '#deecd7'
+                                : setColor(e) == 'meeting'
+                                ? '#dcf0ff'
+                                : setColor(e) == 'meetingwithpp'
+                                ? '#dcf0ff'
+                                : setColor(e) == 'followup'
+                                ? '#fff1c5'
+                                : setColor(e) == 'closed'
+                                ? '#e6e6e6'
+                                : setShift(e) == false
+                                ? '#f1f1f1'
+                                : 'white',
 
                               borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
-                              borderWidth: isSelected.includes(e.id) ? 1.5 : 0.6,
+                              borderWidth: isSelected.includes(e.id) ? 1.2 : 0.6,
                             },
                           ]}
                           key={i}

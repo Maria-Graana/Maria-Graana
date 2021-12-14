@@ -4,6 +4,8 @@ import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionFeatures, PermissionActions } from '../../hoc/PermissionsTypes'
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
@@ -19,20 +21,40 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
-
 class Landing extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       tiles: [],
       tileNames: [
-        'InventoryTabs',
-        'Leads',
-        'My Deals',
-        'Diary',
-        // 'Dashboard',
-        'Team Diary',
-        'Targets',
+        {
+          tile: 'Diary',
+          actions: 'DIARY',
+        },
+        {
+          tile: 'Leads',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'My Deals',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'InventoryTabs',
+          actions: 'INVENTORY',
+        },
+        {
+          tile: 'InventoryTabs',
+          actions: 'INVENTORY',
+        },
+        {
+          tile: 'Project Inventory',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'Targets',
+          actions: 'TARGETS',
+        },
       ],
       loading: true,
       userStatistics: null,
@@ -42,7 +64,7 @@ class Landing extends React.Component {
   }
 
   async componentDidMount() {
-    const { navigation, dispatch, contacts, user } = this.props
+    const { navigation, dispatch, permissions } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
@@ -52,6 +74,12 @@ class Landing extends React.Component {
     await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
+    console.log('getPermissionValue: ', getPermissionValue)
+    console.log('PermissionFeatures: ', PermissionFeatures.PROJECT_LEADS)
+    console.log('PermissionActions: ', PermissionActions.CREATE)
+    console.log(
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions)
+    )
   }
 
   componentDidUpdate(prevProps) {
@@ -152,15 +180,16 @@ class Landing extends React.Component {
   }
 
   fetchTiles = () => {
-    const { user, count } = this.props
+    const { user, count, permissions } = this.props
     const { tileNames } = this.state
     let counter = 0
     let tileData = []
 
-    for (let tile of tileNames) {
+    for (let oneTile of tileNames) {
+      const { tile, actions } = oneTile
       let label = tile
       tile = tile.replace(/ /g, '')
-      if (Ability.canView(user.subRole, tile)) {
+      if (getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) {
         if (label === 'InventoryTabs') label = 'Properties'
         let oneTilee = {
           screenName: tile,
@@ -187,6 +216,7 @@ class Landing extends React.Component {
 
   // ****** Navigate Function
   navigateFunction = (name, screenName) => {
+    console.log('screenName: ', screenName)
     const { navigation } = this.props
     if (screenName === 'InventoryTabs') {
       navigation.navigate('InventoryTabs', {
@@ -342,6 +372,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     count: store.listings.count,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

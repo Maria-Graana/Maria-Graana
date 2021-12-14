@@ -21,7 +21,7 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
         endPoint = `/api/diary/all?overdue=${overdue}&status=pending&orderBy=${sort}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
         endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
-        //console.log('endPoint=>', endPoint)
+        // console.log('endPoint=>', endPoint)
       }
     } else {
       if (overdue) {
@@ -116,6 +116,15 @@ export function setPageCount(count) {
   }
 }
 
+export function setDiaryFilterReason(reason) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_DIARY_FILTER_REASON,
+      payload: reason,
+    })
+  }
+}
+
 export const mapFiltersToQuery = (filters) => {
   if (filters) {
     for (let key in filters) {
@@ -127,13 +136,14 @@ export const mapFiltersToQuery = (filters) => {
       .map((key) => {
         if (key === 'date') {
           return `date[]=${filters[key]}`
-        } else if (key === 'feedbacksId') {
-          return `feedbacksId[]=${filters[key].value}`
+        } else if (key === 'feedbackId') {
+          return filters[key].map((item) => `&feedbacksId[]=${item}`)
         } else {
           return `${key}=${filters[key]}`
         }
       })
       .join('&')
+      .replace(/,/g, '')
     return qs
   }
 }

@@ -14,7 +14,7 @@ import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
 import { clearSlotData, setSlotDiaryData } from '../../actions/slotManagement'
-import { getDiaryTasks } from '../../actions/diary'
+import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
 
 class AddDiary extends Component {
   constructor(props) {
@@ -47,6 +47,7 @@ class AddDiary extends Component {
   componentWillUnmount() {
     const { dispatch } = this.props
     dispatch(clearSlotData())
+    dispatch(setDiaryFilterReason(null))
   }
 
   formSubmit = (data) => {
@@ -67,7 +68,7 @@ class AddDiary extends Component {
   }
 
   generatePayload = (data) => {
-    const { route, user } = this.props
+    const { route, user, feedbackReasonFilter = null } = this.props
     const { rcmLeadId, cmLeadId } = route.params
     let payload = null
     if (route.params.update) {
@@ -82,9 +83,9 @@ class AddDiary extends Component {
       payload.taskCategory = rcmLeadId || cmLeadId ? 'leadTask' : 'simpleTask'
 
       if (rcmLeadId) {
-        payload.rcmLeadId = rcmLeadId
+        payload.armsLeadId = rcmLeadId
       } else if (cmLeadId) {
-        payload.cmLeadId = cmLeadId
+        payload.leadId = cmLeadId
       }
 
       delete payload.startTime
@@ -102,10 +103,17 @@ class AddDiary extends Component {
       payload.start = data.startTime
       payload.end = data.endTime
       payload.taskCategory = rcmLeadId || cmLeadId ? 'leadTask' : 'simpleTask'
+
+      if (data.taskType === 'follow_up') {
+        payload.reasonTag = feedbackReasonFilter ? feedbackReasonFilter.name : null
+        payload.reasonId =
+          feedbackReasonFilter && feedbackReasonFilter.value ? feedbackReasonFilter.value[0] : null
+      }
+
       if (rcmLeadId) {
-        payload.rcmLeadId = rcmLeadId
+        payload.armsLeadId = rcmLeadId
       } else if (cmLeadId) {
-        payload.cmLeadId = cmLeadId
+        payload.leadId = cmLeadId
       }
       delete payload.startTime
       delete payload.endTime
@@ -188,6 +196,11 @@ class AddDiary extends Component {
     navigation.navigate('TimeSlotManagement')
   }
 
+  goToDiaryReasons = () => {
+    const { navigation } = this.props
+    navigation.navigate('DiaryReasons', { screenName: 'AddDiary' })
+  }
+
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route, slotsData } = this.props
@@ -214,6 +227,7 @@ class AddDiary extends Component {
                 checkValidation={checkValidation}
                 loading={loading}
                 goToSlotManagement={this.goToSlotManagement}
+                goToDiaryReasons={this.goToDiaryReasons}
                 slotsData={slotsData}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
@@ -229,6 +243,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     slotsData: store.slotManagement.slotsPayload,
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
   }
 }
 

@@ -104,6 +104,15 @@ const filters = (state = filtersData, action) => {
   }
 }
 
+const feedbackReasonFilter = (state = null, action) => {
+  switch (action.type) {
+    case types.SET_DIARY_FILTER_REASON:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 const diaryStats = (state = '', action) => {
   switch (action.type) {
     case types.GET_DIARY_STATS:
@@ -121,4 +130,5 @@ export default combineReducers({
   sort,
   onEndReachedLoader,
   isFilterApplied,
+  feedbackReasonFilter,
 })

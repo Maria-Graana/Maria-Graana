@@ -17,6 +17,7 @@ import Search from '../../components/Search'
 import NoResultsComponent from '../../components/NoResultsComponent'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import _ from 'underscore'
+import { setlead } from '../../actions/lead'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -167,9 +168,22 @@ class Client extends React.Component {
     await axios
       .post(`/api/leads/project`, payload)
       .then((response) => {
+        this.newLeadNavigate(response, navigation, data, unit)
+      })
+      .catch((error) => {
+        console.log('/api/leads/project', error)
+      })
+  }
+
+  newLeadNavigate = (response, navigation, data, unit) => {
+    const { dispatch } = this.props
+    axios
+      .get(`/api/leads/project/byId?id=${response.data.leadId}`)
+      .then((res) => {
+        dispatch(setlead(res.data))
         navigation.navigate('CMLeadTabs', {
           params: {
-            lead: response.data.leadId,
+            lead: res.data,
             client: data,
             name: data.firstName + ' ' + data.lastName,
             unitData: unit,
@@ -177,7 +191,7 @@ class Client extends React.Component {
         })
       })
       .catch((error) => {
-        console.log('/api/leads/project', error)
+        console.log('/api/leads/project/byId?id - Error', error)
       })
   }
 

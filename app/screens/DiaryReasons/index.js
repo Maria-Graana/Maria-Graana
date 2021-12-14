@@ -25,8 +25,14 @@ class DiaryReasons extends React.Component {
   }
 
   getFeedbackReasons = () => {
+    const { route } = this.props
+    const { screenName = null } = route.params
+    let endPoint = ``
     this.setState({ loading: true }, () => {
-      let endPoint = `/api/feedbacks/fetch`
+      endPoint =
+        screenName && screenName === 'DiaryFilter'
+          ? `/api/feedbacks/fetch`
+          : `/api/feedbacks/fetch?section=Internal`
       axios
         .get(endPoint)
         .then((res) => {
@@ -70,7 +76,7 @@ class DiaryReasons extends React.Component {
   }
 
   render() {
-    const { feedbackReasons, loading, selectedFeedback } = this.state
+    const { feedbackReasons, loading } = this.state
     const { feedbackReasonFilter } = this.props
 
     return (

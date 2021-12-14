@@ -83,13 +83,8 @@ class DiaryFilter extends React.Component {
   }
 
   goToDiaryReasons = () => {
-    const { navigation, filters, route } = this.props
-    const { feedbackReason } = route.params
-    navigation.navigate('DiaryReasons', {
-      filters,
-      screenName: 'DiaryFilter',
-      selectedFeedbackRoute: feedbackReason,
-    })
+    const { navigation, route } = this.props
+    navigation.navigate('DiaryReasons', { screenName: 'DiaryFilter' })
   }
 
   render() {

@@ -26,7 +26,6 @@ class TaskDetails extends Component {
   render() {
     const { route } = this.props
     const { diary } = route.params
-    console.log(diary)
     return (
       <View style={AppStyles.container}>
         <View style={styles.innerContainer}>

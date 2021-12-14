@@ -39,7 +39,6 @@ class DetailForm extends Component {
 
   componentDidMount() {
     const { editableData, props } = this.props
-    console.log(editableData)
     if (editableData != null) {
       this.setFormValues(editableData)
     }
@@ -80,6 +79,8 @@ class DetailForm extends Component {
       goToSlotManagement,
       slotsData,
       editableData,
+      feedbackReasonFilter,
+      goToDiaryReasons,
     } = this.props
     return (
       <View>
@@ -123,6 +124,15 @@ class DetailForm extends Component {
                 {editableData.reasonTag}
               </Text>
             </View>
+          </View>
+        ) : taskType === 'follow_up' ? (
+          <View style={[AppStyles.inputWrap]}>
+            <TouchableInput
+              onPress={() => goToDiaryReasons()}
+              showIconOrImage={false}
+              value={feedbackReasonFilter ? feedbackReasonFilter.name : ''}
+              placeholder={'Select Reason'}
+            />
           </View>
         ) : null}
 
@@ -200,6 +210,7 @@ class DetailForm extends Component {
 
 mapStateToProps = (store) => {
   return {
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
     user: store.user.user,
   }
 }

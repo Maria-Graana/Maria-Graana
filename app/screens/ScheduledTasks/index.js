@@ -41,8 +41,8 @@ export class ScheduledTasks extends Component {
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
       // for scheduled tasks on basis of lead id
-      if (route.params) {
-        const { cmLeadId = null, rcmLeadId = null } = route.params
+      const { cmLeadId = null, rcmLeadId = null, fromDate = null, toDate = null } = route.params
+      if (cmLeadId || rcmLeadId) {
         if (cmLeadId) {
           this.setState({ leadId: cmLeadId, leadType: 'invest' })
           dispatch(getDiaryTasks({ leadId: cmLeadId, leadType: 'invest' }))
@@ -51,7 +51,8 @@ export class ScheduledTasks extends Component {
           dispatch(getDiaryTasks({ leadId: rcmLeadId, leadType: 'buyRent' }))
         }
       } else {
-        console.log('call scheduled tasks from slots api call')
+        // from slots
+        dispatch(getDiaryTasks({ fromDate, toDate }))
       }
     })
   }
@@ -167,7 +168,7 @@ export class ScheduledTasks extends Component {
 
   render() {
     const { showMenu, leadType, leadId } = this.state
-    const { route, dispatch, diary, scheduledTasks } = this.props
+    const { dispatch, diary } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={style.container}>
@@ -205,7 +206,7 @@ export class ScheduledTasks extends Component {
         ) : (
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={scheduledTasks ? scheduledTasks.diary : diaries.rows}
+            data={diaries.rows}
             renderItem={({ item, index }) => (
               <DiaryTile
                 diary={item}
@@ -231,7 +232,6 @@ export class ScheduledTasks extends Component {
 
 mapStateToProps = (store) => {
   return {
-    scheduledTasks: store.slotManagement.setScheduled,
     diary: store.diary.diary,
     selectedDiary: store.diary.selectedDiary,
     selectedLead: store.diary.selectedLead,

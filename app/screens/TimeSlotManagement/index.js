@@ -40,6 +40,9 @@ function TimeSlotManagement(props) {
   const [tempSlot, setTempSlot] = useState(null)
   const [sSlots, setSSlots] = useState([])
 
+  const [startDate, setStartDate] = useState(null)
+  const [toDate, setToDate] = useState(null)
+
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
@@ -113,6 +116,10 @@ function TimeSlotManagement(props) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ssZ')
   }
 
+  const formatDT = (date, time) => {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+  }
+
   const verifyDetail = (e) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
@@ -130,12 +137,17 @@ function TimeSlotManagement(props) {
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
+    const sDate = formatDT(selectedDate, sortedAray && sortedAray[0].startTime)
+    const eDate = formatDT(selectedDate, sortedAray && sortedAray[sortedAray.length - 1].endTime)
+
     setCheck(true)
     setDisabled(false)
     setTempDate(date)
     setTempEndTime(endTime)
     setTempStartTime(startTime)
     setTempSlot(slots)
+    setStartDate(sDate)
+    setToDate(eDate)
   }
 
   const onDone = () => {
@@ -627,7 +639,12 @@ function TimeSlotManagement(props) {
           borderWidth={1}
           label="Show Details"
           disabled={disabled}
-          onPress={() => props.navigation.navigate('ScheduledTasks')}
+          onPress={() =>
+            props.navigation.navigate('ScheduledTasks', {
+              fromDate: startDate,
+              toDate: toDate,
+            })
+          }
         />
         <TouchableButton
           containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}

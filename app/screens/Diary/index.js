@@ -22,8 +22,6 @@ import CalendarComponent from '../../components/CalendarComponent'
 import moment from 'moment'
 import DiaryTile from '../../components/DiaryTile'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
-import axios from 'axios'
-import helper, { formatDateTime } from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
@@ -42,6 +40,7 @@ import {
   setDairyFilterApplied,
   cancelDiaryViewing,
   cancelDiaryMeeting,
+  clearDiaries,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -56,6 +55,7 @@ import {
 import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
 import { DiarySortModal } from '../../components/DiarySortModal'
+import helper, { formatDateTime } from '../../helper'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -113,6 +113,11 @@ class Diary extends React.Component {
       dispatch(setSlotDiaryData(_today))
       this.setState({ isDelete: false })
     }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(clearDiaries())
   }
 
   getMyDiary = (dateSelected) => {
@@ -181,7 +186,7 @@ class Diary extends React.Component {
   getDiaries = () => {
     const { agentId, selectedDate } = this.state
     const { dispatch } = this.props
-    dispatch(getDiaryTasks(selectedDate, agentId, false))
+    dispatch(getDiaryTasks({ selectedDate, agentId }))
     dispatch(getOverdueCount(agentId))
   }
 
@@ -238,13 +243,14 @@ class Diary extends React.Component {
     const { selectedDiary } = diary
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone(selectedDate, agentId, false))
+      dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
     } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing(selectedDate, agentId, false))
+      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
     } else if (action === 'cancel_meeting') {
-      dispatch(cancelDiaryMeeting(selectedDate, agentId, false))
+      dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
+      dispatch(clearDiaries())
       if (selectedDiary) {
         dispatch(
           setSlotData(
@@ -271,7 +277,7 @@ class Diary extends React.Component {
           {
             text: 'Delete',
             onPress: () => {
-              dispatch(deleteDiaryTask(selectedDate, agentId, false))
+              dispatch(deleteDiaryTask({ selectedDate, agentId }))
               dispatch(clearSlotDiaryData())
               dispatch(setSlotDiaryData(selectedDate))
               this.setState({ isDelete: true })
@@ -329,6 +335,7 @@ class Diary extends React.Component {
   goToAddEditDiaryScreen = (update, data = null) => {
     const { navigation, dispatch } = this.props
     const { selectedDate } = this.state
+    dispatch(clearDiaries())
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
@@ -389,7 +396,15 @@ class Diary extends React.Component {
           toggleCategoryModal={(value) => {
             dispatch(setClassificationModal(value))
           }}
-          onCategorySelected={(value) => dispatch(setCategory(value, selectedDate, agentId))}
+          onCategorySelected={(value) =>
+            dispatch(
+              setCategory({
+                category: value,
+                selectedDate,
+                agentId,
+              })
+            )
+          }
           selectedCategory={
             selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
@@ -532,7 +547,7 @@ class Diary extends React.Component {
               if (diaries.rows.length < diaries.count) {
                 dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
-                dispatch(getDiaryTasks(selectedDate, agentId, false, false))
+                dispatch(getDiaryTasks({ selectedDate, agentId }))
               }
             }}
             onEndReachedThreshold={0.5}

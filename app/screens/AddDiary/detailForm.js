@@ -142,7 +142,7 @@ class DetailForm extends Component {
           showIconOrImage={true}
           showDropDownIcon={false}
           iconMarginHorizontal={15}
-          disabled={formData.status === 'completed'}
+          disabled={formData.status === 'completed' || taskType === ''}
           onPress={() => goToSlotManagement(formData)}
           value={
             slotsData

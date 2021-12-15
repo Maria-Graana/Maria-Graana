@@ -51,7 +51,8 @@ const diary = (state = diaryData, action) => {
         ...state,
         page: action.payload,
       }
-
+    case types.CLEAR_DIARIES:
+      return { ...diaryData, diaries: action.payload }
     default:
       return state
   }

@@ -510,12 +510,7 @@ function TimeSlotManagement(props) {
   const setSelectedColor = () => {
     const { route } = props
     const task = route.params.taskType.replace(/[_ ]+/g, '').toLowerCase()
-    if (
-      task == 'dailyupdate' ||
-      task == 'morningmeeting' ||
-      task == 'meetingwithpp' ||
-      task == 'meeting'
-    ) {
+    if (task == 'dailyupdate' || task == 'morningmeeting' || task == 'meetingwithpp') {
       return '#dcf0ff'
     } else if (task == 'followup') {
       return '#fff1c5'
@@ -523,6 +518,8 @@ function TimeSlotManagement(props) {
       return '#deecd7'
     } else if (task == 'closed') {
       return '#e6e6e6'
+    } else if (task === 'meeting' || task === 'viewing') {
+      return '#99c5fa'
     }
   }
 
@@ -587,7 +584,9 @@ function TimeSlotManagement(props) {
                                 : setColor(e) == 'connect'
                                 ? '#deecd7'
                                 : setColor(e) == 'meeting'
-                                ? '#dcf0ff'
+                                ? '#99c5fa'
+                                : setColor(e) == 'viewing'
+                                ? '#99c5fa'
                                 : setColor(e) == 'meetingwithpp'
                                 ? '#dcf0ff'
                                 : setColor(e) == 'followup'

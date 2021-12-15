@@ -39,7 +39,7 @@ class DiaryFilter extends React.Component {
     dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     dispatch(setDiaryFilterReason(null))
-    dispatch(getDiaryTasks(_today, agentId, isOverdue))
+    dispatch(getDiaryTasks({ selectedDate: _today, agentId, overdue: isOverdue }))
     navigation.goBack()
   }
 
@@ -54,7 +54,7 @@ class DiaryFilter extends React.Component {
     //console.log(newFormData)
     dispatch(setDiaryFilter(newFormData))
     dispatch(setDairyFilterApplied(true))
-    dispatch(getDiaryTasks(null, agentId, isOverdue))
+    dispatch(getDiaryTasks({ agentId, overdue: isOverdue }))
     navigation.goBack()
   }
 

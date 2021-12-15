@@ -21,17 +21,27 @@ import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
+  cancelDiaryMeeting,
+  cancelDiaryViewing,
+  clearDiaryFilter,
   deleteDiaryTask,
   getDiaryTasks,
   increasePageCount,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
+  setDairyFilterApplied,
   setOnEndReachedLoader,
+  setPageCount,
   setSelectedDiary,
+  setSortValue,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import moment from 'moment'
+import { DiarySortModal } from '../../components/DiarySortModal'
 
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
 class OverdueTasks extends React.Component {
   constructor(props) {
     super(props)
@@ -40,13 +50,26 @@ class OverdueTasks extends React.Component {
       agentId: '',
       showMenu: false,
       selectedDiary: null,
+      isSortModalVisible: false,
     }
   }
   componentDidMount() {
     const { navigation, dispatch, route } = this.props
-    const { count, agentId } = route.params
-    navigation.setOptions({ title: `Overdue Tasks(${count})` })
+    const { count, agentId, agentName } = route.params
+    navigation.setOptions({
+      title: agentName ? `${agentName} Tasks (${count})` : `Overdue Tasks(${count})`,
+    })
     this.getDiaries()
+  }
+
+  componentWillUnmount() {
+    const { navigation, dispatch, route } = this.props
+    const { agentId } = route.params
+    dispatch(setDairyFilterApplied(false))
+    dispatch(clearDiaryFilter())
+    dispatch(setSortValue('')).then((result) => {
+      dispatch(getDiaryTasks({ selectedData: _today, agentId, overdue: false }))
+    })
   }
 
   handleMenuActions = (action) => {
@@ -54,8 +77,11 @@ class OverdueTasks extends React.Component {
     const { selectedDiary } = diary
     const { agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone(null, agentId, true))
+      dispatch(markDiaryTaskAsDone({ agentId, overdue: true }))
     } else if (action === 'cancel_viewing') {
+      dispatch(cancelDiaryViewing({ agentId, overdue: true }))
+    } else if (action === 'cancel_meeting') {
+      dispatch(cancelDiaryMeeting({ agentId, overdue: true }))
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {
@@ -69,7 +95,7 @@ class OverdueTasks extends React.Component {
         'Are you sure you want to delete this task ?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask(null, agentId, true)) },
+          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask({ agentId, overdue: true })) },
         ],
         { cancelable: false }
       )
@@ -113,13 +139,17 @@ class OverdueTasks extends React.Component {
   navigateToFiltersScreen = () => {
     const { navigation } = this.props
     const { agentId, selectedDate } = this.state
-    navigation.navigate('DiaryFilter', { agentId, isOverdue: true, selectedDate })
+    navigation.navigate('DiaryFilter', {
+      agentId,
+      isOverdue: true,
+      selectedDate,
+    })
   }
 
   getDiaries = () => {
     const { dispatch, user, route } = this.props
     const { agentId } = route.params
-    dispatch(getDiaryTasks(null, agentId, true))
+    dispatch(getDiaryTasks({ agentId, overdue: true }))
   }
 
   showMenuOptions = (data) => {
@@ -132,17 +162,14 @@ class OverdueTasks extends React.Component {
     this.setState({ showMenu: false })
   }
 
+  showSortModalVisible = (value) => {
+    this.setState({ isSortModalVisible: value })
+  }
+
   render() {
-    const { selectedDate, showMenu, agentId } = this.state
-    const { diary, dispatch } = this.props
-    const {
-      diaries,
-      loading,
-      selectedDiary,
-      selectedLead,
-      showClassificationModal,
-      onEndReachedLoader,
-    } = diary
+    const { selectedDate, showMenu, agentId, isSortModalVisible } = this.state
+    const { diary, dispatch, route, onEndReachedLoader, sortValue, isFilterApplied } = this.props
+    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal
@@ -150,19 +177,48 @@ class OverdueTasks extends React.Component {
           toggleCategoryModal={(value) => {
             dispatch(setClassificationModal(value))
           }}
-          onCategorySelected={(value) => dispatch(setCategory(value, selectedDate, agentId))}
+          onCategorySelected={(value) =>
+            dispatch(
+              setCategory({
+                category: value,
+                overdue: true,
+              })
+            )
+          }
           selectedCategory={
             selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
         />
 
+        <DiarySortModal
+          isSortModalVisible={isSortModalVisible}
+          isOverdue={true}
+          isFiltered={isFilterApplied}
+          selectedDate={selectedDate}
+          agentId={agentId}
+          sortValue={sortValue}
+          showSortModalVisible={(value) => this.showSortModalVisible(value)}
+        />
+
         <View style={styles.rowOne}>
           <View style={styles.filterSortView}>
             <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
-              <Image source={require('../../../assets/img/filter.png')} style={styles.filterImg} />
+              <Image
+                source={
+                  !isFilterApplied
+                    ? require('../../../assets/img/filter.png')
+                    : require('../../../assets/img/filter_blue.png')
+                }
+                style={styles.filterImg}
+              />
             </TouchableOpacity>
 
-            <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
+            <FontAwesome5
+              name="sort-amount-down-alt"
+              size={24}
+              color={sortValue === '' ? 'black' : AppStyles.colors.primaryColor}
+              onPress={() => this.showSortModalVisible(true)}
+            />
           </View>
         </View>
         {loading ? (
@@ -196,8 +252,10 @@ class OverdueTasks extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
-                dispatch(increasePageCount())
-                dispatch(setOnEndReachedLoader())
+                //console.log(diaries.count, diaries.rows.length)
+                dispatch(setOnEndReachedLoader(true))
+                dispatch(setPageCount(page + 1))
+                dispatch(getDiaryTasks({ agentId, overdue: true }))
               }
             }}
             onEndReachedThreshold={0.5}
@@ -243,6 +301,9 @@ mapStateToProps = (store) => {
     selectedLead: store.diary.selectedLead,
     page: store.diary.page,
     pageSize: store.diary.pageSize,
+    sortValue: store.diary.sort,
+    onEndReachedLoader: store.diary.onEndReachedLoader,
+    isFilterApplied: store.diary.isFilterApplied,
   }
 }
 

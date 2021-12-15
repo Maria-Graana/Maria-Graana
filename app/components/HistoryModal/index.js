@@ -233,7 +233,7 @@ class HistoryModal extends React.Component {
               }}
             />
             <View style={styles.header}>
-              <Text style={styles.headerText}>CALL HISTORY</Text>
+              <Text style={styles.headerText}>ACTIVITY HISTORY</Text>
             </View>
           </View>
           {data.length ? (

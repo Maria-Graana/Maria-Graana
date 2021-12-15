@@ -27,14 +27,11 @@ var CANCEL_INDEX = 3
 
 const triggerStyles = {
   triggerText: {
-    color: '#fff',
-    fontFamily: AppStyles.fonts.boldFont,
     fontSize: 16,
     alignSelf: 'center',
   },
   triggerWrapper: {
     padding: 5,
-    backgroundColor: AppStyles.colors.primaryColor,
     height: '100%',
     width: '100%',
     justifyContent: 'center',
@@ -50,9 +47,6 @@ const triggerStyles = {
 const optionsStyles = {
   optionsContainer: {
     backgroundColor: '#fff',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: AppStyles.colors.primaryColor,
     padding: 5,
   },
   optionsWrapper: {
@@ -352,6 +346,8 @@ class CMBottomNav extends React.Component {
       goToRejectForm,
       closedLeadEdit,
       lead,
+      goToDiaryForm,
+      goToAttachments
     } = this.props
     const {
       visible,
@@ -364,28 +360,54 @@ class CMBottomNav extends React.Component {
     return (
       <View style={styles.bottomNavMain}>
         <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
-          <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
-          <Text style={styles.bottomNavBtnText}>CIF</Text>
+          <View style={{alignItems: "center"}}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/black/details.png')}
+            />
+            <Text style={styles.bottomNavBtnText}>Details</Text>
+          </View>
         </TouchableOpacity>
-        <PopupMenu style={styles.popMenu}>
-          <MenuTrigger text="Action" customStyles={triggerStyles} />
-          <MenuOptions customStyles={optionsStyles}>{this.listActionMenuItems()}</MenuOptions>
-        </PopupMenu>
         <TouchableOpacity
           disabled={closedLeadEdit ? false : true}
           style={styles.followBtn}
           onPress={() => goToFollowUp()}
         >
-          <Text style={styles.followText}>Follow Up</Text>
+          <View style={{ alignItems: 'center' }}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/black/tasks.png')}
+            />
+            <Text style={styles.followText}>Tasks</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={closedLeadEdit ? false : true}
+          style={styles.followBtn}
+          onPress={() => goToHistory()}
+        >
+          <View style={{ alignItems: 'center' }}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/black/activity.png')}
+            />
+            <Text style={styles.followText}>Activity</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity
           disabled={closedLeadEdit ? false : true}
           style={styles.rejectBtn}
-          onPress={() => goToRejectForm()}
+          onPress={() => console.log("navigate to SCA document")}
         >
-          <Text style={styles.actionText}>Reject</Text>
+          <View style={{ alignItems: 'center' }}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/black/SCA.png')}
+            />
+            <Text style={styles.followText}>SCA</Text>
+          </View>
         </TouchableOpacity>
-        <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
+        <View style={[styles.bottomNavBtn2, visible === true]}>
           <Menu
             visible={visible}
             onDismiss={() => this.openMenu(false)}
@@ -394,15 +416,15 @@ class CMBottomNav extends React.Component {
                 {visible === true ? (
                   <Image
                     style={styles.bottomNavImg}
-                    source={require('../../../assets/img/menuIcon.png')}
+                    source={require('../../../assets/img/Blue/menu.png')}
                   />
                 ) : (
                   <Image
                     style={styles.bottomNavImg}
-                    source={require('../../../assets/img/menuIcon2.png')}
+                    source={require('../../../assets/img/black/menu.png')}
                   />
                 )}
-                <Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>
+                <Text style={[styles.bottomNavBtnText, visible === true && {color : "#348ceb"}]}>
                   Menu
                 </Text>
               </TouchableOpacity>
@@ -412,11 +434,11 @@ class CMBottomNav extends React.Component {
               <Menu.Item
                 onPress={() => {
                   if (closedLeadEdit) {
+                    goToHistory()
                     this.openMenu(false)
-                    this.setState({ isLeadCategoryModalVisible: true })
                   } else helper.leadClosedToast()
                 }}
-                title="Set Classification"
+                title="Activity History"
               />
             ) : null}
 
@@ -433,16 +455,41 @@ class CMBottomNav extends React.Component {
               />
             ) : null}
             {callButton ? (
-              <Menu.Item
+              <View>
+                <Menu.Item
                 onPress={() => {
                   if (closedLeadEdit) {
-                    goToHistory()
+                    this.navigateToAssignLead(lead)
                     this.openMenu(false)
                   } else helper.leadClosedToast()
                 }}
-                icon={require('../../../assets/img/callIcon.png')}
-                title="Call History"
+                // icon={require('../../../assets/img/callIcon.png')}
+                title="Re-assign"
               />
+              <Menu.Item
+                onPress={() => {
+                  if (closedLeadEdit) {
+                    this.navigateToShareScreen(lead)
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
+                }}
+                // icon={require('../../../assets/img/callIcon.png')}
+                title="Refer"
+              />
+              <Menu.Item
+                onPress={() => {
+                  if (closedLeadEdit) {
+                    goToAttachments()
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
+                }}
+                // icon={require('../../../assets/img/callIcon.png')}
+                title="Attachments"
+              />
+              </View>
+              
+              
+              
             ) : null}
             {!callButton && !lead.projectId ? <Menu.Item title="No Option" /> : null}
           </Menu>

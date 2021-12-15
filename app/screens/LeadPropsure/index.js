@@ -572,8 +572,8 @@ class LeadPropsure extends React.Component {
       leadObject = lead
     }
     if (leadObject) {
-      axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
-        this.setState({ meetings: res.data.rows })
+      axios.get(`/api/leads/tasks?rcmLeadId=${leadObject.id}`).then((res) => {
+        this.setState({ meetings: res.data })
       })
     }
   }
@@ -1241,6 +1241,7 @@ class LeadPropsure extends React.Component {
     navigation.navigate('ScheduledTasks', {
       taskType: 'follow_up',
       lead,
+      rcmLeadId: lead ? lead.id : null,
     })
     // this.setState({
     //   active: !this.state.active,

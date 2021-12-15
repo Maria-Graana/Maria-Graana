@@ -9,7 +9,6 @@ export default styles = StyleSheet.create({
   },
   timePageBtn: {
     justifyContent: 'center',
-    minHeight: 55,
     borderRadius: 4,
     padding: 15,
     marginBottom: 10,
@@ -21,31 +20,25 @@ export default styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   minCol: {
-    minWidth: '4%',
+    minWidth: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },
   hourCol: {
-    minWidth: '5%',
+    minWidth: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },
   hourRow: {
-    minWidth: '5%',
-    paddingLeft: 30,
-    paddingRight: 30,
-    paddingTop: 23,
-    paddingBottom: 23,
+    minWidth: 50,
+    minHeight: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
-    borderWidth: 0.6,
-    borderColor: 'grey',
   },
   viewHourCol: {
     flexDirection: 'row',
     padding: 10,
-    paddingLeft: 60,
+    paddingLeft: 50,
   },
   viewMinCol: {
     flexDirection: 'row',
@@ -55,5 +48,16 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
+  },
+  timeText: {
+    fontSize: 10,
+  },
+  taskLengthView: {
+    backgroundColor: '#D3D3D3',
+    borderRadius: 100,
+    paddingRight: 5,
+    paddingLeft: 5,
+    paddingTop: 3,
+    paddingBottom: 3,
   },
 })

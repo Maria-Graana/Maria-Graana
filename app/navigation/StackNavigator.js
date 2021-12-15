@@ -55,6 +55,7 @@ import RCMLeadTabs from './RCMTabNavigator'
 
 import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
 import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
+import DiaryReasons from '../screens/DiaryReasons'
 
 const Stack = createStackNavigator()
 
@@ -145,6 +146,21 @@ function MainStack() {
           title: 'Filters',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="DiaryReasons"
+        component={DiaryReasons}
+        options={({ navigation, route }) => ({
+          title: 'SELECT REASON',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text style={{ paddingRight: 15 }}>Done</Text>
+            </TouchableOpacity>
+          ),
           headerTitleAlign: 'center',
         })}
       />
@@ -470,7 +486,7 @@ function MainStack() {
         name="AvailableInventory"
         component={AvailableInventory}
         options={({ navigation, route }) => ({
-          title: 'AVAILABLE INVENTORIES',
+          title: 'AVAILABLE INVENTORY',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

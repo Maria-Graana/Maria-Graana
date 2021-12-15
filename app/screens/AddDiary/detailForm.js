@@ -143,7 +143,7 @@ class DetailForm extends Component {
           showDropDownIcon={false}
           iconMarginHorizontal={15}
           disabled={formData.status === 'completed'}
-          onPress={() => goToSlotManagement()}
+          onPress={() => goToSlotManagement(formData)}
           value={
             slotsData
               ? `${slotsData.date} (${helper.formatTime(slotsData.startTime)} - ${helper.formatTime(

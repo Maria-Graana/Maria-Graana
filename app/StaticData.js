@@ -82,6 +82,8 @@ export default StaticData = {
       { value: 'industrial land', name: 'Industrial Land' },
       { value: 'plot file', name: 'Plot File' },
       { value: 'farmhouse plot', name: 'Farmhouse Plot' },
+      { value: 'land', name: 'Commercial Land' },
+
     ],
     commercial: [
       { value: 'office', name: 'Office' },
@@ -93,7 +95,6 @@ export default StaticData = {
       { value: 'Gym', name: 'Gym' },
       { value: 'Food Court', name: 'Food Court' },
       { value: 'hall', name: 'Hall' },
-      { value: 'land', name: 'Land' },
       { value: 'plaza', name: 'Plaza' },
       { value: 'other', name: 'Other' },
     ],

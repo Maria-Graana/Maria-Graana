@@ -41,13 +41,17 @@ export class ScheduledTasks extends Component {
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
       // for scheduled tasks on basis of lead id
-      const { cmLeadId = null, rcmLeadId = null } = route.params
-      if (cmLeadId) {
-        this.setState({ leadId: cmLeadId, leadType: 'invest' })
-        dispatch(getDiaryTasks({ leadId: cmLeadId, leadType: 'invest' }))
-      } else if (rcmLeadId) {
-        this.setState({ leadId: rcmLeadId, leadType: 'buyRent' })
-        dispatch(getDiaryTasks({ leadId: rcmLeadId, leadType: 'buyRent' }))
+      if (route.params) {
+        const { cmLeadId = null, rcmLeadId = null } = route.params
+        if (cmLeadId) {
+          this.setState({ leadId: cmLeadId, leadType: 'invest' })
+          dispatch(getDiaryTasks({ leadId: cmLeadId, leadType: 'invest' }))
+        } else if (rcmLeadId) {
+          this.setState({ leadId: rcmLeadId, leadType: 'buyRent' })
+          dispatch(getDiaryTasks({ leadId: rcmLeadId, leadType: 'buyRent' }))
+        }
+      } else {
+        console.log('call scheduled tasks from slots api call')
       }
     })
   }
@@ -164,7 +168,6 @@ export class ScheduledTasks extends Component {
   render() {
     const { showMenu, leadType, leadId } = this.state
     const { route, dispatch, diary, scheduledTasks } = this.props
-    // const { cmLeadId = null, rcmLeadId = null } = route.params
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={style.container}>
@@ -202,7 +205,7 @@ export class ScheduledTasks extends Component {
         ) : (
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={diaries.rows}
+            data={scheduledTasks ? scheduledTasks.diary : diaries.rows}
             renderItem={({ item, index }) => (
               <DiaryTile
                 diary={item}

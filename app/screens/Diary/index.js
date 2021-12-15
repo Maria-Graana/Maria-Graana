@@ -40,6 +40,7 @@ import {
   setDairyFilterApplied,
   cancelDiaryViewing,
   cancelDiaryMeeting,
+  clearDiaries,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -112,6 +113,11 @@ class Diary extends React.Component {
       dispatch(setSlotDiaryData(_today))
       this.setState({ isDelete: false })
     }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(clearDiaries())
   }
 
   getMyDiary = (dateSelected) => {
@@ -244,6 +250,7 @@ class Diary extends React.Component {
       dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
+      dispatch(clearDiaries())
       if (selectedDiary) {
         dispatch(
           setSlotData(
@@ -328,6 +335,7 @@ class Diary extends React.Component {
   goToAddEditDiaryScreen = (update, data = null) => {
     const { navigation, dispatch } = this.props
     const { selectedDate } = this.state
+    dispatch(clearDiaries())
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }

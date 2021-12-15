@@ -83,6 +83,18 @@ export function getDiaryTasks(data) {
   }
 }
 
+export function clearDiaries() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_DIARIES,
+      payload: {
+        rows: [],
+        count: null,
+      },
+    })
+  }
+}
+
 export function setSelectedDiary(diary) {
   return (dispatch, getsState) => {
     let lead = null

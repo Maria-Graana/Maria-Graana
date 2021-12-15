@@ -14,6 +14,7 @@ import helper from '../../helper.js'
 import {
   cancelDiaryMeeting,
   cancelDiaryViewing,
+  clearDiaries,
   deleteDiaryTask,
   getDiaryTasks,
   markDiaryTaskAsDone,
@@ -55,6 +56,11 @@ export class ScheduledTasks extends Component {
         dispatch(getDiaryTasks({ fromDate, toDate }))
       }
     })
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(clearDiaries())
   }
 
   showMenuOptions = (data) => {
@@ -139,7 +145,7 @@ export class ScheduledTasks extends Component {
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
-    navigation.navigate('AddDiary', {
+    navigation.replace('AddDiary', {
       update,
       data,
       selectedDate: data ? moment(data.date).format('YYYY-MM-DD') : null,

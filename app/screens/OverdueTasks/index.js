@@ -68,7 +68,7 @@ class OverdueTasks extends React.Component {
     dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     dispatch(setSortValue('')).then((result) => {
-      dispatch(getDiaryTasks(_today, agentId, false))
+      dispatch(getDiaryTasks({ selectedData: _today, agentId, overdue: false }))
     })
   }
 
@@ -77,11 +77,11 @@ class OverdueTasks extends React.Component {
     const { selectedDiary } = diary
     const { agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone(null, agentId, true))
+      dispatch(markDiaryTaskAsDone({ agentId, overdue: true }))
     } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing(null, agentId, true))
+      dispatch(cancelDiaryViewing({ agentId, overdue: true }))
     } else if (action === 'cancel_meeting') {
-      dispatch(cancelDiaryMeeting(null, agentId, true))
+      dispatch(cancelDiaryMeeting({ agentId, overdue: true }))
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {
@@ -95,7 +95,7 @@ class OverdueTasks extends React.Component {
         'Are you sure you want to delete this task ?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask(null, agentId, true)) },
+          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask({ agentId, overdue: true })) },
         ],
         { cancelable: false }
       )
@@ -149,7 +149,7 @@ class OverdueTasks extends React.Component {
   getDiaries = () => {
     const { dispatch, user, route } = this.props
     const { agentId } = route.params
-    dispatch(getDiaryTasks(null, agentId, true))
+    dispatch(getDiaryTasks({ agentId, overdue: true }))
   }
 
   showMenuOptions = (data) => {
@@ -177,7 +177,14 @@ class OverdueTasks extends React.Component {
           toggleCategoryModal={(value) => {
             dispatch(setClassificationModal(value))
           }}
-          onCategorySelected={(value) => dispatch(setCategory(value, selectedDate, agentId))}
+          onCategorySelected={(value) =>
+            dispatch(
+              setCategory({
+                category: value,
+                overdue: true,
+              })
+            )
+          }
           selectedCategory={
             selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
@@ -248,7 +255,7 @@ class OverdueTasks extends React.Component {
                 //console.log(diaries.count, diaries.rows.length)
                 dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
-                dispatch(getDiaryTasks(null, agentId, true, false))
+                dispatch(getDiaryTasks({ agentId, overdue: true }))
               }
             }}
             onEndReachedThreshold={0.5}

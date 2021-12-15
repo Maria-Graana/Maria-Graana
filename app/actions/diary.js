@@ -5,12 +5,19 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 
-export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
+export function getDiaryTasks(data) {
   return (dispatch, getsState) => {
     let endPoint = ``
     let diaryRows = []
     const { page, pageSize, diaries } = getsState().diary.diary
     const { sort, isFilterApplied } = getsState().diary
+    const {
+      selectedDate = null,
+      agentId = null,
+      overdue = false,
+      leadId = null,
+      leadType = null,
+    } = data
 
     if (isFilterApplied) {
       // if filter is applied
@@ -23,7 +30,7 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
         endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         // console.log('endPoint=>', endPoint)
       }
-    } else {
+    } else if (leadId === null && leadType === null) {
       if (overdue) {
         endPoint = `/api/diary/all?overdue=${overdue}&status=pending&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         // console.log('overdue=>', endPoint)
@@ -31,7 +38,15 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
         endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         //console.log(endPoint)
       }
+    } else {
+      if (leadType === 'invest') {
+        endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}&status=pending`
+      } else if (leadType === 'buyRent') {
+        endPoint = `/api/diary/all?page=1&pageSize=100&buyrentId=${leadId}&status=pending`
+      }
     }
+
+    // console.log('endpoint', endPoint)
 
     if (page === 1) {
       dispatch({
@@ -204,9 +219,10 @@ export const setSortValue = (value) => {
   }
 }
 
-export function setCategory(category, selectedDate = null, agentId) {
+export function setCategory(data) {
   return (dispatch, getsState) => {
     const { selectedLead } = getsState().diary.diary
+    const { category, selectedDate = null, agentId = null, overdue = false, leadType = null } = data
     if (selectedLead) {
       let endPoint = ``
       let body = {
@@ -221,7 +237,9 @@ export function setCategory(category, selectedDate = null, agentId) {
           dispatch(setClassificationModal(false))
           if (res.status === 200) {
             helper.successToast(`Lead Category added`)
-            dispatch(getDiaryTasks(selectedDate, agentId))
+            dispatch(
+              getDiaryTasks({ selectedDate, agentId, overdue, leadId: selectedLead.id, leadType })
+            )
           } else {
             helper.successToast(`Something went wrong!`)
           }
@@ -234,9 +252,16 @@ export function setCategory(category, selectedDate = null, agentId) {
   }
 }
 
-export const markDiaryTaskAsDone = (selectedDate, agentId, overdue) => {
+export const markDiaryTaskAsDone = (data) => {
   return (dispatch, getsState) => {
     const { selectedDiary } = getsState().diary.diary
+    const {
+      selectedDate = null,
+      agentId = null,
+      overdue = false,
+      leadId = null,
+      leadType = null,
+    } = data
     let endPoint = ``
     endPoint = `/api/diary/update?id=${selectedDiary.id}`
     axios
@@ -245,7 +270,7 @@ export const markDiaryTaskAsDone = (selectedDate, agentId, overdue) => {
       })
       .then(function (response) {
         if (response.status == 200) {
-          dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
           helper.successToast(`Task completed`)
           //helper.deleteLocalNotification(data.id)
         }
@@ -253,9 +278,16 @@ export const markDiaryTaskAsDone = (selectedDate, agentId, overdue) => {
   }
 }
 
-export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
+export const deleteDiaryTask = (data) => {
   return (dispatch, getsState) => {
     const { selectedDiary } = getsState().diary.diary
+    const {
+      selectedDate = null,
+      agentId = null,
+      overdue = false,
+      leadId = null,
+      leadType = null,
+    } = data
     let endPoint = ``
     endPoint = `/api/diary/delete?id=${selectedDiary.id}`
     axios
@@ -263,7 +295,7 @@ export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
       .then(function (response) {
         if (response.status === 200) {
           helper.successToast('TASK DELETED SUCCESSFULLY!')
-          dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
           // helper.deleteLocalNotification(data.id)
         }
       })
@@ -273,16 +305,23 @@ export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
   }
 }
 
-export const cancelDiaryViewing = (selectedDate, agentId, overdue) => {
+export const cancelDiaryViewing = (data) => {
   return (dispatch, getsState) => {
     const { selectedDiary, selectedLead } = getsState().diary.diary
+    const {
+      selectedDate = null,
+      agentId = null,
+      overdue = false,
+      leadId = null,
+      leadType = null,
+    } = data
     if (selectedDiary.propertyId) {
       axios
         .delete(
           `/api/diary/delete?id=${selectedDiary.id}&propertyId=${selectedDiary.id}&leadId=${selectedLead.id}`
         )
         .then((res) => {
-          dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
           //helper.deleteLocalNotification(property.diaries[0].id)
           //this.fetchProperties()
         })
@@ -293,13 +332,20 @@ export const cancelDiaryViewing = (selectedDate, agentId, overdue) => {
   }
 }
 
-export const cancelDiaryMeeting = (selectedDate, agentId, overdue) => {
+export const cancelDiaryMeeting = (data) => {
   return (dispatch, getsState) => {
     const { selectedDiary, selectedLead } = getsState().diary.diary
+    const {
+      selectedDate = null,
+      agentId = null,
+      overdue = false,
+      leadId = null,
+      leadType = null,
+    } = data
     axios
       .delete(`/api/diary/delete?id=${selectedDiary.id}&cmLeadId=${selectedLead.id}`)
       .then((res) => {
-        dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+        dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
       })
       .catch((error) => {
         console.log(error)
@@ -320,7 +366,7 @@ export const getDiaryStats = (userId, day, startTime, endTime) => {
         })
       )
       .catch((error) => {
-        console.log(endPoint)
+        //console.log(endPoint)
         console.log('error', error)
       })
   }

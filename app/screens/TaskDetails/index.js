@@ -19,8 +19,8 @@ class TaskDetails extends Component {
 
   goToEditTask = () => {
     const { route, navigation } = this.props
-    const { diary, selectedDate } = route.params
-    navigation.navigate('AddDiary', { update: true, data: diary, selectedDate })
+    const { diary } = route.params
+    navigation.navigate('AddDiary', { update: true, data: diary })
   }
 
   render() {

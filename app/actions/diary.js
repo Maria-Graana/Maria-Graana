@@ -21,7 +21,7 @@ export function getDiaryTasks(selectedDate, agentId = null, overdue = false) {
         endPoint = `/api/diary/all?overdue=${overdue}&status=pending&orderBy=${sort}&page=${page}&pageSize=${pageSize}&agentId=${agentId}&${urlValue}`
       } else {
         endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
-        //console.log('endPoint=>', endPoint)
+        // console.log('endPoint=>', endPoint)
       }
     } else {
       if (overdue) {
@@ -116,6 +116,15 @@ export function setPageCount(count) {
   }
 }
 
+export function setDiaryFilterReason(reason) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_DIARY_FILTER_REASON,
+      payload: reason,
+    })
+  }
+}
+
 export const mapFiltersToQuery = (filters) => {
   if (filters) {
     for (let key in filters) {
@@ -127,13 +136,14 @@ export const mapFiltersToQuery = (filters) => {
       .map((key) => {
         if (key === 'date') {
           return `date[]=${filters[key]}`
-        } else if (key === 'feedbacksId') {
-          return `feedbacksId[]=${filters[key].value}`
+        } else if (key === 'feedbackId') {
+          return filters[key].map((item) => `&feedbacksId[]=${item}`)
         } else {
           return `${key}=${filters[key]}`
         }
       })
       .join('&')
+      .replace(/,/g, '')
     return qs
   }
 }
@@ -259,6 +269,40 @@ export const deleteDiaryTask = (selectedDate, agentId, overdue) => {
       })
       .catch(function (error) {
         helper.successToast(error.message)
+      })
+  }
+}
+
+export const cancelDiaryViewing = (selectedDate, agentId, overdue) => {
+  return (dispatch, getsState) => {
+    const { selectedDiary, selectedLead } = getsState().diary.diary
+    if (selectedDiary.propertyId) {
+      axios
+        .delete(
+          `/api/diary/delete?id=${selectedDiary.id}&propertyId=${selectedDiary.id}&leadId=${selectedLead.id}`
+        )
+        .then((res) => {
+          dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+          //helper.deleteLocalNotification(property.diaries[0].id)
+          //this.fetchProperties()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+  }
+}
+
+export const cancelDiaryMeeting = (selectedDate, agentId, overdue) => {
+  return (dispatch, getsState) => {
+    const { selectedDiary, selectedLead } = getsState().diary.diary
+    axios
+      .delete(`/api/diary/delete?id=${selectedDiary.id}&cmLeadId=${selectedLead.id}`)
+      .then((res) => {
+        dispatch(getDiaryTasks(selectedDate, agentId, overdue))
+      })
+      .catch((error) => {
+        console.log(error)
       })
   }
 }

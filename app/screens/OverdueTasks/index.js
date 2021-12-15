@@ -21,6 +21,8 @@ import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
+  cancelDiaryMeeting,
+  cancelDiaryViewing,
   clearDiaryFilter,
   deleteDiaryTask,
   getDiaryTasks,
@@ -55,7 +57,7 @@ class OverdueTasks extends React.Component {
     const { navigation, dispatch, route } = this.props
     const { count, agentId, agentName } = route.params
     navigation.setOptions({
-      title: agentName ? `${agentName} Overdue Tasks(${count})` : `Overdue Tasks(${count})`,
+      title: agentName ? `${agentName} Tasks (${count})` : `Overdue Tasks(${count})`,
     })
     this.getDiaries()
   }
@@ -77,6 +79,9 @@ class OverdueTasks extends React.Component {
     if (action === 'mark_as_done') {
       dispatch(markDiaryTaskAsDone(null, agentId, true))
     } else if (action === 'cancel_viewing') {
+      dispatch(cancelDiaryViewing(null, agentId, true))
+    } else if (action === 'cancel_meeting') {
+      dispatch(cancelDiaryMeeting(null, agentId, true))
     } else if (action === 'task_details') {
       navigation.navigate('TaskDetails', { diary: selectedDiary })
     } else if (action === 'edit_task') {

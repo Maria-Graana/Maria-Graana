@@ -10,12 +10,18 @@ export function setSlotDiaryData(selectedDate) {
       .get(
         `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
       )
-      .then((response) =>
-        dispatch({
-          type: types.SET_SLOT_DIARY_DATA,
-          payload: response.data,
-        })
-      )
+      .then((response) => {
+        if (response.data[0] == undefined) {
+          dispatch({
+            type: types.CLEAR_SLOT_DATA_DIARY,
+          })
+        } else {
+          dispatch({
+            type: types.SET_SLOT_DIARY_DATA,
+            payload: response.data,
+          })
+        }
+      })
       .catch((error) => {
         console.log(
           `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
@@ -74,11 +80,27 @@ export function clearSlotData() {
   }
 }
 
+export function clearSlotDiaryData() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SLOT_DATA_DIARY,
+    })
+  }
+}
+
 export function setScheduledTasks(payload) {
   return (dispatch, getsState) => {
     dispatch({
       type: types.SET_SCHEDULED_TASKS,
       payload: payload,
+    })
+  }
+}
+
+export function clearScheduledTasks() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SCHEDULED_TASKS,
     })
   }
 }

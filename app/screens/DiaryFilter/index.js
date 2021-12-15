@@ -16,9 +16,11 @@ import {
   getDiaryTasks,
   setDairyFilterApplied,
   setDiaryFilter,
+  setDiaryFilterReason,
 } from '../../actions/diary'
 import moment from 'moment'
 import { connect } from 'react-redux'
+import TouchableInput from '../../components/TouchableInput'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -31,58 +33,26 @@ class DiaryFilter extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.getFeedbackReasons()
-  }
-
   clearFilter = () => {
     const { dispatch, route, navigation } = this.props
     const { agentId, isOverdue } = route.params
     dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
+    dispatch(setDiaryFilterReason(null))
     dispatch(getDiaryTasks(_today, agentId, isOverdue))
     navigation.goBack()
-  }
-
-  getFeedbackReasons = () => {
-    this.setState({ loading: true }, () => {
-      let endPoint = `/api/feedbacks/fetch`
-      axios
-        .get(endPoint)
-        .then((res) => {
-          if (res && res.data) {
-            let sections = Object.keys(res.data)
-            let result = {}
-            for (let i = 0; i < sections.length; i++) {
-              let sectionArr = res.data[sections[i]]
-              for (let j = 0; j < sectionArr.length; j++) {
-                let id = sectionArr[j].id
-                let tags = sectionArr[j].tags
-                if (tags) {
-                  for (let k = 0; k < tags.length; k++) {
-                    if (result[tags[k]]) result[tags[k]] = [...result[tags[k]], id]
-                    else result[tags[k]] = [id]
-                  }
-                }
-              }
-            }
-            let response = Object.keys(result).map((item) => {
-              return {
-                name: item,
-                value: result[item],
-              }
-            })
-
-            this.setState({ loading: false, feedbackReasons: response })
-          }
-        })
-        .catch((error) => {})
-    })
   }
 
   onSearchPressed = () => {
     const { navigation, route, dispatch } = this.props
     const { agentId, isOverdue = false } = route.params
+    const { filters, feedbackReasonFilter } = this.props
+    const newFormData = {
+      ...filters,
+      feedbackId: feedbackReasonFilter ? feedbackReasonFilter.value : null,
+    }
+    //console.log(newFormData)
+    dispatch(setDiaryFilter(newFormData))
     dispatch(setDairyFilterApplied(true))
     dispatch(getDiaryTasks(null, agentId, isOverdue))
     navigation.goBack()
@@ -90,14 +60,17 @@ class DiaryFilter extends React.Component {
 
   handleForm = (value, name) => {
     const { dispatch } = this.props
-    const { filters } = this.props
-    let newformData = { ...filters }
+    const { filters, feedbackReasonFilter } = this.props
+    let newformData = {
+      ...filters,
+    }
     if (
       name === 'wantedId' ||
       name === 'projectId' ||
       name === 'buyrentId' ||
       name === 'customerId'
     ) {
+      s
       if (helper.isANumber(value)) {
         newformData[name] = value
       } else {
@@ -109,11 +82,15 @@ class DiaryFilter extends React.Component {
     dispatch(setDiaryFilter(newformData))
   }
 
+  goToDiaryReasons = () => {
+    const { navigation, route } = this.props
+    navigation.navigate('DiaryReasons', { screenName: 'DiaryFilter' })
+  }
+
   render() {
-    const { filters, route } = this.props
-    const { loading, feedbackReasons } = this.state
+    const { filters, route, feedbackReasonFilter } = this.props
+    const { loading } = this.state
     const { isOverdue } = route.params
-    const { feedbacksId } = filters
 
     return loading ? (
       <Loader loading={loading} />
@@ -133,12 +110,22 @@ class DiaryFilter extends React.Component {
                 date={new Date()}
                 selectedValue={filters.date ? helper.formatDate(filters.date) : ''}
                 handleForm={(value, name) => this.handleForm(helper.formatDate(value), name)}
-                // disabled={currentMeeting && currentMeeting.status === 'completed'}
               />
             </>
           )}
-
           <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText]}>Reason:</Text>
+              <TouchableInput
+                onPress={() => this.goToDiaryReasons()}
+                showIconOrImage={false}
+                value={feedbackReasonFilter ? feedbackReasonFilter.name : ''}
+                placeholder={'Select Reason'}
+              />
+            </View>
+          </View>
+
+          {/* <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <Text style={[styles.headingText, { marginBottom: 10 }]}>Reason:</Text>
               <PickerComponent
@@ -151,7 +138,7 @@ class DiaryFilter extends React.Component {
                 customIconStyle={{ marginRight: -6 }}
               />
             </View>
-          </View>
+          </View> */}
 
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
@@ -296,6 +283,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     filters: store.diary.filters,
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
   }
 }
 

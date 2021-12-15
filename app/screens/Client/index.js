@@ -182,6 +182,7 @@ class Client extends React.Component {
       .then((res) => {
         dispatch(setlead(res.data))
         navigation.navigate('CMLeadTabs', {
+          screen: 'Payments',
           params: {
             lead: res.data,
             client: data,

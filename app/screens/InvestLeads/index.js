@@ -230,7 +230,8 @@ class InvestLeads extends React.Component {
   }
 
   navigateTo = (data) => {
-    const { navigation } = this.props
+    const { navigation, route } = this.props
+    const unitData = route.params.unitData
     this.props.dispatch(setlead(data))
     let page = ''
     if (data.readAt === null) {
@@ -248,8 +249,8 @@ class InvestLeads extends React.Component {
       }
 
       navigation.navigate('CMLeadTabs', {
-        screen: page,
-        params: { lead: data },
+        screen: unitData ? 'Payments' : page,
+        params: { lead: data, unitData: unitData },
       })
     }
   }

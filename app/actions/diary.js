@@ -17,6 +17,8 @@ export function getDiaryTasks(data) {
       overdue = false,
       leadId = null,
       leadType = null,
+      fromDate = null,
+      toDate = null,
     } = data
 
     if (isFilterApplied) {
@@ -38,6 +40,8 @@ export function getDiaryTasks(data) {
         endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         //console.log(endPoint)
       }
+    } else if (fromDate && toDate) {
+      endPoint = `/api/diary/all?fromDate=${fromDate}&toDate=${toDate}`
     } else {
       if (leadType === 'invest') {
         endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}&status=pending`
@@ -46,7 +50,7 @@ export function getDiaryTasks(data) {
       }
     }
 
-    // console.log('endpoint', endPoint)
+    //console.log('endpoint', endPoint)
 
     if (page === 1) {
       dispatch({

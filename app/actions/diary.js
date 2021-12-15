@@ -32,7 +32,7 @@ export function getDiaryTasks(data) {
         endPoint = `/api/diary/all?agentId=${agentId}&${urlValue}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         // console.log('endPoint=>', endPoint)
       }
-    } else if (leadId === null && leadType === null) {
+    } else if (leadId === null && leadType === null && fromDate === null && toDate === null) {
       if (overdue) {
         endPoint = `/api/diary/all?overdue=${overdue}&status=pending&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         // console.log('overdue=>', endPoint)

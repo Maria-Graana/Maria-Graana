@@ -25,6 +25,8 @@ class CMFirstForm extends Component {
     const { unitPearlDetailsData } = this.props
     if (unitPearlDetailsData && 'pearlArea' in unitPearlDetailsData) {
       return unitPearlDetailsData.pearlArea < 50 ? StaticData.onlyUnitType : StaticData.unitType
+    } else {
+      return StaticData.unitType
     }
   }
 
@@ -40,7 +42,6 @@ class CMFirstForm extends Component {
         : false
     return checkForUnitIdavail
   }
-  
 
   setPaymentTile = () => {
     const { CMPayment } = this.props
@@ -450,15 +451,15 @@ class CMFirstForm extends Component {
           </View>
         </View>
         <View>
-        <TouchableInput
-          placeholder="Client"
-          onPress={() => handleClientClick()}
-          value={clientName}
-          showError={checkValidation === true && firstFormData.customerId === ''}
-          errorMessage="Required"
-        />
+          <TouchableInput
+            placeholder="Client"
+            onPress={() => handleClientClick()}
+            value={clientName}
+            showError={checkValidation === true && firstFormData.customerId === ''}
+            errorMessage="Required"
+          />
         </View>
-        
+
         <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}

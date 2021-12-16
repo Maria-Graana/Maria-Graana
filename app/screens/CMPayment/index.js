@@ -80,7 +80,7 @@ class CMPayment extends Component {
             ? lead.project.id
             : '',
         floor: route.params?.unitData != null ? route.params?.unitData.floorId : '',
-        unitType: route.params?.unitData != null ? route.params?.unitData.type : '',
+        unitType: route.params?.unitData != null ? 'fullUnit' : null,
         pearl: '',
         unit:
           route.params?.unitData != null
@@ -103,7 +103,7 @@ class CMPayment extends Component {
         projectName: route.params?.unitData != null ? route.params?.unitData.project.name : '',
         floorName: route.params?.unitData != null ? route.params?.unitData.floor.name : '',
       },
-      unitPearlDetailsData: {},
+      unitPearlDetailsData: route.params?.unitData != null ? route.params?.unitData.floor : {},
       oneUnitData: route.params?.unitData != null ? route.params?.unitData : {},
       RCMFormData: {
         type: '',
@@ -195,7 +195,10 @@ class CMPayment extends Component {
   }
 
   componentDidMount = () => {
-    const { navigation } = this.props
+    const { navigation, route } = this.props
+    if (route.params) {
+      this.changeProject(route.params.unitData.projectId)
+    }
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
       const { firstForm, secondForm } = this.state
@@ -1289,9 +1292,12 @@ class CMPayment extends Component {
     }
     var leadId = []
     leadId.push(lead.id)
-    axios.patch(`/api/leads/project`, body, { params: { id: leadId } }).then((res) => {
-      this.fetchLead()
-    })
+    axios
+      .patch(`/api/leads/project`, body, { params: { id: leadId } })
+      .then((res) => {
+        this.fetchLead()
+      })
+      .catch((err) => console.log(`/api/leads/project`, body, { params: { id: leadId } }))
   }
 
   openUnitDetailsModal = () => {
@@ -1418,7 +1424,6 @@ class CMPayment extends Component {
     const { lead, CMPayment, addInstrument } = this.props
     const { noProduct } = lead
     const { firstFormData, oneProductData, isPrimary, selectedClient } = this.state
-    console.log('selectedClient: ', selectedClient)
     let body = noProduct
       ? PaymentHelper.generateApiPayload(
           firstFormData,

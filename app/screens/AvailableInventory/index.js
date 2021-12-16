@@ -403,7 +403,7 @@ class AvailableInventory extends Component {
                       <ScrollView style={styles.dataWrapper}>
                         <Table borderStyle={styles.tableBorder}>
                           {tableData.map((rowData, index) =>
-                            rowData[5] == 'Available' ? (
+                            rowData[rowData.length - 1] == 'Available' ? (
                               <TouchableOpacity
                                 activeOpacity={0.6}
                                 onPress={() => this.onRowSelect(rowData[0])}

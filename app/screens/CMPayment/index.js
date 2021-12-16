@@ -198,6 +198,7 @@ class CMPayment extends Component {
     const { navigation, route } = this.props
     if (route.params) {
       this.changeProject(route.params.unitData.projectId)
+      this.getUnits(route.params.unitData.projectId, route.params.unitData.floorId)
     }
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
@@ -1077,23 +1078,23 @@ class CMPayment extends Component {
       lead.paidProject != null && lead.paidProject.monthly_installment_availablity === 'yes'
         ? true
         : false
-    ;(newcheckPaymentPlan['rental'] =
-      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false),
-      this.setState(
-        {
-          checkPaymentPlan: newcheckPaymentPlan,
-          firstFormData,
-        },
-        () => {
-          const { checkPaymentPlan } = this.state
-          let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
-          this.setState({
-            progressValue: cmProgressBar[lead.status] || 0,
-            paymentPlan: paymentArray,
-            editable: false,
-          })
-        }
-      )
+    newcheckPaymentPlan['rental'] =
+      lead.paidProject != null && lead.paidProject.rent_available === 'yes' ? true : false
+    this.setState(
+      {
+        checkPaymentPlan: newcheckPaymentPlan,
+        firstFormData,
+      },
+      () => {
+        const { checkPaymentPlan } = this.state
+        let paymentArray = PaymentHelper.setPaymentPlanArray(lead, checkPaymentPlan)
+        this.setState({
+          progressValue: cmProgressBar[lead.status] || 0,
+          paymentPlan: paymentArray,
+          editable: false,
+        })
+      }
+    )
   }
 
   callAgain = () => {

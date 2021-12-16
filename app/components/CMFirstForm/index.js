@@ -26,7 +26,7 @@ class CMFirstForm extends Component {
     if (unitPearlDetailsData && 'pearlArea' in unitPearlDetailsData) {
       return unitPearlDetailsData.pearlArea < 50 ? StaticData.onlyUnitType : StaticData.unitType
     } else {
-      return StaticData.unitType
+      return StaticData.onlyUnitType
     }
   }
 

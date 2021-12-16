@@ -10,12 +10,18 @@ export function setSlotDiaryData(selectedDate) {
       .get(
         `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
       )
-      .then((response) =>
-        dispatch({
-          type: types.SET_SLOT_DIARY_DATA,
-          payload: response.data,
-        })
-      )
+      .then((response) => {
+        if (response.data[0] == undefined) {
+          dispatch({
+            type: types.CLEAR_SLOT_DATA_DIARY,
+          })
+        } else {
+          dispatch({
+            type: types.SET_SLOT_DIARY_DATA,
+            payload: response.data,
+          })
+        }
+      })
       .catch((error) => {
         console.log(
           `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
@@ -74,11 +80,27 @@ export function clearSlotData() {
   }
 }
 
+export function clearSlotDiaryData() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SLOT_DATA_DIARY,
+    })
+  }
+}
+
 export function setScheduledTasks(payload) {
   return (dispatch, getsState) => {
     dispatch({
       type: types.SET_SCHEDULED_TASKS,
       payload: payload,
+    })
+  }
+}
+
+export function clearScheduledTasks() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_SCHEDULED_TASKS,
     })
   }
 }
@@ -95,6 +117,32 @@ export function getTimeShifts() {
       )
       .catch((error) => {
         console.log('api/slotManagement/user-shifts')
+        console.log('error', error)
+      })
+  }
+}
+
+export function setDataSlotsArray(dataSlots) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_SLOTS_DATA_PAYLOAD,
+      payload: dataSlots,
+    })
+  }
+}
+
+export function alltimeSlots() {
+  return (dispatch, getsState) => {
+    axios
+      .get('api/slotManagement/slot')
+      .then((response) =>
+        dispatch({
+          type: types.ALL_TIME_SLOTS,
+          payload: response.data,
+        })
+      )
+      .catch((error) => {
+        console.log('api/slotManagement/slot')
         console.log('error', error)
       })
   }

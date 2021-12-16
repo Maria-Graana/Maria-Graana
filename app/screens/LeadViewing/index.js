@@ -592,8 +592,8 @@ class LeadViewing extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 
@@ -791,6 +791,7 @@ class LeadViewing extends React.Component {
     navigation.navigate('ScheduledTasks', {
       taskType: 'follow_up',
       lead,
+      rcmLeadId: lead ? lead.id : null,
     })
     // this.setState({
     //   active: !this.state.active,

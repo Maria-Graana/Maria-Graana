@@ -162,7 +162,7 @@ const PaymentHelper = {
       name: 'name',
     }
   },
-  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument, isPrimary) {
+  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument, isPrimary, selectedClient) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -198,6 +198,7 @@ const PaymentHelper = {
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
       isPrimary,
+      purchaserId : selectedClient?.id
     }
   },
   generateProductApiPayload(
@@ -207,7 +208,8 @@ const PaymentHelper = {
     CMPayment,
     oneProduct,
     instrument,
-    isPrimary
+    isPrimary,
+    selectedClient
   ) {
     const { projectProduct } = oneProduct
     return {
@@ -276,6 +278,7 @@ const PaymentHelper = {
           : null,
       possessionChargesPercentage: projectProduct.possessionCharges,
       downPaymentPercentage: projectProduct.downPayment,
+      purchaserId: selectedClient?.id
     }
   },
   normalizeProjectProducts(products) {
@@ -493,7 +496,8 @@ const PaymentHelper = {
     pearlUnitPrice,
     unitPearlDetailsData,
     oneProductData,
-    CMPayment
+    CMPayment,
+    selectedClient
   ) {
     const { projectProduct } = oneProductData
     let body = PaymentHelper.createPearl({
@@ -529,6 +533,7 @@ const PaymentHelper = {
         : null,
       unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
       installmentAmount: CMPayment.installmentAmount,
+      purchaserId: selectedClient?.id
     }
     return body
   },

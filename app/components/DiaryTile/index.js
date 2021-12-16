@@ -34,6 +34,7 @@ class DiaryTile extends React.Component {
       diary,
       hideMenu,
       selectedDiary,
+      selectedLead,
       showMenuOptions,
       showMenu,
       setClassification,
@@ -70,20 +71,20 @@ class DiaryTile extends React.Component {
               )}${DiaryHelper.showClientName(diary)}`}</Text>
 
               <View>
-                {diary.status !== 'completed' ? (
-                  <Menu
-                    visible={showMenu && diary.id === selectedDiary.id}
-                    onDismiss={() => hideMenu()}
-                    anchor={
-                      <Ionicons
-                        onPress={() => showMenuOptions(diary)}
-                        name="ellipsis-vertical"
-                        size={22}
-                        color="black"
-                      />
-                    }
-                  >
-                    <View>
+                <Menu
+                  visible={showMenu && diary.id === selectedDiary.id}
+                  onDismiss={() => hideMenu()}
+                  anchor={
+                    <Ionicons
+                      onPress={() => showMenuOptions(diary)}
+                      name="ellipsis-vertical"
+                      size={22}
+                      color="black"
+                    />
+                  }
+                >
+                  <View>
+                    {diary.status !== 'completed' && (
                       <Menu.Item
                         onPress={() => {
                           handleMenuActions('mark_as_done')
@@ -91,25 +92,39 @@ class DiaryTile extends React.Component {
                         }}
                         title="Mark as Done"
                       />
+                    )}
 
-                      {diary.taskType === 'viewing' && diary.armsLeadId ? (
-                        <Menu.Item
-                          onPress={() => {
-                            handleMenuActions('cancel_viewing')
-                            hideMenu()
-                          }}
-                          title="Cancel Viewing"
-                        />
-                      ) : null}
-
+                    {DiaryHelper.getLeadId(diary) && diary.status !== 'completed' ? (
                       <Menu.Item
                         onPress={() => {
-                          handleMenuActions('task_details')
+                          setClassification(diary)
                           hideMenu()
                         }}
-                        title="Task Details"
+                        title="Set Classification"
                       />
+                    ) : null}
 
+                    {diary.taskType === 'viewing' &&
+                    diary.armsLeadId &&
+                    diary.status !== 'completed' ? (
+                      <Menu.Item
+                        onPress={() => {
+                          handleMenuActions('cancel_viewing')
+                          hideMenu()
+                        }}
+                        title="Cancel Viewing"
+                      />
+                    ) : null}
+
+                    <Menu.Item
+                      onPress={() => {
+                        handleMenuActions('task_details')
+                        hideMenu()
+                      }}
+                      title="Task Details"
+                    />
+
+                    {diary.status !== 'completed' && (
                       <Menu.Item
                         onPress={() => {
                           handleMenuActions('edit_task')
@@ -117,33 +132,36 @@ class DiaryTile extends React.Component {
                         }}
                         title="Edit Task"
                       />
+                    )}
 
-                      {diary.taskType !== 'morning_meeting' &&
-                      diary.taskType !== 'daily_update' &&
-                      diary.taskType !== 'meeting_with_pp' ? (
-                        <View>
-                          {!diary.wantedId ? (
-                            <Menu.Item
-                              onPress={() => {
-                                handleMenuActions('refer_lead')
-                                hideMenu()
-                              }}
-                              title="Refer Lead"
-                            />
-                          ) : null}
+                    {diary.taskType !== 'morning_meeting' &&
+                    diary.taskType !== 'daily_update' &&
+                    diary.taskType !== 'meeting_with_pp' &&
+                    diary.status !== 'completed' ? (
+                      <View>
+                        {!diary.wantedId ? (
                           <Menu.Item
                             onPress={() => {
-                              handleMenuActions('reassign_lead')
+                              handleMenuActions('refer_lead')
                               hideMenu()
                             }}
-                            title="Reassign Lead"
+                            title="Refer Lead"
                           />
-                        </View>
-                      ) : null}
+                        ) : null}
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('reassign_lead')
+                            hideMenu()
+                          }}
+                          title="Reassign Lead"
+                        />
+                      </View>
+                    ) : null}
 
-                      {diary.taskType === 'morning_meeting' ||
+                    {(diary.taskType === 'morning_meeting' ||
                       diary.taskType === 'daily_update' ||
-                      diary.taskType === 'meeting_with_pp' ? (
+                      diary.taskType === 'meeting_with_pp') &&
+                      diary.status !== 'completed' && (
                         <Menu.Item
                           onPress={() => {
                             handleMenuActions('delete')
@@ -151,22 +169,30 @@ class DiaryTile extends React.Component {
                           }}
                           title="Delete"
                         />
-                      ) : null}
-                    </View>
-                  </Menu>
-                ) : null}
+                      )}
+                  </View>
+                </Menu>
               </View>
             </View>
-            {diary && diary.response ? (
+            {diary && diary.reasonTag ? (
               <View style={styles.taskResponseView}>
-                <Text style={styles.taskResponse}>{diary.response}</Text>
+                <Text
+                  style={[
+                    styles.taskResponse,
+                    { backgroundColor: diary.reason ? diary.reason.colorCode : 'transparent' },
+                  ]}
+                >
+                  {diary.reasonTag}
+                </Text>
               </View>
             ) : null}
-            <View style={styles.rowWidth100}>
-              <Text numberOfLines={1} style={styles.requirements}>{`${DiaryHelper.checkLeadType(
-                diary
-              )} - ${DiaryHelper.showRequirements(diary)}`}</Text>
-            </View>
+            {DiaryHelper.checkLeadType(diary) ? (
+              <View style={styles.rowWidth100}>
+                <Text numberOfLines={1} style={styles.requirements}>{`${DiaryHelper.checkLeadType(
+                  diary
+                )}${DiaryHelper.showRequirements(diary)}`}</Text>
+              </View>
+            ) : null}
 
             <View style={styles.rowWidth100}>
               <View style={styles.bottomView}>
@@ -176,16 +202,20 @@ class DiaryTile extends React.Component {
               </View>
               {DiaryHelper.getLeadId(diary) === null ? null : (
                 <>
-                  <Text
-                    numberOfLines={1}
-                    onPress={() => setClassification(diary)}
-                    style={[
-                      styles.classification,
-                      { color: DiaryHelper.setLeadCategoryColor(diary) },
-                    ]}
-                  >
-                    {DiaryHelper.checkLeadCategory(diary)}
-                  </Text>
+                  {DiaryHelper.checkLeadCategory(diary) === 'Not Defined' ? (
+                    <View style={styles.classification} />
+                  ) : (
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        styles.classification,
+                        { color: DiaryHelper.setLeadCategoryColor(diary) },
+                      ]}
+                    >
+                      {DiaryHelper.checkLeadCategory(diary)}
+                    </Text>
+                  )}
+
                   <TouchableOpacity
                     style={{ width: '10%' }}
                     onPress={() => console.log('call connect')}

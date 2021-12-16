@@ -14,6 +14,7 @@ import TouchableButton from '../../components/TouchableButton'
 import Ability from '../../hoc/Ability'
 import TouchableInput from '../../components/TouchableInput'
 import styles from './style.js'
+import DiaryHelper from '../Diary/diaryHelper.js'
 
 class DetailForm extends Component {
   constructor(props) {
@@ -55,6 +56,7 @@ class DetailForm extends Component {
     newObject.taskType = data.taskType
     newObject.status = data.status
     newObject.taskCategory = data.taskCategory
+    newObject.isRecurring = data.isRecurring
     this.setState({ formData: newObject, buttonText: 'UPDATE TASK' })
   }
 
@@ -65,47 +67,83 @@ class DetailForm extends Component {
   }
 
   render() {
-    const { taskType, date, startTime, endTime, subject, notes, isRecurring } = this.state.formData
+    const { taskType, date, startTime, endTime, subject, notes, isRecurring, taskCategory } =
+      this.state.formData
     const { formData, buttonText } = this.state
     const {
       formSubmit,
       checkValidation,
       taskValues,
       loading,
-      performTaskActions,
       user,
       goToSlotManagement,
       slotsData,
+      editableData,
+      feedbackReasonFilter,
+      goToDiaryReasons,
     } = this.props
     return (
       <View>
-        <View style={[AppStyles.mainInputWrap]}>
+        {editableData ? (
+          <View style={styles.editViewContainer}>
+            <Text style={styles.headingText}> Task Type: </Text>
+            <Text style={styles.labelText}> {`${DiaryHelper.showTaskType(taskType)}`} </Text>
+          </View>
+        ) : (
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <PickerComponent
+                enabled={editableData === null}
+                onValueChange={this.handleForm}
+                selectedItem={taskType}
+                data={taskValues}
+                name={'taskType'}
+                placeholder="Task Type"
+              />
+            </View>
+            {checkValidation === true && taskType === '' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
+        )}
+
+        {editableData && editableData.taskType === 'follow_up' ? (
+          <View style={styles.editViewContainer}>
+            <Text style={styles.headingText}> Reason: </Text>
+            <View style={{ alignSelf: 'flex-start', marginVertical: 10 }}>
+              <Text
+                style={[
+                  styles.taskResponse,
+                  {
+                    borderColor: editableData.reason
+                      ? editableData.reason.colorCode
+                      : 'transparent',
+                  },
+                ]}
+              >
+                {editableData.reasonTag}
+              </Text>
+            </View>
+          </View>
+        ) : taskType === 'follow_up' ? (
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent
-              // enabled={
-              //   formData.status === 'pending' &&
-              //   (formData.taskCategory === 'simpleTask' || formData.taskCategory === null)
-              //     ? true
-              //     : false
-              // }
-              onValueChange={this.handleForm}
-              selectedItem={taskType}
-              data={taskValues}
-              name={'taskType'}
-              placeholder="Task Type"
+            <TouchableInput
+              onPress={() => goToDiaryReasons()}
+              showIconOrImage={false}
+              value={feedbackReasonFilter ? feedbackReasonFilter.name : ''}
+              placeholder={'Select Reason'}
             />
           </View>
-          {checkValidation === true && taskType === '' && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
-        </View>
+        ) : null}
+
         <TouchableInput
           placeholder="Book Slot"
           iconSource={require('../../../assets/img/calendar.png')}
           showIconOrImage={true}
           showDropDownIcon={false}
           iconMarginHorizontal={15}
-          onPress={() => goToSlotManagement()}
+          disabled={formData.status === 'completed' || taskType === ''}
+          onPress={() => goToSlotManagement(formData)}
           value={
             slotsData
               ? `${slotsData.date} (${helper.formatTime(slotsData.startTime)} - ${helper.formatTime(
@@ -115,18 +153,23 @@ class DetailForm extends Component {
           }
         />
 
-        <TouchableOpacity
-          onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
-          style={styles.checkBoxRow}
-        >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={isRecurring}
-            style={styles.checkBox}
+        {editableData === null &&
+        (taskType === 'morning_meeting' ||
+          taskType === 'daily_update' ||
+          taskType === 'meeting_with_pp') ? (
+          <TouchableOpacity
             onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
-          />
-          <Text style={styles.checkBoxText}>Recurring</Text>
-        </TouchableOpacity>
+            style={styles.checkBoxRow}
+          >
+            <CheckBox
+              color={AppStyles.colors.primaryColor}
+              checked={isRecurring}
+              style={styles.checkBox}
+              onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
+            />
+            <Text style={styles.checkBoxText}>Recurring</Text>
+          </TouchableOpacity>
+        ) : null}
 
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea
@@ -142,9 +185,10 @@ class DetailForm extends Component {
               },
             ]}
             rowSpan={5}
-            placeholder="Comment"
+            placeholder="Description"
+            maxLength={1000}
             onChangeText={(text) => this.handleForm(text, 'notes')}
-            // disabled={formData.status === 'pending' ? false : true}
+            disabled={formData.status === 'pending' ? false : true}
             value={notes}
           />
         </View>
@@ -166,6 +210,7 @@ class DetailForm extends Component {
 
 mapStateToProps = (store) => {
   return {
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
     user: store.user.user,
   }
 }

@@ -34,8 +34,6 @@ export default styles = StyleSheet.create({
     minHeight: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 0.6,
-    borderColor: 'grey',
   },
   viewHourCol: {
     flexDirection: 'row',

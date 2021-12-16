@@ -3,6 +3,7 @@
 import helper from '../../helper'
 import _ from 'underscore'
 import moment from 'moment'
+import StaticData from '../../StaticData'
 
 const DiaryHelper = {
   removeUnderscore(str) {
@@ -34,9 +35,9 @@ const DiaryHelper = {
       diary.armsProjectLead &&
       diary.armsProjectLead.customer
     ) {
-      return `-${diary.armsProjectLead.customer.first_name} ${diary.armsProjectLead.customer.last_name}`
+      return ` - ${diary.armsProjectLead.customer.first_name} ${diary.armsProjectLead.customer.last_name}`
     } else if (diary && diary.armsLeadId && diary.armsLead && diary.armsLead.customer) {
-      return `-${diary.armsLead.customer.first_name} ${diary.armsLead.customer.last_name}`
+      return ` - ${diary.armsLead.customer.first_name} ${diary.armsLead.customer.last_name}`
     } else {
       return ''
     }
@@ -96,23 +97,45 @@ const DiaryHelper = {
     const { armsProjectLeadId, armsLeadId, armsLead, armsProjectLead, wantedId, wanted } = diary
     if (diary && armsProjectLeadId) {
       if (armsProjectLead && armsProjectLead.projectType) {
-        return `${armsProjectLead.projectType} in ${armsProjectLead.projectName}`
+        return `-${armsProjectLead.projectType} in ${armsProjectLead.projectName}`
       } else if (armsProjectLead && armsProjectLead.projectId && armsProjectLead.projectName) {
-        return `${armsProjectLead.projectName}`
+        return `-${armsProjectLead.projectName}`
       } else {
         return ''
       }
     } else if (diary && armsLeadId) {
       if (armsLead) {
-        return `${armsLead.size} ${helper.capitalize(armsLead.size_unit)} ${helper.capitalize(
-          armsLead.subtype
-        )} in ${armsLead.city.name}`
+        return `-${
+          armsLead.size === 0 ||
+          armsLead.size === StaticData.Constants.size_any_value ||
+          armsLead.size === null
+            ? ''
+            : armsLead.size
+        } ${
+          armsLead.size !== 0 && armsLead.size !== StaticData.Constants.size_any_value
+            ? helper.capitalize(armsLead.size_unit)
+            : ''
+        } ${armsLead.subtype ? `${helper.capitalize(armsLead?.subtype)} in ` : ''} in ${
+          armsLead.city?.name
+        }`
       }
     } else if (wantedId) {
       if (wanted) {
-        return `${wanted.size} ${helper.capitalize(wanted.size_unit)} ${helper.capitalize(
-          wanted.subtype
-        )} in ${wanted.city.name}`
+        return `-${
+          wanted.size === 0 ||
+          wanted.size === StaticData.Constants.size_any_value ||
+          wanted.size === null
+            ? ''
+            : wanted.size
+        } ${
+          wanted.size !== 0 &&
+          wanted.size !== StaticData.Constants.size_any_value &&
+          wanted.size !== null
+            ? helper.capitalize(wanted.size_unit)
+            : ''
+        }${wanted.subtype ? `${helper.capitalize(wanted?.subtype)} in ` : ''}${wanted.city?.name}`
+      } else {
+        return ''
       }
     } else {
       return ''

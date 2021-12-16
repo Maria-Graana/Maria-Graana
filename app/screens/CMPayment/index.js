@@ -195,10 +195,11 @@ class CMPayment extends Component {
   }
 
   componentDidMount = () => {
-    const { navigation, route } = this.props
-    if (route.params) {
-      this.changeProject(route.params.unitData.projectId)
-      this.getUnits(route.params.unitData.projectId, route.params.unitData.floorId)
+    const { navigation, route, lead } = this.props
+    if (route.params && route.params.unitData) {
+      lead.id != route.params.unitData.projectId &&
+        this.changeProject(route.params.unitData.projectId)
+      lead.status == 'open' && this.getAllProjects()
     }
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
@@ -378,6 +379,7 @@ class CMPayment extends Component {
   }
 
   getAllProjects = () => {
+    const { route, lead } = this.props
     axios
       .get(`/api/project/all`)
       .then((res) => {
@@ -386,10 +388,16 @@ class CMPayment extends Component {
           res.data.items.map((item, index) => {
             return projectArray.push({ value: item.id, name: item.name })
           })
-        this.setState({
-          pickerProjects: projectArray,
-          allProjects: res.data.items,
-        })
+        this.setState(
+          {
+            pickerProjects: projectArray,
+            allProjects: res.data.items,
+          },
+          () =>
+            lead.status == 'open' &&
+            route.params &&
+            this.getUnits(route.params.unitData.projectId, route.params.unitData.floorId)
+        )
       })
       .catch((error) => {
         console.log('/api/project/all - Error', error)

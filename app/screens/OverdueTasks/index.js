@@ -68,7 +68,7 @@ class OverdueTasks extends React.Component {
     dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     dispatch(setSortValue('')).then((result) => {
-      dispatch(getDiaryTasks({ selectedData: _today, agentId, overdue: false }))
+      dispatch(getDiaryTasks({ selectedDate: _today, agentId }))
     })
   }
 

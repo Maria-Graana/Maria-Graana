@@ -407,6 +407,7 @@ class AvailableInventory extends Component {
                               <TouchableOpacity
                                 activeOpacity={0.6}
                                 onPress={() => this.onRowSelect(rowData[0])}
+                                key={index}
                               >
                                 <Row
                                   key={index}

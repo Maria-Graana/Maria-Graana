@@ -202,10 +202,15 @@ class InvestLeads extends React.Component {
 
   navigateTo = (data) => {
     const { navigation } = this.props
+    const { screen } = this.props.route.params
     this.props.dispatch(setlead(data))
     let page = ''
     if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'invest',
+        screenName: screen,
+      })
     } else {
       if (
         data.status === 'token' ||
@@ -220,7 +225,7 @@ class InvestLeads extends React.Component {
 
       navigation.navigate('CMLeadTabs', {
         screen: page,
-        params: { lead: data },
+        params: { lead: data , screenName : screen }
       })
     }
   }

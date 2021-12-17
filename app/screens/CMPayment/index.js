@@ -1564,12 +1564,25 @@ class CMPayment extends Component {
   }
 
   //  ************ Function for open Follow up modal ************
+  // openModalInFollowupMode = (value) => {
+  //   this.setState({
+  //     active: !this.state.active,
+  //     isFollowUpMode: true,
+  //     comment: value,
+  //   })
+  // }
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   //  ************ SCHEDULE OF PAYMENT WORKFLOW **************
@@ -1844,6 +1857,7 @@ class CMPayment extends Component {
       meetings,
     } = this.state
     const { lead, navigation, contacts } = this.props
+    const {screenName} = this.props.route.params
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -2079,6 +2093,7 @@ class CMPayment extends Component {
               goToHistory={this.goToHistory}
               onHandleCloseLead={this.onHandleCloseLead}
               fetchLead={this.fetchLead}
+              screenName={screenName}
             />
           </View>
         </View>

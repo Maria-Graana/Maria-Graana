@@ -10,11 +10,13 @@ import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import SortImg from '../../../assets/img/sort.png'
+import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
 import { getItem, storeItem } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
+import DateSearchFilter from '../../components/DateSearchFilter'
 import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
@@ -26,14 +28,12 @@ import Search from '../../components/Search'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import config from '../../config'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
-import DateSearchFilter from '../../components/DateSearchFilter'
-import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
-import { setCallPayload } from '../../actions/callMeetingFeedback'
 
 var BUTTONS = [
   'Assign to team member',
@@ -208,11 +208,20 @@ class RentLeads extends React.Component {
 
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
+    const { screen } = this.props.route.params
     let page = ''
     if (this.props.route.params?.screen === 'MyDeals') {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'rent',
+        screenName: screen,
+      })
     } else if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'rent',
+        screenName: screen,
+      })
     } else {
       if (data.status === 'open') {
         page = 'Match'

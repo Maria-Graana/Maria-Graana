@@ -132,7 +132,9 @@ class AddDiary extends Component {
 
   addDiary = (data) => {
     const { route, navigation, dispatch } = this.props
+    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
     let diary = this.generatePayload(data)
+
     axios
       .post(`/api/leads/task`, diary)
       .then((res) => {
@@ -146,8 +148,24 @@ class AddDiary extends Component {
             body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
           }
           TimerNotification(data, start)
-          dispatch(getDiaryTasks(moment(diary.date).format('YYYY-MM-DD'), diary.userId, false))
-          navigation.goBack()
+          if (screenName === 'Diary') {
+            dispatch(
+              getDiaryTasks({
+                selectedDate: moment(diary.date).format('YYYY-MM-DD'),
+                agentId: diary.userId,
+                overdue: false,
+              })
+            )
+          } else {
+            dispatch(
+              getDiaryTasks({
+                leadId: cmLeadId ? cmLeadId : rcmLeadId,
+                leadType: cmLeadId ? 'invest' : 'buyRent',
+              })
+            )
+          }
+
+          navigation.navigate(screenName, { cmLeadId, rcmLeadId })
         } else {
           helper.errorToast('ERROR: SOMETHING WENT WRONG')
         }
@@ -163,7 +181,8 @@ class AddDiary extends Component {
 
   updateDiary = (data) => {
     let diary = this.generatePayload(data)
-    const { dispatch, navigation } = this.props
+    const { dispatch, navigation, route } = this.props
+    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
     axios
       .patch(`/api/diary/update?id=${diary.id}`, diary)
       .then((res) => {
@@ -176,10 +195,28 @@ class AddDiary extends Component {
           body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
         }
         helper.deleteAndUpdateNotification(data, start, res.data.id)
-        dispatch(getDiaryTasks(moment(diary.date).format('YYYY-MM-DD'), diary.userId, false))
-        navigation.navigate('Diary', {
+        if (screenName === 'Diary') {
+          dispatch(
+            getDiaryTasks({
+              selectedDate: moment(diary.date).format('YYYY-MM-DD'),
+              agentId: diary.userId,
+              overdue: false,
+            })
+          )
+        } else {
+          dispatch(
+            getDiaryTasks({
+              leadId: cmLeadId ? cmLeadId : rcmLeadId,
+              leadType: cmLeadId ? 'invest' : 'buyRent',
+            })
+          )
+        }
+
+        navigation.navigate(screenName, {
           update: false,
           agentId: this.props.route.params.agentId,
+          cmLeadId,
+          rcmLeadId,
         })
       })
       .catch((error) => {

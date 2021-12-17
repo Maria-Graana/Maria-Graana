@@ -600,7 +600,7 @@ class LeadDetail extends React.Component {
             user.id !== lead.shared_with_armsuser_id &&
             lead.shareUser ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Shared with</Text>
+                <Text style={styles.headingTextTypeTwo}>Reffered to</Text>
                 <Text style={styles.labelTextTypeTwo}>
                   {lead.shareUser.firstName +
                     ' ' +
@@ -615,7 +615,7 @@ class LeadDetail extends React.Component {
             user.id === lead.shared_with_armsuser_id &&
             lead.armsuser ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Shared by</Text>
+                <Text style={styles.headingTextTypeTwo}>Reffered by</Text>
                 <Text style={styles.labelTextTypeTwo}>
                   {lead.armsuser.firstName +
                     ' ' +

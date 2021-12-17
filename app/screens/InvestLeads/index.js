@@ -231,9 +231,12 @@ class InvestLeads extends React.Component {
   }
   navigateFromMenu = (data, name) => {
     this.props.dispatch(setlead(data))
-    console.log(setlead(data).payload, '===> L')
-    this.props.navigation.navigate(name, { lead: data, purposeTab: 'invest', screen: 'MenuLead' })
-    console.log(this.lead)
+    this.props.navigation.navigate(name, {
+      lead: data,
+      purposeTab: 'invest',
+      screen: 'InvestLeads',
+      cmLeadId: data.id,
+    })
     this.setIsMenuVisible(false, data)
   }
 
@@ -275,7 +278,7 @@ class InvestLeads extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: 'Investment',
-            screen: 'MenuLead',
+            // screen: 'MenuLead',
           })
         }
       } else {

@@ -1042,7 +1042,7 @@ class LeadRCMPayment extends React.Component {
     }
     if (leadObject) {
       axios.get(`/api/leads/tasks?rcmLeadId=${leadObject.id}`).then((res) => {
-        this.setState({ meetings: res.data})
+        this.setState({ meetings: res.data })
       })
     }
   }
@@ -1777,6 +1777,7 @@ class LeadRCMPayment extends React.Component {
     navigation.navigate('ScheduledTasks', {
       taskType: 'follow_up',
       lead,
+      rcmLeadId: lead ? lead.id : null,
     })
   }
 

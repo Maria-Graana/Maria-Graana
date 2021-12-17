@@ -28,7 +28,7 @@ export function DiarySortModal({
               onPress={() => {
                 dispatch(setSortValue(item.value)).then((result) => {
                   if (result) {
-                    dispatch(getDiaryTasks(selectedDate, agentId, isOverdue, isFiltered))
+                    dispatch(getDiaryTasks({ selectedDate, agentId, overdue: isOverdue }))
                     showSortModalVisible(false)
                   }
                 })

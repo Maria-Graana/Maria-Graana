@@ -350,7 +350,7 @@ class BuyLeads extends React.Component {
 
   sendStatus = (status) => {
     this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
-      storeItem('sortInvest', status)
+      storeItem('sortBuy', status)
       this.fetchLeads()
     })
   }

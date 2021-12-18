@@ -24,12 +24,18 @@ import _ from 'underscore'
 function TimeSlotManagement(props) {
   const data = props.timeSlots
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(_today)
+  const [selectedDate, setSelectedDate] = useState(
+    props.route.params.date ? props.route.params.date : _today
+  )
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
   const [check, setCheck] = useState(false)
   const [slots, setSlots] = useState(props.slotData ? props.slotData.slots : [])
-  const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
+  const [dayName, setDayName] = useState(
+    moment(props.route.params.date ? props.route.params.date : _today)
+      .format('dddd')
+      .toLowerCase()
+  )
   const [slotsData, setSlotsData] = useState(props.slotsDataArray ? props.slotsDataArray : [])
   const [slotsDiary, setSlotsDiary] = useState(props.slotDiary ? props.slotDiary : [])
   const [isSelected, setIsSelected] = useState(props.slotData ? props.slotData.slots : [])

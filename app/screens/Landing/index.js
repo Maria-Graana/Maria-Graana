@@ -338,28 +338,28 @@ class Landing extends React.Component {
         ) : null} */}
 
         <View style={styles.btnView}>
-          {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate('AddInventory', { update: false })
-              }}
-              style={styles.btnStyle}
-            >
-              <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>PIF</Text>
-            </TouchableOpacity>
-          ) : null}
-          {Ability.canAdd(user.subRole, 'Client') ? (
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate('AddClient', { update: false })
-              }}
-              style={[styles.btnStyle, { marginLeft: 5 }]}
-            >
-              <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>CIF</Text>
-            </TouchableOpacity>
-          ) : null}
+          {/* {Ability.canAdd(user.subRole, 'InventoryTabs') ? ( */}
+          <TouchableOpacity
+            onPress={() => {
+              this.props.navigation.navigate('AddInventory', { update: false })
+            }}
+            style={styles.btnStyle}
+          >
+            <Image source={addIcon} style={styles.containerImg} />
+            <Text style={styles.font}>PR</Text>
+          </TouchableOpacity>
+          {/* ) : null} */}
+          {/* {Ability.canAdd(user.subRole, 'Client') ? ( */}
+          <TouchableOpacity
+            onPress={() => {
+              this.props.navigation.navigate('AddClient', { update: false })
+            }}
+            style={[styles.btnStyle, { marginLeft: 5 }]}
+          >
+            <Image source={addIcon} style={styles.containerImg} />
+            <Text style={styles.font}>CR</Text>
+          </TouchableOpacity>
+          {/* ) : null} */}
         </View>
         <UpdateApp />
       </SafeAreaView>

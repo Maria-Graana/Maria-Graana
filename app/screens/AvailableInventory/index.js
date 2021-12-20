@@ -10,6 +10,7 @@ import {
   Image,
   SafeAreaView,
   TouchableHighlight,
+  TouchableOpacity,
 } from 'react-native'
 import _ from 'underscore'
 import { Fab } from 'native-base'
@@ -41,6 +42,7 @@ class AvailableInventory extends Component {
       loading: true,
       showFilterModal: false,
       status: '',
+      projectData: null,
     }
   }
 
@@ -62,6 +64,7 @@ class AvailableInventory extends Component {
             pickerProjects: projectArray,
             allProjects: res.data.items,
             selectedProject: projectArray && projectArray.length > 0 ? projectArray[0].value : null,
+            projectData: projectArray && projectArray.length > 0 ? projectArray[0] : null,
           },
           () => {
             this.getFloors(this.state.selectedProject)
@@ -203,9 +206,20 @@ class AvailableInventory extends Component {
   }
 
   handleProjectChange = (item) => {
+    const { pickerProjects } = this.state
     this.setState({ selectedProject: item, selectedFloor: null, loading: true }, () => {
       this.getFloors(this.state.selectedProject)
     })
+
+    this.setProjectData(item, pickerProjects)
+  }
+
+  setProjectData = (item, pickerProjects) => {
+    for (var i = 0; i < pickerProjects.length; i++) {
+      if (item == pickerProjects[i].value) {
+        this.setState({ projectData: pickerProjects[i] })
+      }
+    }
   }
 
   handleFloorChange = (item) => {
@@ -237,6 +251,28 @@ class AvailableInventory extends Component {
     this.setState({ showFilterModal: value })
   }
 
+  fetchOneUnit = (unit) => {
+    const { allUnits } = this.state
+    let oneUnit = {}
+    if (allUnits && allUnits.length) {
+      oneUnit = allUnits.find((item) => {
+        return item.name == unit && item
+      })
+    }
+    return oneUnit
+  }
+
+  onRowSelect = (val) => {
+    const { navigation } = this.props
+    const unit = this.fetchOneUnit(val)
+    navigation.navigate('Client', {
+      isUnitBooking: true,
+      screenName: 'Leads',
+      projectData: this.state.projectData,
+      unit: unit,
+    })
+  }
+
   render() {
     const {
       pickerProjects,
@@ -249,7 +285,7 @@ class AvailableInventory extends Component {
       showFilterModal,
       status,
     } = this.state
-
+    const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -366,18 +402,37 @@ class AvailableInventory extends Component {
 
                       <ScrollView style={styles.dataWrapper}>
                         <Table borderStyle={styles.tableBorder}>
-                          {tableData.map((rowData, index) => (
-                            <Row
-                              key={index}
-                              data={rowData}
-                              widthArr={widthArr}
-                              style={[
-                                styles.row,
-                                { backgroundColor: helper.setBookingStatusColor(rowData) },
-                              ]}
-                              textStyle={styles.text}
-                            />
-                          ))}
+                          {tableData.map((rowData, index) =>
+                            rowData[rowData.length - 1] == 'Available' ? (
+                              <TouchableOpacity
+                                activeOpacity={0.6}
+                                onPress={() => this.onRowSelect(rowData[0])}
+                                key={index}
+                              >
+                                <Row
+                                  key={index}
+                                  data={rowData}
+                                  widthArr={widthArr}
+                                  style={[
+                                    styles.row,
+                                    { backgroundColor: helper.setBookingStatusColor(rowData) },
+                                  ]}
+                                  textStyle={styles.text}
+                                />
+                              </TouchableOpacity>
+                            ) : (
+                              <Row
+                                key={index}
+                                data={rowData}
+                                widthArr={widthArr}
+                                style={[
+                                  styles.row,
+                                  { backgroundColor: helper.setBookingStatusColor(rowData) },
+                                ]}
+                                textStyle={styles.text}
+                              />
+                            )
+                          )}
                         </Table>
                       </ScrollView>
                     </View>

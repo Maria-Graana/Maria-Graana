@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native'
+import { StackActions, CommonActions } from '@react-navigation/native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
 import { Ionicons, FontAwesome5, Entypo, Fontisto } from '@expo/vector-icons'
@@ -21,8 +22,6 @@ import CalendarComponent from '../../components/CalendarComponent'
 import moment from 'moment'
 import DiaryTile from '../../components/DiaryTile'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
-import axios from 'axios'
-import helper, { formatDateTime } from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
@@ -36,9 +35,17 @@ import {
   setClassificationModal,
   setOnEndReachedLoader,
   setSelectedDiary,
+  setSortValue,
+  clearDiaryFilter,
+  setDairyFilterApplied,
+  cancelDiaryViewing,
+  cancelDiaryMeeting,
+  clearDiaries,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
+  alltimeSlots,
+  clearSlotDiaryData,
   getTimeShifts,
   setSlotData,
   setSlotDiaryData,
@@ -47,6 +54,8 @@ import {
 
 import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
+import { DiarySortModal } from '../../components/DiarySortModal'
+import helper, { formatDateTime } from '../../helper'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -57,7 +66,7 @@ class Diary extends React.Component {
     super(props)
     this.state = {
       startDate: _today,
-      agentId: '',
+      agentId: null,
       selectedDate: _today,
       isCalendarVisible: false,
       showMenu: false,
@@ -67,38 +76,65 @@ class Diary extends React.Component {
       startTime: '',
       endTime: '',
       isMenuVisible: false,
+      isSortModalVisible: false,
+      isDelete: false,
     }
   }
   componentDidMount() {
     const { navigation, dispatch } = this.props
     const { route, user } = this.props
-
+    const { agentId } = route.params
+    dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
     dispatch(setSlotDiaryData(_today))
     this.getDiariesStats()
-    // this._unsubscribe = navigation.addListener('focus', () => {
-    let { selectedDate } = this.state
-    let dateSelected = selectedDate
-    if ('openDate' in route.params) {
-      const { openDate } = route.params
-      dateSelected = moment(openDate).format(_format)
-    }
-    if (route.params !== undefined && 'agentId' in route.params) {
-      navigation.setOptions({ title: `${route.params.name} Diary` })
-      this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
-        this.getDiaries()
+    this._unsubscribe = navigation.addListener('focus', () => {
+      let { selectedDate } = this.state
+      dispatch(setSlotDiaryData(_today))
+      let dateSelected = selectedDate
+      if ('openDate' in route.params) {
+        const { openDate } = route.params
+        dateSelected = moment(openDate).format(_format)
+      }
+      if (route.params !== undefined && agentId) {
         // Team Diary View
-      })
-    } else {
-      navigation.setOptions({ title: 'My Diary' })
-      this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
+        this.getTeamDiary(dateSelected)
+      } else {
         // Personal Diary
-        this.getDiaries()
-      })
+        this.getMyDiary(dateSelected)
+      }
+    })
+  }
+
+  componentDidUpdate() {
+    const { dispatch } = this.props
+    if (this.state.isDelete) {
+      dispatch(setSlotDiaryData(_today))
+      this.setState({ isDelete: false })
     }
-    //}
-    //})
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(clearDiaries())
+  }
+
+  getMyDiary = (dateSelected) => {
+    const { route, user, navigation } = this.props
+    navigation.setOptions({ title: 'My Diary' })
+    this.setState({ agentId: user.id, selectedDate: dateSelected }, () => {
+      // Personal Diary
+      this.getDiaries()
+    })
+  }
+
+  getTeamDiary = (dateSelected) => {
+    const { route, user, navigation } = this.props
+    navigation.setOptions({ title: `${route.params.name} Diary` })
+    this.setState({ agentId: route.params.agentId, selectedDate: dateSelected }, () => {
+      this.getDiaries()
+    })
   }
 
   getDiariesStats = () => {
@@ -107,25 +143,7 @@ class Diary extends React.Component {
     const array = []
 
     for (var i = 0; i < data.length; i++) {
-      if (dayName == data[i].dayName && dayName == 'sunday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'monday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'tuesday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'wednesday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'thursday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'friday') {
-        array.push(data[i])
-      }
-      if (dayName == data[i].dayName && dayName == 'saturday') {
+      if (dayName == data[i].dayName) {
         array.push(data[i])
       }
     }
@@ -136,7 +154,7 @@ class Diary extends React.Component {
 
       this.setStatsData(start, end)
     } else if (array[0] && array.length == 3) {
-      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+      const start = formatDateTime(selectedDate, array[0]?.armsShift.startTime)
       const end = formatDateTime(
         array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
         array[2].armsShift.endTime
@@ -144,7 +162,7 @@ class Diary extends React.Component {
 
       this.setStatsData(start, end)
     } else {
-      const start = formatDateTime(selectedDate, array[0] && array[0].armsShift.startTime)
+      const start = formatDateTime(selectedDate, array[0] && array[0]?.armsShift.startTime)
       const end = formatDateTime(
         array[0] && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
         array[0] && array[0].armsShift.endTime
@@ -167,34 +185,8 @@ class Diary extends React.Component {
 
   getDiaries = () => {
     const { agentId, selectedDate } = this.state
-
-    let endPoint = ``
-    this.setState({ loading: true }, () => {
-      endPoint = `/api/diary/all?date[]=${selectedDate}`
-      axios
-        .get(`${endPoint}`)
-        .then((res) => {
-          // console.log(res)
-          this.setState(
-            {
-              diaryData: res.data,
-              loading: false,
-            },
-            () => {
-              // this.showTime()
-            }
-          )
-        })
-        .catch((error) => {
-          console.log(error)
-          this.setState({
-            loading: false,
-          })
-        })
-    })
-
     const { dispatch } = this.props
-    dispatch(getDiaryTasks(selectedDate, agentId, false))
+    dispatch(getDiaryTasks({ selectedDate, agentId }))
     dispatch(getOverdueCount(agentId))
   }
 
@@ -202,6 +194,8 @@ class Diary extends React.Component {
     const { isCalendarVisible } = this.state
     const { dispatch, diary } = this.props
     const { page } = diary
+    dispatch(setDairyFilterApplied(false))
+    dispatch(clearDiaryFilter())
     this.setState(
       {
         selectedDate: date,
@@ -228,13 +222,19 @@ class Diary extends React.Component {
   }
 
   setCalendarVisible = (value) => {
+    const { dispatch } = this.props
+    dispatch(setDairyFilterApplied(false))
+    dispatch(clearDiaryFilter())
     this.setState({ isCalendarVisible: value })
   }
 
   goToOverdueTasks = () => {
-    const { navigation, overdueCount, route } = this.props
+    const { navigation, overdueCount, route, dispatch } = this.props
     const { name = null } = route.params
     const { agentId } = this.state
+    dispatch(setDairyFilterApplied(false))
+    dispatch(clearDiaryFilter())
+    dispatch(setSortValue(''))
     navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name })
   }
 
@@ -243,12 +243,26 @@ class Diary extends React.Component {
     const { selectedDiary } = diary
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone(selectedDate, agentId, false))
+      dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
     } else if (action === 'cancel_viewing') {
+      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
+    } else if (action === 'cancel_meeting') {
+      dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
-      navigation.navigate('TaskDetails', { diary: selectedDiary })
+      const { selectedDate } = this.state
+      dispatch(clearDiaries())
+      if (selectedDiary) {
+        dispatch(
+          setSlotData(
+            moment(selectedDiary.date).format('YYYY-MM-DD'),
+            selectedDiary.start,
+            selectedDiary.end,
+            []
+          )
+        )
+      }
+      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate })
     } else if (action === 'edit_task') {
-      console.log(selectedDiary)
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')
@@ -262,7 +276,12 @@ class Diary extends React.Component {
           { text: 'Cancel', style: 'cancel' },
           {
             text: 'Delete',
-            onPress: () => dispatch(deleteDiaryTask(selectedDate, agentId, false)),
+            onPress: () => {
+              dispatch(deleteDiaryTask({ selectedDate, agentId }))
+              dispatch(clearSlotDiaryData())
+              dispatch(setSlotDiaryData(selectedDate))
+              this.setState({ isDelete: true })
+            },
           },
         ],
         { cancelable: false }
@@ -305,26 +324,30 @@ class Diary extends React.Component {
   }
 
   navigateToFiltersScreen = () => {
-    const { navigation } = this.props
-    const { agentId, selectedDate } = this.state
+    const { navigation, isFilterApplied, dispatch } = this.props
+    const { agentId } = this.state
     navigation.navigate('DiaryFilter', {
       agentId,
       isOverdue: false,
-      selectedDate,
-      screenName: 'Diary',
     })
   }
 
   goToAddEditDiaryScreen = (update, data = null) => {
     const { navigation, dispatch } = this.props
+    const { selectedDate } = this.state
+    dispatch(clearDiaries())
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
-    navigation.navigate('AddDiary', { update, data })
+    navigation.navigate('AddDiary', { update, data, selectedDate })
   }
 
   setShowDayEnd = (display) => {
     this.setState({ showDayEnd: display })
+  }
+
+  showSortModalVisible = (value) => {
+    this.setState({ isSortModalVisible: value })
   }
 
   render() {
@@ -338,18 +361,22 @@ class Diary extends React.Component {
       endTime,
       dayName,
       isMenuVisible,
+      isSortModalVisible,
     } = this.state
-    const { overdueCount, diary, dispatch, navigation, diaryStat, user, route } = this.props
     const {
-      diaries,
-      loading,
-      selectedDiary,
-      selectedLead,
-      showClassificationModal,
+      overdueCount,
+      diary,
+      dispatch,
+      navigation,
+      diaryStat,
+      user,
+      route,
+      sortValue,
       onEndReachedLoader,
-      page,
-    } = diary
-    const { isFilterApplied = false } = route?.params
+      isFilterApplied,
+    } = this.props
+    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
+    const { name = null } = route.params
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -369,7 +396,15 @@ class Diary extends React.Component {
           toggleCategoryModal={(value) => {
             dispatch(setClassificationModal(value))
           }}
-          onCategorySelected={(value) => dispatch(setCategory(value, selectedDate, agentId))}
+          onCategorySelected={(value) =>
+            dispatch(
+              setCategory({
+                category: value,
+                selectedDate,
+                agentId,
+              })
+            )
+          }
           selectedCategory={
             selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
@@ -386,6 +421,16 @@ class Diary extends React.Component {
           day={dayName}
         />
 
+        <DiarySortModal
+          isSortModalVisible={isSortModalVisible}
+          isOverdue={false}
+          isFiltered={isFilterApplied}
+          selectedDate={selectedDate}
+          agentId={agentId}
+          sortValue={sortValue}
+          showSortModalVisible={(value) => this.showSortModalVisible(value)}
+        />
+
         <CalendarComponent
           showCalendar={isCalendarVisible}
           startDate={selectedDate}
@@ -394,6 +439,7 @@ class Diary extends React.Component {
           selectedDate={selectedDate}
           onPress={() => this.setCalendarVisible(!isCalendarVisible)}
         />
+
         <View style={styles.rowOne}>
           <DateControl
             selectedDate={selectedDate}
@@ -417,7 +463,12 @@ class Diary extends React.Component {
               />
             </TouchableOpacity>
 
-            <FontAwesome5 name="sort-amount-down-alt" size={24} color="black" />
+            <FontAwesome5
+              name="sort-amount-down-alt"
+              size={24}
+              color={sortValue === '' ? 'black' : AppStyles.colors.primaryColor}
+              onPress={() => this.showSortModalVisible(true)}
+            />
 
             <Menu
               visible={isMenuVisible}
@@ -438,9 +489,38 @@ class Diary extends React.Component {
                 }}
                 title="Day/Shift End Report"
               />
+
+              <Menu.Item
+                onPress={() => {
+                  navigation.replace('TeamDiary'), this.setState({ isMenuVisible: false })
+                }}
+                title="View Team Diary"
+              />
             </Menu>
           </View>
         </View>
+
+        {agentId !== user.id && name ? (
+          <View style={styles.teamViewIndicator}>
+            <Image
+              source={require('../../../assets/img/alert_diary.png')}
+              style={styles.teamViewImageAlert}
+            />
+            <Text style={styles.teamViewText}>
+              {`You are viewing ${name} Diary, Click`}
+              <Text
+                style={{ color: AppStyles.colors.primaryColor }}
+                onPress={() => {
+                  navigation.replace('Diary', { agentId: null })
+                }}
+              >
+                {` here `}
+              </Text>
+              to see your Diary
+            </Text>
+          </View>
+        ) : null}
+
         {loading ? (
           <Loader loading={loading} />
         ) : (
@@ -465,9 +545,9 @@ class Diary extends React.Component {
             )}
             onEndReached={() => {
               if (diaries.rows.length < diaries.count) {
-                dispatch(setOnEndReachedLoader())
+                dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
-                dispatch(getDiaryTasks(selectedDate, agentId, false, false))
+                dispatch(getDiaryTasks({ selectedDate, agentId }))
               }
             }}
             onEndReachedThreshold={0.5}
@@ -524,6 +604,27 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 40,
   },
+  teamViewIndicator: {
+    margin: 10,
+    backgroundColor: '#FFFCE3',
+    borderColor: '#FDD835',
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  teamViewImageAlert: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+  teamViewText: {
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 12,
+    padding: 5,
+  },
 })
 
 mapStateToProps = (store) => {
@@ -537,6 +638,10 @@ mapStateToProps = (store) => {
     pageSize: store.diary.pageSize,
     userShifts: store.slotManagement.userTimeShifts,
     diaryStat: store.diary.diaryStats,
+    sortValue: store.diary.sort,
+    onEndReachedLoader: store.diary.onEndReachedLoader,
+    isFilterApplied: store.diary.isFilterApplied,
+    slotDiary: store.slotManagement.slotDiaryData,
   }
 }
 

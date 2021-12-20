@@ -22,7 +22,7 @@ class AssignLead extends React.Component {
       loading: true,
       selected: false,
       selectedId: null,
-      searchBy: 'myTeam',
+      // searchBy: 'myTeam',
       searchText: '',
     }
   }
@@ -37,35 +37,36 @@ class AssignLead extends React.Component {
     } else if (purpose === 'refer') {
       // For lead sharing we call this function
       navigation.setOptions({ title: 'SELECT AGENT' })
-      this.fetchShareTeam()
+      this.fetchTeam()
     }
   }
 
   fetchTeam = () => {
-    const { route } = this.props
-    const { searchBy } = this.state
-    const { type } = route.params
-    const url =
-      type === 'investment'
-        ? `/api/user/agents?leads=${true}&searchBy=${searchBy}`
-        : `/api/user/agents?leads=${true}&rcm=${true}&searchBy=${searchBy}`
-    axios
-      .get(url)
-      .then((res) => {
-        this.setState(
-          {
-            teamMembers: res.data,
-          },
-          () => {
-            this.setState({ loading: false })
-          }
-        )
-      })
-      .catch((error) => {
-        console.log(error)
-        this.setState({ loading: false })
-        return null
-      })
+    const { user, route } = this.props
+    const { purpose } = route.params
+    if (purpose) {
+      const url =
+        purpose === 'reassign'
+          ? `/api/role/sub-users?roleId=${user.armsUserRoleId}&addManager=true`
+          : `/api/user/agents?sharing=${true}`
+      axios
+        .get(url)
+        .then((res) => {
+          this.setState(
+            {
+              teamMembers: res.data,
+            },
+            () => {
+              this.setState({ loading: false })
+            }
+          )
+        })
+        .catch((error) => {
+          console.log(error)
+          this.setState({ loading: false })
+          return null
+        })
+    }
   }
 
   assignLeadToSelectedMember = () => {
@@ -90,22 +91,6 @@ class AssignLead extends React.Component {
       .catch((error) => {
         console.log(error)
         helper.errorToast(error.message)
-      })
-  }
-
-  fetchShareTeam = () => {
-    const url = `/api/user/agents?sharing=${true}`
-    axios
-      .get(url)
-      .then((res) => {
-        this.setState({ teamMembers: res.data }, () => {
-          this.setState({ loading: false })
-        })
-      })
-      .catch((error) => {
-        console.log(error)
-        this.setState({ loading: false })
-        return null
       })
   }
 
@@ -157,8 +142,8 @@ class AssignLead extends React.Component {
   }
 
   render() {
-    const { teamMembers, loading, selected, selectedId, searchBy, searchText } = this.state
-    const { user, route } = this.props
+    const { teamMembers, loading, selected, selectedId, searchText } = this.state
+    const { route } = this.props
     const { screen, purpose } = route.params
     let data = []
     if (searchText !== '' && data && data.length === 0) {
@@ -172,24 +157,11 @@ class AssignLead extends React.Component {
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <Search
-          placeholder={purpose === 'reassign' ? 'Search team members here' : 'Search Agents here'}
+          placeholder={'Search Agents here'}
           searchText={searchText}
           setSearchText={(value) => this.setState({ searchText: value })}
         />
-        {user.role === 'admin 3' || user.role === 'sub_admin 1' ? (
-          <View style={styles.pickerMain}>
-            <PickerComponent
-              placeholder={'Search By'}
-              data={StaticData.searchTeamBy}
-              customStyle={styles.pickerStyle}
-              customIconStyle={styles.customIconStyle}
-              onValueChange={this.changeSearchValue}
-              selectedItem={searchBy}
-            />
-          </View>
-        ) : null}
-
-        {data.length ? (
+        {teamMembers.length ? (
           <FlatList
             data={data}
             renderItem={(item, index) => (
@@ -219,7 +191,7 @@ class AssignLead extends React.Component {
         >
           <Text style={AppStyles.btnText}>
             {' '}
-            {screen == 'MenuLead' ? 'REFER LEAD' : 'SHARE LEAD'}{' '}
+            {purpose == 'refer' ? 'REFER LEAD' : 'ASSIGN LEAD'}{' '}
           </Text>
         </TouchableOpacity>
       </View>

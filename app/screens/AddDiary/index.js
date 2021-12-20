@@ -13,7 +13,8 @@ import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
-import { clearSlotData } from '../../actions/slotManagement'
+import { clearSlotData, setSlotDiaryData } from '../../actions/slotManagement'
+import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
 
 class AddDiary extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class AddDiary extends Component {
   }
 
   componentDidMount() {
-    const { route, navigation } = this.props
+    const { route, navigation, dispatch } = this.props
     let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId } = route.params
     if (rcmLeadId) {
       tasksList = StaticData.diaryTasksRCM
@@ -38,11 +39,15 @@ class AddDiary extends Component {
       navigation.setOptions({ title: 'EDIT TASK' })
     }
     this.setState({ taskValues: tasksList })
+    if (route.params.selectedDate) {
+      dispatch(setSlotDiaryData(route.params.selectedDate))
+    }
   }
 
   componentWillUnmount() {
     const { dispatch } = this.props
     dispatch(clearSlotData())
+    dispatch(setDiaryFilterReason(null))
   }
 
   formSubmit = (data) => {
@@ -63,7 +68,7 @@ class AddDiary extends Component {
   }
 
   generatePayload = (data) => {
-    const { route, user } = this.props
+    const { route, user, feedbackReasonFilter = null } = this.props
     const { rcmLeadId, cmLeadId } = route.params
     let payload = null
     if (route.params.update) {
@@ -71,16 +76,16 @@ class AddDiary extends Component {
       payload = Object.assign({}, data)
       payload.date = data.startTime
       payload.time = data.startTime
-      payload.userId = route.params.agentId
+      payload.userId = user.id
       payload.diaryTime = data.startTime
       payload.start = data.startTime
       payload.end = data.endTime
       payload.taskCategory = rcmLeadId || cmLeadId ? 'leadTask' : 'simpleTask'
 
       if (rcmLeadId) {
-        payload.rcmLeadId = rcmLeadId
+        payload.armsLeadId = rcmLeadId
       } else if (cmLeadId) {
-        payload.cmLeadId = cmLeadId
+        payload.leadId = cmLeadId
       }
 
       delete payload.startTime
@@ -98,10 +103,17 @@ class AddDiary extends Component {
       payload.start = data.startTime
       payload.end = data.endTime
       payload.taskCategory = rcmLeadId || cmLeadId ? 'leadTask' : 'simpleTask'
+
+      if (data.taskType === 'follow_up') {
+        payload.reasonTag = feedbackReasonFilter ? feedbackReasonFilter.name : null
+        payload.reasonId =
+          feedbackReasonFilter && feedbackReasonFilter.value ? feedbackReasonFilter.value[0] : null
+      }
+
       if (rcmLeadId) {
-        payload.rcmLeadId = rcmLeadId
+        payload.armsLeadId = rcmLeadId
       } else if (cmLeadId) {
-        payload.cmLeadId = cmLeadId
+        payload.leadId = cmLeadId
       }
       delete payload.startTime
       delete payload.endTime
@@ -119,8 +131,10 @@ class AddDiary extends Component {
   }
 
   addDiary = (data) => {
-    const { route, navigation } = this.props
+    const { route, navigation, dispatch } = this.props
+    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
     let diary = this.generatePayload(data)
+
     axios
       .post(`/api/leads/task`, diary)
       .then((res) => {
@@ -134,7 +148,24 @@ class AddDiary extends Component {
             body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
           }
           TimerNotification(data, start)
-          navigation.goBack()
+          if (screenName === 'Diary') {
+            dispatch(
+              getDiaryTasks({
+                selectedDate: moment(diary.date).format('YYYY-MM-DD'),
+                agentId: diary.userId,
+                overdue: false,
+              })
+            )
+          } else {
+            dispatch(
+              getDiaryTasks({
+                leadId: cmLeadId ? cmLeadId : rcmLeadId,
+                leadType: cmLeadId ? 'invest' : 'buyRent',
+              })
+            )
+          }
+
+          navigation.navigate(screenName, { cmLeadId, rcmLeadId })
         } else {
           helper.errorToast('ERROR: SOMETHING WENT WRONG')
         }
@@ -150,6 +181,8 @@ class AddDiary extends Component {
 
   updateDiary = (data) => {
     let diary = this.generatePayload(data)
+    const { dispatch, navigation, route } = this.props
+    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
     axios
       .patch(`/api/diary/update?id=${diary.id}`, diary)
       .then((res) => {
@@ -162,9 +195,28 @@ class AddDiary extends Component {
           body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
         }
         helper.deleteAndUpdateNotification(data, start, res.data.id)
-        this.props.navigation.navigate('Diary', {
+        if (screenName === 'Diary') {
+          dispatch(
+            getDiaryTasks({
+              selectedDate: moment(diary.date).format('YYYY-MM-DD'),
+              agentId: diary.userId,
+              overdue: false,
+            })
+          )
+        } else {
+          dispatch(
+            getDiaryTasks({
+              leadId: cmLeadId ? cmLeadId : rcmLeadId,
+              leadType: cmLeadId ? 'invest' : 'buyRent',
+            })
+          )
+        }
+
+        navigation.navigate(screenName, {
           update: false,
           agentId: this.props.route.params.agentId,
+          cmLeadId,
+          rcmLeadId,
         })
       })
       .catch((error) => {
@@ -176,9 +228,17 @@ class AddDiary extends Component {
       })
   }
 
-  goToSlotManagement = () => {
+  goToSlotManagement = (data) => {
+    const { navigation, slotsData } = this.props
+    navigation.navigate('TimeSlotManagement', {
+      taskType: data.taskType,
+      date: slotsData ? slotsData.date : null,
+    })
+  }
+
+  goToDiaryReasons = () => {
     const { navigation } = this.props
-    navigation.navigate('TimeSlotManagement')
+    navigation.navigate('DiaryReasons', { screenName: 'AddDiary' })
   }
 
   render() {
@@ -207,6 +267,7 @@ class AddDiary extends Component {
                 checkValidation={checkValidation}
                 loading={loading}
                 goToSlotManagement={this.goToSlotManagement}
+                goToDiaryReasons={this.goToDiaryReasons}
                 slotsData={slotsData}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
@@ -222,6 +283,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     slotsData: store.slotManagement.slotsPayload,
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
   }
 }
 

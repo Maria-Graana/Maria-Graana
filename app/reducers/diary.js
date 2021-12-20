@@ -15,11 +15,10 @@ let diaryData = {
   showClassificationModal: false,
   page: 1,
   pageSize: 50,
-  onEndReachedLoader: false,
 }
 
 let filtersData = {
-  date: null,
+  date: _today,
   feedbackId: null,
   leadType: null,
   wantedId: null,
@@ -52,11 +51,8 @@ const diary = (state = diaryData, action) => {
         ...state,
         page: action.payload,
       }
-    case types.SET_DIARY_ON_END_REACHED_LOADER:
-      return {
-        ...state,
-        onEndReachedLoader: action.payload,
-      }
+    case types.CLEAR_DIARIES:
+      return { ...diaryData, diaries: action.payload }
     default:
       return state
   }
@@ -71,12 +67,48 @@ const overdueCount = (state = 0, action) => {
   }
 }
 
+const sort = (state = '', action) => {
+  switch (action.type) {
+    case types.SET_DIARY_SORT:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+const isFilterApplied = (state = false, action) => {
+  switch (action.type) {
+    case types.SET_DAIRY_FILTER_APPLIED:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+const onEndReachedLoader = (state = false, action) => {
+  switch (action.type) {
+    case types.SET_DIARY_ON_END_REACHED_LOADER:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 const filters = (state = filtersData, action) => {
   switch (action.type) {
     case types.SET_DIARY_FILTER:
       return action.payload
     case types.CLEAR_DIARY_FILTER:
       return filtersData
+    default:
+      return state
+  }
+}
+
+const feedbackReasonFilter = (state = null, action) => {
+  switch (action.type) {
+    case types.SET_DIARY_FILTER_REASON:
+      return action.payload
     default:
       return state
   }
@@ -96,4 +128,8 @@ export default combineReducers({
   overdueCount,
   filters,
   diaryStats,
+  sort,
+  onEndReachedLoader,
+  isFilterApplied,
+  feedbackReasonFilter,
 })

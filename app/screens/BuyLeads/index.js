@@ -164,7 +164,11 @@ class BuyLeads extends React.Component {
         query = `/api/leads?purpose[]=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads?purpose[]=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      if (statusFilter === 'shortlisting') {
+        query = `/api/leads?purpose[]=sale&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      } else {
+        query = `/api/leads?purpose[]=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      }
     }
     axios
       .get(`${query}`)
@@ -346,6 +350,13 @@ class BuyLeads extends React.Component {
         }
       )
     }
+  }
+
+  sendStatus = (status) => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+      storeItem('sortBuy', status)
+      this.fetchLeads()
+    })
   }
 
   openStatus = () => {

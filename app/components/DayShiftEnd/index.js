@@ -26,9 +26,12 @@ export default function DayShiftEnd({
   const [remainingActions, setRemainingActions] = useState(null)
 
   let date = new Date()
+  const _format = 'YYYY-MM-DD'
   const todayDate = moment(date).format('YYYY-MM-DD')
   const shiftStartDate = moment(startTime).format('YYYY-MM-DD')
   const shiftEndDate = moment(endTime).format('YYYY-MM-DD')
+  const nextDate = moment(todayDate, _format).add(1, 'days').format(_format)
+  const prevDate = moment(todayDate, _format).add(-1, 'days').format(_format)
 
   const emailStats = () => {
     let endpoint = `/api/diary/emailstats?userId=${user.id}&day=${day}&startTime=${startTime}&endTime=${endTime}`
@@ -181,7 +184,7 @@ export default function DayShiftEnd({
           </View>
         </ScrollView>
 
-        {todayDate == shiftStartDate && todayDate == shiftEndDate && (
+        {todayDate == shiftStartDate && (todayDate == shiftEndDate || nextDate == shiftEndDate) && (
           <View style={styles.buttonEndView}>
             <TouchableButton
               containerStyle={styles.endPageBtn}

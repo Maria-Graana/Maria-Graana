@@ -145,7 +145,7 @@ export class ScheduledTasks extends Component {
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
-    navigation.replace('AddDiary', {
+    navigation.navigate('AddDiary', {
       update,
       data,
       selectedDate: data ? moment(data.date).format('YYYY-MM-DD') : null,

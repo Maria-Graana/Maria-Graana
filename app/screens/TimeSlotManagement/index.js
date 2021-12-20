@@ -238,7 +238,7 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 1) {
+    if (array && array[0].armsShift && array.length == 1) {
       const startFirst = array[0].armsShift.startTime
       const endFirst = array[0].armsShift.endTime
       const tempSFirst = startFirst.split(':')
@@ -271,7 +271,7 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 2) {
+    if (array && array[0].armsShift && array.length == 2) {
       const startFirst = array[0].armsShift.startTime
       const endFirst = array[0].armsShift.endTime
       const tempSFirst = startFirst.split(':')
@@ -330,7 +330,7 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 3) {
+    if (array && array[0].armsShift && array.length == 3) {
       const startFirst = array[0].armsShift.startTime
       const endFirst = array[0].armsShift.endTime
       const tempSFirst = startFirst.split(':')
@@ -486,19 +486,19 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 2) {
+    if (array && array[0].armsShift && array.length == 2) {
       const start = array[0].armsShift.startTime
       const end = array[1].armsShift.endTime
 
       if (isTimeBetween(start, end, e.startTime)) return true
       else return false
-    } else if (array && array.length == 3) {
+    } else if (array && array[0].armsShift && array.length == 3) {
       const start = array[0].armsShift.startTime
       const end = array[2].armsShift.endTime
 
       if (isTimeBetween(start, end, e.startTime)) return true
       else return false
-    } else if (array && array.length == 1) {
+    } else if (array && array[0].armsShift && array.length == 1) {
       const start = array[0].armsShift.startTime
       const end = array[0].armsShift.endTime
 

@@ -350,7 +350,6 @@ class CMBottomNav extends React.Component {
       goToFollowUp,
       goToRejectForm,
       closedLeadEdit,
-      goToAttachments,
       lead,
       goToDiaryForm,
       goToAttachments,
@@ -451,7 +450,12 @@ class CMBottomNav extends React.Component {
           <TouchableOpacity
             disabled={closedLeadEdit ? false : true}
             style={styles.rejectBtn}
-            onPress={() => console.log('navigate to SCA document')}
+            onPress={() => {
+              if (closedLeadEdit) {
+                goToAttachments('addSCA')
+                this.openMenu(false)
+              } else helper.leadClosedToast()
+            }}
           >
             <View style={styles.align}>
               <Image

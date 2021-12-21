@@ -60,11 +60,11 @@ class LegalTile extends React.Component {
         disabled={isLeadClosed}
       >
         <View style={{ flexDirection: 'row', flex: 1 }}>
-          {index && (
+          {/* {index && (
             <View style={styles.badgeView}>
               <Text style={styles.badgeText}>{index}</Text>
             </View>
-          )}
+          )} */}
           <Text numberOfLines={1} style={styles.tileTitle}>
             {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
           </Text>
@@ -96,6 +96,7 @@ class LegalTile extends React.Component {
       isLeadClosed,
       checkList,
     } = this.props
+    console.log('lead', data)
     const { menuToggle } = this.state
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)

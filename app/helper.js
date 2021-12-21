@@ -337,7 +337,12 @@ const helper = {
     let primaryBol = false
     let contact = {
       phone: customer && customer.phone,
-      name: customer && customer.customerName && helper.capitalize(customer.customerName),
+      name:
+        customer && customer.customerName
+          ? helper.capitalize(customer.customerName)
+          : customer && customer.first_name
+          ? helper.capitalize(customer.first_name) + ' ' + helper.capitalize(customer.last_name)
+          : '',
       url: `tel:${customer && customer.phone}`,
     }
     if (customer && customer.customerContacts) {

@@ -40,8 +40,7 @@ class DiaryTile extends React.Component {
       setClassification,
       handleMenuActions,
       goToLeadDetails,
-      // addTask,
-      // editTask,
+      initiateConnectFlow,
       screenName,
     } = this.props
     //const { todayDate, selectedTime, showTask, description, active } = this.state
@@ -218,7 +217,7 @@ class DiaryTile extends React.Component {
 
                   <TouchableOpacity
                     style={{ width: '10%' }}
-                    onPress={() => console.log('call connect')}
+                    onPress={() => initiateConnectFlow(diary)}
                   >
                     <Ionicons
                       name="ios-call-outline"

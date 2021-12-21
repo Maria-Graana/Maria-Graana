@@ -5,6 +5,22 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 
+export const FEEDBACK_ACTIONS = {
+  ADD_MEETING: 'Add Meeting',
+  BOOK_UNIT: 'Book a Unit',
+  SETUP_VIEWING: 'Setup Viewing',
+  ASSIGN: 'Assign',
+  RESCHEDULE_MEETING: 'Reschedule Meeting',
+  SETUP_ANOTHER_MEETING: 'Setup Another Meeting',
+  RESCHEDULE_VIEWING: 'Reschedule Viewings',
+  SHORTLIST_PROPERTIES: 'Shortlist Properties',
+  SETUP_MORE_VIEWING: 'Setup More Viewings',
+  OFFER: 'Offer',
+  PROPSURE: 'Propsure',
+  SELECT_PROPERTY_FOR_TRANSACTION: 'Select Property for Transaction',
+  CLIENT_IS_INTERESTED_IN_INVESTMENT: 'Client is interested in Investment',
+}
+
 export function getDiaryTasks(data) {
   return (dispatch, getsState) => {
     let endPoint = ``
@@ -97,6 +113,145 @@ export function clearDiaries() {
       },
     })
   }
+}
+
+export function getDiaryFeedbacks(payload) {
+  return (dispatch, getsState) => {
+    const { leadType = null, taskType = null, actionType = null } = payload
+    const { selectedDiary } = getsState().diary.diary
+    let url = `/api/feedbacks/fetch?taskType=${
+      taskType === 'follow_up' ? 'Connect' : capitalizeWordsWithoutUnderscore(taskType, true)
+    }&actionType=${actionType}&leadType=${leadType}`
+    //console.log(url)
+    axios
+      .get(url)
+      .then((response) => {
+        // console.log(response.data)
+        if (response) {
+          dispatch({
+            type: types.SET_DIARY_FEEDBACKS,
+            payload: formatFeedBacks(
+              response.data,
+              capitalizeWordsWithoutUnderscore(taskType, true),
+              selectedDiary.status
+            ),
+          })
+        }
+      })
+      .catch((error) => {})
+  }
+}
+
+export function setConnectFeedback(data) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_CONNECT_FEEDBACK,
+      payload: data,
+    })
+    return Promise.resolve(true)
+  }
+}
+
+const formatFeedBacks = (diaryFeedbacks, taskType, taskStatus) => {
+  const FA = FEEDBACK_ACTIONS
+  let additionalActions = null
+  let actionAdded = false
+  let updatedDiaryFeedbacks = diaryFeedbacks
+  let rejectFeedback = null
+  let noActionRequired = null
+
+  // filter actions on base of task type
+  diaryFeedbacks &&
+    Object.keys(diaryFeedbacks).map((key, i) => {
+      if (key === 'Actions' && diaryFeedbacks[key]) {
+        additionalActions = diaryFeedbacks[key].filter((action) => {
+          if (taskType === 'Meeting' && taskStatus === 'completed')
+            return action.tags.indexOf(FA.SETUP_ANOTHER_MEETING) > -1
+          else if (taskType === 'Meeting' && taskStatus !== 'completed')
+            return action.tags.indexOf(FA.RESCHEDULE_MEETING) > -1
+          else if (taskType === 'Viewing' && taskStatus === 'completed')
+            return action.tags.indexOf(FA.SHORTLIST_PROPERTIES) > -1
+          else if (taskType === 'Viewing' && taskStatus !== 'completed')
+            return action.tags.indexOf(FA.RESCHEDULE_VIEWING) > -1
+          else return true
+        })
+        delete diaryFeedbacks[key]
+      }
+    })
+
+  // sorting
+  if (additionalActions) {
+    updatedDiaryFeedbacks = diaryFeedbacks
+    diaryFeedbacks &&
+      Object.keys(diaryFeedbacks).map((key, i) => {
+        if (
+          (key.indexOf('No Action Required') > -1 || key.indexOf('Reject') > -1) &&
+          !actionAdded
+        ) {
+          updatedDiaryFeedbacks['Actions'] = additionalActions
+          actionAdded = true
+        }
+        if (key.indexOf('Reject') > -1) {
+          rejectFeedback = diaryFeedbacks[key]
+          delete diaryFeedbacks[key]
+        } else if (key.indexOf('No Action Required') > -1) {
+          noActionRequired = diaryFeedbacks[key]
+          delete diaryFeedbacks[key]
+        } else updatedDiaryFeedbacks[key] = diaryFeedbacks[key]
+      })
+    if (noActionRequired) updatedDiaryFeedbacks['No Action Required'] = noActionRequired
+    if (rejectFeedback) updatedDiaryFeedbacks['Reject'] = rejectFeedback
+  }
+  // console.log(updatedDiaryFeedbacks)
+  return updatedDiaryFeedbacks
+}
+
+export const saveOrUpdateDiaryTask = (taskData, showMessage = false, callback = null) => {
+  let promise
+  if ('id' in taskData) {
+    promise = axios.patch(`/api/diary/update?id=${taskData.id}`, taskData)
+  } else {
+    promise = axios.post(`/api/leads/task`, taskData)
+  }
+  return promise
+}
+
+export function clearDiaryFeedbacks() {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_DIARY_FEEDBACKS,
+    })
+  }
+}
+
+export function initiateConnectFlow() {
+  return (dispatch, getsState) => {
+    const { connectFeedback } = getsState().diary
+    const { selectedLead } = getsState().diary.diary
+    if (selectedLead && selectedLead.customer) {
+      let contactsInformation = helper.createContactPayload(selectedLead.customer)
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          contactsInformation,
+        })
+      )
+    } else {
+      return Promise.reject()
+    }
+    return Promise.resolve(true)
+  }
+}
+
+export const capitalizeWordsWithoutUnderscore = (str, skip = false) => {
+  return (
+    str &&
+    str.replace(/(^|_)./g, function (txt) {
+      let withOut = txt.replace(/_/, ' ')
+      if (skip) return withOut.charAt(0).toUpperCase() + withOut.substr(1)
+      else return withOut.charAt(0).toUpperCase() + withOut.substr(1).toUpperCase()
+    })
+  )
 }
 
 export function setSelectedDiary(diary) {
@@ -280,17 +435,26 @@ export const markDiaryTaskAsDone = (data) => {
     } = data
     let endPoint = ``
     endPoint = `/api/diary/update?id=${selectedDiary.id}`
-    axios
-      .patch(endPoint, {
-        status: 'completed',
-      })
-      .then(function (response) {
-        if (response.status == 200) {
-          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
-          helper.successToast(`Task completed`)
-          //helper.deleteLocalNotification(data.id)
-        }
-      })
+    if (
+      selectedDiary &&
+      selectedDiary.taskType === 'morning_meeting' &&
+      selectedDiary.taskType === 'daily_update' &&
+      selectedDiary.taskType === 'meeting_with_pp'
+    ) {
+      axios
+        .patch(endPoint, {
+          status: 'completed',
+        })
+        .then(function (response) {
+          if (response.status == 200) {
+            dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
+            helper.successToast(`Task completed`)
+            //helper.deleteLocalNotification(data.id)
+          }
+        })
+    } else {
+      // diary feedback flow - > meeting, viewing
+    }
   }
 }
 

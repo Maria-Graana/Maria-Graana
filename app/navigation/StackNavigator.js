@@ -56,6 +56,7 @@ import RCMLeadTabs from './RCMTabNavigator'
 import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
 import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 import DiaryReasons from '../screens/DiaryReasons'
+import DiaryFeedback from '../screens/DiaryFeedback'
 
 const Stack = createStackNavigator()
 
@@ -146,6 +147,16 @@ function MainStack() {
           title: 'Filters',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="DiaryFeedback"
+        component={DiaryFeedback}
+        options={({ navigation, route }) => ({
+          title: 'Connect Feedback',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}
       />

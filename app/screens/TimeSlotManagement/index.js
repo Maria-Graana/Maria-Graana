@@ -24,12 +24,18 @@ import _ from 'underscore'
 function TimeSlotManagement(props) {
   const data = props.timeSlots
   const [isCalendarVisible, setIsCalendarVisible] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(_today)
+  const [selectedDate, setSelectedDate] = useState(
+    props.route.params.date ? props.route.params.date : _today
+  )
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
   const [check, setCheck] = useState(false)
   const [slots, setSlots] = useState(props.slotData ? props.slotData.slots : [])
-  const [dayName, setDayName] = useState(moment(_today).format('dddd').toLowerCase())
+  const [dayName, setDayName] = useState(
+    moment(props.route.params.date ? props.route.params.date : _today)
+      .format('dddd')
+      .toLowerCase()
+  )
   const [slotsData, setSlotsData] = useState(props.slotsDataArray ? props.slotsDataArray : [])
   const [slotsDiary, setSlotsDiary] = useState(props.slotDiary ? props.slotDiary : [])
   const [isSelected, setIsSelected] = useState(props.slotData ? props.slotData.slots : [])
@@ -232,7 +238,7 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 1) {
+    if (array && array[0].armsShift && array.length == 1) {
       const startFirst = array[0].armsShift.startTime
       const endFirst = array[0].armsShift.endTime
       const tempSFirst = startFirst.split(':')
@@ -265,7 +271,7 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 2) {
+    if (array && array[0].armsShift && array.length == 2) {
       const startFirst = array[0].armsShift.startTime
       const endFirst = array[0].armsShift.endTime
       const tempSFirst = startFirst.split(':')
@@ -324,7 +330,7 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 3) {
+    if (array && array[0].armsShift && array.length == 3) {
       const startFirst = array[0].armsShift.startTime
       const endFirst = array[0].armsShift.endTime
       const tempSFirst = startFirst.split(':')
@@ -480,19 +486,19 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array.length == 2) {
+    if (array && array[0].armsShift && array.length == 2) {
       const start = array[0].armsShift.startTime
       const end = array[1].armsShift.endTime
 
       if (isTimeBetween(start, end, e.startTime)) return true
       else return false
-    } else if (array && array.length == 3) {
+    } else if (array && array[0].armsShift && array.length == 3) {
       const start = array[0].armsShift.startTime
       const end = array[2].armsShift.endTime
 
       if (isTimeBetween(start, end, e.startTime)) return true
       else return false
-    } else if (array && array.length == 1) {
+    } else if (array && array[0].armsShift && array.length == 1) {
       const start = array[0].armsShift.startTime
       const end = array[0].armsShift.endTime
 

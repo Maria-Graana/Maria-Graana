@@ -23,7 +23,6 @@ const TabBarBadge = ({ count, color }) => {
 }
 
 function LeadsNavigator(props) {
-
   useEffect(()=>{
     const { navigation, route } = props;
     if(route.params.screen == "MyDeals"){

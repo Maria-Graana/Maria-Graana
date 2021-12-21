@@ -148,25 +148,34 @@ class Diary extends React.Component {
       }
     }
 
-    if (array[0] && array.length == 2) {
+    this.setState({ statDayEnd: array }, () => this.dayEndStat(selectedDate, nextDay, array))
+  }
+
+  dayEndStat = (selectedDate, nextDay, array) => {
+    if (array[0] && array[0].armsShift && array.length == 2) {
       const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
       const end = formatDateTime(nextDay, array[1].armsShift.endTime)
 
       this.setStatsData(start, end)
-    } else if (array[0] && array.length == 3) {
-      const start = formatDateTime(selectedDate, array[0]?.armsShift.startTime)
+    } else if (array[0] && array[0].armsShift && array.length == 3) {
+      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
       const end = formatDateTime(
         array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
         array[2].armsShift.endTime
       )
 
       this.setStatsData(start, end)
-    } else {
-      const start = formatDateTime(selectedDate, array[0] && array[0]?.armsShift.startTime)
+    } else if (array[0] && array[0].armsShift && array.length == 1) {
+      const start = formatDateTime(selectedDate, array[0] && array[0].armsShift.startTime)
       const end = formatDateTime(
         array[0] && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
         array[0] && array[0].armsShift.endTime
       )
+
+      this.setStatsData(start, end)
+    } else {
+      const start = formatDateTime(selectedDate, '00:00:00')
+      const end = formatDateTime(nextDay, '23:59:00')
 
       this.setStatsData(start, end)
     }
@@ -487,7 +496,7 @@ class Diary extends React.Component {
                 onPress={() => {
                   this.setShowDayEnd(!showDayEnd), this.setState({ isMenuVisible: false })
                 }}
-                title="Day/Shift End Report"
+                title="Day End Report"
               />
 
               <Menu.Item

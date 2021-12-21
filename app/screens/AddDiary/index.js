@@ -229,8 +229,11 @@ class AddDiary extends Component {
   }
 
   goToSlotManagement = (data) => {
-    const { navigation } = this.props
-    navigation.navigate('TimeSlotManagement', { taskType: data.taskType })
+    const { navigation, slotsData } = this.props
+    navigation.navigate('TimeSlotManagement', {
+      taskType: data.taskType,
+      date: slotsData ? slotsData.date : null,
+    })
   }
 
   goToDiaryReasons = () => {

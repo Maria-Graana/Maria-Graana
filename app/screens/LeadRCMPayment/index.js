@@ -608,6 +608,10 @@ class LeadRCMPayment extends React.Component {
         this.setState({
           closedWon: true,
         })
+      } else {
+        this.setState({
+          closedWon: false,
+        })
       }
     }
   }

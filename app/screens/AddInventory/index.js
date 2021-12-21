@@ -1,37 +1,37 @@
 /** @format */
 
-import React, { Component } from 'react'
-import {
-  View,
-  KeyboardAvoidingView,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Modal,
-  Keyboard,
-} from 'react-native'
-import { StyleProvider } from 'native-base'
+import axios from 'axios'
+import * as ImageManipulator from 'expo-image-manipulator'
+import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
 import * as Permissions from 'expo-permissions'
-import * as ImagePicker from 'expo-image-picker'
-import getTheme from '../../../native-base-theme/components'
-import formTheme from '../../../native-base-theme/variables/formTheme'
-import axios from 'axios'
-import DetailForm from './detailForm'
-import StaticData from '../../StaticData'
-import AppStyles from '../../AppStyles'
-import helper from '../../helper'
+import { StyleProvider } from 'native-base'
+import React, { Component } from 'react'
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  ScrollView,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import { connect } from 'react-redux'
 import _ from 'underscore'
-import ImageBrowser from '../../components/ImageBrowser/ImageBrowser'
-import * as ImageManipulator from 'expo-image-manipulator'
+import getTheme from '../../../native-base-theme/components'
+import formTheme from '../../../native-base-theme/variables/formTheme'
 import {
-  uploadImage,
   addImage,
   flushImages,
   removeImage,
+  setAddPropertyParams,
   setImageLoading,
+  uploadImage,
 } from '../../actions/property'
-import config from '../../config'
+import AppStyles from '../../AppStyles'
+import ImageBrowser from '../../components/ImageBrowser/ImageBrowser'
+import helper from '../../helper'
+import StaticData from '../../StaticData'
+import DetailForm from './detailForm'
 
 class AddInventory extends Component {
   constructor(props) {
@@ -103,9 +103,6 @@ class AddInventory extends Component {
   componentDidMount() {
     const { navigation, route } = this.props
     const { screenName, lead } = route.params
-    navigation.addListener('focus', () => {
-      this.onScreenFocused()
-    })
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT PROPERTY' })
       this.setEditValues()
@@ -132,12 +129,37 @@ class AddInventory extends Component {
         }
       )
     }
+
+    navigation.addListener('focus', () => {
+      this.onScreenFocused()
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
     //Typical usage, don't forget to compare the props
     if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
       this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
+    }
+
+    if (prevState.formData.lat !== prevProps.addPropertyParams.latitude) {
+      this.updatePropertyLocation()
+    }
+    // this.updatePropertyLocation(prevProps)
+  }
+
+  updatePropertyLocation = () => {
+    if (this.props.addPropertyParams) {
+      this.setState(
+        {
+          formData: {
+            lat: this.props.addPropertyParams.latitude,
+            lng: this.props.addPropertyParams.longitude,
+            locate_manually: this.props.addPropertyParams.locate_manually,
+          },
+          propsure_id: `${this.props.addPropertyParams.propsure_id ?? ''}`,
+        },
+        () => console.log('focus form ==>', this.state.formData)
+      )
     }
   }
 
@@ -323,6 +345,17 @@ class AddInventory extends Component {
       formData.size = 0
       this.setState({ formData })
     }
+  }
+
+  clearGeotaggData = () => {
+    this.props.dispatch(
+      setAddPropertyParams({
+        latitude: '',
+        longitude: '',
+        locate_manually: false,
+        propsure_id: null,
+      })
+    )
   }
 
   // ********* On form Submit Function
@@ -753,6 +786,7 @@ class AddInventory extends Component {
               <View style={AppStyles.container}>
                 <DetailForm
                   formSubmit={this.formSubmit}
+                  clearGeotaggData={this.clearGeotaggData}
                   checkValidation={checkValidation}
                   handleForm={this.handleForm}
                   formData={formData}
@@ -809,6 +843,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     images: store.property.images,
+    addPropertyParams: store.property.addPropertyParams,
   }
 }
 

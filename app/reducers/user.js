@@ -24,6 +24,15 @@ const user = (state = '', action) => {
   }
 }
 
+const permissions = (state = {}, action) => {
+  switch (action.type) {
+    case types.SET_PERMISSIONS:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 const error = (state = '', action) => {
   switch (action.type) {
     case types.SET_USER_ERROR:
@@ -82,4 +91,5 @@ export default combineReducers({
   token,
   isInternetConnected,
   updateLoader,
+  permissions,
 })

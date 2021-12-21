@@ -52,7 +52,6 @@ import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
-
 import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
 import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 import DiaryReasons from '../screens/DiaryReasons'

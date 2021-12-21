@@ -43,7 +43,14 @@ class LegalTile extends React.Component {
   }
 
   UploadTile = () => {
-    const { data, index, getAttachmentFromStorage, addBorder = false, isLeadClosed } = this.props
+    const {
+      data,
+      index,
+      getAttachmentFromStorage,
+      addBorder = false,
+      isLeadClosed,
+      isLeadSCA,
+    } = this.props
     let newStyle = {}
     if (addBorder) {
       newStyle = {
@@ -66,7 +73,11 @@ class LegalTile extends React.Component {
             </View>
           )} */}
           <Text numberOfLines={1} style={styles.tileTitle}>
-            {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
+            {data.name === 'Cnic'
+              ? data.name.toUpperCase()
+              : isLeadSCA
+              ? 'Service Charge Agreement'
+              : data.name}
           </Text>
         </View>
         <View style={{ justifyContent: 'center' }}>
@@ -95,6 +106,7 @@ class LegalTile extends React.Component {
       addBorder = false,
       isLeadClosed,
       checkList,
+      isLeadSCA,
     } = this.props
     console.log('lead', data)
     const { menuToggle } = this.state
@@ -126,7 +138,11 @@ class LegalTile extends React.Component {
                 numberOfLines={1}
                 style={checkList ? style.hyperLinkPadding : styles.textPadding}
               >
-                {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
+                {data.name === 'Cnic'
+                  ? data.name.toUpperCase()
+                  : isLeadSCA
+                  ? 'Service Charge Agreement'
+                  : data.name}
               </Text>
               {data.status === 'rejected' && (
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
@@ -251,7 +267,14 @@ class LegalTile extends React.Component {
   }
 
   StatusTile = () => {
-    const { data, downloadLegalDocs, addBorder = false, isLeadClosed, checkList } = this.props
+    const {
+      data,
+      downloadLegalDocs,
+      addBorder = false,
+      isLeadClosed,
+      checkList,
+      isLeadSCA,
+    } = this.props
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)
     let newStyle = {}
@@ -276,7 +299,11 @@ class LegalTile extends React.Component {
         <View style={[styles.statusTile]}>
           <View style={[styles.contentSpace, { flexDirection: 'row' }]}>
             <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
-              {data.name === 'Cnic' ? data.name.toUpperCase() : data.name}
+              {data.name === 'Cnic'
+                ? data.name.toUpperCase()
+                : isLeadSCA
+                ? 'Service Charge Agreement'
+                : data.name}
             </Text>
             <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
           </View>

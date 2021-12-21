@@ -196,7 +196,9 @@ class CMBottomNav extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: data.projectId ? 'Investment' : 'Buy',
-            screen: data.projectId ? 'InvestmentLead' : 'BuyLead',
+            // screenName: data.projectId ? 'InvestmentLead' : 'BuyLead',
+            purpose: 'refer',
+            screenName: 'LeadDetail',
           })
         }
       } else {
@@ -233,7 +235,13 @@ class CMBottomNav extends React.Component {
     const { navigation } = this.props
     const { showAssignToButton } = this.state
     if (showAssignToButton === true) {
-      navigation.navigate('AssignLead', { leadId: lead.id, type: 'sale', screen: 'LeadDetail' })
+      navigation.navigate('AssignLead', {
+        leadId: lead.id,
+        type: 'sale',
+        screen: 'LeadDetail',
+        purpose: 'reassign',
+        
+      })
     } else {
       helper.errorToast('Lead Already Assign')
     }

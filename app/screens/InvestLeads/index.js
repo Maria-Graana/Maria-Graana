@@ -278,6 +278,8 @@ class InvestLeads extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: 'Investment',
+            purpose : "refer" ,
+            screenName : "Invest"
             // screen: 'MenuLead',
           })
         }
@@ -342,7 +344,8 @@ class InvestLeads extends React.Component {
       navigation.navigate('AssignLead', {
         leadId: lead.id,
         type: 'Investment',
-        screen: 'LeadDetail',
+        purpose : "reassign",
+        screenName : "Invest"
       })
     } else {
       helper.errorToast('Lead Already Assign')

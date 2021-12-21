@@ -74,16 +74,45 @@ class InvestLeads extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      dispatch(getListingsCount())
-      this.getServerTime()
-      this.onFocus()
-    })
+    const { dispatch, route } = this.props
+    const { client } = route.params
+
+    if (client) {
+      this.fetchAddedLeads(client)
+    } else {
+      this._unsubscribe = this.props.navigation.addListener('focus', () => {
+        dispatch(getListingsCount())
+        this.getServerTime()
+        this.onFocus()
+      })
+    }
   }
 
   componentWillUnmount() {
     this.clearStateValues()
+  }
+
+  fetchAddedLeads = (client) => {
+    const { page, leadsData, statusFilter } = this.state
+    this.setState({ loading: true })
+    axios
+      .get(
+        `/api/leads/projects?web=true&hasBooking=null&customerId=${client.id}&customerLeads=true`
+      )
+      .then((res) => {
+        this.setState({
+          leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+          loading: false,
+          onEndReachedLoader: false,
+          totalLeads: res.data.count,
+          statusFilter: statusFilter,
+        })
+      })
+      .catch((res) => {
+        this.setState({
+          loading: false,
+        })
+      })
   }
 
   onFocus = async () => {
@@ -162,7 +191,11 @@ class InvestLeads extends React.Component {
         query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      if (statusFilter === 'in_progress') {
+        query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      } else {
+        query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      }
     }
     axios
       .get(`${query}`)
@@ -201,11 +234,18 @@ class InvestLeads extends React.Component {
   }
 
   navigateTo = (data) => {
-    const { navigation } = this.props
+    const { screen } = this.props.route.params
+    const { navigation, route } = this.props
+    const unitData = route.params.unitData
+
     this.props.dispatch(setlead(data))
     let page = ''
     if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'invest',
+        screenName: screen,
+      })
     } else {
       if (
         data.status === 'token' ||
@@ -219,16 +259,20 @@ class InvestLeads extends React.Component {
       }
 
       navigation.navigate('CMLeadTabs', {
-        screen: page,
-        params: { lead: data },
+        screen: unitData ? 'Payments' : page,
+        params: { lead: data, unitData: unitData , screenName : screen},
+
       })
     }
   }
   navigateFromMenu = (data, name) => {
     this.props.dispatch(setlead(data))
-    console.log(setlead(data).payload, '===> L')
-    this.props.navigation.navigate(name, { lead: data, purposeTab: 'invest', screen: 'MenuLead' })
-    console.log(this.lead)
+    this.props.navigation.navigate(name, {
+      lead: data,
+      purposeTab: 'invest',
+      screen: 'InvestLeads',
+      cmLeadId: data.id,
+    })
     this.setIsMenuVisible(false, data)
   }
 
@@ -270,7 +314,9 @@ class InvestLeads extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: 'Investment',
-            screen: 'MenuLead',
+            purpose : "refer" ,
+            screenName : "Invest"
+            // screen: 'MenuLead',
           })
         }
       } else {
@@ -334,7 +380,8 @@ class InvestLeads extends React.Component {
       navigation.navigate('AssignLead', {
         leadId: lead.id,
         type: 'Investment',
-        screen: 'LeadDetail',
+        purpose : "reassign",
+        screenName : "Invest"
       })
     } else {
       helper.errorToast('Lead Already Assign')

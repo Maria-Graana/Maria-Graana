@@ -1,33 +1,31 @@
 /** @format */
 
+// import { Checkbox } from 'react-native-paper'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
+import { Body, Button, CheckBox, Textarea } from 'native-base'
 import React, { Component } from 'react'
 import {
-  View,
+  Dimensions,
+  FlatList,
+  Image,
+  LogBox,
+  Platform,
   Text,
   TextInput,
   TouchableOpacity,
-  Image,
-  ImageBackground,
-  FlatList,
-  Dimensions,
-  Platform,
-  ActivityIndicator,
+  View,
 } from 'react-native'
-import { Button, Textarea, CheckBox, ListItem, Body } from 'native-base'
-// import { Checkbox } from 'react-native-paper'
-import { AntDesign, Ionicons } from '@expo/vector-icons'
-import PickerComponent from '../../components/Picker/index'
-import styles from './style'
-import AppStyles from '../../AppStyles'
-import LocationImg from '../../../assets/img/location.png'
-import ErrorMessage from '../../components/ErrorMessage'
-import RadioComponent from '../../components/RadioButton/index'
-import { formatPrice } from '../../PriceFormate'
-import TouchableInput from '../../components/TouchableInput'
-import TouchableButton from '../../components/TouchableButton'
-import PhoneInputComponent from '../../components/PhoneCountry/PhoneInput'
 import { connect } from 'react-redux'
-import { LogBox } from 'react-native'
+import EditIcon from '../../../assets/images/edit-icon.png'
+import WhiteCheck from '../../../assets/images/white-check.png'
+import AppStyles from '../../AppStyles'
+import ErrorMessage from '../../components/ErrorMessage'
+import PickerComponent from '../../components/Picker/index'
+import RadioComponent from '../../components/RadioButton/index'
+import TouchableButton from '../../components/TouchableButton'
+import TouchableInput from '../../components/TouchableInput'
+import { formatPrice } from '../../PriceFormate'
+import styles from './style'
 const { width } = Dimensions.get('window')
 
 LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
@@ -52,6 +50,105 @@ class DetailForm extends Component {
     )
   }
 
+  geotaggingComponent = () => {
+    const { formData, handleMarkProperty, clearGeotaggData } = this.props
+    return formData.propsure_id ? (
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+        <TouchableOpacity
+          style={styles.geotaggedBtn}
+          onPress={() => {
+            this.props.navigation.navigate({
+              name: 'MapContainer',
+              params: {
+                mapValues: {
+                  lat: formData.lat,
+                  lng: formData.lng,
+                  propsure_id: formData.propsure_id,
+                },
+                geotaggingType: 'Propsure',
+              },
+            })
+          }}
+        >
+          <Text style={styles.geotaggedText}>PROPSURE GEOTAGGED</Text>
+          <Image source={WhiteCheck} style={styles.whiteCheckImg} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editIconContainer}
+          onPress={
+            () => clearGeotaggData() //handleMarkProperty(!formData.locate_manually)
+          }
+        >
+          <Image source={EditIcon} style={styles.editIcon} />
+        </TouchableOpacity>
+      </View>
+    ) : formData.locate_manually ? (
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+        <TouchableOpacity
+          style={styles.geotaggedBtn}
+          onPress={() => {
+            this.props.navigation.navigate({
+              name: 'MapContainer',
+              params: {
+                mapValues: {
+                  lat: formData.lat,
+                  lng: formData.lng,
+                  propsure_id: formData.propsure_id,
+                },
+                geotaggingType: 'Manual',
+                screenName: 'AddProperty',
+              },
+            })
+          }}
+        >
+          <Text style={styles.geotaggedText}>MANUALLY GEOTAGGED</Text>
+          <Image source={WhiteCheck} style={styles.whiteCheckImg} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editIconContainer}
+          onPress={
+            () => clearGeotaggData() // handleMarkProperty(!formData.locate_manually)
+          }
+        >
+          <Image source={EditIcon} style={styles.editIcon} />
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <View style={styles.propsureManualBtnContainer}>
+        <TouchableOpacity
+          style={styles.propsureBtn}
+          onPress={() => {
+            this.props.navigation.navigate('MapContainer', {
+              mapValues: {
+                lat: formData.lat,
+                lng: formData.lng,
+                propsure_id: formData.propsure_id,
+              },
+              geotaggingType: 'Propsure',
+            })
+          }}
+        >
+          <Text style={styles.propsureBtnText}>PROPSURE GEOTAGGING</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.manualBtn}
+          onPress={() => {
+            this.props.navigation.navigate('MapContainer', {
+              mapValues: {
+                lat: formData.lat,
+                lng: formData.lng,
+                propsure_id: formData.propsure_id,
+              },
+              geotaggingType: 'Manual',
+            })
+          }}
+        >
+          <Text style={styles.manualBtnText}>MANUAL GEOTAGGING</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   getItemLayout = (data, index) => {
     let length = width / 2
     return { length, offset: length * index, index }
@@ -68,8 +165,16 @@ class DetailForm extends Component {
   }
 
   _renderAdditionalView = () => {
-    const { formData, handleForm, features, utilities, facing, selectedFeatures, handleFeatures } =
-      this.props
+    const {
+      formData,
+      handleForm,
+      features,
+      utilities,
+      facing,
+      selectedFeatures,
+      handleFeatures,
+      clearGeotaggData,
+    } = this.props
     let _renderFeatures = () => {
       return features.map((item) => {
         return (
@@ -300,7 +405,6 @@ class DetailForm extends Component {
       handleWaterMark,
       showCustomTitle,
       showCustomTitleField,
-      getCurrentLocation,
     } = this.props
     const { size_unit } = this.props.formData
     return (
@@ -372,7 +476,7 @@ class DetailForm extends Component {
           </View>
         </View>
         {/* **************************************** */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => handleMarkProperty(!formData.locate_manually)}
           style={styles.checkBoxRow}
         >
@@ -383,10 +487,10 @@ class DetailForm extends Component {
             onPress={() => handleMarkProperty(!formData.locate_manually)}
           />
           <Text style={{ marginHorizontal: 15 }}>Mark property manually</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {/* **************************************** */}
-
-        {formData.locate_manually ? (
+        {this.geotaggingComponent()}
+        {/* {formData.locate_manually ? (
           <View style={AppStyles.latLngMain}>
             <View
               style={[
@@ -411,7 +515,6 @@ class DetailForm extends Component {
               </View>
             </View>
 
-            {/* **************************************** */}
             <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
               <View style={[AppStyles.inputWrap]}>
                 <TextInput
@@ -447,12 +550,13 @@ class DetailForm extends Component {
                     lng: formData.lng,
                     propsure_id: formData.propsure_id,
                   },
+                  geotaggingType: 'Manual',
                   screenName: 'AddInventory',
                 })
               }}
             />
           </View>
-        )}
+        )} */}
 
         {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>

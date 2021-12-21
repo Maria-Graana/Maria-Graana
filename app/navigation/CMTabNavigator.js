@@ -10,7 +10,8 @@ const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
 
-export default function CMLeadTabs() {
+export default function CMLeadTabs(props) {
+  const {screenName} = props.route.params.params
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -27,7 +28,7 @@ export default function CMLeadTabs() {
       }}
     >
       {/* <Tab.Screen name="Meetings" options={{ title: 'Nurture' }} component={Meetings} /> */}
-      <Tab.Screen name="Payments" component={CMPayment} />
+      <Tab.Screen name="Payments" component={CMPayment} initialParams = {{screenName : screenName}} />
     </Tab.Navigator>
   )
 }

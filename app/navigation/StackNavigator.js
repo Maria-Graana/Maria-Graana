@@ -30,6 +30,7 @@ import CreateUser from '../screens/CreateUser'
 import Dashboard from '../screens/Dashboard'
 import Diary from '../screens/Diary'
 import DiaryFilter from '../screens/DiaryFilter'
+import DiaryReasons from '../screens/DiaryReasons'
 import EditFieldAppProperty from '../screens/EditFieldAppProperty'
 import Landing from '../screens/Landing/index'
 import LeadAttachments from '../screens/LeadAttachments'
@@ -42,19 +43,19 @@ import PropertyDetail from '../screens/PropertyDetail'
 import PropsureAttachment from '../screens/PropsureAttachment'
 import RCMAttachment from '../screens/RCMAttachment'
 import RCMReport from '../screens/RCMReport'
+import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 import SingleSelectionPicker from '../screens/SingleSelectionPicker'
 import Targets from '../screens/Targets'
 import TaskDetails from '../screens/TaskDetails'
 import TeamDiary from '../screens/TeamDiary'
 import TeamTargets from '../screens/TeamTargets'
+import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
 import CMLeadTabs from './CMTabNavigator'
 import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 
-import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
-import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 
 const Stack = createStackNavigator()
 
@@ -145,6 +146,21 @@ function MainStack() {
           title: 'Filters',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="DiaryReasons"
+        component={DiaryReasons}
+        options={({ navigation, route }) => ({
+          title: 'SELECT REASON',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text style={{ paddingRight: 15 }}>Done</Text>
+            </TouchableOpacity>
+          ),
           headerTitleAlign: 'center',
         })}
       />

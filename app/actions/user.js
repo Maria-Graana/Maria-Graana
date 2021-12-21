@@ -182,6 +182,42 @@ export function logoutUser() {
   }
 }
 
+export function checkPermissions(roleId, data) {
+  return (dispatch, getsState) => {
+    let body = {
+      deviceId: Constants.deviceId,
+    }
+    let source = CancelToken.source()
+    setTimeout(() => {
+      dispatch({
+        type: types.USER_LOADED,
+      })
+      source.cancel()
+    }, 10000)
+    axios.get(`/api/rolepermission/fetch?roleId=${roleId}&all=true`).then((res) => {
+      console.log(`/api/rolepermission/fetch?roleId=${roleId}&all=true`)
+      // console.log('permissions: ', res.data)
+      storeItem('permissions', { ...res.data })
+      dispatch({
+        type: types.SET_USER,
+        payload: { ...data },
+      })
+      dispatch({
+        type: types.SET_PERMISSIONS,
+        payload: { ...res.data },
+      })
+      dispatch({
+        type: types.USER_LOADED,
+      })
+      dispatch({
+        type: types.SET_TOKEN_SUCCESS,
+      })
+      dispatch(getListingsCount())
+      SplashScreen.hideAsync()
+    })
+  }
+}
+
 export function checkToken() {
   return (dispatch, getsState) => {
     getItem('token').then((token) => {
@@ -201,19 +237,7 @@ export function checkToken() {
           )
           .then((response) => {
             setAuthorizationToken(token)
-            // setBaseUrl()
-            dispatch({
-              type: types.SET_USER,
-              payload: { ...response.data },
-            })
-            dispatch({
-              type: types.USER_LOADED,
-            })
-            dispatch({
-              type: types.SET_TOKEN_SUCCESS,
-            })
-            dispatch(getListingsCount())
-            SplashScreen.hideAsync()
+            dispatch(checkPermissions(response.data.armsUserRoleId, response.data))
           })
           .catch((error) => {
             SplashScreen.hideAsync()

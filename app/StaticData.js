@@ -82,6 +82,8 @@ export default StaticData = {
       { value: 'industrial land', name: 'Industrial Land' },
       { value: 'plot file', name: 'Plot File' },
       { value: 'farmhouse plot', name: 'Farmhouse Plot' },
+      { value: 'land', name: 'Commercial Land' },
+
     ],
     commercial: [
       { value: 'office', name: 'Office' },
@@ -93,7 +95,6 @@ export default StaticData = {
       { value: 'Gym', name: 'Gym' },
       { value: 'Food Court', name: 'Food Court' },
       { value: 'hall', name: 'Hall' },
-      { value: 'land', name: 'Land' },
       { value: 'plaza', name: 'Plaza' },
       { value: 'other', name: 'Other' },
     ],
@@ -310,9 +311,7 @@ export default StaticData = {
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
     { value: 'follow_up', name: 'Nurture' },
-    { value: 'viewing', name: 'Viewing' },
-    { value: 'offer', name: 'Offer' },
-    { value: 'propsure', name: 'Propsure' },
+    { value: 'shortlisting', name: 'Shortlisting' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
@@ -328,8 +327,7 @@ export default StaticData = {
   investmentFilter: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
-    { value: 'follow_up', name: 'Nurture' },
-    { value: 'meeting', name: 'Meeting' },
+    { value: 'in_progress', name: 'In-progress' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
@@ -1410,5 +1408,10 @@ export default StaticData = {
     { name: 'Wanted', value: 'Wanted' },
     { name: 'Project', value: 'Project' },
     { name: 'Buy/Rent', value: 'BuyRent' },
+  ],
+  diarySortValues: [
+    { name: 'Time Based', value: '' },
+    { name: 'Task Type', value: 'type' },
+    { name: 'Classification', value: 'class' },
   ],
 }

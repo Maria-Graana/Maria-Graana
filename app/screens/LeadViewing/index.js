@@ -795,6 +795,7 @@ class LeadViewing extends React.Component {
     navigation.navigate('ScheduledTasks', {
       taskType: 'follow_up',
       lead,
+      rcmLeadId: lead ? lead.id : null,
     })
     // this.setState({
     //   active: !this.state.active,

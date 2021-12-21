@@ -108,7 +108,6 @@ class LegalTile extends React.Component {
       checkList,
       isLeadSCA,
     } = this.props
-    console.log('lead', data)
     const { menuToggle } = this.state
     let showStatus = this.findStatusLabel()
     let statusColor = this.findStatusColor(showStatus)

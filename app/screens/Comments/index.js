@@ -3,12 +3,14 @@
 import axios from 'axios'
 import React, { Component } from 'react'
 import { Alert, FlatList } from 'react-native'
+import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AppStyles from '../../AppStyles'
 import CommentTile from '../../components/CommentTile'
 import Loader from '../../components/loader'
 import AddComment from './addComment'
-
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 class Comments extends Component {
   comments = []
 
@@ -144,6 +146,7 @@ class Comments extends Component {
 
   render() {
     const { commentsList, loading, comment, property, addCommentLoading } = this.state
+    const { permissions } = this.props
     return !loading ? (
       <KeyboardAwareScrollView
         style={[AppStyles.container, { paddingHorizontal: 0, marginBottom: 25 }]}
@@ -162,12 +165,18 @@ class Comments extends Component {
           )}
           keyExtractor={(item, index) => index.toString()}
         />
-        <AddComment
-          onPress={this.addComment}
-          loading={addCommentLoading}
-          comment={comment}
-          setComment={this.setComment}
-        />
+        {getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.UPDATE,
+          permissions
+        ) ? (
+          <AddComment
+            onPress={this.addComment}
+            loading={addCommentLoading}
+            comment={comment}
+            setComment={this.setComment}
+          />
+        ) : null}
       </KeyboardAwareScrollView>
     ) : (
       <Loader loading={loading} />
@@ -175,4 +184,10 @@ class Comments extends Component {
   }
 }
 
-export default Comments
+mapStateToProps = (store) => {
+  return {
+    permissions: store.user.permissions,
+  }
+}
+
+export default connect(mapStateToProps)(Comments)

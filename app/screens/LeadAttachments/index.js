@@ -6,6 +6,8 @@ import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import React, { Component } from 'react'
 import { Alert, FlatList, View } from 'react-native'
 import { connect } from 'react-redux'
@@ -279,7 +281,7 @@ class LeadAttachments extends Component {
       showAction,
       doneLoading,
     } = this.state
-    const { route } = this.props
+    const { route, permissions } = this.props
     const { workflow } = route.params
     return (
       <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
@@ -316,13 +318,19 @@ class LeadAttachments extends Component {
               </View>
             )}
             ListFooterComponent={
-              <AddAttachment
-                onPress={this.showModal}
-                downloadFile={this.downloadFile}
-                showDeleteDialog={this.showDeleteDialog}
-                signedServiceFile={signedServiceFile}
-                workflow={workflow}
-              />
+              getPermissionValue(
+                PermissionFeatures.BUY_RENT_LEADS,
+                PermissionActions.UPDATE,
+                permissions
+              ) ? (
+                <AddAttachment
+                  onPress={this.showModal}
+                  downloadFile={this.downloadFile}
+                  showDeleteDialog={this.showDeleteDialog}
+                  signedServiceFile={signedServiceFile}
+                  workflow={workflow}
+                />
+              ) : null
             }
             keyExtractor={(item, index) => index.toString()}
           />
@@ -337,6 +345,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(LeadAttachments)

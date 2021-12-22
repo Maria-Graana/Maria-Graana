@@ -12,6 +12,8 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
 import { Entypo } from '@expo/vector-icons'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 class LeadTile extends React.Component {
   constructor(props) {
@@ -52,6 +54,7 @@ class LeadTile extends React.Component {
       navigateFromMenu,
       checkAssignedLead,
       navigateToShareScreen,
+      permissions,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -316,7 +319,15 @@ class LeadTile extends React.Component {
                     <TouchableOpacity
                       style={styles.actionBtn}
                       onPress={() => {
-                        callNumber(data)
+                        if (
+                          getPermissionValue(
+                            PermissionFeatures.BUY_RENT_LEADS,
+                            PermissionActions.UPDATE,
+                            permissions
+                          ) &&
+                          data.assigned_to_armsuser_id == user.id
+                        )
+                          callNumber(data)
                       }}
                     >
                       <Image style={[styles.fireIcon, AppStyles.mlFive]} source={phone} />
@@ -337,6 +348,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

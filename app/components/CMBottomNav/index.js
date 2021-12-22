@@ -13,6 +13,8 @@ import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import AddLeadCategoryModal from '../AddLeadCategoryModal'
 import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import styles from './style'
 
 var BUTTONS = [
@@ -240,7 +242,6 @@ class CMBottomNav extends React.Component {
         type: 'sale',
         screen: 'LeadDetail',
         purpose: 'reassign',
-        
       })
     } else {
       helper.errorToast('Lead Already Assign')
@@ -354,6 +355,7 @@ class CMBottomNav extends React.Component {
       lead,
       goToDiaryForm,
       goToAttachments,
+      permissions,
     } = this.props
     const {
       visible,
@@ -655,6 +657,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

@@ -43,6 +43,7 @@ class DetailForm extends Component {
       accountsOptionFields,
       client,
       user,
+      screenName,
     } = this.props
     let btnText = update ? 'UPDATE' : 'ADD'
     return (
@@ -57,7 +58,7 @@ class DetailForm extends Component {
               }}
               style={[AppStyles.formControl, AppStyles.inputPadLeft]}
               name={'firstName'}
-              placeholder={'First Name*'}
+              placeholder={'First Name *'}
             />
             {checkValidation === true && formData.firstName === '' && (
               <ErrorMessage errorMessage={'Required'} />
@@ -75,7 +76,7 @@ class DetailForm extends Component {
               }}
               style={[AppStyles.formControl, AppStyles.inputPadLeft]}
               name={'lastName'}
-              placeholder={'Last Name*'}
+              placeholder={'Last Name *'}
             />
             {checkValidation === true && formData.lastName === '' && (
               <ErrorMessage errorMessage={'Required'} />
@@ -83,25 +84,48 @@ class DetailForm extends Component {
           </View>
         </View>
         <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <PhoneInputComponent
-              phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
-              countryCodeValue={countryCode}
-              containerStyle={AppStyles.phoneInputStyle}
-              setPhone={(value) => validate(value, 'phone')}
-              setFlagObject={(object) => {
-                hello(object, 'contactNumber')
-              }}
-              editable={client ? client.assigned_to_armsuser_id === user.id : true}
-              onChangeHandle={handleForm}
-              name={'contactNumber'}
-              placeholder={'Contact Number*'}
-            />
-            {phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />}
-            {phoneValidate == false &&
-              checkValidation === true &&
-              formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />}
-          </View>
+          {screenName === 'Payments' ? (
+            <View style={[AppStyles.inputWrap]}>
+              <PhoneInputComponent
+                phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
+                countryCodeValue={countryCode}
+                containerStyle={AppStyles.phoneInputStyle}
+                setPhone={(value) => validate(value, 'phone')}
+                setFlagObject={(object) => {
+                  hello(object, 'contactNumber')
+                }}
+                editable={client ? client.assigned_to_armsuser_id === user.id : true}
+                onChangeHandle={handleForm}
+                name={'contactNumber'}
+                placeholder={'Contact Number'}
+              />
+              {contact1Validate == true && (
+                <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+              )}
+            </View>
+          ) : (
+            <View style={[AppStyles.inputWrap]}>
+              <PhoneInputComponent
+                phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
+                countryCodeValue={countryCode}
+                containerStyle={AppStyles.phoneInputStyle}
+                setPhone={(value) => validate(value, 'phone')}
+                setFlagObject={(object) => {
+                  hello(object, 'contactNumber')
+                }}
+                editable={client ? client.assigned_to_armsuser_id === user.id : true}
+                onChangeHandle={handleForm}
+                name={'contactNumber'}
+                placeholder={'Contact Number*'}
+              />
+              {phoneValidate == true && (
+                <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+              )}
+              {phoneValidate == false &&
+                checkValidation === true &&
+                formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />}
+            </View>
+          )}
         </View>
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>
@@ -161,21 +185,40 @@ class DetailForm extends Component {
           </View>
         </View>
         <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              keyboardType={'number-pad'}
-              maxLength={15}
-              value={formData.cnic}
-              onChangeText={(text) => {
-                handleForm(text, 'cnic')
-              }}
-              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-              name={'cnic'}
-              placeholder={'CNIC'}
-            />
-            {cnicValidate == true && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />}
-          </View>
+          {screenName === 'Payments' ? (
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                keyboardType={'number-pad'}
+                maxLength={15}
+                value={formData.cnic}
+                onChangeText={(text) => {
+                  handleForm(text, 'cnic')
+                }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                name={'cnic'}
+                placeholder={'CNIC *'}
+              />
+              {cnicValidate && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />}
+              {checkValidation && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />}
+            </View>
+          ) : (
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                keyboardType={'number-pad'}
+                maxLength={15}
+                value={formData.cnic}
+                onChangeText={(text) => {
+                  handleForm(text, 'cnic')
+                }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                name={'cnic'}
+                placeholder={'CNIC'}
+              />
+              {cnicValidate == true && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />}
+            </View>
+          )}
         </View>
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>

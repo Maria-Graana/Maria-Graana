@@ -154,4 +154,8 @@ export default styles = StyleSheet.create({
     borderRadius: 10,
     width: '100%',
   },
+
+  viewBottomScroll: {
+    paddingBottom: '20%',
+  },
 })

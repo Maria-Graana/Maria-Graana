@@ -34,25 +34,6 @@ class DiaryFeedback extends Component {
     const { diaryFeedbacks, connectFeedback, dispatch } = this.props
 
     if (Object.keys(connectFeedback).length) {
-      // setConnectFeedbackModal(false)
-      // setNewTask({
-      //   ...newTask,
-      //   otherTasksToUpdate: connectFeedback.otherTasksToUpdate.map((task) => {
-      //     return {
-      //       ...newTask,
-      //       id: task.id,
-      //       makeHistory: true,
-      //       comments: task.comment,
-      //       response: task.comment,
-      //       feedbackId: connectFeedback.id,
-      //       feedbackTag: connectFeedback.tag,
-      //     }
-      //   }),
-      //   comments: connectFeedback.comment,
-      //   response: connectFeedback.comment,
-      //   feedbackId: connectFeedback.id,
-      //   feedbackTag: connectFeedback.tag,
-      // })
       if (connectFeedback.section === "Couldn't Connect")
         this.setState({ isReconnectModalVisible: true })
       // else if (
@@ -102,8 +83,8 @@ class DiaryFeedback extends Component {
   }
 
   handleNextAction = (type) => {
-    const { dispatch, connectFeedback, route, navigation, diary } = this.props
-    const { selectedDiary, selectedLead } = diary
+    const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
+    const { selectedDiary } = diary
 
     if (type === 'connect_again') {
       dispatch(
@@ -112,13 +93,13 @@ class DiaryFeedback extends Component {
           makeHistory: true,
           comments: connectFeedback.comment,
           response: connectFeedback.comment,
-          feedbackId: connectFeedback.id,
+          feedbackId: connectFeedback.feedbackId,
           feedbackTag: connectFeedback.tag,
           otherTasksToUpdate: [],
         })
       ).then((res) => {
         if (res) {
-          saveOrUpdateDiaryTask(this.props.connectFeedback, false).then((response) => {
+          saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
             if (response) {
               navigation.goBack()
             }
@@ -127,31 +108,40 @@ class DiaryFeedback extends Component {
       })
       // console.log('connect again', connectFeedback)
     } else if (type === 'set_follow_up') {
-      // dispatch(
-      //   setConnectFeedback({
-      //     ...connectFeedback,
-      //     comments: connectFeedback.comment,
-      //     response: connectFeedback.comment,
-      //     feedbackId: connectFeedback.id,
-      //     feedbackTag: connectFeedback.tag,
-      //     status: 'completed',
-      //     otherTasksToUpdate: [],
-      //   })
-      // ).then((res) => {
-      //   saveOrUpdateDiaryTask(this.props.connectFeedback, false).then((res) => {
-      //     if (res) {
-      //       navigation.replace('AddDiary', {
-      //         update: false,
-      //         rcmLeadId:
-      //           selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
-      //         cmLeadId:
-      //           selectedDiary && selectedDiary.armsProjectLeadId
-      //             ? selectedDiary.armsProjectLeadId
-      //             : null,
-      //       })
-      //     }
-      //   })
-      // })
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comment,
+          response: connectFeedback.comment,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          status: 'completed',
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        // console.log('previoustaskpayload=>', this.props.connectFeedback)
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            navigation.replace('TimeSlotManagement', {
+              data: {
+                userId: user.id,
+                taskCategory: 'leadTask',
+                reasonTag: connectFeedback.tag,
+                reasonId: connectFeedback.feedbackId,
+                taskType: 'follow_up',
+                armsLeadId:
+                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+                leadId:
+                  selectedDiary && selectedDiary.armsProjectLeadId
+                    ? selectedDiary.armsProjectLeadId
+                    : null,
+              },
+              taskType: 'follow_up',
+              isFromConnectFlow: true,
+            })
+          }
+        })
+      })
     }
   }
 
@@ -229,8 +219,8 @@ class DiaryFeedback extends Component {
                                       ...connectFeedback,
                                       section: feedback.section,
                                       colorCode: feedback.colorCode,
+                                      feedbackId: feedback.id,
                                       tag: tag,
-                                      id: feedback.id,
                                       comment: connectFeedback.comment || tag,
                                     })
                                   )

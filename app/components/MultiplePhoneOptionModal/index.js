@@ -19,17 +19,20 @@ const MultiplePhoneOptionModal = ({
   connectFeedback,
   contacts,
   navigation,
+  diary,
 }) => {
   const { contactsInformation } = connectFeedback
   const dispatch = useDispatch()
 
   const callOnSelectedNumber = (item, calledOn) => {
     let url = null
+    const { selectedDiary = null } = diary
     dispatch(
       setConnectFeedback({
         ...connectFeedback,
         calledNumber: item.number,
         calledOn,
+        id: selectedDiary.id,
       })
     )
     url = calledOn === 'phone' ? 'tel:' + item.number : 'whatsapp://send?phone=' + item.number
@@ -102,6 +105,7 @@ const MultiplePhoneOptionModal = ({
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    diary: store.diary.diary,
     connectFeedback: store.diary.connectFeedback,
     contacts: store.contacts.contacts,
   }

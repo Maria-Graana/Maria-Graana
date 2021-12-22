@@ -7,7 +7,6 @@ import styles from './style'
 import AppStyles from '../../AppStyles'
 import moment from 'moment'
 import helper from '../../helper'
-import AddTaskModal from '../AddTaskModal'
 import { Ionicons } from '@expo/vector-icons'
 import { Menu } from 'react-native-paper'
 import DiaryHelper from '../../screens/Diary/diaryHelper'
@@ -215,16 +214,18 @@ class DiaryTile extends React.Component {
                     </Text>
                   )}
 
-                  <TouchableOpacity
-                    style={{ width: '10%' }}
-                    onPress={() => initiateConnectFlow(diary)}
-                  >
-                    <Ionicons
-                      name="ios-call-outline"
-                      size={24}
-                      color={AppStyles.colors.primaryColor}
-                    />
-                  </TouchableOpacity>
+                  {diary.status !== 'completed' ? (
+                    <TouchableOpacity
+                      style={{ width: '10%' }}
+                      onPress={() => initiateConnectFlow(diary)}
+                    >
+                      <Ionicons
+                        name="ios-call-outline"
+                        size={24}
+                        color={AppStyles.colors.primaryColor}
+                      />
+                    </TouchableOpacity>
+                  ) : null}
                 </>
               )}
             </View>

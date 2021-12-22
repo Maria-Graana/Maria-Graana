@@ -206,7 +206,7 @@ const formatFeedBacks = (diaryFeedbacks, taskType, taskStatus) => {
   return updatedDiaryFeedbacks
 }
 
-export const saveOrUpdateDiaryTask = (taskData, showMessage = false, callback = null) => {
+export const saveOrUpdateDiaryTask = (taskData) => {
   let promise
   if ('id' in taskData) {
     promise = axios.patch(`/api/diary/update?id=${taskData.id}`, taskData)

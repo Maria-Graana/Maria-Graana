@@ -202,6 +202,16 @@ const DiaryHelper = {
       return '-'
     }
   },
+
+  getLeadType(diary) {
+    if (diary && diary.armsLeadId) {
+      return 'BuyRent'
+    } else if (diary && diary.armsProjectLeadId) {
+      return 'Project'
+    } else {
+      return 'Wanted'
+    }
+  },
 }
 
 module.exports = DiaryHelper

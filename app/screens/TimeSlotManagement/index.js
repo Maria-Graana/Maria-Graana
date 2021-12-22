@@ -20,6 +20,8 @@ import {
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
+import { saveOrUpdateDiaryTask } from '../../actions/diary'
+import helper from '../../helper'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -68,6 +70,7 @@ function TimeSlotManagement(props) {
 
   useEffect(() => {
     const { dispatch, route } = props
+    //console.log(route.params)
 
     dispatch(setSlotDiaryData(selectedDate))
 
@@ -157,12 +160,30 @@ function TimeSlotManagement(props) {
   }
 
   const onDone = () => {
-    const { dispatch, navigation } = props
-    if (check) {
+    const { dispatch, navigation, route } = props
+    const { data = null, isFromConnectFlow = false } = route.params
+    if (data && isFromConnectFlow) {
+      let copyData = Object.assign({}, data)
+      copyData.date = tempStartTime
+      copyData.time = tempStartTime
+      copyData.diaryTime = tempStartTime
+      copyData.start = tempStartTime
+      copyData.end = tempEndTime
+      copyData.slots = tempSlot
+      //console.log(copyData)
+      saveOrUpdateDiaryTask(copyData).then((response) => {
+        if (response) {
+          helper.successToast('TASK ADDED SUCCESSFULLY!')
+          navigation.goBack()
+        } else {
+          helper.errorToast('SOMETHING WENT WRONG!')
+        }
+      })
+    } else {
       dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
       dispatch(setDataSlotsArray(slotsData))
+      navigation.goBack()
     }
-    navigation.goBack()
   }
 
   const showDetail = (e) => {

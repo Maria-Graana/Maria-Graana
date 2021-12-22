@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native'
-import { StackActions, CommonActions } from '@react-navigation/native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
 import { Ionicons, FontAwesome5, Entypo, Fontisto } from '@expo/vector-icons'
@@ -23,7 +22,6 @@ import moment from 'moment'
 import DiaryTile from '../../components/DiaryTile'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import Loader from '../../components/loader'
-import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
   deleteDiaryTask,
   getDiaryStats,
@@ -41,6 +39,9 @@ import {
   cancelDiaryViewing,
   cancelDiaryMeeting,
   clearDiaries,
+  initiateConnectFlow,
+  setConnectFeedback,
+  getDiaryFeedbacks,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -56,6 +57,8 @@ import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
 import { DiarySortModal } from '../../components/DiarySortModal'
 import helper, { formatDateTime } from '../../helper'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import diaryHelper from './diaryHelper'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -77,6 +80,7 @@ class Diary extends React.Component {
       endTime: '',
       isMenuVisible: false,
       isSortModalVisible: false,
+      isMultiPhoneModalVisible: false,
       isDelete: false,
     }
   }
@@ -118,6 +122,7 @@ class Diary extends React.Component {
   componentWillUnmount() {
     const { dispatch } = this.props
     dispatch(clearDiaries())
+    dispatch(setConnectFeedback({}))
   }
 
   getMyDiary = (dateSelected) => {
@@ -359,6 +364,10 @@ class Diary extends React.Component {
     this.setState({ isSortModalVisible: value })
   }
 
+  showMultiPhoneModal = (value) => {
+    this.setState({ isMultiPhoneModalVisible: value })
+  }
+
   render() {
     const {
       selectedDate,
@@ -371,6 +380,7 @@ class Diary extends React.Component {
       dayName,
       isMenuVisible,
       isSortModalVisible,
+      isMultiPhoneModalVisible,
     } = this.state
     const {
       overdueCount,
@@ -383,9 +393,11 @@ class Diary extends React.Component {
       sortValue,
       onEndReachedLoader,
       isFilterApplied,
+      connectFeedback,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     const { name = null } = route.params
+
     return (
       <SafeAreaView style={styles.container}>
         <Fab
@@ -428,6 +440,12 @@ class Diary extends React.Component {
           startTime={startTime}
           endTime={endTime}
           day={dayName}
+        />
+
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
+          navigation={navigation}
         />
 
         <DiarySortModal
@@ -550,6 +568,19 @@ class Diary extends React.Component {
                 selectedDiary={selectedDiary}
                 screenName={'diary'}
                 hideMenu={() => this.hideMenu()}
+                initiateConnectFlow={(diary) => {
+                  dispatch(setSelectedDiary(diary))
+                  dispatch(initiateConnectFlow()).then((res) => {
+                    this.showMultiPhoneModal(true)
+                    dispatch(
+                      getDiaryFeedbacks({
+                        taskType: diary.taskType,
+                        leadType: diaryHelper.getLeadType(diary),
+                        actionType: 'Connect',
+                      })
+                    )
+                  })
+                }}
               />
             )}
             onEndReached={() => {
@@ -651,6 +682,7 @@ mapStateToProps = (store) => {
     onEndReachedLoader: store.diary.onEndReachedLoader,
     isFilterApplied: store.diary.isFilterApplied,
     slotDiary: store.slotManagement.slotDiaryData,
+    connectFeedback: store.diary.connectFeedback,
   }
 }
 

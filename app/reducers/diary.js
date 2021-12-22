@@ -67,6 +67,17 @@ const overdueCount = (state = 0, action) => {
   }
 }
 
+const diaryFeedbacks = (state = {}, action) => {
+  switch (action.type) {
+    case types.SET_DIARY_FEEDBACKS:
+      return action.payload
+    case types.CLEAR_DIARY_FEEDBACKS:
+      return {}
+    default:
+      return state
+  }
+}
+
 const sort = (state = '', action) => {
   switch (action.type) {
     case types.SET_DIARY_SORT:
@@ -123,6 +134,15 @@ const diaryStats = (state = '', action) => {
   }
 }
 
+const connectFeedback = (state = {}, action) => {
+  switch (action.type) {
+    case types.SET_CONNECT_FEEDBACK:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   diary,
   overdueCount,
@@ -132,4 +152,6 @@ export default combineReducers({
   onEndReachedLoader,
   isFilterApplied,
   feedbackReasonFilter,
+  diaryFeedbacks,
+  connectFeedback,
 })

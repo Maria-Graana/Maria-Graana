@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import * as React from 'react'
-import { FlatList, Image, Linking, Text, TouchableOpacity, View, Alert } from 'react-native'
+import { Alert, FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -14,15 +14,14 @@ import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import OfferModal from '../../components/OfferModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './styles'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import { formatPrice } from '../../components/PriceFormate'
-import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
@@ -319,9 +318,13 @@ class LeadOffer extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {

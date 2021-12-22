@@ -1,21 +1,19 @@
 /** @format */
 
 import axios from 'axios'
-import moment from 'moment'
+import { ActionSheet } from 'native-base'
 import React from 'react'
-import { ActionSheet, InputGroup } from 'native-base'
-import { Image, Linking, Text, TouchableOpacity, View, TouchableHighlight } from 'react-native'
-import { Menu as PopupMenu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu'
-import { Menu, Divider } from 'react-native-paper'
+import { Image, Linking, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
+import { Divider, Menu } from 'react-native-paper'
+import { MenuOption } from 'react-native-popup-menu'
 import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import helper from '../../helper'
-import StaticData from '../../StaticData'
-import styles from './style'
-import Ability from '../../hoc/Ability'
-import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
 import { setCallPayload } from '../../actions/callMeetingFeedback'
+import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import StaticData from '../../StaticData'
 import AddLeadCategoryModal from '../AddLeadCategoryModal'
+import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
+import styles from './style'
 
 var BUTTONS = [
   'Assign to team member',
@@ -198,7 +196,9 @@ class CMBottomNav extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: data.projectId ? 'Investment' : 'Buy',
-            screen: data.projectId ? 'InvestmentLead' : 'BuyLead',
+            // screenName: data.projectId ? 'InvestmentLead' : 'BuyLead',
+            purpose: 'refer',
+            screenName: 'LeadDetail',
           })
         }
       } else {
@@ -235,7 +235,12 @@ class CMBottomNav extends React.Component {
     const { navigation } = this.props
     const { showAssignToButton } = this.state
     if (showAssignToButton === true) {
-      navigation.navigate('AssignLead', { leadId: lead.id, type: 'sale', screen: 'LeadDetail' })
+      navigation.navigate('AssignLead', {
+        leadId: lead.id,
+        type: 'sale',
+        screen: 'LeadDetail',
+        purpose: 'reassign',
+      })
     } else {
       helper.errorToast('Lead Already Assign')
     }
@@ -347,7 +352,7 @@ class CMBottomNav extends React.Component {
       closedLeadEdit,
       lead,
       goToDiaryForm,
-      goToAttachments
+      goToAttachments,
     } = this.props
     const {
       visible,
@@ -356,11 +361,12 @@ class CMBottomNav extends React.Component {
       calledOn,
       isLeadCategoryModalVisible,
     } = this.state
+    const { screenName } = this.props
 
     return (
       <View style={styles.bottomNavMain}>
         <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
-          <View style={{alignItems: "center"}}>
+          <View style={{ alignItems: 'center' }}>
             <Image
               style={styles.bottomNavImg}
               source={require('../../../assets/img/black/details.png')}
@@ -368,132 +374,268 @@ class CMBottomNav extends React.Component {
             <Text style={styles.bottomNavBtnText}>Details</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          disabled={closedLeadEdit ? false : true}
-          style={styles.followBtn}
-          onPress={() => goToFollowUp()}
-        >
-          <View style={{ alignItems: 'center' }}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/black/tasks.png')}
-            />
-            <Text style={styles.followText}>Tasks</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={closedLeadEdit ? false : true}
-          style={styles.followBtn}
-          onPress={() => goToHistory()}
-        >
-          <View style={{ alignItems: 'center' }}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/black/activity.png')}
-            />
-            <Text style={styles.followText}>Activity</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={closedLeadEdit ? false : true}
-          style={styles.rejectBtn}
-          onPress={() => console.log("navigate to SCA document")}
-        >
-          <View style={{ alignItems: 'center' }}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/black/SCA.png')}
-            />
-            <Text style={styles.followText}>SCA</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={[styles.bottomNavBtn2, visible === true]}>
-          <Menu
-            visible={visible}
-            onDismiss={() => this.openMenu(false)}
-            anchor={
-              <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
-                {visible === true ? (
-                  <Image
-                    style={styles.bottomNavImg}
-                    source={require('../../../assets/img/Blue/menu.png')}
-                  />
-                ) : (
-                  <Image
-                    style={styles.bottomNavImg}
-                    source={require('../../../assets/img/black/menu.png')}
-                  />
-                )}
-                <Text style={[styles.bottomNavBtnText, visible === true && {color : "#348ceb"}]}>
-                  Menu
-                </Text>
-              </TouchableOpacity>
-            }
+        {screenName === 'MyDeals' ? (
+          <TouchableOpacity
+            // disabled={closedLeadEdit ? false : true}
+            style={styles.followBtn}
+            onPress={() => goToFollowUp()}
           >
-            {lead.projectId ? (
-              <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit) {
-                    goToHistory()
-                    this.openMenu(false)
-                  } else helper.leadClosedToast()
-                }}
-                title="Activity History"
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/diaryBottom.png')}
               />
-            ) : null}
+              <Text style={styles.followText}>Diary</Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            // disabled={closedLeadEdit ? false : true}
+            style={styles.followBtn}
+            onPress={() => goToFollowUp()}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/tasks.png')}
+              />
+              <Text style={styles.followText}>Tasks</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        {screenName === 'MyDeals' ? (
+          <TouchableOpacity
+            disabled={closedLeadEdit ? false : true}
+            style={styles.followBtn}
+            onPress={() => goToAttachments()}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/attachBottom.png')}
+              />
+              <Text style={styles.followText}>Files</Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            disabled={closedLeadEdit ? false : true}
+            style={styles.followBtn}
+            onPress={() => goToHistory()}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/activity.png')}
+              />
+              <Text style={styles.followText}>Activity</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        {screenName === 'MyDeals' ? (
+          <TouchableOpacity
+            disabled={closedLeadEdit ? false : true}
+            style={styles.rejectBtn}
+            onPress={() => goToHistory()}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/logBottom.png')}
+              />
+              <Text style={styles.followText}>Logs</Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            disabled={closedLeadEdit ? false : true}
+            style={styles.rejectBtn}
+            onPress={() => {
+              if (closedLeadEdit) {
+                goToAttachments('addSCA')
+                this.openMenu(false)
+              } else helper.leadClosedToast()
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/SCA.png')}
+              />
+              <Text style={styles.followText}>SCA</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        {screenName === 'MyDeals' ? (
+          <View style={[styles.bottomNavBtn2, visible === true]}>
+            <Menu
+              visible={visible}
+              onDismiss={() => this.openMenu(false)}
+              anchor={
+                <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
+                  {visible === true ? (
+                    <Image
+                      style={styles.bottomNavImg}
+                      source={require('../../../assets/img/Blue/menu.png')}
+                    />
+                  ) : (
+                    <Image
+                      style={styles.bottomNavImg}
+                      source={require('../../../assets/img/black/menu.png')}
+                    />
+                  )}
+                  <Text style={[styles.bottomNavBtnText, visible === true && { color: '#348ceb' }]}>
+                    Menu
+                  </Text>
+                </TouchableOpacity>
+              }
+            >
+              {/* {lead.projectId ? (
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit) {
+                      goToHistory()
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  title="Activity History"
+                />
+              ) : null} */}
 
-            {isFromViewingScreen ? (
-              <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit) {
-                    goToPropertyScreen()
-                    this.openMenu(false)
-                  } else helper.leadClosedToast()
-                }}
-                icon={require('../../../assets/img/properties-icon-l.png')}
-                title="Add Property"
-              />
-            ) : null}
-            {callButton ? (
+              {/* {isFromViewingScreen ? (
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit) {
+                      goToPropertyScreen()
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/properties-icon-l.png')}
+                  title="Add Property"
+                />
+              ) : null} */}
               <View>
                 <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit) {
-                    this.navigateToAssignLead(lead)
-                    this.openMenu(false)
-                  } else helper.leadClosedToast()
-                }}
-                // icon={require('../../../assets/img/callIcon.png')}
-                title="Re-assign"
-              />
-              <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit) {
-                    this.navigateToShareScreen(lead)
-                    this.openMenu(false)
-                  } else helper.leadClosedToast()
-                }}
-                // icon={require('../../../assets/img/callIcon.png')}
-                title="Refer"
-              />
-              <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit) {
-                    goToAttachments()
-                    this.openMenu(false)
-                  } else helper.leadClosedToast()
-                }}
-                // icon={require('../../../assets/img/callIcon.png')}
-                title="Attachments"
-              />
+                  onPress={() => {
+                    if (closedLeadEdit) {
+                      this.navigateToAssignLead(lead)
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Re-assign"
+                />
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit) {
+                      this.navigateToShareScreen(lead)
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Refer"
+                />
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit) {
+                      this.onCategorySelected(lead)
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Set Classification"
+                />
               </View>
-              
-              
-              
-            ) : null}
-            {!callButton && !lead.projectId ? <Menu.Item title="No Option" /> : null}
-          </Menu>
-        </View>
+              {/* {!callButton && !lead.projectId ? <Menu.Item title="No Option" /> : null} */}
+            </Menu>
+          </View>
+        ) : (
+          <View style={[styles.bottomNavBtn2, visible === true]}>
+            <Menu
+              visible={visible}
+              onDismiss={() => this.openMenu(false)}
+              anchor={
+                <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
+                  {visible === true ? (
+                    <Image
+                      style={styles.bottomNavImg}
+                      source={require('../../../assets/img/Blue/menu.png')}
+                    />
+                  ) : (
+                    <Image
+                      style={styles.bottomNavImg}
+                      source={require('../../../assets/img/black/menu.png')}
+                    />
+                  )}
+                  <Text style={[styles.bottomNavBtnText, visible === true && { color: '#348ceb' }]}>
+                    Menu
+                  </Text>
+                </TouchableOpacity>
+              }
+            >
+              {lead.projectId ? (
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit) {
+                      goToHistory()
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  title="Activity History"
+                />
+              ) : null}
+
+              {isFromViewingScreen ? (
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit) {
+                      goToPropertyScreen()
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  icon={require('../../../assets/img/properties-icon-l.png')}
+                  title="Add Property"
+                />
+              ) : null}
+              {callButton ? (
+                <View>
+                  <Menu.Item
+                    onPress={() => {
+                      if (closedLeadEdit) {
+                        this.navigateToAssignLead(lead)
+                        this.openMenu(false)
+                      } else helper.leadClosedToast()
+                    }}
+                    // icon={require('../../../assets/img/callIcon.png')}
+                    title="Re-assign"
+                  />
+                  <Menu.Item
+                    onPress={() => {
+                      if (closedLeadEdit) {
+                        this.navigateToShareScreen(lead)
+                        this.openMenu(false)
+                      } else helper.leadClosedToast()
+                    }}
+                    // icon={require('../../../assets/img/callIcon.png')}
+                    title="Refer"
+                  />
+                  <Menu.Item
+                    onPress={() => {
+                      if (closedLeadEdit) {
+                        goToAttachments()
+                        this.openMenu(false)
+                      } else helper.leadClosedToast()
+                    }}
+                    // icon={require('../../../assets/img/callIcon.png')}
+                    title="Attachments"
+                  />
+                </View>
+              ) : null}
+              {!callButton && !lead.projectId ? <Menu.Item title="No Option" /> : null}
+            </Menu>
+          </View>
+        )}
+
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={selectedClientContacts.payload}

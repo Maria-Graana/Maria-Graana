@@ -1,6 +1,6 @@
 /** @format */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, Modal, SafeAreaView, TextInput, TouchableOpacity } from 'react-native'
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import styles from './styles'
@@ -19,7 +19,15 @@ const AddAttachmentPopup = (props) => {
     getAttachmentFromStorage,
     setTitle,
     doneLoading,
+    navigation,
+    workflow,
+    purpose,
   } = props
+  useEffect(() => {
+    if (purpose == 'addSCA') {
+      setTitle('Service Charge Agreement Document')
+    }
+  }, [])
   return (
     <Modal visible={isVisible} animationType="slide" onRequestClose={closeModal}>
       <SafeAreaView
@@ -27,7 +35,9 @@ const AddAttachmentPopup = (props) => {
       >
         <AntDesign
           style={styles.closeStyle}
-          onPress={closeModal}
+          onPress={() => {
+            closeModal(), purpose == 'addSCA' && navigation.goBack()
+          }}
           name="close"
           size={26}
           color={AppStyles.colors.textColor}
@@ -38,11 +48,13 @@ const AddAttachmentPopup = (props) => {
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]}
-                placeholder={'Subject/Title'}
+                placeholder={
+                  purpose == 'addSCA' ? 'Service Charge Agreement Document' : 'Subject/Title'
+                }
                 onChangeText={(text) => setTitle(text)}
               />
             </View>
-            {checkValidation === true && formData.title === '' && (
+            {checkValidation === true && purpose != 'addSCA' && formData.title === '' && (
               <ErrorMessage errorMessage={'Required'} />
             )}
           </View>
@@ -99,7 +111,9 @@ const AddAttachmentPopup = (props) => {
             <TouchableButton
               label={'DONE'}
               loading={doneLoading}
-              onPress={formSubmit}
+              onPress={() => {
+                formSubmit(), purpose == 'addSCA' && closeModal()
+              }}
               containerStyle={styles.button}
             />
           </View>

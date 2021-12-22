@@ -511,9 +511,9 @@ class CMPayment extends Component {
   }
 
   // **************** Bottom Nav Functions Start *******************
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { navigation, route, lead } = this.props
-    navigation.navigate('LeadAttachments', { cmLeadId: lead.id, workflow: 'cm' })
+    navigation.navigate('LeadAttachments', { cmLeadId: lead.id, workflow: 'cm', purpose: purpose })
   }
 
   goToPayAttachments = () => {
@@ -1596,12 +1596,25 @@ class CMPayment extends Component {
   }
 
   //  ************ Function for open Follow up modal ************
+  // openModalInFollowupMode = (value) => {
+  //   this.setState({
+  //     active: !this.state.active,
+  //     isFollowUpMode: true,
+  //     comment: value,
+  //   })
+  // }
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   //  ************ SCHEDULE OF PAYMENT WORKFLOW **************
@@ -1881,7 +1894,10 @@ class CMPayment extends Component {
       callModal,
       meetings,
     } = this.state
+
     const { lead, navigation, contacts ,route} = this.props
+    const {screenName} = this.props.route.params
+
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -2118,6 +2134,7 @@ class CMPayment extends Component {
               goToHistory={this.goToHistory}
               onHandleCloseLead={this.onHandleCloseLead}
               fetchLead={this.fetchLead}
+              screenName={screenName}
             />
           </View>
         </View>

@@ -233,6 +233,10 @@ class Landing extends React.Component {
         screen: screenName,
         hasBooking: true,
       })
+    } else if (screenName === 'ProjectInventory') {
+      navigation.navigate('AvailableInventory', {
+        screen: 'AvailableInventory',
+      })
     } else {
       navigation.navigate(name, { screen: screenName })
     }

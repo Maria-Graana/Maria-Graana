@@ -15,6 +15,7 @@ import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import helper from '../../helper'
 import TouchableInput from '../TouchableInput'
+import { Client } from '../../hoc/role'
 
 class CMFirstForm extends Component {
   constructor(props) {
@@ -90,6 +91,7 @@ class CMFirstForm extends Component {
       clientName,
       checkValidation,
       handleClientClick,
+      selectedClient
     } = this.props
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
@@ -365,6 +367,27 @@ class CMFirstForm extends Component {
             ) : null} */}
           </View>
         )}
+        
+        {/* **************************************** */}
+        <View style={{ paddingVertical: 10 }}>
+          <View style={styles.backgroundBlue}>
+            <Text style={styles.finalPrice}>FINAL PRICE</Text>
+
+            <Text style={styles.priceValue}>
+              {helper.currencyConvert(firstFormData.finalPrice)}
+            </Text>
+            <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
+          </View>
+        </View>
+        <View>
+        <TouchableInput
+          placeholder="Client"
+          onPress={() => handleClientClick()}
+          value={clientName ? clientName :firstFormData.clientName}
+          showError={checkValidation === true && firstFormData.customerId === ''}
+          errorMessage="Required Purchaiser"
+        />
+        </View>
 
         {/* **************************************** */}
         {cnicEditable != false && (
@@ -380,23 +403,12 @@ class CMFirstForm extends Component {
             fromatName={false}
           />
         )}
-        {(firstFormValidate === true && firstFormData.cnic === null) ||
-        firstFormData.cnic === '' ? (
-          <ErrorMessage errorMessage={'Required'} />
+        {(firstFormValidate === true) ||
+        (selectedClient && selectedClient.cnic === null) ? (
+          <ErrorMessage errorMessage={'Required CNIC'} />
         ) : cnicValidate ? (
           <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
         ) : null}
-        {/* **************************************** */}
-        <View style={{ paddingVertical: 10 }}>
-          <View style={styles.backgroundBlue}>
-            <Text style={styles.finalPrice}>FINAL PRICE</Text>
-
-            <Text style={styles.priceValue}>
-              {helper.currencyConvert(firstFormData.finalPrice)}
-            </Text>
-            <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
-          </View>
-        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -450,16 +462,8 @@ class CMFirstForm extends Component {
             </TouchableOpacity>
           </View>
         </View>
-        <View>
-          <TouchableInput
-            placeholder="Client"
-            onPress={() => handleClientClick()}
-            value={clientName}
-            showError={checkValidation === true && firstFormData.customerId === ''}
-            errorMessage="Required"
-          />
-        </View>
-
+        
+        
         <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}

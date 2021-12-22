@@ -49,7 +49,7 @@ var CANCEL_INDEX = 1
 class CMPayment extends Component {
   constructor(props) {
     super(props)
-    const { lead, user, route } = this.props
+    const { lead, user, route} = this.props
     this.state = {
       checkLeadClosedOrNot: false,
       editable: false,
@@ -225,6 +225,7 @@ class CMPayment extends Component {
       this.getAllProjects()
       this.setdefaultFields(this.props.lead)
       this.validateCnic(lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null)
+      if (route.params) this.setClient()
     })
   }
 
@@ -240,18 +241,28 @@ class CMPayment extends Component {
   }
   setClient = () => {
     const { client, name } = this.props.route.params
-    this.setState({ clientName: name, selectedClient: client }, () => {
-      this.clearParmas()
-    })
+    const { firstFormData} = this.state
+    firstFormData.cnic = client.cnic
+    if (client && client.cnic === null){
+      this.setState({cnicEditable : true})
+    }
+    else{
+      this.setState({cnicEditable : false})
+    }
+    this.setState(
+      { clientName: name, selectedClient: client },
+      () => {
+        this.clearParmas()
+      }
+    )
   }
   handleClientClick = () => {
     const { navigation } = this.props
-    const { firstFormData } = this.state
+    const { firstFormData, selectedClient } = this.state
     let copyObject = Object.assign({}, firstFormData)
     this.setState({
       firstFormData: copyObject,
     })
-    const { selectedClient } = this.state
     navigation.navigate('Client', {
       isFromDropDown: true,
       selectedClient,
@@ -395,7 +406,7 @@ class CMPayment extends Component {
           },
           () =>
             lead.status == 'open' &&
-            route.params &&
+            route.params && route.params.unitData &&
             this.getUnits(route.params.unitData.projectId, route.params.unitData.floorId)
         )
       })
@@ -1335,7 +1346,7 @@ class CMPayment extends Component {
 
   validateCnic = (value) => {
     if ((value && value.length < 15) || value === '' || !value) {
-      this.setState({ cnicValidate: true, cnicEditable: true })
+      this.setState({ cnicEditable: true })
     } else {
       this.setState({ cnicValidate: false })
     }
@@ -1870,7 +1881,7 @@ class CMPayment extends Component {
       callModal,
       meetings,
     } = this.state
-    const { lead, navigation, contacts } = this.props
+    const { lead, navigation, contacts ,route} = this.props
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -2016,9 +2027,10 @@ class CMPayment extends Component {
                     installmentFrequency={installmentFrequency}
                     lead={lead}
                     openUnitsTable={this.openUnitsTable}
-                    clientName={firstFormData.clientName}
+                    clientName={clientName}
                     checkValidation={checkValidation}
                     handleClientClick={this.handleClientClick}
+                    selectedClient = {route.params ? route.params.client : '' }
                   />
                 )}
                 {secondForm && (

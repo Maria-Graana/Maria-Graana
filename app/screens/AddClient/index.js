@@ -44,6 +44,7 @@ class AddClient extends Component {
         accountTitle: '',
         bank: '',
         iBan: '',
+        bookUnit: true,
       },
       emailValidate: true,
       phoneValidate: false,
@@ -301,6 +302,8 @@ class AddClient extends Component {
     let phone1 = this.checkNum(formData.contactNumber, callingCode)
     let phone2 = this.checkNum(formData.contact1, callingCode1)
     let phone3 = this.checkNum(formData.contact2, callingCode2)
+    const {screenName } = this.props.route.params
+    if (screenName === 'Payments') {
     let body = {
       first_name: helper.capitalize(formData.firstName),
       last_name: helper.capitalize(formData.lastName),
@@ -327,10 +330,44 @@ class AddClient extends Component {
       bank: formData.bank,
       accountTitle: formData.accountTitle,
       iBan: formData.iBan,
+      bookUnit: formData.bookUnit,
     }
     if (!body.contact1.contact1) delete body.contact1
     if (!body.contact2.contact2) delete body.contact2
+    return body}
+    else{
+      let body = {
+        first_name: helper.capitalize(formData.firstName),
+        last_name: helper.capitalize(formData.lastName),
+        email: formData.email,
+        cnic: formData.cnic,
+        phone: {
+          countryCode: callingCode === '+92' ? 'PK' : countryCode,
+          phone: phone1 ? phone1.replace(/\s+/g, '') : null,
+          dialCode: callingCode,
+        },
+        address: formData.address,
+        secondary_address: formData.secondaryAddress,
+        contact1: {
+          countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
+          contact1: phone2 ? phone2.replace(/\s+/g, '') : null,
+          dialCode: callingCode1,
+        },
+        contact2: {
+          countryCode: callingCode2 === '+92' ? 'PK' : countryCode2,
+          contact2: phone3 ? phone3.replace(/\s+/g, '') : null,
+          dialCode: callingCode2,
+        },
+        familyMember: formData.familyMember,
+        bank: formData.bank,
+        accountTitle: formData.accountTitle,
+        iBan: formData.iBan,
+      }
+      if (!body.contact1.contact1) delete body.contact1
+    if (!body.contact2.contact2) delete body.contact2
     return body
+    }
+    
   }
 
   updatePayload = () => {
@@ -391,6 +428,7 @@ class AddClient extends Component {
       bank: formData.bank,
       accountTitle: formData.accountTitle,
       iBan: formData.iBan,
+      bookunit: formData.bookunit,
     }
     body.customersContacts = []
     body.customersContacts.push(body.phone)
@@ -433,7 +471,7 @@ class AddClient extends Component {
     if (
       !formData.firstName ||
       !formData.lastName ||
-      !formData.contactNumber ||
+      (screenName === 'Payments' ? !formData.cnic : !formData.contactNumber) ||
       this.checkRequiredField()
     ) {
       this.setState({
@@ -450,6 +488,7 @@ class AddClient extends Component {
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
+              console.log(body, 'BODY')
               if (res.status === 200 && res.data) {
                 if (res.data.message !== 'CLIENT CREATED') {
                   // Error Messages
@@ -566,8 +605,7 @@ class AddClient extends Component {
       accountsOptionFields,
     } = this.state
     const { route } = this.props
-    const { update, client } = route.params
-    //console.log(client)
+    const { update, client, screenName } = route.params
     return (
       <View style={[AppStyles.container]}>
         <StyleProvider style={getTheme(formTheme)}>
@@ -599,6 +637,7 @@ class AddClient extends Component {
                     hello={this.hello}
                     accountsOptionFields={accountsOptionFields}
                     client={client}
+                    screenName={screenName}
                   />
                 </View>
               </TouchableWithoutFeedback>

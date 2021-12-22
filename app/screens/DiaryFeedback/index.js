@@ -15,6 +15,8 @@ import { connect } from 'react-redux'
 import { clearDiaryFeedbacks, saveOrUpdateDiaryTask, setConnectFeedback } from '../../actions/diary'
 import TouchableButton from '../../components/TouchableButton'
 import ReconnectModal from '../../components/ReconnectModal'
+import { setlead } from '../../actions/lead'
+import axios from 'axios'
 class DiaryFeedback extends Component {
   constructor(props) {
     super(props)
@@ -33,9 +35,13 @@ class DiaryFeedback extends Component {
   setNextFlow = () => {
     const { diaryFeedbacks, connectFeedback, dispatch } = this.props
 
+    //console.log('Action=>', connectFeedback)
     if (Object.keys(connectFeedback).length) {
       if (connectFeedback.section === "Couldn't Connect")
         this.setState({ isReconnectModalVisible: true })
+      else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
+      else if (connectFeedback.section === 'No Action Required')
+        this.handleNextAction('no_action_required')
       // else if (
       //   ['Follow up', 'Cancel Viewing', 'Cancel Meeting'].indexOf(connectFeedback.section) > -1
       // ) {
@@ -84,21 +90,22 @@ class DiaryFeedback extends Component {
 
   handleNextAction = (type) => {
     const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
-    const { selectedDiary } = diary
+    const { selectedDiary, selectedLead } = diary
 
-    if (type === 'connect_again') {
+    if (type === 'connect_again' || type === 'no_action_required') {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
           makeHistory: true,
-          comments: connectFeedback.comment,
-          response: connectFeedback.comment,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
           feedbackId: connectFeedback.feedbackId,
           feedbackTag: connectFeedback.tag,
           otherTasksToUpdate: [],
         })
       ).then((res) => {
         if (res) {
+          console.log(this.props.connectFeedback)
           saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
             if (response) {
               navigation.goBack()
@@ -111,8 +118,8 @@ class DiaryFeedback extends Component {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
-          comments: connectFeedback.comment,
-          response: connectFeedback.comment,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
           feedbackId: connectFeedback.feedbackId,
           feedbackTag: connectFeedback.tag,
           status: 'completed',
@@ -138,6 +145,33 @@ class DiaryFeedback extends Component {
               },
               taskType: 'follow_up',
               isFromConnectFlow: true,
+            })
+          }
+        })
+      })
+    } else if (type === 'book_a_unit') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          status: 'completed',
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            // get all information for lead before moving to next screen
+            axios.get(`/api/leads/project/byId?id=${selectedLead.id}`).then((res) => {
+              if (res.data) {
+                dispatch(setlead(res.data))
+                navigation.replace('CMLeadTabs', {
+                  screen: 'Payments',
+                  params: { screenName: 'Payments' },
+                })
+              }
             })
           }
         })
@@ -171,9 +205,9 @@ class DiaryFeedback extends Component {
               //autoFocus
               placeholder={'Comments'}
               onChangeText={(text) =>
-                dispatch(setConnectFeedback({ ...connectFeedback, comment: text }))
+                dispatch(setConnectFeedback({ ...connectFeedback, comments: text }))
               }
-              value={connectFeedback && connectFeedback.comment ? connectFeedback.comment : null}
+              // value={connectFeedback && connectFeedback.comment ? connectFeedback.comment : null}
             />
           </View>
           {diaryFeedbacks &&
@@ -201,19 +235,7 @@ class DiaryFeedback extends Component {
                                 },
                               ]}
                               onPress={() => {
-                                if (feedback.section === 'Actions') console.log('actions')
-                                // setNextAction(tag, {
-                                //   section: feedback.section,
-                                //   colorCode: feedback.colorCode,
-                                //   tag: tag,
-                                //   id: feedback.id,
-                                //   comment: connectFeedback.comment || tag,
-                                //   otherTasksToUpdate: connectFeedback.otherTasksToUpdate ? connectFeedback.otherTasksToUpdate.filter(task =>
-                                //     selectedProperty.indexOf(task.propertyId) > -1
-                                //   ).map(task => {
-                                //     return {id: task.id, comment: task.comment || tag}
-                                // }, selectedProperty)
-                                else
+                                if (feedback.section === 'Actions') {
                                   dispatch(
                                     setConnectFeedback({
                                       ...connectFeedback,
@@ -221,7 +243,20 @@ class DiaryFeedback extends Component {
                                       colorCode: feedback.colorCode,
                                       feedbackId: feedback.id,
                                       tag: tag,
-                                      comment: connectFeedback.comment || tag,
+                                      comments: connectFeedback.comments || tag,
+                                    })
+                                  ).then((res) => {
+                                    this.handleNextAction(tag.replace(/\s+/g, '_').toLowerCase())
+                                  })
+                                } else
+                                  dispatch(
+                                    setConnectFeedback({
+                                      ...connectFeedback,
+                                      section: feedback.section,
+                                      colorCode: feedback.colorCode,
+                                      feedbackId: feedback.id,
+                                      tag: tag,
+                                      comments: connectFeedback.comments || tag,
                                     })
                                   )
                               }}

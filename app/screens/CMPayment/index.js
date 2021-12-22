@@ -396,6 +396,7 @@ class CMPayment extends Component {
           () =>
             lead.status == 'open' &&
             route.params &&
+            route.params.unitData &&
             this.getUnits(route.params.unitData.projectId, route.params.unitData.floorId)
         )
       })
@@ -1884,7 +1885,7 @@ class CMPayment extends Component {
       meetings,
     } = this.state
     const { lead, navigation, contacts } = this.props
-    const {screenName} = this.props.route.params
+    const { screenName = '' } = this.props.route.params
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar

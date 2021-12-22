@@ -106,79 +106,81 @@ export default function DayShiftEnd({
           onPress={() => setVisible(!visible)}
         />
 
-        <View style={styles.cardView}>
-          <View style={styles.card}>
-            <Text>Name:</Text>
-            <Text style={styles.cardText}>
-              {user.firstName} {''}
-              {user.lastName}
-            </Text>
+        <ScrollView>
+          <View style={styles.cardView}>
+            <View style={styles.card}>
+              <Text>Name:</Text>
+              <Text style={styles.cardText}>
+                {user.firstName} {''}
+                {user.lastName}
+              </Text>
 
-            <Text style={styles.cardInnerSpace}>Report Duration:</Text>
-            <Text style={styles.cardText}>
-              {moment(startTime).format('hh:mm a')} - {moment(endTime).format('hh:mm a')} {'('}
-              {moment(startTime).format('YYYY-MM-DD')}
-              {')'}
-            </Text>
+              <Text style={styles.cardInnerSpace}>Report Duration:</Text>
+              <Text style={styles.cardText}>
+                {moment(startTime).format('hh:mm a')} - {moment(endTime).format('hh:mm a')} {'('}
+                {moment(startTime).format('YYYY-MM-DD')}
+                {')'}
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.containerRow}>
-          <View style={styles.TotalBox}>
-            <Text style={styles.TotalLabel1}>
-              {remainingTasks}/{totalTasks}
-            </Text>
-            <Text style={styles.TotalLabel2}>Total Tasks of the Day</Text>
+          <View style={styles.containerRow}>
+            <View style={styles.TotalBox}>
+              <Text style={styles.TotalLabel1}>
+                {remainingTasks}/{totalTasks}
+              </Text>
+              <Text style={styles.TotalLabel2}>Total Tasks of the Day</Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.containerOverDueRow}>
-          <View style={styles.OverDueBox}>
-            <Text style={styles.bigLabelBoxText1}>
-              {/* {overDueTasks.toString().length == 1 && overDueTasks.toString() != '0'
+          <View style={styles.containerOverDueRow}>
+            <View style={styles.OverDueBox}>
+              <Text style={styles.bigLabelBoxText1}>
+                {/* {overDueTasks.toString().length == 1 && overDueTasks.toString() != '0'
                 ? '0' + overDueTasks
                 : overDueTasks} */}
-              {diaryStat['Overdue Tasks']}
-            </Text>
-            <Text style={styles.bigLabelBoxText2}>Overdue Tasks</Text>
-          </View>
-        </View>
-
-        <ScrollView>
-          <View style={styles.containerRow}>
-            <View style={styles.connectBoxViewOuterLeft}>
-              <View style={styles.connectBoxViewInner}>
-                <Text style={styles.bigLabelBoxText1}>
-                  {diaryStat['Connect tasks done']}/{diaryStat['Total Connect']}
-                </Text>
-                <Text style={styles.bigLabelBoxText2}>Connects Tasks</Text>
-              </View>
-            </View>
-
-            <View style={styles.followBoxViewOuterRight}>
-              <View style={styles.followBoxViewInner}>
-                <Text style={styles.bigLabelBoxText1}>
-                  {diaryStat['Follow ups done']}/{diaryStat['Total FollowUps']}
-                </Text>
-                <Text style={styles.bigLabelBoxText2}>Follow Up Tasks</Text>
-              </View>
+                {diaryStat['Overdue Tasks']}
+              </Text>
+              <Text style={styles.bigLabelBoxText2}>Overdue Tasks</Text>
             </View>
           </View>
 
-          <View style={styles.containerRow}>
-            <View style={styles.bigBoxViewOuterLeft}>
-              <View style={styles.bigBoxViewInner}>
-                <Text style={styles.bigLabelBoxText1}>
-                  {remainingActions}/{totalActions}
-                </Text>
-                <Text style={styles.bigLabelBoxText2}>Actions</Text>
+          <View style={styles.viewBottomScroll}>
+            <View style={styles.containerRow}>
+              <View style={styles.connectBoxViewOuterLeft}>
+                <View style={styles.connectBoxViewInner}>
+                  <Text style={styles.bigLabelBoxText1}>
+                    {diaryStat['Connect tasks done']}/{diaryStat['Total Connect']}
+                  </Text>
+                  <Text style={styles.bigLabelBoxText2}>Connects Tasks</Text>
+                </View>
+              </View>
+
+              <View style={styles.followBoxViewOuterRight}>
+                <View style={styles.followBoxViewInner}>
+                  <Text style={styles.bigLabelBoxText1}>
+                    {diaryStat['Follow ups done']}/{diaryStat['Total FollowUps']}
+                  </Text>
+                  <Text style={styles.bigLabelBoxText2}>Follow Up Tasks</Text>
+                </View>
               </View>
             </View>
 
-            <View style={styles.bigBoxViewOuterRight}>
-              <View style={styles.bigBoxViewInnerL}>
-                <Text style={styles.bigLabelBoxText1}>{rejectedTasks}</Text>
-                <Text style={styles.bigLabelBoxText2}>Leads Rejected</Text>
+            <View style={styles.containerRow}>
+              <View style={styles.bigBoxViewOuterLeft}>
+                <View style={styles.bigBoxViewInner}>
+                  <Text style={styles.bigLabelBoxText1}>
+                    {remainingActions}/{totalActions}
+                  </Text>
+                  <Text style={styles.bigLabelBoxText2}>Actions</Text>
+                </View>
+              </View>
+
+              <View style={styles.bigBoxViewOuterRight}>
+                <View style={styles.bigBoxViewInnerL}>
+                  <Text style={styles.bigLabelBoxText1}>{rejectedTasks}</Text>
+                  <Text style={styles.bigLabelBoxText2}>Leads Rejected</Text>
+                </View>
               </View>
             </View>
           </View>

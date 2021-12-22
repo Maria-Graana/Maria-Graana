@@ -36,9 +36,9 @@ export default styles = StyleSheet.create({
   },
   bottomNavBtnText: {
     fontSize: 16,
+    color: 'black',
   },
-  forMenuIcon: {
-  },
+  forMenuIcon: {},
   colorWhite: {
     color: '#fff',
   },

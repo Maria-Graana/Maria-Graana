@@ -28,7 +28,7 @@ const AttachmentTile = (props) => {
       ) : (
         <View style={styles.horizontalContainer}>
           <Text style={[styles.headingStyle, { flex: 0.9, marginRight: 10, paddingTop: 10 }]}>
-            {data && data.title.toUpperCase()}
+            {data && data.title != null && data.title.toUpperCase()}
           </Text>
           <TouchableOpacity
             style={{ flex: 0.1, alignItems: 'flex-end' }}
@@ -42,7 +42,7 @@ const AttachmentTile = (props) => {
 
       {docType && (
         <Text style={[styles.headingStyle, styles.docText]}>
-          {data && data.title.toUpperCase()}
+          {data && data.title != null && data.title.toUpperCase()}
         </Text>
       )}
       {/*   Second Row    */}

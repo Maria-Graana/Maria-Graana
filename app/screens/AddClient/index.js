@@ -488,7 +488,6 @@ class AddClient extends Component {
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
-              console.log(body, 'BODY')
               if (res.status === 200 && res.data) {
                 if (res.data.message !== 'CLIENT CREATED') {
                   // Error Messages

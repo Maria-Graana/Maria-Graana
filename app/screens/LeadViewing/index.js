@@ -393,12 +393,15 @@ class LeadViewing extends React.Component {
   }
 
   toggleCheckListModal = (toggleState, data) => {
-    this.setState({
-      isCheckListModalVisible: toggleState,
-      currentProperty: data ? data : null,
-      selectedCheckList: [],
-      userFeedback: null,
-    })
+    // this.setState(
+    //   {
+    // isCheckListModalVisible: toggleState,
+    //   currentProperty: data ? data : null,
+    //   selectedCheckList: [],
+    //   userFeedback: null,
+    // },
+    this.doneViewing(data ? data : null)
+    // )
   }
 
   checkStatus = (property) => {
@@ -511,10 +514,10 @@ class LeadViewing extends React.Component {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
       if (
-        diary.status === 'pending' &&
-        selectedCheckList.length === StaticData.areaManagerCheckList.length &&
-        userFeedback !== '' &&
-        userFeedback !== null
+        diary.status === 'pending' //&&
+        // selectedCheckList.length === StaticData.areaManagerCheckList.length &&
+        // userFeedback !== '' &&
+        // userFeedback !== null
       ) {
         let checkList = {}
         selectedCheckList.map((item, index) => {
@@ -529,7 +532,7 @@ class LeadViewing extends React.Component {
         axios
           .patch(`/api/diary/update?id=${diary.id}`, body)
           .then((res) => {
-            this.setState({ loading: true })
+            // this.setState({ loading: true })
             this.toggleCheckListModal(false, null)
             this.fetchProperties()
           })

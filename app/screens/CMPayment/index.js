@@ -242,7 +242,7 @@ class CMPayment extends Component {
   setClient = () => {
     const { client, name } = this.props.route.params
     const { firstFormData} = this.state
-    firstFormData.cnic = client.cnic
+    if (client) firstFormData.cnic = client.cnic
     if (client && client.cnic === null){
       this.setState({cnicEditable : true})
     }

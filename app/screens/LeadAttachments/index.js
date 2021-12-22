@@ -47,6 +47,7 @@ class LeadAttachments extends Component {
       viewCommentsCheck: false,
       documentComments: [],
       scaId: null,
+      scaStatus: null,
     }
   }
 
@@ -90,12 +91,13 @@ class LeadAttachments extends Component {
             attachmentsData: res.data,
             signedServiceFile: signedFile,
             scaId: res.data[0].id,
+            scaStatus: res.data[0].status,
           })
         } else this.createSCAPayload()
       })
       .then(() =>
         this.setState({
-          isVisible: this.state.attachmentsData[0] || purpose == 'view' ? false : true,
+          isVisible: this.state.scaStatus != 'pending_upload' || purpose == 'view' ? false : true,
           loading: false,
           doneLoading: false,
         })
@@ -159,12 +161,13 @@ class LeadAttachments extends Component {
             attachmentsData: res.data,
             signedServiceFile: signedFile,
             scaId: res.data[0].id,
+            scaStatus: res.data[0].status,
           })
         } else this.createSCAPayload()
       })
       .then(() =>
         this.setState({
-          isVisible: this.state.attachmentsData[0] || purpose == 'view' ? false : true,
+          isVisible: this.state.scaStatus != 'pending_upload' || purpose == 'view' ? false : true,
           loading: false,
           doneLoading: false,
         })
@@ -578,6 +581,7 @@ class LeadAttachments extends Component {
         {!loading ? (
           <>
             <FlatList
+              style={{ paddingBottom: '3%' }}
               data={attachmentsData}
               renderItem={({ item, index }) => (
                 <LegalTile

@@ -622,7 +622,7 @@ class CMBottomNav extends React.Component {
                   <Menu.Item
                     onPress={() => {
                       if (closedLeadEdit) {
-                        goToAttachments()
+                        goToAttachments('view')
                         this.openMenu(false)
                       } else helper.leadClosedToast()
                     }}

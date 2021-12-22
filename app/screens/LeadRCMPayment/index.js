@@ -18,23 +18,32 @@ import {
   Platform,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
+import {
+  clearInstrumentInformation,
+  clearInstrumentsList,
+  getInstrumentDetails,
+  setInstrumentInformation
+} from '../../actions/addInstrument'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import AppStyles from '../../AppStyles'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import ViewDocs from '../../components/ViewDocs'
 import config from '../../config'
 import helper from '../../helper'
@@ -42,17 +51,6 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import styles from './styles'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import moment from 'moment'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import {
-  clearInstrumentInformation,
-  clearInstrumentsList,
-  getInstrumentDetails,
-  setInstrumentInformation,
-} from '../../actions/addInstrument'
-import { useValue } from 'react-native-reanimated'
-import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -903,10 +901,14 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { navigation } = this.props
     const { lead } = this.state
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {

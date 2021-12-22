@@ -2,7 +2,6 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
@@ -214,12 +213,21 @@ class BuyLeads extends React.Component {
   }
 
   navigateTo = (data) => {
+    const { screen } = this.props.route.params
     this.props.dispatch(setlead(data))
     let page = ''
     if (this.props.route.params?.screen === 'MyDeals') {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
+      })
     } else if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
+      })
     } else {
       if (data.status == 'open') {
         page = 'Match'
@@ -607,7 +615,6 @@ class BuyLeads extends React.Component {
       selectedLead,
     } = this.state
     const { user } = this.props
-
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter

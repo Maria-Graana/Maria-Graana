@@ -348,6 +348,7 @@ class LeadDetail extends React.Component {
     const { user, route } = this.props
     const { purposeTab } = route.params
     const { screen } = route.params
+    const { screenName } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
     const leadSource = this.checkLeadSource()
     const regex = /(<([^>]+)>)/gi
@@ -670,7 +671,7 @@ class LeadDetail extends React.Component {
             </View>
           </View>
         </ScrollView>
-        {screen === 'MenuLead' ? null : (
+        {screen === 'MenuLead' || screenName === 'MyDeals' ? null : (
           <View style={styles.bottom}>
             <Button
               onPress={() => {

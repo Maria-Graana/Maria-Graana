@@ -234,12 +234,18 @@ class InvestLeads extends React.Component {
   }
 
   navigateTo = (data) => {
+    const { screen } = this.props.route.params
     const { navigation, route } = this.props
     const unitData = route.params.unitData
+
     this.props.dispatch(setlead(data))
     let page = ''
     if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'invest',
+        screenName: screen,
+      })
     } else {
       if (
         data.status === 'token' ||
@@ -254,7 +260,8 @@ class InvestLeads extends React.Component {
 
       navigation.navigate('CMLeadTabs', {
         screen: unitData ? 'Payments' : page,
-        params: { lead: data, unitData: unitData },
+        params: { lead: data, unitData: unitData , screenName : screen},
+
       })
     }
   }
@@ -307,6 +314,8 @@ class InvestLeads extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: 'Investment',
+            purpose : "refer" ,
+            screenName : "Invest"
             // screen: 'MenuLead',
           })
         }
@@ -371,7 +380,8 @@ class InvestLeads extends React.Component {
       navigation.navigate('AssignLead', {
         leadId: lead.id,
         type: 'Investment',
-        screen: 'LeadDetail',
+        purpose : "reassign",
+        screenName : "Invest"
       })
     } else {
       helper.errorToast('Lead Already Assign')

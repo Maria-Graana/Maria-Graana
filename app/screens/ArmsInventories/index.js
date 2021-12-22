@@ -46,24 +46,23 @@ class ArmsInventories extends React.Component {
       statusFilter: 'all',
       searchBy: 'id',
       selectedArea: null,
+      showMenu: false,
+      selectedProperty: null,
     }
   }
 
   componentDidMount() {
-    const { navigation } = this.props;
-    let that = this;
+    const { navigation } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
-      const { route } = that.props
+      const { route } = this.props
       if (route.params && route.params.selectedArea) {
-        const { selectedArea } = route.params;
+        const { selectedArea } = route.params
         if (selectedArea) {
           this.setState({ selectedArea }, () => {
-            //console.log(this.state.selectedArea);
             this.getPropertyArmsListing()
           })
         }
-      }
-      else {
+      } else {
         this.getPropertyArmsListing()
       }
     })
@@ -81,27 +80,31 @@ class ArmsInventories extends React.Component {
     })
   }
 
-  
-
   getPropertyArmsListing = () => {
-    const { propertiesList, page, pageSize, statusFilter, searchBy, searchText, showSearchBar, selectedArea } = this.state
+    const {
+      propertiesList,
+      page,
+      pageSize,
+      statusFilter,
+      searchBy,
+      searchText,
+      showSearchBar,
+      selectedArea,
+    } = this.state
     let query = ``
     if (showSearchBar && searchBy === 'id' && searchText !== '') {
       if (helper.isANumber(searchText)) {
         // Search By ID
         query = `/api/inventory/all?propType=arms&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      }
-      else {
+      } else {
         alert('Please Enter valid Property ID!')
-        this.setState({loading: false});
-        return;
+        this.setState({ loading: false })
+        return
       }
-    }
-    else if (showSearchBar && searchBy === 'area' && selectedArea) {
+    } else if (showSearchBar && searchBy === 'area' && selectedArea) {
       // Search By Area
       query = `/api/inventory/all?propType=arms&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
-    }
-    else {
+    } else {
       // Only Status Filter
       query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
@@ -206,35 +209,84 @@ class ArmsInventories extends React.Component {
   changeStatus = (status) => {
     this.clearStateValues()
     this.setState({ statusFilter: status, propertiesList: [], loading: true }, () => {
-      this.getPropertyArmsListing();
+      this.getPropertyArmsListing()
     })
   }
 
   clearAndCloseSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, searchBy: 'id', statusFilter: 'all' }, () => {
-      this.clearStateValues();
-      this.getPropertyArmsListing();
-    })
+    this.setState(
+      {
+        searchText: '',
+        showSearchBar: false,
+        selectedArea: null,
+        loading: true,
+        searchBy: 'id',
+        statusFilter: 'all',
+      },
+      () => {
+        this.clearStateValues()
+        this.getPropertyArmsListing()
+      }
+    )
   }
 
   changeSearchBy = (searchBy) => {
-    this.setState({ searchBy, selectedArea: null });
+    this.setState({ searchBy, selectedArea: null })
   }
 
-
   handleSearchByArea = () => {
-    const { navigation } = this.props;
-    const { selectedArea } = this.state;
-    navigation.navigate('AssignedAreas', { screenName: 'ARMS', selectedArea });
+    const { navigation } = this.props
+    const { selectedArea } = this.state
+    navigation.navigate('AssignedAreas', { screenName: 'ARMS', selectedArea })
+  }
+
+  showMenuOptions = (data) => {
+    this.setState({ selectedProperty: data, showMenu: true })
+  }
+
+  hideMenu = () => {
+    this.setState({ selectedProperty: null, showMenu: false })
+  }
+
+  goToAttachments = (purpose) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('LeadAttachments', {
+      navProperty: true,
+      purpose: purpose,
+      propertyId: this.state.selectedProperty.id,
+    })
   }
 
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader, statusFilter, searchText, showSearchBar, searchBy, selectedArea } = this.state
+    const {
+      propertiesList,
+      loading,
+      totalProperties,
+      onEndReachedLoader,
+      statusFilter,
+      searchText,
+      showSearchBar,
+      searchBy,
+      selectedArea,
+      showMenu,
+      selectedProperty,
+    } = this.state
     const { user, route } = this.props
     return !loading ? (
       <View style={[styles.container, { marginBottom: 25 }]}>
         {showSearchBar ? (
-          <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }]}>
+          <View
+            style={[
+              styles.filterRow,
+              {
+                paddingBottom: 0,
+                paddingTop: 0,
+                paddingLeft: 0,
+                flexDirection: 'row',
+                alignItems: 'center',
+              },
+            ]}
+          >
             <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
               <PickerComponent
                 placeholder={'Search By'}
@@ -245,61 +297,74 @@ class ArmsInventories extends React.Component {
                 selectedItem={searchBy}
               />
             </View>
-            {
-              searchBy === 'id' ? <Search
+            {searchBy === 'id' ? (
+              <Search
                 containerWidth={'80%'}
-                placeholder={"Search by ID"}
+                placeholder={'Search by ID'}
                 searchText={searchText}
                 setSearchText={(value) => this.setState({ searchText: value })}
                 showShadow={false}
                 showClearButton={true}
                 returnKeyType={'search'}
-                onSubmitEditing={() => this.setState({ loading: true }, () => { this.getPropertyArmsListing() })}
+                onSubmitEditing={() =>
+                  this.setState({ loading: true }, () => {
+                    this.getPropertyArmsListing()
+                  })
+                }
                 closeSearchBar={() => this.clearAndCloseSearch()}
               />
-                :
-                helper.checkPP(user) ?
-                  null
-                  :
-                  <View style={styles.searchTextContainerStyle} >
-                    <Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
-                      color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
-                    }]} >
-                      {isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
-                    </Text>
-                    <Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
-                  </View>
-
-            }
-
+            ) : helper.checkPP(user) ? null : (
+              <View style={styles.searchTextContainerStyle}>
+                <Text
+                  onPress={() => this.handleSearchByArea()}
+                  style={[
+                    AppStyles.formFontSettings,
+                    styles.searchAreaInput,
+                    {
+                      color: isEmpty(selectedArea)
+                        ? AppStyles.colors.subTextColor
+                        : AppStyles.colors.textColor,
+                    },
+                  ]}
+                >
+                  {isEmpty(selectedArea) ? 'Search by Area' : selectedArea.name}
+                </Text>
+                <Ionicons
+                  style={{ width: '10%' }}
+                  onPress={() => this.clearAndCloseSearch()}
+                  name={'ios-close-circle-outline'}
+                  size={24}
+                  color={'grey'}
+                />
+              </View>
+            )}
           </View>
         ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Property Status'}
-                  data={[{ value: 'all', name: 'All' }]}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
-              <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons
-                  onPress={() => {
-                    this.setState({ showSearchBar: true }, () => {
-                      this.clearStateValues()
-                    })
-                  }}
-                  name={'ios-search'}
-                  size={26}
-                  color={AppStyles.colors.primaryColor}
-                />
-              </View>
-
+          <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+            <View style={styles.pickerMain}>
+              <PickerComponent
+                placeholder={'Property Status'}
+                data={[{ value: 'all', name: 'All' }]}
+                customStyle={styles.pickerStyle}
+                customIconStyle={styles.customIconStyle}
+                onValueChange={this.changeStatus}
+                selectedItem={statusFilter}
+              />
             </View>
-          )}
+            <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons
+                onPress={() => {
+                  this.setState({ showSearchBar: true }, () => {
+                    this.clearStateValues()
+                  })
+                }}
+                name={'ios-search'}
+                size={26}
+                color={AppStyles.colors.primaryColor}
+              />
+            </View>
+          </View>
+        )}
 
         {Ability.canAdd(user.subRole, route.params.screen) ? (
           <Fab
@@ -327,6 +392,11 @@ class ArmsInventories extends React.Component {
                 onLongPress={(id) => this.onHandleLongPress(id)}
                 onCall={this.onHandleOnCall}
                 screen={'arms'}
+                showMenuOptions={(data) => this.showMenuOptions(data)}
+                showMenu={showMenu}
+                hideMenu={() => this.hideMenu()}
+                selectedProperty={selectedProperty}
+                goToAttachments={this.goToAttachments}
               />
             )}
             onEndReached={() => {
@@ -346,14 +416,14 @@ class ArmsInventories extends React.Component {
             keyExtractor={(item, index) => `${item.id}`}
           />
         ) : (
-            <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
-          )}
+          <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
+        )}
 
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
       </View>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

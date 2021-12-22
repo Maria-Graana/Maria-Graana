@@ -64,6 +64,8 @@ class InventoryTile extends React.Component {
       showGraanaMenuOptions,
       hideGraanaMenu,
       propertyGeoTagging,
+      goToAttachments,
+      // closedLeadEdit,
     } = this.props
     const imagesList = data.armsuser ? data.armsPropertyImages : data.property_images
     const imagesCount =
@@ -131,6 +133,39 @@ class InventoryTile extends React.Component {
                 source={require('../../../assets/img/pp_logo.png')}
               />
             ) : null}
+
+            {screen === 'arms' ? (
+              <View
+                style={{
+                  alignSelf: 'flex-end',
+                  marginRight: 10,
+                }}
+              >
+                <Menu
+                  visible={showMenu && data.id === selectedProperty.id}
+                  onDismiss={() => hideMenu()}
+                  anchor={
+                    <Entypo
+                      onPress={() => showMenuOptions(data)}
+                      name="dots-three-vertical"
+                      size={24}
+                    />
+                  }
+                >
+                  <Menu.Item
+                    onPress={() => {
+                      // if (closedLeadEdit) {
+                      goToAttachments('addSCA')
+                      hideMenu()
+                      // } else helper.leadClosedToast()
+                    }}
+                    icon={require('../../../assets/img/properties-icon-l.png')}
+                    title={'Add SCA Document'}
+                  />
+                </Menu>
+              </View>
+            ) : null}
+
             {screen === 'fields' && data.status === 'onhold' ? (
               <View
                 style={{

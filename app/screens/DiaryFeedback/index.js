@@ -91,7 +91,6 @@ class DiaryFeedback extends Component {
   handleNextAction = (type) => {
     const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
     const { selectedDiary, selectedLead } = diary
-
     if (type === 'connect_again' || type === 'no_action_required') {
       dispatch(
         setConnectFeedback({
@@ -114,7 +113,7 @@ class DiaryFeedback extends Component {
         }
       })
       // console.log('connect again', connectFeedback)
-    } else if (type === 'set_follow_up') {
+    } else if (type === 'set_follow_up' || type === 'add_meeting') {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -135,7 +134,7 @@ class DiaryFeedback extends Component {
                 taskCategory: 'leadTask',
                 reasonTag: connectFeedback.tag,
                 reasonId: connectFeedback.feedbackId,
-                taskType: 'follow_up',
+                taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
                 armsLeadId:
                   selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
                 leadId:
@@ -143,7 +142,7 @@ class DiaryFeedback extends Component {
                     ? selectedDiary.armsProjectLeadId
                     : null,
               },
-              taskType: 'follow_up',
+              taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
               isFromConnectFlow: true,
             })
           }
@@ -172,6 +171,41 @@ class DiaryFeedback extends Component {
                   params: { screenName: 'Payments' },
                 })
               }
+            })
+          }
+        })
+      })
+    } else if (type === 'reschedule_meeting') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          makeHistory: true,
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        // console.log('previoustaskpayload=>', this.props.connectFeedback)
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            navigation.replace('TimeSlotManagement', {
+              data: {
+                userId: user.id,
+                taskCategory: 'leadTask',
+                reasonTag: connectFeedback.tag,
+                reasonId: connectFeedback.feedbackId,
+                taskType: 'meeting',
+                armsLeadId:
+                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+                leadId:
+                  selectedDiary && selectedDiary.armsProjectLeadId
+                    ? selectedDiary.armsProjectLeadId
+                    : null,
+              },
+              taskType: 'meeting',
+              isFromConnectFlow: true,
             })
           }
         })

@@ -201,6 +201,40 @@ function TimeSlotManagement(props) {
     }
   }
 
+  const showDetailNew = (e) => {
+    const tempAray = slotsData.length != 0 ? _.sortBy(slotsData, 'id') : []
+    if (slotsData.length == 0) {
+      slotsData.push(e)
+      slots.push(e.id)
+      isSelected.push(e.id)
+      fortyPercent(e)
+      verifyDetail(e)
+    } else {
+      if (e.id == tempAray[0].id - 1 || e.id == tempAray[tempAray.length - 1].id + 1) {
+        slotsData.push(e)
+        slots.push(e.id)
+        isSelected.push(e.id)
+        fortyPercent(e)
+        verifyDetail(e)
+      } else if (_.contains(tempAray, e)) {
+      } else {
+        Alert.alert(
+          'Sorry',
+          'You cannot skip a slot\nPlease clear current selection if you want to continue',
+          [
+            { text: 'OK' },
+            {
+              text: 'Clear',
+              onPress: () => {
+                setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
+              },
+            },
+          ]
+        )
+      }
+    }
+  }
+
   const showDetail = (e) => {
     slotsData.push(e)
     slots.push(e.id)
@@ -624,7 +658,11 @@ function TimeSlotManagement(props) {
                   </View>
                   {o.map((e, i) => {
                     return (
-                      <TouchableOpacity activeOpacity={0.1} onPress={() => showDetail(e)} key={i}>
+                      <TouchableOpacity
+                        activeOpacity={0.1}
+                        onPress={() => showDetailNew(e)}
+                        key={i}
+                      >
                         <View
                           style={[
                             styles.hourRow,

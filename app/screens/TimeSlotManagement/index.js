@@ -129,6 +129,12 @@ function TimeSlotManagement(props) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
   }
 
+  const compareTime = (timeStart, timeLast) => {
+    if (timeLast < timeStart) {
+      return true
+    } else return false
+  }
+
   const verifyDetail = (e) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
@@ -139,15 +145,24 @@ function TimeSlotManagement(props) {
 
     const sortedAray = _.sortBy(slotsData, 'id')
 
+    const _format = 'YYYY-MM-DD'
     const date = selectedDate
+    const nextDate = moment(selectedDate, _format).add(1, 'days').format(_format)
     const startTime = formatDateAndTime(selectedDate, sortedAray && sortedAray[0].startTime)
     const endTime = formatDateAndTime(
-      selectedDate,
+      compareTime(sortedAray[0].startTime, sortedAray[sortedAray.length - 1].endTime)
+        ? nextDate
+        : selectedDate,
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
     const sDate = formatDT(selectedDate, sortedAray && sortedAray[0].startTime)
-    const eDate = formatDT(selectedDate, sortedAray && sortedAray[sortedAray.length - 1].endTime)
+    const eDate = formatDT(
+      compareTime(sortedAray[0].startTime, sortedAray[sortedAray.length - 1].endTime)
+        ? nextDate
+        : selectedDate,
+      sortedAray && sortedAray[sortedAray.length - 1].endTime
+    )
 
     setCheck(true)
     setDisabled(false)

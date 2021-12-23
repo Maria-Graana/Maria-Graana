@@ -1,7 +1,7 @@
 /** @format */
 
 import * as types from '../types'
-
+import _ from 'underscore'
 import axios from 'axios'
 
 export function setSlotDiaryData(selectedDate) {
@@ -32,6 +32,11 @@ export function setSlotDiaryData(selectedDate) {
 }
 
 export function setTimeSlots() {
+  const sortTimeData = (res, dispatch) => {
+    const sortedResp = _.sortBy(res, 'startTime')
+    dataSlots(sortedResp, dispatch)
+  }
+
   const dataSlots = (res, dispatch) => {
     var x = new Array(24)
     for (var i = 0; i < 24; i++) {
@@ -55,7 +60,7 @@ export function setTimeSlots() {
   return (dispatch, getsState) => {
     axios
       .get('api/slotManagement/slot')
-      .then((response) => dataSlots(response.data, dispatch))
+      .then((response) => sortTimeData(response.data, dispatch))
       .catch((error) => {
         console.log('api/slotManagement/slot')
         console.log('error', error)

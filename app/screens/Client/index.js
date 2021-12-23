@@ -275,17 +275,17 @@ class Client extends React.Component {
             searchText={searchText}
             setSearchText={(value) => this.setState({ searchText: value })}
           />
-          {Ability.canAdd(user.subRole, 'Client') ? (
-            <Fab
-              active="true"
-              containerStyle={{ zIndex: 20 }}
-              style={{ backgroundColor: AppStyles.colors.primaryColor }}
-              position="bottomRight"
-              onPress={this.addClient}
-            >
-              <Ionicons name="md-add" color="#ffffff" />
-            </Fab>
-          ) : null}
+          {/* {Ability.canAdd(user.subRole, 'Client') ? ( */}
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{ backgroundColor: AppStyles.colors.primaryColor }}
+            position="bottomRight"
+            onPress={this.addClient}
+          >
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
+          {/* ) : null} */}
           {data && data.length > 0 ? (
             <FlatList
               data={data}

@@ -94,7 +94,6 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         if (res) {
-          //console.log(this.props.connectFeedback)
           saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
             if (response) {
               navigation.goBack()
@@ -102,7 +101,6 @@ class DiaryFeedback extends Component {
           })
         }
       })
-      // console.log('connect again', connectFeedback)
     } else if (type === 'set_follow_up' || type === 'add_meeting') {
       dispatch(
         setConnectFeedback({
@@ -115,7 +113,6 @@ class DiaryFeedback extends Component {
           otherTasksToUpdate: [],
         })
       ).then((res) => {
-        // console.log('previoustaskpayload=>', this.props.connectFeedback)
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
           if (res) {
             navigation.replace('TimeSlotManagement', {
@@ -177,7 +174,6 @@ class DiaryFeedback extends Component {
           otherTasksToUpdate: [],
         })
       ).then((res) => {
-        // console.log('previoustaskpayload=>', this.props.connectFeedback)
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
           if (res) {
             navigation.replace('TimeSlotManagement', {

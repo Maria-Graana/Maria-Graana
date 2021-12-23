@@ -18,19 +18,10 @@ export const minArray = [
 ]
 
 export const hourArray = [
-  '00:00AM',
-  '01:00AM',
-  '02:00AM',
-  '03:00AM',
-  '04:00AM',
-  '05:00AM',
-  '06:00AM',
-  '07:00AM',
-  '08:00AM',
   '09:00AM',
   '10:00AM',
   '11:00AM',
-  '00:00PM',
+  '12:00PM',
   '01:00PM',
   '02:00PM',
   '03:00PM',
@@ -42,6 +33,15 @@ export const hourArray = [
   '09:00PM',
   '10:00PM',
   '11:00PM',
+  '12:00AM',
+  '01:00AM',
+  '02:00AM',
+  '03:00AM',
+  '04:00AM',
+  '05:00AM',
+  '06:00AM',
+  '07:00AM',
+  '08:00AM',
 ]
 
 export const _format = 'YYYY-MM-DD'

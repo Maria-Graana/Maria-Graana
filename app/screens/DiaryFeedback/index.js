@@ -12,16 +12,25 @@ import {
 } from 'react-native'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
-import { clearDiaryFeedbacks, saveOrUpdateDiaryTask, setConnectFeedback } from '../../actions/diary'
+import {
+  clearDiaryFeedbacks,
+  FEEDBACK_ACTIONS,
+  saveOrUpdateDiaryTask,
+  setConnectFeedback,
+} from '../../actions/diary'
 import TouchableButton from '../../components/TouchableButton'
 import ReconnectModal from '../../components/ReconnectModal'
 import { setlead } from '../../actions/lead'
 import axios from 'axios'
+import RWRModal from '../../components/RWRModal'
+import helper from '../../helper'
+import DiaryHelper from '../Diary/diaryHelper'
 class DiaryFeedback extends Component {
   constructor(props) {
     super(props)
     this.state = {
       isReconnectModalVisible: false,
+      isRWRModalVisible: false,
     }
   }
 
@@ -35,13 +44,15 @@ class DiaryFeedback extends Component {
   setNextFlow = () => {
     const { diaryFeedbacks, connectFeedback, dispatch } = this.props
 
-    //console.log('Action=>', connectFeedback)
     if (Object.keys(connectFeedback).length) {
       if (connectFeedback.section === "Couldn't Connect")
         this.setState({ isReconnectModalVisible: true })
       else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
       else if (connectFeedback.section === 'No Action Required')
         this.handleNextAction('no_action_required')
+      else if (connectFeedback.section === 'Reject') {
+        this.setState({ isRWRModalVisible: true })
+      }
       // else if (
       //   ['Follow up', 'Cancel Viewing', 'Cancel Meeting'].indexOf(connectFeedback.section) > -1
       // ) {
@@ -58,27 +69,6 @@ class DiaryFeedback extends Component {
       //   }
       // }
       //  else if (connectFeedback.section === 'refer') setInvestLeadModal(true)
-      //   else if (connectFeedback.section === 'Reject') setRwrModal(true)
-      //   else if (connectFeedback.section === 'No Action Required')
-      //     saveOrUpdateDiaryTask({
-      //       ...newTask,
-      //       makeHistory: true,
-      //       otherTasksToUpdate: connectFeedback.otherTasksToUpdate.map((task) => {
-      //         return {
-      //           ...newTask,
-      //           id: task.id,
-      //           makeHistory: true,
-      //           comments: task.comment,
-      //           response: task.comment,
-      //           feedbackId: connectFeedback.id,
-      //           feedbackTag: connectFeedback.tag,
-      //         }
-      //       }),
-      //       comments: connectFeedback.comment,
-      //       response: connectFeedback.comment,
-      //       feedbackId: connectFeedback.id,
-      //       feedbackTag: connectFeedback.tag,
-      //     })
     }
   }
 
@@ -88,7 +78,7 @@ class DiaryFeedback extends Component {
     })
   }
 
-  handleNextAction = (type) => {
+  handleNextAction = (type, reason = '', isBlacklist = false) => {
     const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
     const { selectedDiary, selectedLead } = diary
     if (type === 'connect_again' || type === 'no_action_required') {
@@ -104,7 +94,7 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         if (res) {
-          console.log(this.props.connectFeedback)
+          //console.log(this.props.connectFeedback)
           saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
             if (response) {
               navigation.goBack()
@@ -210,12 +200,61 @@ class DiaryFeedback extends Component {
           }
         })
       })
+    } else if (type === 'reject') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          status: 'completed',
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            this.closedLost(
+              isBlacklist,
+              DiaryHelper.getLeadType(selectedDiary),
+              selectedLead,
+              reason
+            )
+          }
+        })
+      })
     }
   }
 
+  closedLost = (isBlacklist = false, leadType, lead, reason = '') => {
+    const { navigation } = this.props
+    let url = `/api/leads/project`
+    if (leadType === 'BuyRent') url = `/api/leads`
+    else if (leadType === 'Wanted') url = `/api/wanted`
+    axios({
+      method: 'patch',
+      url: url,
+      params: {
+        id: leadType === 'Wanted' ? lead && lead.id : lead && [lead.id],
+        blacklistCustomer: isBlacklist,
+      },
+      data: {
+        [leadType === 'Wanted' ? 'reason' : 'reasons']: reason,
+        [['BuyRent', 'Project'].indexOf(leadType) > -1 ? 'customerId' : 'customer_id']:
+          lead.customer && lead.customer.id,
+      },
+    }).then((res) => {
+      this.setState({ isRWRModalVisible: false })
+      helper.successToast('Lead closed successfully!')
+      navigation.goBack()
+    })
+  }
+
   render() {
-    const { diaryFeedbacks, connectFeedback, dispatch } = this.props
-    const { isReconnectModalVisible } = this.state
+    const { diaryFeedbacks, connectFeedback, dispatch, diary } = this.props
+    const { selectedDiary, selectedLead } = diary
+    const { isReconnectModalVisible, isRWRModalVisible } = this.state
+    const FA = FEEDBACK_ACTIONS
     return (
       <View style={AppStyles.container}>
         <ScrollView>
@@ -224,6 +263,14 @@ class DiaryFeedback extends Component {
             setIsReconnectModalVisible={(value, type) =>
               this.setIsReconnectModalVisible(value, type)
             }
+          />
+          <RWRModal
+            isVisible={isRWRModalVisible}
+            showHideModal={(value) => this.setState({ isRWRModalVisible: value })}
+            rejectLead={(reason, isBlacklist) =>
+              this.handleNextAction('reject', reason, isBlacklist)
+            }
+            selectedReason={connectFeedback.tag ? connectFeedback.tag : null}
           />
           <View style={[AppStyles.mainInputWrap]}>
             <TextInput
@@ -247,13 +294,14 @@ class DiaryFeedback extends Component {
           {diaryFeedbacks &&
             Object.keys(diaryFeedbacks).map((key, j) => {
               return diaryFeedbacks[key].map((feedback, i) => {
+                if (feedback.section === 'Actions') JSON.parse(feedback.tags[0])
                 return feedback.tags ? (
                   <View key={i} style={styles.sectionView}>
                     <Text style={styles.sectionText}>{feedback.section}</Text>
                     <View style={styles.chipMain}>
-                      {feedback.tags &&
-                        feedback.tags.map((tag, k) => {
-                          return (
+                      {feedback.section === 'Actions'
+                        ? feedback.tags &&
+                          Object.keys(JSON.parse(feedback.tags[0])).map((tag, k) => (
                             <TouchableOpacity
                               key={k}
                               style={[
@@ -263,7 +311,8 @@ class DiaryFeedback extends Component {
                                   backgroundColor:
                                     feedback.section === 'Actions'
                                       ? '#026ff2'
-                                      : connectFeedback && tag === connectFeedback.tag
+                                      : connectFeedback &&
+                                        JSON.parse(feedback.tags[0])[tag] === connectFeedback.tag
                                       ? connectFeedback.colorCode
                                       : 'white',
                                 },
@@ -276,7 +325,7 @@ class DiaryFeedback extends Component {
                                       section: feedback.section,
                                       colorCode: feedback.colorCode,
                                       feedbackId: feedback.id,
-                                      tag: tag,
+                                      tag: JSON.parse(feedback.tags[0])[tag],
                                       comments: connectFeedback.comments || tag,
                                     })
                                   ).then((res) => {
@@ -301,7 +350,8 @@ class DiaryFeedback extends Component {
                                   {
                                     color:
                                       feedback.section === 'Actions' ||
-                                      (connectFeedback && tag === connectFeedback.tag)
+                                      (connectFeedback &&
+                                        JSON.parse(feedback.tags[0])[tag] === connectFeedback.tag)
                                         ? 'white'
                                         : 'black',
                                   },
@@ -310,8 +360,79 @@ class DiaryFeedback extends Component {
                                 {tag}
                               </Text>
                             </TouchableOpacity>
-                          )
-                        })}
+                          ))
+                        : feedback.tags &&
+                          feedback.tags.map((tag, k) => {
+                            return (
+                              (((tag === FA.CLIENT_IS_INTERESTED_IN_INVESTMENT ||
+                                feedback.section !== 'Reject') &&
+                                DiaryHelper.getLeadType(selectedDiary) === 'Wanted' &&
+                                selectedLead &&
+                                selectedLead.projectId) ||
+                                (tag !== FA.CLIENT_IS_INTERESTED_IN_INVESTMENT &&
+                                  selectedLead &&
+                                  !selectedLead.projectId)) && (
+                                <TouchableOpacity
+                                  key={k}
+                                  style={[
+                                    styles.chipContainer,
+                                    {
+                                      borderColor: feedback.colorCode,
+                                      backgroundColor:
+                                        feedback.section === 'Actions'
+                                          ? '#026ff2'
+                                          : connectFeedback && tag === connectFeedback.tag
+                                          ? connectFeedback.colorCode
+                                          : 'white',
+                                    },
+                                  ]}
+                                  onPress={() => {
+                                    if (feedback.section === 'Actions') {
+                                      dispatch(
+                                        setConnectFeedback({
+                                          ...connectFeedback,
+                                          section: feedback.section,
+                                          colorCode: feedback.colorCode,
+                                          feedbackId: feedback.id,
+                                          tag: tag,
+                                          comments: connectFeedback.comments || tag,
+                                        })
+                                      ).then((res) => {
+                                        this.handleNextAction(
+                                          tag.replace(/\s+/g, '_').toLowerCase()
+                                        )
+                                      })
+                                    } else
+                                      dispatch(
+                                        setConnectFeedback({
+                                          ...connectFeedback,
+                                          section: feedback.section,
+                                          colorCode: feedback.colorCode,
+                                          feedbackId: feedback.id,
+                                          tag: tag,
+                                          comments: connectFeedback.comments || tag,
+                                        })
+                                      )
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.chipName,
+                                      {
+                                        color:
+                                          feedback.section === 'Actions' ||
+                                          (connectFeedback && tag === connectFeedback.tag)
+                                            ? 'white'
+                                            : 'black',
+                                      },
+                                    ]}
+                                  >
+                                    {tag}
+                                  </Text>
+                                </TouchableOpacity>
+                              )
+                            )
+                          })}
                     </View>
                   </View>
                 ) : null

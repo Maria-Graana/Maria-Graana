@@ -308,179 +308,181 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array[0].armsShift && array.length == 1) {
-      const startFirst = array[0].armsShift.startTime
-      const endFirst = array[0].armsShift.endTime
-      const tempSFirst = startFirst.split(':')
-      const tempEFirst = endFirst.split(':')
-      const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
-      const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
+    if (array.length > 0) {
+      if (array && array[0].armsShift && array.length == 1) {
+        const startFirst = array[0].armsShift.startTime
+        const endFirst = array[0].armsShift.endTime
+        const tempSFirst = startFirst.split(':')
+        const tempEFirst = endFirst.split(':')
+        const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
+        const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
 
-      const shiftFirst = array[0].armsShift.name.toLowerCase()
+        const shiftFirst = array[0].armsShift.name.toLowerCase()
 
-      if (isTimeBetween(startFirst, endFirst, currentTime)) {
-        if (e.startTime >= currentTime && e.startTime < endFirst) {
-          sSlots.push(e)
-          if (endMin < startMin) {
-            const p = 1440 - (endMin + startMin)
-            const x = currentMin - startMin
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
-          } else {
-            const p = endMin - startMin
-            const x = currentMin - startMin
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+        if (isTimeBetween(startFirst, endFirst, currentTime)) {
+          if (e.startTime >= currentTime && e.startTime < endFirst) {
+            sSlots.push(e)
+            if (endMin < startMin) {
+              const p = 1440 - (endMin + startMin)
+              const x = currentMin - startMin
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+            } else {
+              const p = endMin - startMin
+              const x = currentMin - startMin
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+            }
           }
-        }
-      } else {
-        if (slotFirst >= startFirst && slotEnd <= endFirst) {
-          sSlots.push(e)
-          shiftsSlotsEval(sSlots.length, shiftFirst, e)
+        } else {
+          if (slotFirst >= startFirst && slotEnd <= endFirst) {
+            sSlots.push(e)
+            shiftsSlotsEval(sSlots.length, shiftFirst, e)
+          }
         }
       }
-    }
 
-    if (array && array[0].armsShift && array.length == 2) {
-      const startFirst = array[0].armsShift.startTime
-      const endFirst = array[0].armsShift.endTime
-      const tempSFirst = startFirst.split(':')
-      const tempEFirst = endFirst.split(':')
-      const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
-      const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
+      if (array && array[0].armsShift && array.length == 2) {
+        const startFirst = array[0].armsShift.startTime
+        const endFirst = array[0].armsShift.endTime
+        const tempSFirst = startFirst.split(':')
+        const tempEFirst = endFirst.split(':')
+        const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
+        const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
 
-      const startSecond = array[1].armsShift.startTime
-      const endSecond = array[1].armsShift.endTime
-      const tempSSecond = startSecond.split(':')
-      const tempESecond = endSecond.split(':')
-      const startMinS = parseInt(tempSSecond[0]) * 60 + parseInt(tempSSecond[1])
-      const endMinS = parseInt(tempESecond[0]) * 60 + parseInt(tempESecond[1])
+        const startSecond = array[1].armsShift.startTime
+        const endSecond = array[1].armsShift.endTime
+        const tempSSecond = startSecond.split(':')
+        const tempESecond = endSecond.split(':')
+        const startMinS = parseInt(tempSSecond[0]) * 60 + parseInt(tempSSecond[1])
+        const endMinS = parseInt(tempESecond[0]) * 60 + parseInt(tempESecond[1])
 
-      const shiftFirst = array[0].armsShift.name.toLowerCase()
-      const shiftSecond = array[1].armsShift.name.toLowerCase()
+        const shiftFirst = array[0].armsShift.name.toLowerCase()
+        const shiftSecond = array[1].armsShift.name.toLowerCase()
 
-      if (isTimeBetween(startFirst, endFirst, currentTime)) {
-        if (e.startTime >= currentTime && e.startTime < endFirst) {
-          sSlots.push(e)
-          if (endMin < startMin) {
-            const p = 1440 - (endMin + startMin)
-            const x = currentMin - startMin
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
-          } else {
-            const p = endMin - startMin
-            const x = currentMin - startMin
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+        if (isTimeBetween(startFirst, endFirst, currentTime)) {
+          if (e.startTime >= currentTime && e.startTime < endFirst) {
+            sSlots.push(e)
+            if (endMin < startMin) {
+              const p = 1440 - (endMin + startMin)
+              const x = currentMin - startMin
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+            } else {
+              const p = endMin - startMin
+              const x = currentMin - startMin
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+            }
           }
-        }
-      } else if (isTimeBetween(startSecond, endSecond, currentTime)) {
-        if (e.startTime >= currentTime && e.startTime < endSecond) {
-          sSlots.push(e)
-          if (endMinS < startMinS) {
-            const p = 1440 - (endMinS + startMinS)
-            const x = currentMin - startMinS
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
-          } else {
-            const p = endMinS - startMinS
-            const x = currentMin - startMinS
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+        } else if (isTimeBetween(startSecond, endSecond, currentTime)) {
+          if (e.startTime >= currentTime && e.startTime < endSecond) {
+            sSlots.push(e)
+            if (endMinS < startMinS) {
+              const p = 1440 - (endMinS + startMinS)
+              const x = currentMin - startMinS
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+            } else {
+              const p = endMinS - startMinS
+              const x = currentMin - startMinS
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+            }
           }
-        }
-      } else {
-        if (slotFirst >= startFirst && slotEnd <= endFirst) {
-          sSlots.push(e)
-          shiftsSlotsEval(sSlots, shiftFirst, e)
-        } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
-          sSlots.push(e)
-          shiftsSlotsEval(sSlots, shiftSecond, e)
+        } else {
+          if (slotFirst >= startFirst && slotEnd <= endFirst) {
+            sSlots.push(e)
+            shiftsSlotsEval(sSlots, shiftFirst, e)
+          } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
+            sSlots.push(e)
+            shiftsSlotsEval(sSlots, shiftSecond, e)
+          }
         }
       }
-    }
 
-    if (array && array[0].armsShift && array.length == 3) {
-      const startFirst = array[0].armsShift.startTime
-      const endFirst = array[0].armsShift.endTime
-      const tempSFirst = startFirst.split(':')
-      const tempEFirst = endFirst.split(':')
-      const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
-      const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
+      if (array && array[0].armsShift && array.length == 3) {
+        const startFirst = array[0].armsShift.startTime
+        const endFirst = array[0].armsShift.endTime
+        const tempSFirst = startFirst.split(':')
+        const tempEFirst = endFirst.split(':')
+        const startMin = parseInt(tempSFirst[0]) * 60 + parseInt(tempSFirst[1])
+        const endMin = parseInt(tempEFirst[0]) * 60 + parseInt(tempEFirst[1])
 
-      const startSecond = array[1].armsShift.startTime
-      const endSecond = array[1].armsShift.endTime
-      const tempSSecond = startSecond.split(':')
-      const tempESecond = endSecond.split(':')
-      const startMinS = parseInt(tempSSecond[0]) * 60 + parseInt(tempSSecond[1])
-      const endMinS = parseInt(tempESecond[0]) * 60 + parseInt(tempESecond[1])
+        const startSecond = array[1].armsShift.startTime
+        const endSecond = array[1].armsShift.endTime
+        const tempSSecond = startSecond.split(':')
+        const tempESecond = endSecond.split(':')
+        const startMinS = parseInt(tempSSecond[0]) * 60 + parseInt(tempSSecond[1])
+        const endMinS = parseInt(tempESecond[0]) * 60 + parseInt(tempESecond[1])
 
-      const startThird = array[2].armsShift.startTime
-      const endThird = array[2].armsShift.endTime
-      const tempSThird = startThird.split(':')
-      const tempEThird = endThird.split(':')
-      const startMinT = parseInt(tempSThird[0]) * 60 + parseInt(tempSThird[1])
-      const endMinT = parseInt(tempEThird[0]) * 60 + parseInt(tempEThird[1])
+        const startThird = array[2].armsShift.startTime
+        const endThird = array[2].armsShift.endTime
+        const tempSThird = startThird.split(':')
+        const tempEThird = endThird.split(':')
+        const startMinT = parseInt(tempSThird[0]) * 60 + parseInt(tempSThird[1])
+        const endMinT = parseInt(tempEThird[0]) * 60 + parseInt(tempEThird[1])
 
-      const shiftFirst = array[0].armsShift.name.toLowerCase()
-      const shiftSecond = array[1].armsShift.name.toLowerCase()
-      const shiftThird = array[2].armsShift.name.toLowerCase()
+        const shiftFirst = array[0].armsShift.name.toLowerCase()
+        const shiftSecond = array[1].armsShift.name.toLowerCase()
+        const shiftThird = array[2].armsShift.name.toLowerCase()
 
-      if (isTimeBetween(startFirst, endFirst, currentTime)) {
-        if (e.startTime >= currentTime && e.startTime < endFirst) {
-          sSlots.push(e)
-          if (endMin < startMin) {
-            const p = 1440 - (endMin + startMin)
-            const x = currentMin - startMin
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
-          } else {
-            const p = endMin - startMin
-            const x = currentMin - startMin
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+        if (isTimeBetween(startFirst, endFirst, currentTime)) {
+          if (e.startTime >= currentTime && e.startTime < endFirst) {
+            sSlots.push(e)
+            if (endMin < startMin) {
+              const p = 1440 - (endMin + startMin)
+              const x = currentMin - startMin
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+            } else {
+              const p = endMin - startMin
+              const x = currentMin - startMin
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftFirst, e, r)
+            }
           }
-        }
-      } else if (isTimeBetween(startSecond, endSecond, currentTime)) {
-        if (e.startTime >= currentTime && e.startTime < endSecond) {
-          sSlots.push(e)
-          if (endMinS < startMinS) {
-            const p = 1440 - (endMinS + startMinS)
-            const x = currentMin - startMinS
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
-          } else {
-            const p = endMinS - startMinS
-            const x = currentMin - startMinS
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+        } else if (isTimeBetween(startSecond, endSecond, currentTime)) {
+          if (e.startTime >= currentTime && e.startTime < endSecond) {
+            sSlots.push(e)
+            if (endMinS < startMinS) {
+              const p = 1440 - (endMinS + startMinS)
+              const x = currentMin - startMinS
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+            } else {
+              const p = endMinS - startMinS
+              const x = currentMin - startMinS
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftSecond, e, r)
+            }
           }
-        }
-      } else if (isTimeBetween(startThird, endThird, currentTime)) {
-        if (e.startTime >= currentTime && e.startTime < endThird) {
-          sSlots.push(e)
-          if (endMinT < startMinT) {
-            const p = 1440 - (endMinT + startMinT)
-            const x = currentMin - startMinT
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftThird, e, r)
-          } else {
-            const p = endMinT - startMinT
-            const x = currentMin - startMinT
-            const r = (p - x) / 5
-            shiftsSlotsEval(sSlots.length, shiftThird, e, r)
+        } else if (isTimeBetween(startThird, endThird, currentTime)) {
+          if (e.startTime >= currentTime && e.startTime < endThird) {
+            sSlots.push(e)
+            if (endMinT < startMinT) {
+              const p = 1440 - (endMinT + startMinT)
+              const x = currentMin - startMinT
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftThird, e, r)
+            } else {
+              const p = endMinT - startMinT
+              const x = currentMin - startMinT
+              const r = (p - x) / 5
+              shiftsSlotsEval(sSlots.length, shiftThird, e, r)
+            }
           }
-        }
-      } else {
-        if (slotFirst >= startFirst && slotEnd <= endFirst) {
-          sSlots.push(e)
-          shiftsSlotsEval(sSlots, shiftFirst, e)
-        } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
-          sSlots.push(e)
-          shiftsSlotsEval(sSlots, shiftSecond, e)
-        } else if (slotFirst >= startThird && slotEnd <= endThird) {
-          sSlots.push(e)
-          shiftsSlotsEval(sSlots, shiftThird, e)
+        } else {
+          if (slotFirst >= startFirst && slotEnd <= endFirst) {
+            sSlots.push(e)
+            shiftsSlotsEval(sSlots, shiftFirst, e)
+          } else if (slotFirst >= startSecond && slotEnd <= endSecond) {
+            sSlots.push(e)
+            shiftsSlotsEval(sSlots, shiftSecond, e)
+          } else if (slotFirst >= startThird && slotEnd <= endThird) {
+            sSlots.push(e)
+            shiftsSlotsEval(sSlots, shiftThird, e)
+          }
         }
       }
     }
@@ -556,26 +558,28 @@ function TimeSlotManagement(props) {
       }
     }
 
-    if (array && array[0].armsShift && array.length == 2) {
-      const start = array[0].armsShift.startTime
-      const end = array[1].armsShift.endTime
+    if (array.length > 0) {
+      if (array && array[0].armsShift && array.length == 2) {
+        const start = array[0].armsShift.startTime
+        const end = array[1].armsShift.endTime
 
-      if (isTimeBetween(start, end, e.startTime)) return true
-      else return false
-    } else if (array && array[0].armsShift && array.length == 3) {
-      const start = array[0].armsShift.startTime
-      const end = array[2].armsShift.endTime
+        if (isTimeBetween(start, end, e.startTime)) return true
+        else return false
+      } else if (array && array[0].armsShift && array.length == 3) {
+        const start = array[0].armsShift.startTime
+        const end = array[2].armsShift.endTime
 
-      if (isTimeBetween(start, end, e.startTime)) return true
-      else return false
-    } else if (array && array[0].armsShift && array.length == 1) {
-      const start = array[0].armsShift.startTime
-      const end = array[0].armsShift.endTime
+        if (isTimeBetween(start, end, e.startTime)) return true
+        else return false
+      } else if (array && array[0].armsShift && array.length == 1) {
+        const start = array[0].armsShift.startTime
+        const end = array[0].armsShift.endTime
 
-      if (isTimeBetween(start, end, e.startTime)) return true
-      else return false
-    } else {
-      return false
+        if (isTimeBetween(start, end, e.startTime)) return true
+        else return false
+      } else {
+        return false
+      }
     }
   }
 

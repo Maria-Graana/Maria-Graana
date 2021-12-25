@@ -49,7 +49,7 @@ var CANCEL_INDEX = 1
 class CMPayment extends Component {
   constructor(props) {
     super(props)
-    const { lead, user, route} = this.props
+    const { lead, user, route } = this.props
     this.state = {
       checkLeadClosedOrNot: false,
       editable: false,
@@ -67,7 +67,6 @@ class CMPayment extends Component {
       allUnits: [],
       meetings: [],
       pickerUnits: [],
-      clientName: lead.customer.customerName != null ? lead.customer.customerName : '',
       firstFormData: {
         customerId: lead.customerId != null ? lead.customerId : '',
         clientName: lead.customer.customerName != null ? lead.customer.customerName : '',
@@ -206,7 +205,6 @@ class CMPayment extends Component {
       const { firstForm, secondForm } = this.state
       const { lead } = this.props
       const { paidProject, project } = lead
-      if (route.params) this.setClient()
       if (firstForm) {
         let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
         if ((paidProject && paidProject.id) || (project && project.id)) {
@@ -241,20 +239,21 @@ class CMPayment extends Component {
   }
   setClient = () => {
     const { client, name } = this.props.route.params
-    const { firstFormData} = this.state
-    if (client) firstFormData.cnic = client.cnic
-    if (client && client.cnic === null){
-      this.setState({cnicEditable : true})
-    }
-    else{
-      this.setState({cnicEditable : false})
-    }
-    this.setState(
-      { clientName: name, selectedClient: client },
-      () => {
-        this.clearParmas()
+    const { firstFormData } = this.state
+    let copyObject = Object.assign({}, firstFormData)
+    if (client) {
+      copyObject.cnic = client.cnic
+      copyObject.clientName = name
+      this.setState({ firstFormData: copyObject })
+      if (client.cnic != null) {
+        this.setState({ cnicEditable: false })
+      } else {
+        this.setState({ cnicEditable: true })
       }
-    )
+    }
+    this.setState({ selectedClient: client }, () => {
+      this.clearParmas()
+    })
   }
   handleClientClick = () => {
     const { navigation } = this.props
@@ -406,8 +405,8 @@ class CMPayment extends Component {
           },
           () =>
             lead.status == 'open' &&
-
-            route.params && route.params.unitData &&
+            route.params &&
+            route.params.unitData &&
             this.getUnits(route.params.unitData.projectId, route.params.unitData.floorId)
         )
       })
@@ -1347,7 +1346,7 @@ class CMPayment extends Component {
 
   validateCnic = (value) => {
     if ((value && value.length < 15) || value === '' || !value) {
-      this.setState({ cnicEditable: true })
+      this.setState({ cnicValidate: true, cnicEditable: true })
     } else {
       this.setState({ cnicValidate: false })
     }
@@ -1889,15 +1888,15 @@ class CMPayment extends Component {
       toggleUnitsTable,
       tableHeaderTitle,
       tableData,
-      clientName,
       checkValidation,
       selectedClient,
       callModal,
       meetings,
     } = this.state
 
-    const { lead, navigation, contacts ,route} = this.props
-    const {screenName} = this.props.route.params
+    const { lead, navigation, contacts, route } = this.props
+    const { screenName } = this.props.route.params
+
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -1923,6 +1922,7 @@ class CMPayment extends Component {
             openUnitDetailsModal={this.openUnitDetailsModal}
             finalPrice={finalPrice}
             generateKFI={this.generateKFI}
+            navigation={navigation}
           />
           <SchedulePayment
             active={showSchedule}
@@ -2043,10 +2043,8 @@ class CMPayment extends Component {
                     installmentFrequency={installmentFrequency}
                     lead={lead}
                     openUnitsTable={this.openUnitsTable}
-                    clientName={clientName}
                     checkValidation={checkValidation}
                     handleClientClick={this.handleClientClick}
-                    selectedClient = {route.params ? route.params.client : '' }
                   />
                 )}
                 {secondForm && (

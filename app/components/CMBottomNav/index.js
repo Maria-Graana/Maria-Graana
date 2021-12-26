@@ -356,6 +356,7 @@ class CMBottomNav extends React.Component {
       goToDiaryForm,
       goToAttachments,
       permissions,
+      screenName,
     } = this.props
     const {
       visible,
@@ -364,7 +365,39 @@ class CMBottomNav extends React.Component {
       calledOn,
       isLeadCategoryModalVisible,
     } = this.state
-    const { screenName } = this.props
+    let readPermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.READ,
+      permissions
+    )
+    let referPermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.REFER,
+      permissions
+    )
+    let assignPermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.ASSIGN_REASSIGN,
+      permissions
+    )
+    let updatePermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+    let updateProperty = getPermissionValue(
+      PermissionFeatures.PROPERTIES,
+      PermissionActions.UPDATE,
+      permissions
+    )
 
     return (
       <View style={styles.bottomNavMain}>
@@ -381,7 +414,9 @@ class CMBottomNav extends React.Component {
           <TouchableOpacity
             // disabled={closedLeadEdit ? false : true}
             style={styles.followBtn}
-            onPress={() => goToFollowUp()}
+            onPress={() => {
+              if (closedLeadEdit && readPermission) goToFollowUp()
+            }}
           >
             <View style={styles.align}>
               <Image
@@ -395,7 +430,9 @@ class CMBottomNav extends React.Component {
           <TouchableOpacity
             // disabled={closedLeadEdit ? false : true}
             style={styles.followBtn}
-            onPress={() => goToFollowUp()}
+            onPress={() => {
+              if (closedLeadEdit && readPermission) goToFollowUp()
+            }}
           >
             <View style={styles.align}>
               <Image
@@ -410,7 +447,11 @@ class CMBottomNav extends React.Component {
           <TouchableOpacity
             disabled={closedLeadEdit ? false : true}
             style={styles.followBtn}
-            onPress={() => goToAttachments()}
+            onPress={() => {
+              if (closedLeadEdit && readPermission) {
+                goToAttachments()
+              }
+            }}
           >
             <View style={styles.align}>
               <Image
@@ -424,7 +465,11 @@ class CMBottomNav extends React.Component {
           <TouchableOpacity
             disabled={closedLeadEdit ? false : true}
             style={styles.followBtn}
-            onPress={() => goToHistory()}
+            onPress={() => {
+              if (closedLeadEdit && readPermission) {
+                goToHistory()
+              }
+            }}
           >
             <View style={styles.align}>
               <Image
@@ -439,7 +484,9 @@ class CMBottomNav extends React.Component {
           <TouchableOpacity
             disabled={closedLeadEdit ? false : true}
             style={styles.rejectBtn}
-            onPress={() => goToHistory()}
+            onPress={() => {
+              if (closedLeadEdit && readPermission) goToHistory()
+            }}
           >
             <View style={styles.align}>
               <Image
@@ -454,7 +501,7 @@ class CMBottomNav extends React.Component {
             disabled={closedLeadEdit ? false : true}
             style={styles.rejectBtn}
             onPress={() => {
-              if (closedLeadEdit) {
+              if (closedLeadEdit && updatePermission) {
                 goToAttachments('addSCA')
                 this.openMenu(false)
               } else helper.leadClosedToast()
@@ -520,7 +567,7 @@ class CMBottomNav extends React.Component {
               <View>
                 <Menu.Item
                   onPress={() => {
-                    if (closedLeadEdit) {
+                    if (closedLeadEdit && assignPermission) {
                       this.navigateToAssignLead(lead)
                       this.openMenu(false)
                     } else helper.leadClosedToast()
@@ -530,7 +577,7 @@ class CMBottomNav extends React.Component {
                 />
                 <Menu.Item
                   onPress={() => {
-                    if (closedLeadEdit) {
+                    if (closedLeadEdit && referPermission) {
                       this.navigateToShareScreen(lead)
                       this.openMenu(false)
                     } else helper.leadClosedToast()
@@ -579,7 +626,7 @@ class CMBottomNav extends React.Component {
               {lead.projectId ? (
                 <Menu.Item
                   onPress={() => {
-                    if (closedLeadEdit) {
+                    if (closedLeadEdit && readPermission) {
                       goToHistory()
                       this.openMenu(false)
                     } else helper.leadClosedToast()
@@ -591,7 +638,7 @@ class CMBottomNav extends React.Component {
               {isFromViewingScreen ? (
                 <Menu.Item
                   onPress={() => {
-                    if (closedLeadEdit) {
+                    if (closedLeadEdit && updateProperty) {
                       goToPropertyScreen()
                       this.openMenu(false)
                     } else helper.leadClosedToast()
@@ -604,7 +651,7 @@ class CMBottomNav extends React.Component {
                 <View>
                   <Menu.Item
                     onPress={() => {
-                      if (closedLeadEdit) {
+                      if (closedLeadEdit && assignPermission) {
                         this.navigateToAssignLead(lead)
                         this.openMenu(false)
                       } else helper.leadClosedToast()
@@ -614,7 +661,7 @@ class CMBottomNav extends React.Component {
                   />
                   <Menu.Item
                     onPress={() => {
-                      if (closedLeadEdit) {
+                      if (closedLeadEdit && referPermission) {
                         this.navigateToShareScreen(lead)
                         this.openMenu(false)
                       } else helper.leadClosedToast()
@@ -624,13 +671,13 @@ class CMBottomNav extends React.Component {
                   />
                   <Menu.Item
                     onPress={() => {
-                      if (closedLeadEdit) {
+                      if (closedLeadEdit && readPermission) {
                         goToAttachments('view')
                         this.openMenu(false)
                       } else helper.leadClosedToast()
                     }}
                     // icon={require('../../../assets/img/callIcon.png')}
-                    title="Attachments"
+                    title="View Attachments"
                   />
                 </View>
               ) : null}

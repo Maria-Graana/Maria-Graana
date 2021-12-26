@@ -39,6 +39,8 @@ import {
   setInstrumentInformation,
 } from '../../actions/addInstrument'
 import style from '../../components/LegalTile/style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -46,7 +48,7 @@ class LegalAttachment extends Component {
   attachments = []
   constructor(props) {
     super(props)
-    const { route } = this.props
+    const { lead, user } = this.props
     this.state = {
       isVisible: false,
       checkValidation: false,
@@ -82,6 +84,7 @@ class LegalAttachment extends Component {
       selectedDocument: null,
       transferDate: null,
       viewCommentsCheck: false,
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
     }
   }
 
@@ -346,6 +349,8 @@ class LegalAttachment extends Component {
     let url = `/api/legal/document?legalId=${currentItem.id}`
     if (legalAttachment.category === 'legal_checklist')
       url = `/api/leads/checklist?id=${checkListDoc.id}&addedBy=${route.params.addedBy}`
+    console.log('fd: ', fd)
+    console.log('url: ', url)
     axios
       .post(url, fd)
       .then((res) => {
@@ -1134,6 +1139,24 @@ class LegalAttachment extends Component {
     )
   }
 
+  readPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.READ,
+      permissions
+    )
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+  }
+
   render() {
     const {
       legalListing,
@@ -1161,6 +1184,7 @@ class LegalAttachment extends Component {
       documentComments,
       transferDate,
       viewCommentsCheck,
+      closedLeadEdit,
     } = this.state
     const { lead, route, contacts } = this.props
     const { leadPurpose, addedBy } = route.params
@@ -1169,6 +1193,9 @@ class LegalAttachment extends Component {
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
+    let readPermission = this.readPermission()
+    let updatePermission = this.updatePermission()
+
     return (
       <View style={[AppStyles.mb1]}>
         <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
@@ -1228,23 +1255,27 @@ class LegalAttachment extends Component {
               <>
                 <View style={{ padding: 10 }}>
                   <PickerComponent
-                    onValueChange={this.handleFirstForm}
+                    onValueChange={() => {
+                      if (updatePermission && closedLeadEdit) this.handleFirstForm
+                    }}
                     data={StaticData.legalServicesFields}
                     name={'legalService'}
                     placeholder="Legal Services Types"
                     selectedItem={firstFormData.legalService}
-                    // enabled={checkLeadClosedOrNot}
+                    enabled={closedLeadEdit}
                   />
                 </View>
                 {firstFormData.legalService !== 'internal' && leadPurpose === 'sale' ? (
                   <View style={{ padding: 10 }}>
                     <PickerComponent
-                      onValueChange={this.handleFirstForm}
+                      onValueChange={() => {
+                        if (updatePermission && closedLeadEdit) this.handleFirstForm
+                      }}
                       data={StaticData.externalServicesFields}
                       name={'legalDescription'}
                       placeholder="External Service Preferences"
                       selectedItem={firstFormData.legalDescription}
-                      // enabled={checkLeadClosedOrNot}
+                      enabled={closedLeadEdit}
                     />
                   </View>
                 ) : null}
@@ -1257,9 +1288,15 @@ class LegalAttachment extends Component {
                     <LegalTile
                       data={item}
                       index={index + 1}
-                      submitMenu={this.submitMenu}
-                      getAttachmentFromStorage={this.toggleActionSheet}
-                      downloadLegalDocs={this.downloadLegalDocs}
+                      submitMenu={() => {
+                        if (updatePermission && closedLeadEdit) this.submitMenu
+                      }}
+                      getAttachmentFromStorage={(item) => {
+                        if (updatePermission && closedLeadEdit) this.toggleActionSheet()
+                      }}
+                      downloadLegalDocs={(item) => {
+                        if (updatePermission && closedLeadEdit) this.downloadLegalDocs()
+                      }}
                       isLeadClosed={isLeadClosed}
                     />
                   )}
@@ -1275,7 +1312,7 @@ class LegalAttachment extends Component {
                   {!mailCheck ? (
                     <RCMBTN
                       onClick={() => {
-                        this.showLegalRequestConfirmation()
+                        if (updatePermission && closedLeadEdit) this.showLegalRequestConfirmation()
                       }}
                       btnText={'REQUEST TRANSFER SERVICES'}
                       checkLeadClosedOrNot={false}
@@ -1310,14 +1347,18 @@ class LegalAttachment extends Component {
                           iconSource={require('../../../assets/img/calendar.png')}
                           date={transferDate ? new Date(transferDate) : new Date()}
                           selectedValue={transferDate ? helper.formatDate(transferDate) : ''}
-                          handleForm={(value, name) => this.setTransferDate(value, 'transferDate')}
+                          handleForm={(value, name) => {
+                            if (updatePermission && closedLeadEdit)
+                              this.setTransferDate(value, 'transferDate')
+                          }}
                         />
                       </View>
                       <View style={styles.pad15}>
                         {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
                           <RCMBTN
                             onClick={() => {
-                              this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
+                              if (updatePermission && closedLeadEdit)
+                                this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
                             }}
                             btnImage={RoundPlus}
                             btnText={'ADD LEGAL SERVICES PAYMENT'}
@@ -1329,6 +1370,7 @@ class LegalAttachment extends Component {
                         ) : null}
                         {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
                           <CommissionTile
+                            updatePermission={updatePermission}
                             data={legalPaymentObj}
                             editTile={this.setCommissionEditData}
                             onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
@@ -1373,6 +1415,7 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(LegalAttachment)

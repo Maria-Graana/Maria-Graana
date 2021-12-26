@@ -1,30 +1,20 @@
 /** @format */
 
-import axios from 'axios'
-import React, { Component } from 'react'
-import {
-  Text,
-  StyleSheet,
-  View,
-  ScrollView,
-  Image,
-  SafeAreaView,
-  TouchableHighlight,
-  TouchableOpacity,
-} from 'react-native'
-import _ from 'underscore'
-import { Fab } from 'native-base'
-import AppStyles from '../../AppStyles'
 import { Ionicons } from '@expo/vector-icons'
+import axios from 'axios'
+import { Fab } from 'native-base'
+import React, { Component } from 'react'
+import { Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Row, Table } from 'react-native-table-component'
+import _ from 'underscore'
+import AppStyles from '../../AppStyles'
+import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
 import Loader from '../../components/loader'
 import PickerComponent from '../../components/Picker'
-import { Row, Table } from 'react-native-table-component'
-import PaymentMethods from '../../PaymentMethods'
 import helper from '../../helper.js'
-import Search from '../../components/Search'
-import StaticData from '../../StaticData'
-import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
-import { formatNumericPrice, formatPrice } from '../../components/PriceFormate'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import PaymentMethods from '../../PaymentMethods'
 
 class AvailableInventory extends Component {
   constructor(props) {
@@ -273,6 +263,15 @@ class AvailableInventory extends Component {
     })
   }
 
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.PROJECT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+  }
+
   render() {
     const {
       pickerProjects,
@@ -287,6 +286,8 @@ class AvailableInventory extends Component {
     } = this.state
     const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
+    let updatePermission = this.updatePermission()
+
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainContainer}>
@@ -406,7 +407,9 @@ class AvailableInventory extends Component {
                             rowData[rowData.length - 1] == 'Available' ? (
                               <TouchableOpacity
                                 activeOpacity={0.6}
-                                onPress={() => this.onRowSelect(rowData[0])}
+                                onPress={() => {
+                                  if (updatePermission) this.onRowSelect(rowData[0])
+                                }}
                                 key={index}
                               >
                                 <Row

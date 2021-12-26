@@ -10,7 +10,8 @@ import styles from './style'
 
 const RCMBuyerModal = (props) => {
   checkReadOnlyMode = () => {
-    const { leadAgentType, isLeadClosed } = props
+    const { leadAgentType, isLeadClosed, updatePermission } = props
+    if (!updatePermission) return false
     if (leadAgentType === 'seller') return false
     else {
       if (isLeadClosed) return false

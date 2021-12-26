@@ -515,6 +515,8 @@ class LeadAttachments extends Component {
     // ====================== API call for Attachments base on Payment ID
 
     let url = `/api/legal/document?legalId=${scaId}`
+    console.log(`/api/legal/document?legalId=${scaId}`)
+    console.log(`fd: `, fd)
     axios
       .post(url, fd)
       .then((res) => {

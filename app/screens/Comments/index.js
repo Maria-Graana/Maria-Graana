@@ -11,11 +11,13 @@ import Loader from '../../components/loader'
 import AddComment from './addComment'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import helper from '../../helper'
 class Comments extends Component {
   comments = []
 
   constructor(props) {
     super(props)
+    const { user, lead } = this.props
     this.state = {
       commentsList: [],
       comment: '',
@@ -23,6 +25,7 @@ class Comments extends Component {
       type: 'comment',
       property: false,
       addCommentLoading: false,
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
     }
   }
 
@@ -96,7 +99,7 @@ class Comments extends Component {
   }
 
   addComment = () => {
-    const { comment, property } = this.state
+    const { comment, property, closedLeadEdit } = this.state
     const { route } = this.props
     const { rcmLeadId, cmLeadId, screenName, propertyId, leadId } = route.params
     let commentObject = {}
@@ -145,7 +148,8 @@ class Comments extends Component {
   }
 
   render() {
-    const { commentsList, loading, comment, property, addCommentLoading } = this.state
+    const { commentsList, loading, comment, property, addCommentLoading, closedLeadEdit } =
+      this.state
     const { permissions } = this.props
     return !loading ? (
       <KeyboardAwareScrollView
@@ -169,7 +173,7 @@ class Comments extends Component {
           PermissionFeatures.BUY_RENT_LEADS,
           PermissionActions.UPDATE,
           permissions
-        ) ? (
+        ) && closedLeadEdit ? (
           <AddComment
             onPress={this.addComment}
             loading={addCommentLoading}
@@ -187,6 +191,8 @@ class Comments extends Component {
 mapStateToProps = (store) => {
   return {
     permissions: store.user.permissions,
+    lead: store.lead.lead,
+    user: store.user.user,
   }
 }
 

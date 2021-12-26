@@ -129,6 +129,7 @@ class LeadDetail extends React.Component {
   navigateTo = () => {
     const { navigation, user } = this.props
     const { lead, type } = this.state
+    console.log('navigateTo: ')
     var status = lead.status
     let page = ''
     if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead)) {
@@ -195,6 +196,8 @@ class LeadDetail extends React.Component {
   goBack = () => {
     const { lead, type, fromScreen } = this.state
     const { navigation } = this.props
+    console.log('type: ', type)
+    console.log('fromScreen: ', fromScreen)
     goBack({ lead, type, fromScreen, navigation })
   }
 

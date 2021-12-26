@@ -86,6 +86,8 @@ class BuyerSellerTile extends React.Component {
       setComissionApplicable,
       call,
       leadType,
+      updatePermission,
+      closedLeadEdit,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
     let disabledSwitch = this.checkSwitchVisibility() ? false : true
@@ -103,7 +105,7 @@ class BuyerSellerTile extends React.Component {
               thumbColor={false ? AppStyles.colors.primaryColor : '#fff'}
               ios_backgroundColor="#81b0ff"
               onValueChange={() => {
-                if (!this.switchToggle())
+                if (!this.switchToggle() && updatePermission)
                   setComissionApplicable(!commissionNotApplicableBuyerSeller, tileType)
               }}
               value={commissionNotApplicableBuyerSeller ? false : true}
@@ -126,17 +128,24 @@ class BuyerSellerTile extends React.Component {
                 <CommissionTile
                   data={payment}
                   editTile={editTile}
-                  onPaymentLongPress={() => onPaymentLongPress(payment)}
+                  onPaymentLongPress={() => {
+                    if (updatePermission && closedLeadEdit) onPaymentLongPress(payment)
+                  }}
                   commissionEdit={onReadOnly}
                   title={payment ? commissionTitle : ''}
                   call={call}
                   showAccountPhone={true}
+                  updatePermission={updatePermission}
+                  closedLeadEdit={closedLeadEdit}
                 />
               ) : (
                 <View style={{ paddingTop: 10 }}>
                   {paymentCommission ? (
                     <RCMBTN
-                      onClick={() => onAddCommissionPayment(tileType, 'commission')}
+                      onClick={() => {
+                        if (updatePermission && closedLeadEdit)
+                          onAddCommissionPayment(tileType, 'commission')
+                      }}
                       btnImage={RoundPlus}
                       btnText={RCMBTNTitle}
                       checkLeadClosedOrNot={false}

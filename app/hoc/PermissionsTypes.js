@@ -37,7 +37,7 @@ export const PermissionActions = {
   ELIGIABLE_FOR_COMPANY_LEADS: 'Eligiable for Company Leads',
   Assign_Company_Leads: 'Assign Company Leads',
   ASSIGN_REASSIGN: 'Re-assign',
-  SHARE: 'Refer',
+  REFER: 'Refer',
   DOWNLOAD_REBATE_DATA: 'Download Rebate Data',
   CLEARANCE: 'Clearance',
   ORGANIZATIONS_PAGE_VIEW: 'Organizations',

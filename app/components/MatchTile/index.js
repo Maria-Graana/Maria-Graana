@@ -140,8 +140,12 @@ class MatchTile extends React.Component {
   }
 
   callToggleFunc = (data) => {
-    const { permissions, toggleMenu } = this.props
-    if (getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions))
+    const { permissions, toggleMenu, user, lead } = this.props
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
+    if (
+      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions) &&
+      closedLeadEdit
+    )
       toggleMenu(true, data.id)
   }
 
@@ -157,6 +161,7 @@ class MatchTile extends React.Component {
       propertyGeoTagging,
       lead,
       permissions,
+      user,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -165,6 +170,7 @@ class MatchTile extends React.Component {
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
     let isPP = helper.checkPPFlag(data)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
@@ -184,7 +190,8 @@ class MatchTile extends React.Component {
               PermissionFeatures.BUY_RENT_LEADS,
               PermissionActions.UPDATE,
               permissions
-            )
+            ) &&
+            closedLeadEdit
           )
             this.props.addProperty(data)
         }}
@@ -433,7 +440,8 @@ class MatchTile extends React.Component {
                                 PermissionFeatures.BUY_RENT_LEADS,
                                 PermissionActions.UPDATE,
                                 permissions
-                              )
+                              ) &&
+                              closedLeadEdit
                             )
                               this.props.cancelPropsureRequest(data)
                           }}
@@ -482,7 +490,8 @@ class MatchTile extends React.Component {
                                     PermissionFeatures.BUY_RENT_LEADS,
                                     PermissionActions.UPDATE,
                                     permissions
-                                  )
+                                  ) &&
+                                  closedLeadEdit
                                 )
                                   propertyGeoTagging(data)
                               }}
@@ -495,7 +504,8 @@ class MatchTile extends React.Component {
                                     PermissionFeatures.BUY_RENT_LEADS,
                                     PermissionActions.UPDATE,
                                     permissions
-                                  )
+                                  ) &&
+                                  closedLeadEdit
                                 )
                                   toggleCheckListModal(true, data)
                               }}
@@ -508,7 +518,8 @@ class MatchTile extends React.Component {
                                     PermissionFeatures.BUY_RENT_LEADS,
                                     PermissionActions.UPDATE,
                                     permissions
-                                  )
+                                  ) &&
+                                  closedLeadEdit
                                 )
                                   this.props.cancelViewing(data)
                               }}
@@ -530,7 +541,8 @@ class MatchTile extends React.Component {
                                     PermissionFeatures.BUY_RENT_LEADS,
                                     PermissionActions.UPDATE,
                                     permissions
-                                  )
+                                  ) &&
+                                  closedLeadEdit
                                 )
                                   propertyGeoTagging(data)
                               }}
@@ -543,7 +555,8 @@ class MatchTile extends React.Component {
                                     PermissionFeatures.BUY_RENT_LEADS,
                                     PermissionActions.UPDATE,
                                     permissions
-                                  )
+                                  ) &&
+                                  closedLeadEdit
                                 )
                                   this.props.deleteProperty(data)
                               }}
@@ -561,7 +574,8 @@ class MatchTile extends React.Component {
                                 PermissionFeatures.BUY_RENT_LEADS,
                                 PermissionActions.UPDATE,
                                 permissions
-                              )
+                              ) &&
+                              closedLeadEdit
                             )
                               bookAnotherViewing(data)
                           }}
@@ -574,7 +588,8 @@ class MatchTile extends React.Component {
                                 PermissionFeatures.BUY_RENT_LEADS,
                                 PermissionActions.UPDATE,
                                 permissions
-                              )
+                              ) &&
+                              closedLeadEdit
                             )
                               propertyGeoTagging(data)
                           }}
@@ -601,7 +616,8 @@ class MatchTile extends React.Component {
                         PermissionFeatures.BUY_RENT_LEADS,
                         PermissionActions.UPDATE,
                         permissions
-                      )
+                      ) &&
+                      closedLeadEdit
                     )
                       this.props.addProperty(data)
                   }}
@@ -620,7 +636,8 @@ class MatchTile extends React.Component {
                     PermissionFeatures.BUY_RENT_LEADS,
                     PermissionActions.UPDATE,
                     permissions
-                  )
+                  ) &&
+                  closedLeadEdit
                 )
                   this.call(data)
               }}

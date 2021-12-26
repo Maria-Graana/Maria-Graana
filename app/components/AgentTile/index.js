@@ -116,8 +116,12 @@ class AgentTile extends React.Component {
   }
 
   callToggleFunc = (data) => {
-    const { permissions, toggleMenu } = this.props
-    if (getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions))
+    const { permissions, toggleMenu, user, lead } = this.props
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
+    if (
+      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions) &&
+      closedLeadEdit
+    )
       toggleMenu(true, data.id)
   }
 
@@ -133,12 +137,14 @@ class AgentTile extends React.Component {
       propertyGeoTagging,
       lead,
       permissions,
+      user,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let otherAgentdiary = this.getOtherDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
-    // let showDone = this.checkDiaryStatus(data)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
+
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
@@ -388,7 +394,8 @@ class AgentTile extends React.Component {
                                 PermissionFeatures.BUY_RENT_LEADS,
                                 PermissionActions.UPDATE,
                                 permissions
-                              )
+                              ) &&
+                              closedLeadEdit
                             )
                               this.props.cancelPropsureRequest(data)
                           }}
@@ -436,7 +443,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     propertyGeoTagging(data)
                                 }}
@@ -449,7 +457,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     toggleCheckListModal(true, data)
                                 }}
@@ -462,7 +471,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     this.props.cancelViewing(data)
                                 }}
@@ -484,7 +494,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     propertyGeoTagging(data)
                                 }}
@@ -497,7 +508,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     this.props.deleteProperty(data)
                                 }}
@@ -517,7 +529,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     propertyGeoTagging(data)
                                 }}
@@ -539,7 +552,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     bookAnotherViewing(data)
                                 }}
@@ -552,7 +566,8 @@ class AgentTile extends React.Component {
                                       PermissionFeatures.BUY_RENT_LEADS,
                                       PermissionActions.UPDATE,
                                       permissions
-                                    )
+                                    ) &&
+                                    closedLeadEdit
                                   )
                                     propertyGeoTagging(data)
                                 }}
@@ -581,7 +596,8 @@ class AgentTile extends React.Component {
                           PermissionFeatures.BUY_RENT_LEADS,
                           PermissionActions.UPDATE,
                           permissions
-                        )
+                        ) &&
+                        closedLeadEdit
                       )
                         this.props.addProperty(data)
                     }}
@@ -622,7 +638,8 @@ class AgentTile extends React.Component {
                         PermissionFeatures.BUY_RENT_LEADS,
                         PermissionActions.UPDATE,
                         permissions
-                      )
+                      ) &&
+                      closedLeadEdit
                     )
                       this.call(data)
                   }}

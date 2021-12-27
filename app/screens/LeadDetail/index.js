@@ -345,6 +345,25 @@ class LeadDetail extends React.Component {
     }
   }
 
+  leadStatus = () => {
+    const { lead } = this.state
+    if (lead && lead.status) {
+      if (
+        lead.status === 'viewing' ||
+        lead.status === 'propsure' ||
+        lead.status === 'offer' ||
+        lead.status === 'offer'
+      ) {
+        return 'Shortlisting'
+      }
+      if (lead.status === 'meeting' || lead.status === 'nurture') {
+        return 'In-Progress'
+      } else {
+        return helper.showStatus(lead.status.replace(/_+/g, ' ')).toUpperCase()
+      }
+    }
+  }
+
   render() {
     let { type, lead, customerName, mainButtonText, fromScreen, loading, editDes, description } =
       this.state
@@ -368,8 +387,9 @@ class LeadDetail extends React.Component {
         parseAdditonalInfo[item].map((internalItem, index) => internalItem + ', ')
       )
     }
-
+    let leadStatus = this.leadStatus()
     let assignedByName = this.getAssignedByName(lead)
+
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -551,13 +571,7 @@ class LeadDetail extends React.Component {
               <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
               <View style={styles.statusView}>
                 <Text style={styles.textStyle} numberOfLines={1}>
-                  {lead.status && lead.status === 'token' ? (
-                    <Text>TOKEN</Text>
-                  ) : lead.status === 'meeting' ? (
-                    lead.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-                  ) : (
-                    helper.showStatus(lead.status.replace(/_+/g, ' ')).toUpperCase()
-                  )}
+                  {leadStatus}
                 </Text>
               </View>
             </View>

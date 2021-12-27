@@ -35,6 +35,23 @@ class LeadTile extends React.Component {
     return size
   }
 
+  leadStatus = () => {
+    const { data } = this.props
+    if (
+      data.status === 'viewing' ||
+      data.status === 'propsure' ||
+      data.status === 'offer' ||
+      data.status === 'offer'
+    ) {
+      return 'Shortlisting'
+    }
+    if (data.status === 'meeting' || data.status === 'nurture') {
+      return 'In-Progress'
+    } else {
+      return helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
+    }
+  }
+
   render() {
     const {
       data,
@@ -85,6 +102,7 @@ class LeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+    let leadStatus = this.leadStatus()
     return (
       <TouchableOpacity
         disabled={screen === 'Leads' ? true : false}
@@ -118,13 +136,7 @@ class LeadTile extends React.Component {
                   numberOfLines={1}
                 >
                   {/* Disabled Sentry in development  Sentry in */}
-                  {data.status === 'token' ? (
-                    <Text>TOKEN</Text>
-                  ) : data.status === 'meeting' ? (
-                    data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-                  ) : (
-                    helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
-                  )}
+                  {leadStatus}
                 </Text>
                 {data.shared_with_armsuser_id && (
                   <View style={styles.sharedLead}>

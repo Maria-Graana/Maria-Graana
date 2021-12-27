@@ -1,35 +1,35 @@
 /** @format */
 
-import React from 'react'
-import styles from './style'
-import moment from 'moment'
-import { View, Text, TouchableOpacity, Image, SafeAreaView, Linking, FlatList } from 'react-native'
-import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import PickerComponent from '../../components/Picker/index'
-import { ActionSheet } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
-import SortImg from '../../../assets/img/sort.png'
-import LoadingNoResult from '../../components/LoadingNoResult'
-import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import LeadTile from '../../components/LeadTile'
 import axios from 'axios'
-import helper from '../../helper'
-import StaticData from '../../StaticData'
+import { ActionSheet } from 'native-base'
+import React from 'react'
+import { FlatList, Image, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
-import Loader from '../../components/loader'
-import SortModal from '../../components/SortModal'
-import { setlead } from '../../actions/lead'
-import Search from '../../components/Search'
-import Ability from '../../hoc/Ability'
-import { getItem, storeItem } from '../../actions/user'
-import { getListingsCount } from '../../actions/listings'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
-import DateSearchFilter from '../../components/DateSearchFilter'
+import { connect } from 'react-redux'
+import SortImg from '../../../assets/img/sort.png'
 import { setCallPayload } from '../../actions/callMeetingFeedback'
+import { setlead } from '../../actions/lead'
+import { getListingsCount } from '../../actions/listings'
+import { getItem, storeItem } from '../../actions/user'
+import AppStyles from '../../AppStyles'
+import DateSearchFilter from '../../components/DateSearchFilter'
+import LeadTile from '../../components/LeadTile'
+import LoadingNoResult from '../../components/LoadingNoResult'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import PickerComponent from '../../components/Picker/index'
+import Search from '../../components/Search'
+import SortModal from '../../components/SortModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import StaticData from '../../StaticData'
+import styles from './style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = [
   'Assign to team member',
@@ -531,7 +531,7 @@ class InvestLeads extends React.Component {
       newActionModal,
       isMenuVisible,
     } = this.state
-    const { user, lead, navigation } = this.props
+    const { user, permissions } = this.props
     const screen = this.props.route.params.screen
     let buyRentFilterType = StaticData.buyRentFilterType
     return (
@@ -648,28 +648,39 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        <FAB.Group
-          open={open}
-          icon="plus"
-          style={{ marginBottom: 16 }}
-          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-          color={AppStyles.bgcWhite.backgroundColor}
-          actions={[
-            {
-              icon: 'plus',
-              label: 'Buy/Rent Lead',
-              color: AppStyles.colors.primaryColor,
-              onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
-            },
-            {
-              icon: 'plus',
-              label: 'Investment Lead',
-              color: AppStyles.colors.primaryColor,
-              onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
-            },
-          ]}
-          onStateChange={({ open }) => this.setState({ open })}
-        />
+        {getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ||
+        getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ? (
+          <FAB.Group
+            open={open}
+            icon="plus"
+            style={{ marginBottom: 16 }}
+            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+            color={AppStyles.bgcWhite.backgroundColor}
+            actions={[
+              {
+                icon: 'plus',
+                label: 'Buy/Rent Lead',
+                color: AppStyles.colors.primaryColor,
+                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+              },
+              {
+                icon: 'plus',
+                label: 'Investment Lead',
+                color: AppStyles.colors.primaryColor,
+                onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+              },
+            ]}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
+        ) : null}
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -730,6 +741,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

@@ -12,6 +12,8 @@ import Loader from '../../components/loader'
 import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper'
 import styles from './style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 const PlaceHolderImage = require('../../../assets/img/img-3.png')
 
@@ -107,6 +109,11 @@ class PropertyDetail extends React.Component {
     })
   }
 
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.UPDATE, permissions)
+  }
+
   render() {
     const { loading, property } = this.state
     const { route, navigation } = this.props
@@ -140,6 +147,8 @@ class PropertyDetail extends React.Component {
     let riderPhone = ''
     let rider = null
     let riderCustomeTile = ''
+    let updatePermission = this.updatePermission()
+
     if (!loading) {
       type = property && property.type.charAt(0).toUpperCase() + property.type.slice(1)
       subtype = property && property.subtype.charAt(0).toUpperCase() + property.subtype.slice(1)
@@ -398,7 +407,7 @@ class PropertyDetail extends React.Component {
               {
                 <MaterialCommunityIcons
                   onPress={() => {
-                    this.navigateTo()
+                    if (updatePermission) this.navigateTo()
                   }}
                   name="square-edit-outline"
                   size={26}
@@ -414,7 +423,9 @@ class PropertyDetail extends React.Component {
             <TouchableButton
               containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
               label={'APPROVE PROPERTY'}
-              onPress={() => this.approveProperty(property.id)}
+              onPress={() => {
+                if (updatePermission) this.approveProperty(property.id)
+              }}
               loading={loading}
             />
           </View>
@@ -429,6 +440,7 @@ class PropertyDetail extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 

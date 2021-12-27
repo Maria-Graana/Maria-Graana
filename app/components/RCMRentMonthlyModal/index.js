@@ -10,18 +10,20 @@ import styles from './style'
 
 const RCMRentMonthlyModal = (props) => {
   const checkReadOnlyMode = () => {
-    const { leadAgentType, isLeadClosed } = props
+    const { leadAgentType, isLeadClosed, updatePermission, closedLeadEdit } = props
+    if (!updatePermission) return false
     if (leadAgentType === 'seller') return false
     else {
-      if (isLeadClosed) return false
+      if (isLeadClosed || !closedLeadEdit) return false
       else return true
     }
   }
 
   const checkMonthlyRentReadOnlyMode = () => {
-    const { lead, leadAgentType, isLeadClosed } = props
+    const { leadAgentType, isLeadClosed, updatePermission, closedLeadEdit } = props
+    if (!updatePermission) return false
     if (leadAgentType === 'seller') return false
-    else if (isLeadClosed) return false
+    else if (isLeadClosed || !closedLeadEdit) return false
     else return true
   }
 

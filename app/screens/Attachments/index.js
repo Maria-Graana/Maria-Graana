@@ -14,6 +14,8 @@ import AppStyles from '../../AppStyles'
 import AddAttachmentPopup from '../../components/AddAttachmentPopup'
 import AttachmentTile from '../../components/AttachmentTile'
 import UploadAttachment from '../../components/UploadAttachment'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import ViewDocs from '../../components/ViewDocs'
 import helper from '../../helper'
 import AddAttachment from './addAttachment'
@@ -219,7 +221,7 @@ class RCMAttachment extends Component {
 
   render() {
     const { isVisible, formData, checkValidation, title, showAction, showDoc, docUrl } = this.state
-    const { CMPayment } = this.props
+    const { CMPayment, permissions } = this.props
     return (
       <View style={[AppStyles.container, { paddingLeft: 0, paddingRight: 0 }]}>
         <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
@@ -258,6 +260,7 @@ class RCMAttachment extends Component {
 mapStateToProps = (store) => {
   return {
     CMPayment: store.CMPayment.CMPayment,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(RCMAttachment)

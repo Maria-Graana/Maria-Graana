@@ -231,37 +231,7 @@ class InvestLeads extends React.Component {
     })
   }
 
-  navigateTo = (data) => {
-    const { screen } = this.props.route.params
-    const { navigation, route } = this.props
-    const unitData = route.params.unitData
-
-    this.props.dispatch(setlead(data))
-    let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
-        lead: data,
-        purposeTab: 'invest',
-        screenName: screen,
-      })
-    } else {
-      if (
-        data.status === 'token' ||
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payments'
-      } else {
-        page = 'Meetings'
-      }
-
-      navigation.navigate('CMLeadTabs', {
-        screen: unitData ? 'Payments' : page,
-        params: { lead: data, unitData: unitData, screenName: screen },
-      })
-    }
-  }
+ 
   navigateFromMenu = (data, name) => {
     this.props.dispatch(setlead(data))
     this.props.navigation.navigate(name, {
@@ -321,6 +291,37 @@ class InvestLeads extends React.Component {
       }
     } else {
       helper.errorToast('Something went wrong!')
+    }
+  }
+  navigateToBookUnit = (data) => {
+    const { screen } = this.props.route.params
+    const { navigation, route } = this.props
+    const unitData = route.params.unitData
+
+    this.props.dispatch(setlead(data))
+    let page = ''
+    if (data.readAt === null) {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'invest',
+        screenName: screen,
+      })
+    } else {
+      if (
+        data.status === 'token' ||
+        data.status === 'payment' ||
+        data.status === 'closed_won' ||
+        data.status === 'closed_lost'
+      ) {
+        page = 'Payments'
+      } else {
+        page = 'Meetings'
+      }
+
+      navigation.navigate('CMLeadTabs', {
+        screen: unitData ? 'Payments' : page,
+        params: { lead: data, unitData: unitData, screenName: screen },
+      })
     }
   }
 
@@ -616,7 +617,7 @@ class InvestLeads extends React.Component {
                 purposeTab={'invest'}
                 user={user}
                 data={item}
-                navigateTo={this.navigateTo}
+                navigateToBookUnit={this.navigateToBookUnit}
                 navigateFromMenu={this.navigateFromMenu}
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}

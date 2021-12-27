@@ -55,7 +55,7 @@ class LeadTile extends React.Component {
   render() {
     const {
       data,
-      navigateTo,
+      navigateToBookUnit,
       callNumber,
       user,
       purposeTab,
@@ -219,6 +219,12 @@ class LeadTile extends React.Component {
                             navigateFromMenu(data, 'LeadDetail')
                           }}
                           title="Details"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateToBookUnit(data), setIsMenuVisible(false, data)
+                          }}
+                          title="Book a Unit"
                         />
                         <Menu.Item
                           onPress={() => {

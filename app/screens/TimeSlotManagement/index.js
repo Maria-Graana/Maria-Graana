@@ -129,6 +129,12 @@ function TimeSlotManagement(props) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
   }
 
+  const compareTime = (timeStart, timeLast) => {
+    if (timeLast < timeStart) {
+      return true
+    } else return false
+  }
+
   const verifyDetail = (e) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
@@ -139,15 +145,24 @@ function TimeSlotManagement(props) {
 
     const sortedAray = _.sortBy(slotsData, 'id')
 
+    const _format = 'YYYY-MM-DD'
     const date = selectedDate
+    const nextDate = moment(selectedDate, _format).add(1, 'days').format(_format)
     const startTime = formatDateAndTime(selectedDate, sortedAray && sortedAray[0].startTime)
     const endTime = formatDateAndTime(
-      selectedDate,
+      compareTime(sortedAray[0].startTime, sortedAray[sortedAray.length - 1].endTime)
+        ? nextDate
+        : selectedDate,
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
     const sDate = formatDT(selectedDate, sortedAray && sortedAray[0].startTime)
-    const eDate = formatDT(selectedDate, sortedAray && sortedAray[sortedAray.length - 1].endTime)
+    const eDate = formatDT(
+      compareTime(sortedAray[0].startTime, sortedAray[sortedAray.length - 1].endTime)
+        ? nextDate
+        : selectedDate,
+      sortedAray && sortedAray[sortedAray.length - 1].endTime
+    )
 
     setCheck(true)
     setDisabled(false)
@@ -183,6 +198,40 @@ function TimeSlotManagement(props) {
       dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
       dispatch(setDataSlotsArray(slotsData))
       navigation.goBack()
+    }
+  }
+
+  const showDetailNew = (e) => {
+    const tempAray = slotsData.length != 0 ? _.sortBy(slotsData, 'id') : []
+    if (slotsData.length == 0) {
+      slotsData.push(e)
+      slots.push(e.id)
+      isSelected.push(e.id)
+      fortyPercent(e)
+      verifyDetail(e)
+    } else {
+      if (e.id == tempAray[0].id - 1 || e.id == tempAray[tempAray.length - 1].id + 1) {
+        slotsData.push(e)
+        slots.push(e.id)
+        isSelected.push(e.id)
+        fortyPercent(e)
+        verifyDetail(e)
+      } else if (_.contains(tempAray, e)) {
+      } else {
+        Alert.alert(
+          'Sorry',
+          'You cannot skip a slot\nPlease clear current selection if you want to continue',
+          [
+            { text: 'OK' },
+            {
+              text: 'Clear',
+              onPress: () => {
+                setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
+              },
+            },
+          ]
+        )
+      }
     }
   }
 
@@ -609,7 +658,11 @@ function TimeSlotManagement(props) {
                   </View>
                   {o.map((e, i) => {
                     return (
-                      <TouchableOpacity activeOpacity={0.1} onPress={() => showDetail(e)} key={i}>
+                      <TouchableOpacity
+                        activeOpacity={0.1}
+                        onPress={() => showDetailNew(e)}
+                        key={i}
+                      >
                         <View
                           style={[
                             styles.hourRow,

@@ -4,9 +4,6 @@ import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
-import { getPermissionValue } from '../../hoc/Permissions'
-import { PermissionFeatures, PermissionActions } from '../../hoc/PermissionsTypes'
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
 import { setContacts } from '../../actions/contacts'
@@ -15,10 +12,9 @@ import { getCurrentUser } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import LandingTile from '../../components/LandingTile'
-import Loader from '../../components/loader'
-import StatisticsTile from '../../components/StatisticsTile'
 import helper from '../../helper'
-import Ability from '../../hoc/Ability'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
 class Landing extends React.Component {
@@ -74,12 +70,6 @@ class Landing extends React.Component {
     await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
-    console.log('getPermissionValue: ', getPermissionValue)
-    console.log('PermissionFeatures: ', PermissionFeatures.PROJECT_LEADS)
-    console.log('PermissionActions: ', PermissionActions.CREATE)
-    console.log(
-      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions)
-    )
   }
 
   componentDidUpdate(prevProps) {
@@ -233,6 +223,10 @@ class Landing extends React.Component {
         screen: screenName,
         hasBooking: true,
       })
+    } else if (screenName === 'ProjectInventory') {
+      navigation.navigate('AvailableInventory', {
+        screen: 'AvailableInventory',
+      })
     } else {
       navigation.navigate(name, { screen: screenName })
     }
@@ -276,7 +270,7 @@ class Landing extends React.Component {
 
   render() {
     const { tiles, loading, toggleStatsTile, kpisData } = this.state
-    const { user, navigation } = this.props
+    const { user, navigation, permissions } = this.props
     let isShowKPIs = this.isShowKPIsView()
     return (
       <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
@@ -338,28 +332,32 @@ class Landing extends React.Component {
         ) : null} */}
 
         <View style={styles.btnView}>
-          {/* {Ability.canAdd(user.subRole, 'InventoryTabs') ? ( */}
-          <TouchableOpacity
-            onPress={() => {
-              this.props.navigation.navigate('AddInventory', { update: false })
-            }}
-            style={styles.btnStyle}
-          >
-            <Image source={addIcon} style={styles.containerImg} />
-            <Text style={styles.font}>PR</Text>
-          </TouchableOpacity>
-          {/* ) : null} */}
-          {/* {Ability.canAdd(user.subRole, 'Client') ? ( */}
-          <TouchableOpacity
-            onPress={() => {
-              this.props.navigation.navigate('AddClient', { update: false })
-            }}
-            style={[styles.btnStyle, { marginLeft: 5 }]}
-          >
-            <Image source={addIcon} style={styles.containerImg} />
-            <Text style={styles.font}>CR</Text>
-          </TouchableOpacity>
-          {/* ) : null} */}
+          {getPermissionValue(
+            PermissionFeatures.PROPERTIES,
+            PermissionActions.CREATE,
+            permissions
+          ) ? (
+            <TouchableOpacity
+              onPress={() => {
+                this.props.navigation.navigate('AddInventory', { update: false })
+              }}
+              style={styles.btnStyle}
+            >
+              <Image source={addIcon} style={styles.containerImg} />
+              <Text style={styles.font}>PR</Text>
+            </TouchableOpacity>
+          ) : null}
+          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
+            <TouchableOpacity
+              onPress={() => {
+                this.props.navigation.navigate('AddClient', { update: false })
+              }}
+              style={[styles.btnStyle, { marginLeft: 5 }]}
+            >
+              <Image source={addIcon} style={styles.containerImg} />
+              <Text style={styles.font}>CR</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
         <UpdateApp />
       </SafeAreaView>

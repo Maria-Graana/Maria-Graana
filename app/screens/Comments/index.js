@@ -3,17 +3,21 @@
 import axios from 'axios'
 import React, { Component } from 'react'
 import { Alert, FlatList } from 'react-native'
+import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AppStyles from '../../AppStyles'
 import CommentTile from '../../components/CommentTile'
 import Loader from '../../components/loader'
 import AddComment from './addComment'
-
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import helper from '../../helper'
 class Comments extends Component {
   comments = []
 
   constructor(props) {
     super(props)
+    const { user, lead } = this.props
     this.state = {
       commentsList: [],
       comment: '',
@@ -21,6 +25,7 @@ class Comments extends Component {
       type: 'comment',
       property: false,
       addCommentLoading: false,
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
     }
   }
 
@@ -94,7 +99,7 @@ class Comments extends Component {
   }
 
   addComment = () => {
-    const { comment, property } = this.state
+    const { comment, property, closedLeadEdit } = this.state
     const { route } = this.props
     const { rcmLeadId, cmLeadId, screenName, propertyId, leadId } = route.params
     let commentObject = {}
@@ -143,7 +148,9 @@ class Comments extends Component {
   }
 
   render() {
-    const { commentsList, loading, comment, property, addCommentLoading } = this.state
+    const { commentsList, loading, comment, property, addCommentLoading, closedLeadEdit } =
+      this.state
+    const { permissions } = this.props
     return !loading ? (
       <KeyboardAwareScrollView
         style={[AppStyles.container, { paddingHorizontal: 0, marginBottom: 25 }]}
@@ -162,12 +169,18 @@ class Comments extends Component {
           )}
           keyExtractor={(item, index) => index.toString()}
         />
-        <AddComment
-          onPress={this.addComment}
-          loading={addCommentLoading}
-          comment={comment}
-          setComment={this.setComment}
-        />
+        {getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.UPDATE,
+          permissions
+        ) && closedLeadEdit ? (
+          <AddComment
+            onPress={this.addComment}
+            loading={addCommentLoading}
+            comment={comment}
+            setComment={this.setComment}
+          />
+        ) : null}
       </KeyboardAwareScrollView>
     ) : (
       <Loader loading={loading} />
@@ -175,4 +188,12 @@ class Comments extends Component {
   }
 }
 
-export default Comments
+mapStateToProps = (store) => {
+  return {
+    permissions: store.user.permissions,
+    lead: store.lead.lead,
+    user: store.user.user,
+  }
+}
+
+export default connect(mapStateToProps)(Comments)

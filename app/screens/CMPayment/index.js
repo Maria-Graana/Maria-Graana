@@ -1893,9 +1893,10 @@ class CMPayment extends Component {
       callModal,
       meetings,
     } = this.state
+    
+    const { lead, navigation, contacts ,route} = this.props
+    const {screenName} = this.props.route.params
 
-    const { lead, navigation, contacts, route } = this.props
-    const { screenName } = this.props.route.params
 
     return (
       <View style={{ flex: 1 }}>

@@ -122,11 +122,9 @@ export function getDiaryFeedbacks(payload) {
     let url = `/api/feedbacks/fetch?taskType=${
       taskType === 'follow_up' ? 'Connect' : capitalizeWordsWithoutUnderscore(taskType, true)
     }&actionType=${actionType}&leadType=${leadType}`
-    //console.log(url)
     axios
       .get(url)
       .then((response) => {
-        // console.log(response.data)
         if (response) {
           dispatch({
             type: types.SET_DIARY_FEEDBACKS,
@@ -165,20 +163,20 @@ const formatFeedBacks = (diaryFeedbacks, taskType, taskStatus) => {
     Object.keys(diaryFeedbacks).map((key, i) => {
       if (key === 'Actions' && diaryFeedbacks[key]) {
         additionalActions = diaryFeedbacks[key].filter((action) => {
+          let tags = JSON.parse(action.tags[0])
           if (taskType === 'Meeting' && taskStatus === 'completed')
-            return action.tags.indexOf(FA.SETUP_ANOTHER_MEETING) > -1
+            return FA.SETUP_ANOTHER_MEETING in tags
           else if (taskType === 'Meeting' && taskStatus !== 'completed')
-            return action.tags.indexOf(FA.RESCHEDULE_MEETING) > -1
+            return FA.RESCHEDULE_MEETING in tags
           else if (taskType === 'Viewing' && taskStatus === 'completed')
-            return action.tags.indexOf(FA.SHORTLIST_PROPERTIES) > -1
+            return FA.SHORTLIST_PROPERTIES in tags
           else if (taskType === 'Viewing' && taskStatus !== 'completed')
-            return action.tags.indexOf(FA.RESCHEDULE_VIEWING) > -1
+            return FA.RESCHEDULE_VIEWING in tags
           else return true
         })
         delete diaryFeedbacks[key]
       }
     })
-
   // sorting
   if (additionalActions) {
     updatedDiaryFeedbacks = diaryFeedbacks
@@ -202,7 +200,6 @@ const formatFeedBacks = (diaryFeedbacks, taskType, taskStatus) => {
     if (noActionRequired) updatedDiaryFeedbacks['No Action Required'] = noActionRequired
     if (rejectFeedback) updatedDiaryFeedbacks['Reject'] = rejectFeedback
   }
-  // console.log(updatedDiaryFeedbacks)
   return updatedDiaryFeedbacks
 }
 

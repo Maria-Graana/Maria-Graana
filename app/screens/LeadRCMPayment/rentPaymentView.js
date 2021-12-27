@@ -37,6 +37,9 @@ const RentPaymentView = (props) => {
     updateRentLead,
     buyerSellerCounts,
     call,
+    readPermission,
+    updatePermission,
+    closedLeadEdit,
   } = props
 
   MonthlyTile = () => {
@@ -92,24 +95,29 @@ const RentPaymentView = (props) => {
   )
   let showMenu = helper.showBuyerTokenMenu(tokenPayment)
   if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
+
   return (
     <View>
       <MonthlyTile />
       <View style={{ paddingVertical: 5 }} />
       {!tokenPayment ? (
         <RCMBTN
-          onClick={() => onAddCommissionPayment('buyer', 'token')}
+          onClick={() => {
+            if (updatePermission) onAddCommissionPayment('buyer', 'token')
+          }}
           btnImage={RoundPlus}
           btnText={'ADD TOKEN'}
           checkLeadClosedOrNot={false}
-          isLeadClosed={isLeadClosed}
+          isLeadClosed={!closedLeadEdit ? true : false}
         />
       ) : null}
       {tokenPayment ? (
         <TokenTile
           data={tokenPayment}
           editTile={editTile}
-          onPaymentLongPress={() => onPaymentLongPress(tokenPayment)}
+          onPaymentLongPress={() => {
+            if (updatePermission && closedLeadEdit) onPaymentLongPress(tokenPayment)
+          }}
           commissionEdit={!buyerCommission}
           title={tokenPayment ? 'Token' : ''}
           toggleTokenMenu={toggleTokenMenu}
@@ -119,6 +127,8 @@ const RentPaymentView = (props) => {
           singleCommission={singleCommission}
           onSubmitNewToken={onAddCommissionPayment}
           isLeadClosed={isLeadClosed}
+          updatePermission={updatePermission}
+          closedLeadEdit={closedLeadEdit}
         />
       ) : null}
       {tokenPayment && <View style={{ paddingVertical: 3 }} />}
@@ -132,6 +142,9 @@ const RentPaymentView = (props) => {
         updateRentLead={updateRentLead}
         leadAgentType={'buyer'}
         lead={lead}
+        readPermission={readPermission}
+        updatePermission={updatePermission}
+        closedLeadEdit={closedLeadEdit}
       />
       <BuyerSellerTile
         singleCommission={singleCommission}
@@ -156,6 +169,9 @@ const RentPaymentView = (props) => {
         buyerSellerCounts={buyerSellerCounts}
         call={call}
         leadType={'rcm'}
+        readPermission={readPermission}
+        updatePermission={updatePermission}
+        closedLeadEdit={closedLeadEdit}
       />
       <BuyerSellerTile
         singleCommission={singleCommission}
@@ -180,6 +196,9 @@ const RentPaymentView = (props) => {
         buyerSellerCounts={buyerSellerCounts}
         call={call}
         leadType={'rcm'}
+        readPermission={readPermission}
+        updatePermission={updatePermission}
+        closedLeadEdit={closedLeadEdit}
       />
     </View>
   )

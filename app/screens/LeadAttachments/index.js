@@ -6,6 +6,8 @@ import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import React, { Component } from 'react'
 import { Alert, FlatList, View } from 'react-native'
 import { connect } from 'react-redux'
@@ -513,6 +515,8 @@ class LeadAttachments extends Component {
     // ====================== API call for Attachments base on Payment ID
 
     let url = `/api/legal/document?legalId=${scaId}`
+    console.log(`/api/legal/document?legalId=${scaId}`)
+    console.log(`fd: `, fd)
     axios
       .post(url, fd)
       .then((res) => {
@@ -548,7 +552,7 @@ class LeadAttachments extends Component {
       documentComments,
       viewCommentsCheck,
     } = this.state
-    const { route, navigation } = this.props
+    const { route, permissions, navigation } = this.props
     const { workflow, purpose } = route.params
 
     return (
@@ -643,6 +647,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(LeadAttachments)

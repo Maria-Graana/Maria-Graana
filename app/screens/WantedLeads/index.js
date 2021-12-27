@@ -534,7 +534,7 @@ class WantedLeads extends React.Component {
       lead: data,
       purposeTab: 'wanted',
       screen: 'WantedLeads',
-      cmLeadId: data.id,
+      rcmLeadId: data.id,
     })
     this.setIsMenuVisible(false, data)
   }

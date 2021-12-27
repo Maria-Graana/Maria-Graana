@@ -25,6 +25,10 @@ export default styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
   },
+  detailsBtnView: {
+    flex: 1,
+    alignSelf: 'flex-end',
+  },
   smallText: {
     color: '#1F2029',
     fontSize: 14,
@@ -54,6 +58,15 @@ export default styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 50,
+  },
+  roundButtonView: {
+    backgroundColor: AppStyles.colors.primaryColor,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    alignItems: 'center',
   },
   headerText: {
     fontFamily: AppStyles.fonts.boldFont,

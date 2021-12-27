@@ -129,26 +129,22 @@ class Client extends React.Component {
       }
     } else if (isUnitBooking) {
       const { projectData, unit } = route.params
-      axios
-        .get(
-          `/api/leads/projects?web=true&hasBooking=null&customerId=${data.id}&customerLeads=true`
-        )
-        .then((response) => {
-          const res = response.data
-          if (res.count > 0) {
-            navigation.navigate(screenName, {
-              screen: 'Invest',
-              params: {
-                client: data,
-                name: data.firstName + ' ' + data.lastName,
-                leadsData: res.rows,
-                unitData: unit,
-              },
-            })
-          } else {
-            this.leadCreation(data, projectData, navigation, data, unit)
-          }
-        })
+      axios.get(`/api/leads/projects?customerId=${data.id}`).then((response) => {
+        const res = response.data
+        if (res.count > 0) {
+          navigation.navigate(screenName, {
+            screen: 'Invest',
+            params: {
+              client: data,
+              name: data.firstName + ' ' + data.lastName,
+              leadsData: res.rows,
+              unitData: unit,
+            },
+          })
+        } else {
+          this.leadCreation(data, projectData, navigation, data, unit)
+        }
+      })
     } else {
       // by default flow of client screen
       navigation.navigate('ClientDetail', { client: data })

@@ -70,7 +70,6 @@ class DiaryFilter extends React.Component {
       name === 'buyrentId' ||
       name === 'customerId'
     ) {
-      s
       if (helper.isANumber(value)) {
         newformData[name] = value
       } else {

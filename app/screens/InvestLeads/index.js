@@ -96,9 +96,7 @@ class InvestLeads extends React.Component {
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
     axios
-      .get(
-        `/api/leads/projects?web=true&hasBooking=null&customerId=${client.id}&customerLeads=true`
-      )
+      .get(`/api/leads/projects?customerId=${client.id}`)
       .then((res) => {
         this.setState({
           leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
@@ -260,8 +258,7 @@ class InvestLeads extends React.Component {
 
       navigation.navigate('CMLeadTabs', {
         screen: unitData ? 'Payments' : page,
-        params: { lead: data, unitData: unitData , screenName : screen},
-
+        params: { lead: data, unitData: unitData, screenName: screen },
       })
     }
   }
@@ -314,8 +311,8 @@ class InvestLeads extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: 'Investment',
-            purpose : "refer" ,
-            screenName : "Invest"
+            purpose: 'refer',
+            screenName: 'Invest',
             // screen: 'MenuLead',
           })
         }
@@ -380,8 +377,8 @@ class InvestLeads extends React.Component {
       navigation.navigate('AssignLead', {
         leadId: lead.id,
         type: 'Investment',
-        purpose : "reassign",
-        screenName : "Invest"
+        purpose: 'reassign',
+        screenName: 'Invest',
       })
     } else {
       helper.errorToast('Lead Already Assign')

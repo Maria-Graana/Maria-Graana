@@ -20,6 +20,8 @@ import {
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
+import { saveOrUpdateDiaryTask } from '../../actions/diary'
+import helper from '../../helper'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -68,6 +70,7 @@ function TimeSlotManagement(props) {
 
   useEffect(() => {
     const { dispatch, route } = props
+    //console.log(route.params)
 
     dispatch(setSlotDiaryData(selectedDate))
 
@@ -126,6 +129,12 @@ function TimeSlotManagement(props) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
   }
 
+  const compareTime = (timeStart, timeLast) => {
+    if (timeLast < timeStart) {
+      return true
+    } else return false
+  }
+
   const verifyDetail = (e) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
@@ -136,15 +145,24 @@ function TimeSlotManagement(props) {
 
     const sortedAray = _.sortBy(slotsData, 'id')
 
+    const _format = 'YYYY-MM-DD'
     const date = selectedDate
+    const nextDate = moment(selectedDate, _format).add(1, 'days').format(_format)
     const startTime = formatDateAndTime(selectedDate, sortedAray && sortedAray[0].startTime)
     const endTime = formatDateAndTime(
-      selectedDate,
+      compareTime(sortedAray[0].startTime, sortedAray[sortedAray.length - 1].endTime)
+        ? nextDate
+        : selectedDate,
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
     const sDate = formatDT(selectedDate, sortedAray && sortedAray[0].startTime)
-    const eDate = formatDT(selectedDate, sortedAray && sortedAray[sortedAray.length - 1].endTime)
+    const eDate = formatDT(
+      compareTime(sortedAray[0].startTime, sortedAray[sortedAray.length - 1].endTime)
+        ? nextDate
+        : selectedDate,
+      sortedAray && sortedAray[sortedAray.length - 1].endTime
+    )
 
     setCheck(true)
     setDisabled(false)
@@ -157,12 +175,64 @@ function TimeSlotManagement(props) {
   }
 
   const onDone = () => {
-    const { dispatch, navigation } = props
-    if (check) {
+    const { dispatch, navigation, route } = props
+    const { data = null, isFromConnectFlow = false } = route.params
+    if (data && isFromConnectFlow) {
+      let copyData = Object.assign({}, data)
+      copyData.date = tempStartTime
+      copyData.time = tempStartTime
+      copyData.diaryTime = tempStartTime
+      copyData.start = tempStartTime
+      copyData.end = tempEndTime
+      copyData.slots = tempSlot
+      //console.log(copyData)
+      saveOrUpdateDiaryTask(copyData).then((response) => {
+        if (response) {
+          helper.successToast('TASK ADDED SUCCESSFULLY!')
+          navigation.goBack()
+        } else {
+          helper.errorToast('SOMETHING WENT WRONG!')
+        }
+      })
+    } else {
       dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
       dispatch(setDataSlotsArray(slotsData))
+      navigation.goBack()
     }
-    navigation.goBack()
+  }
+
+  const showDetailNew = (e) => {
+    const tempAray = slotsData.length != 0 ? _.sortBy(slotsData, 'id') : []
+    if (slotsData.length == 0) {
+      slotsData.push(e)
+      slots.push(e.id)
+      isSelected.push(e.id)
+      fortyPercent(e)
+      verifyDetail(e)
+    } else {
+      if (e.id == tempAray[0].id - 1 || e.id == tempAray[tempAray.length - 1].id + 1) {
+        slotsData.push(e)
+        slots.push(e.id)
+        isSelected.push(e.id)
+        fortyPercent(e)
+        verifyDetail(e)
+      } else if (_.contains(tempAray, e)) {
+      } else {
+        Alert.alert(
+          'Sorry',
+          'You cannot skip a slot\nPlease clear current selection if you want to continue',
+          [
+            { text: 'OK' },
+            {
+              text: 'Clear',
+              onPress: () => {
+                setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
+              },
+            },
+          ]
+        )
+      }
+    }
   }
 
   const showDetail = (e) => {
@@ -588,7 +658,11 @@ function TimeSlotManagement(props) {
                   </View>
                   {o.map((e, i) => {
                     return (
-                      <TouchableOpacity activeOpacity={0.1} onPress={() => showDetail(e)} key={i}>
+                      <TouchableOpacity
+                        activeOpacity={0.1}
+                        onPress={() => showDetailNew(e)}
+                        key={i}
+                      >
                         <View
                           style={[
                             styles.hourRow,

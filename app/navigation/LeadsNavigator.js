@@ -9,6 +9,7 @@ import InvestLeads from '../screens/InvestLeads/index'
 import PropertyLead from '../screens/PropertyLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 import { connect } from 'react-redux'
+import WantedLeads from '../screens/WantedLeads/index'
 
 // const { width } = Dimensions.get('window')
 
@@ -23,10 +24,11 @@ const TabBarBadge = ({ count, color }) => {
 }
 
 function LeadsNavigator(props) {
-  useEffect(()=>{
-    const { navigation, route } = props;
-    if(route.params.screen == "MyDeals"){
-        navigation.setOptions({title: "DEALS"})}     
+  useEffect(() => {
+    const { navigation, route } = props
+    if (route.params.screen == 'MyDeals') {
+      navigation.setOptions({ title: 'DEALS' })
+    }
   })
   const { count, user } = props
   return user.subRole === 'business_centre_manager' ||
@@ -135,6 +137,19 @@ function LeadsNavigator(props) {
         component={BuyLeads}
       />
       {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
+      <Tab.Screen
+        name="Wanted"
+        initialParams={{
+          screen: props.route.params?.screen,
+          hasBooking: props.route.params?.hasBooking,
+        }}
+        options={{
+          tabBarIcon: (props) => (
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+          ),
+        }}
+        component={WantedLeads}
+      />
       <Tab.Screen
         name="Invest"
         options={{

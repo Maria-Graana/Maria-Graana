@@ -41,7 +41,7 @@ var BUTTONS = [
 ]
 var CANCEL_INDEX = 3
 
-class BuyLeads extends React.Component {
+class WantedLeads extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -72,6 +72,7 @@ class BuyLeads extends React.Component {
       selectedClientContacts: [],
       statusFilterType: 'id',
       newActionModal: false,
+      isMenuVisible: false,
     }
   }
 
@@ -153,28 +154,29 @@ class BuyLeads extends React.Component {
     } = this.state
     this.setState({ loading: true })
     const { hasBooking } = this.props.route.params
-    let query = ``
-    if (showSearchBar) {
-      if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose[]=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-      } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose[]=sale&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-      } else {
-        query = `/api/leads?purpose[]=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-      }
-    } else {
-      if (statusFilter === 'shortlisting') {
-        query = `/api/leads?purpose[]=sale&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-      } else {
-        query = `/api/leads?purpose[]=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-      }
-    }
+    let query = `/api/wanted?pageSize=${pageSize}&page=${page}`
+    // if (showSearchBar) {
+    //   if (statusFilterType === 'name' && searchText !== '') {
+    //     query = `/api/leads?purpose[]=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+    //   } else if (statusFilterType === 'id' && searchText !== '') {
+    //     query = `/api/leads?purpose[]=sale&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+    //   } else {
+    //     query = `/api/leads?purpose[]=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+    //   }
+    // } else {
+    //   if (statusFilter === 'shortlisting') {
+    //     query = `/api/leads?purpose[]=sale&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+    //   } else {
+    //     query = `/api/leads?purpose[]=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+    //   }
+    // }
     axios
       .get(`${query}`)
       .then((res) => {
         let leadNewData = helper.leadMenu(
           page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         )
+        // console.log(query, '  ', res.data.rows)
         this.setState({
           leadsData: leadNewData,
           loading: false,
@@ -200,7 +202,7 @@ class BuyLeads extends React.Component {
       pageName: status,
       client: copyClient,
       name: copyClient && copyClient.customerName,
-      purpose: 'sale',
+      purpose: 'wanted',
     })
   }
 
@@ -213,69 +215,69 @@ class BuyLeads extends React.Component {
   }
 
   navigateTo = (data) => {
-    const { screen } = this.props.route.params
-    this.props.dispatch(setlead(data))
-    let page = ''
-    if (this.props.route.params?.screen === 'MyDeals') {
-      this.props.navigation.navigate('LeadDetail', {
-        lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
-      })
-    } else if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
-        lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
-      })
-    } else {
-      if (data.status == 'open') {
-        page = 'Match'
-      }
-      if (data.status === 'viewing') {
-        page = 'Viewing'
-      }
-      if (data.status === 'offer') {
-        page = 'Offer'
-      }
-      if (data.status === 'propsure') {
-        page = 'Propsure'
-      }
-      if (data.status === 'payment') {
-        page = 'Payment'
-      }
-      if (
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payment'
-      }
-      this.props.navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: data },
-      })
-    }
+    // const { screen } = this.props.route.params
+    // this.props.dispatch(setlead(data))
+    // let page = ''
+    // if (this.props.route.params?.screen === 'MyDeals') {
+    //   this.props.navigation.navigate('LeadDetail', {
+    //     lead: data,
+    //     purposeTab: 'sale',
+    //     screenName: screen,
+    //   })
+    // } else if (data.readAt === null) {
+    //   this.props.navigation.navigate('LeadDetail', {
+    //     lead: data,
+    //     purposeTab: 'sale',
+    //     screenName: screen,
+    //   })
+    // } else {
+    //   if (data.status == 'open') {
+    //     page = 'Match'
+    //   }
+    //   if (data.status === 'viewing') {
+    //     page = 'Viewing'
+    //   }
+    //   if (data.status === 'offer') {
+    //     page = 'Offer'
+    //   }
+    //   if (data.status === 'propsure') {
+    //     page = 'Propsure'
+    //   }
+    //   if (data.status === 'payment') {
+    //     page = 'Payment'
+    //   }
+    //   if (
+    //     data.status === 'payment' ||
+    //     data.status === 'closed_won' ||
+    //     data.status === 'closed_lost'
+    //   ) {
+    //     page = 'Payment'
+    //   }
+    //   this.props.navigation.navigate('RCMLeadTabs', {
+    //     screen: page,
+    //     params: { lead: data },
+    //   })
+    // }
   }
 
   handleLongPress = (val) => {
-    ActionSheet.show(
-      {
-        options: BUTTONS,
-        cancelButtonIndex: CANCEL_INDEX,
-        title: 'Select an Option',
-      },
-      (buttonIndex) => {
-        if (buttonIndex === 1) {
-          //Share
-          this.navigateToShareScreen(val)
-        } else if (buttonIndex === 2) {
-          this.goToFormPage('AddRCMLead', 'RCM', val && val.customer ? val.customer : null)
-        } else if (buttonIndex === 0) {
-          this.checkAssignedLead(val)
-        }
-      }
-    )
+    // ActionSheet.show(
+    //   {
+    //     options: BUTTONS,
+    //     cancelButtonIndex: CANCEL_INDEX,
+    //     title: 'Select an Option',
+    //   },
+    //   (buttonIndex) => {
+    //     if (buttonIndex === 1) {
+    //       //Share
+    //       this.navigateToShareScreen(val)
+    //     } else if (buttonIndex === 2) {
+    //       this.goToFormPage('AddRCMLead', 'RCM', val && val.customer ? val.customer : null)
+    //     } else if (buttonIndex === 0) {
+    //       this.checkAssignedLead(val)
+    //     }
+    //   }
+    // )
   }
 
   navigateToShareScreen = (data) => {
@@ -304,28 +306,28 @@ class BuyLeads extends React.Component {
   }
 
   callNumber = (data) => {
-    const { contacts, dispatch } = this.props
-    this.setState({ selectedLead: data }, () => {
-      if (data && data.customer) {
-        let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
-          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            //  multiple numbers to select
-            this.showMultiPhoneModal(true)
-          } else {
-            dispatch(
-              setCallPayload(
-                selectedClientContacts ? selectedClientContacts.phone : null,
-                'phone',
-                data
-              )
-            )
-            helper.callNumber(selectedClientContacts, contacts)
-            this.showStatusFeedbackModal(true, 'call')
-          }
-        })
-      }
-    })
+    // const { contacts, dispatch } = this.props
+    // this.setState({ selectedLead: data }, () => {
+    //   if (data && data.customer) {
+    //     let selectedClientContacts = helper.createContactPayload(data.customer)
+    //     this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
+    //       if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
+    //         //  multiple numbers to select
+    //         this.showMultiPhoneModal(true)
+    //       } else {
+    //         dispatch(
+    //           setCallPayload(
+    //             selectedClientContacts ? selectedClientContacts.phone : null,
+    //             'phone',
+    //             data
+    //           )
+    //         )
+    //         helper.callNumber(selectedClientContacts, contacts)
+    //         this.showStatusFeedbackModal(true, 'call')
+    //       }
+    //     })
+    //   }
+    // })
   }
 
   setNewActionModal = (value) => {
@@ -388,7 +390,7 @@ class BuyLeads extends React.Component {
     if (data.status === 'open') {
       axios
         .patch(
-          `/api/leads`,
+          `/api/wanted`,
           {
             status: 'called',
           },
@@ -431,7 +433,7 @@ class BuyLeads extends React.Component {
     const { navigation } = this.props
     const { showAssignToButton } = this.state
     if (showAssignToButton === true) {
-      navigation.navigate('AssignLead', { leadId: lead.id, type: 'sale', screen: 'LeadDetail' })
+      navigation.navigate('AssignLead', { leadId: lead.id, type: 'wanted', screen: 'LeadDetail' })
     } else {
       helper.errorToast('Lead Already Assign')
     }
@@ -456,6 +458,14 @@ class BuyLeads extends React.Component {
         })
         .catch((err) => console.error('An error occurred', err))
     }
+  }
+
+  setIsMenuVisible = (value, data) => {
+    const { dispatch } = this.props
+    dispatch(setlead(data))
+    this.setState({
+      isMenuVisible: value,
+    })
   }
 
   changeLeadStatus = (lead) => {
@@ -516,6 +526,17 @@ class BuyLeads extends React.Component {
           popupLoading: false,
         })
       })
+  }
+
+  navigateFromMenu = (data, name) => {
+    this.props.dispatch(setlead(data))
+    this.props.navigation.navigate(name, {
+      lead: data,
+      purposeTab: 'wanted',
+      screen: 'WantedLeads',
+      cmLeadId: data.id,
+    })
+    this.setIsMenuVisible(false, data)
   }
 
   closePopup = () => {
@@ -613,8 +634,10 @@ class BuyLeads extends React.Component {
       statusFilterType,
       newActionModal,
       selectedLead,
+      isMenuVisible,
     } = this.state
     const { user } = this.props
+    // console.log('Hrellooo', leadsData && leadsData.length && leadsData[0].customer)
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -631,7 +654,7 @@ class BuyLeads extends React.Component {
           />
           {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
-              <View style={styles.idPicker}>
+              {/* <View style={styles.idPicker}>
                 <PickerComponent
                   placeholder={'NAME'}
                   data={buyRentFilterType}
@@ -640,8 +663,8 @@ class BuyLeads extends React.Component {
                   onValueChange={this.changeStatusType}
                   selectedItem={statusFilterType}
                 />
-              </View>
-              {statusFilterType === 'name' || statusFilterType === 'id' ? (
+              </View> */}
+              {/* {statusFilterType === 'name' || statusFilterType === 'id' ? (
                 <Search
                   containerWidth="75%"
                   placeholder="Search leads here"
@@ -659,11 +682,11 @@ class BuyLeads extends React.Component {
                   applyFilter={this.fetchLeads}
                   clearFilter={() => this.clearAndCloseSearch()}
                 />
-              )}
+              )} */}
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              <View style={styles.pickerMain}>
+              {/* <View style={styles.pickerMain}>
                 <PickerComponent
                   placeholder={'Lead Status'}
                   data={leadStatus}
@@ -693,7 +716,7 @@ class BuyLeads extends React.Component {
                   size={26}
                   color={AppStyles.colors.primaryColor}
                 />
-              </View>
+              </View> */}
             </View>
           )}
         </View>
@@ -703,24 +726,31 @@ class BuyLeads extends React.Component {
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
               <View>
-                {(!user.organization && user.subRole === 'group_management') ||
-                (user.organization && !user.organization.isPP) ? (
-                  <LeadTile
-                    updateStatus={this.updateStatus}
-                    dispatch={this.props.dispatch}
-                    purposeTab={'sale'}
-                    user={user}
-                    data={{ ...item }}
-                    navigateTo={this.navigateTo}
-                    callNumber={this.callNumber}
-                    handleLongPress={this.handleLongPress}
-                    serverTime={serverTime}
-                  />
-                ) : (
+                {/* {(!user.organization && user.subRole === 'group_management') ||
+                (user.organization && !user.organization.isPP) ? ( */}
+                <LeadTile
+                  updateStatus={this.updateStatus}
+                  dispatch={this.props.dispatch}
+                  purposeTab={'wanted'}
+                  user={user}
+                  data={{ ...item }}
+                  navigateTo={this.navigateTo}
+                  callNumber={this.callNumber}
+                  handleLongPress={this.handleLongPress}
+                  serverTime={serverTime}
+                  displayPhone={false}
+                  screen={'Leads'}
+                  isMenuVisible={isMenuVisible}
+                  setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
+                  navigateFromMenu={this.navigateFromMenu}
+                  // checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
+                  wanted={true}
+                />
+                {/* ) : (
                   <PPLeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
-                    purposeTab={'sale'}
+                    purposeTab={'rent'}
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
@@ -731,7 +761,7 @@ class BuyLeads extends React.Component {
                     PPLeadStatusUpdate={this.PPLeadStatusUpdate}
                     fetchShortlistedProperties={this.fetchShortlistedProperties}
                   />
-                )}
+                )} */}
               </View>
             )}
             onEndReached={() => {
@@ -846,4 +876,4 @@ mapStateToProps = (store) => {
     PPBuyNotification: store.Notification.PPBuyNotification,
   }
 }
-export default connect(mapStateToProps)(BuyLeads)
+export default connect(mapStateToProps)(WantedLeads)

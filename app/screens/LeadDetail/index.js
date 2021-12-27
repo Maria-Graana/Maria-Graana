@@ -77,6 +77,16 @@ class LeadDetail extends React.Component {
           this.fetchLead('api/leads/byId')
         }
       )
+    } else if (purposeTab === 'wanted') {
+      this.setState(
+        {
+          type: 'Wanted',
+        },
+        () => {
+          this.props.navigation.setParams({ type: 'Wanted' })
+          this.fetchLead('api/wanted')
+        }
+      )
     } else {
       this.setState(
         {
@@ -93,13 +103,12 @@ class LeadDetail extends React.Component {
   fetchLead = (url) => {
     const { route, user } = this.props
     const { type } = this.state
-    const { lead } = route.params
+    const { lead, purposeTab } = route.params
     const that = this
     axios
       .get(`${url}?id=${lead.id}`)
       .then((res) => {
-        let responseData = res.data
-
+        let responseData = purposeTab == 'wanted' ? res.data.rows[0] : res.data
         let leadType = type
         if (!responseData.paidProject) {
           responseData.paidProject = responseData.project
@@ -107,22 +116,37 @@ class LeadDetail extends React.Component {
         this.props.dispatch(setlead(responseData))
         const regex = /(<([^>]+)>)/gi
         let text =
-          res.data.description && res.data.description !== ''
+          purposeTab == 'wanted' && res.data.rows[0].description
+            ? res.data.rows[0].description
+            : res.data.description && res.data.description !== ''
             ? res.data.description.replace(regex, '')
             : null
-        let leadData = res.data
+        let leadData = purposeTab == 'wanted' ? res.data.rows[0] : res.data
         if (
           leadData.added_by_armsuser_id !== user.id &&
           leadData.assigned_to_armsuser_id !== user.id
         )
           leadType = 'Property'
-        this.setState({ lead: res.data, loading: false, description: text, type: leadType }, () => {
-          that.checkCustomerName(res.data)
-          that.checkAssignedLead(res.data)
-        })
+
+        this.setState(
+          {
+            lead: purposeTab == 'wanted' ? res.data.rows[0] : res.data,
+            loading: false,
+            description: text,
+            type: leadType,
+          },
+          () => {
+            purposeTab == 'wanted'
+              ? that.checkCustomerName(res.data.rows[0])
+              : that.checkCustomerName(res.data)
+            purposeTab == 'wanted'
+              ? that.checkAssignedLead(res.data.rows[0])
+              : that.checkAssignedLead(res.data)
+          }
+        )
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error, `${url}?id=${lead.id}`)
       })
   }
 
@@ -278,6 +302,8 @@ class LeadDetail extends React.Component {
     }
     if (purposeTab == 'invest') {
       endPoint = `/api/leads/project`
+    } else if (purposeTab == 'wanted') {
+      endPoint = `/api/wanted`
     } else {
       endPoint = `/api/leads`
     }

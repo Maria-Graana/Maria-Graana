@@ -52,6 +52,7 @@ class LeadTile extends React.Component {
       navigateFromMenu,
       checkAssignedLead,
       navigateToShareScreen,
+      wanted,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -179,7 +180,7 @@ class LeadTile extends React.Component {
                   </Text>
                   {/* 3 dots menu */}
                   <View style={{ position: 'absolute', right: -55 }}>
-                    {screen === 'Leads' ? (
+                    {screen === 'Leads' && !wanted ? (
                       <Menu
                         visible={isMenuVisible && data.id === lead.id}
                         onDismiss={() => setIsMenuVisible(false, data)}
@@ -218,6 +219,34 @@ class LeadTile extends React.Component {
                           title="Re-Assign"
                         />
                         <Menu.Item onPress={() => {}} title="Delete" disabled />
+                      </Menu>
+                    ) : null}
+                    {screen === 'Leads' && wanted ? (
+                      <Menu
+                        visible={isMenuVisible && data.id === lead.id}
+                        onDismiss={() => setIsMenuVisible(false, data)}
+                        anchor={
+                          <View>
+                            <Entypo
+                              onPress={() => setIsMenuVisible(true, data)}
+                              name="dots-three-vertical"
+                              size={22}
+                            />
+                          </View>
+                        }
+                      >
+                        <Menu.Item
+                          onPress={() => {
+                            navigateFromMenu(data, 'ScheduledTasks')
+                          }}
+                          title="Scheduled Tasks"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateFromMenu(data, 'LeadDetail')
+                          }}
+                          title="Details"
+                        />
                       </Menu>
                     ) : null}
                   </View>

@@ -3,6 +3,8 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import React, { useEffect } from 'react'
 import { Text, View, StyleSheet } from 'react-native'
+import { getPermissionValue } from '../hoc/Permissions'
+import { PermissionFeatures, PermissionActions } from '../hoc/PermissionsTypes'
 import AppStyles from '../AppStyles'
 import BuyLeads from '../screens/BuyLeads/index'
 import InvestLeads from '../screens/InvestLeads/index'
@@ -29,8 +31,8 @@ function LeadsNavigator(props) {
     if (route.params.screen == 'MyDeals') {
       navigation.setOptions({ title: 'DEALS' })
     }
-  })
-  const { count, user } = props
+  }, [])
+  const { count, user, permissions } = props
   return user.subRole === 'business_centre_manager' ||
     user.subRole === 'business_centre_agent' ||
     user.subRole === 'call_centre_manager' ||
@@ -58,33 +60,47 @@ function LeadsNavigator(props) {
         },
       }}
     >
-      <Tab.Screen
-        name="Invest"
-        options={{
-          tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
-          ),
-        }}
-        component={InvestLeads}
-      />
-      <Tab.Screen
-        name="Rent"
-        options={{
-          tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
-          ),
-        }}
-        component={RentLeads}
-      />
-      <Tab.Screen
-        name="Buy"
-        component={BuyLeads}
-        options={{
-          tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
-          ),
-        }}
-      />
+      {getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions) ? (
+        <Tab.Screen
+          name="Invest"
+          options={{
+            tabBarIcon: (props) => (
+              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
+            ),
+          }}
+          component={InvestLeads}
+        />
+      ) : null}
+      {getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.READ,
+        permissions
+      ) ? (
+        <Tab.Screen
+          name="Rent"
+          options={{
+            tabBarIcon: (props) => (
+              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
+            ),
+          }}
+          component={RentLeads}
+        />
+      ) : null}
+      {getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.READ,
+        permissions
+      ) ? (
+        <Tab.Screen
+          name="Buy"
+          component={BuyLeads}
+          options={{
+            tabBarIcon: (props) => (
+              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+            ),
+          }}
+        />
+      ) : null}
       {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
     </Tab.Navigator>
   ) : (
@@ -110,32 +126,44 @@ function LeadsNavigator(props) {
         },
       }}
     >
-      <Tab.Screen
-        name="Rent"
-        options={{
-          tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
-          ),
-        }}
-        initialParams={{
-          screen: props.route.params?.screen,
-          hasBooking: props.route.params?.hasBooking,
-        }}
-        component={RentLeads}
-      />
-      <Tab.Screen
-        name="Buy"
-        initialParams={{
-          screen: props.route.params?.screen,
-          hasBooking: props.route.params?.hasBooking,
-        }}
-        options={{
-          tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
-          ),
-        }}
-        component={BuyLeads}
-      />
+      {getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.READ,
+        permissions
+      ) ? (
+        <Tab.Screen
+          name="Rent"
+          options={{
+            tabBarIcon: (props) => (
+              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
+            ),
+          }}
+          initialParams={{
+            screen: props.route.params?.screen,
+            hasBooking: props.route.params?.hasBooking,
+          }}
+          component={RentLeads}
+        />
+      ) : null}
+      {getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.READ,
+        permissions
+      ) ? (
+        <Tab.Screen
+          name="Buy"
+          initialParams={{
+            screen: props.route.params?.screen,
+            hasBooking: props.route.params?.hasBooking,
+          }}
+          options={{
+            tabBarIcon: (props) => (
+              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+            ),
+          }}
+          component={BuyLeads}
+        />
+      ) : null}
       {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
       <Tab.Screen
         name="Wanted"
@@ -150,23 +178,26 @@ function LeadsNavigator(props) {
         }}
         component={WantedLeads}
       />
-      <Tab.Screen
-        name="Invest"
-        options={{
-          tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
-          ),
-        }}
-        initialParams={{
-          screen: props.route.params?.screen,
-          hasBooking: props.route.params?.hasBooking,
-        }}
-        component={InvestLeads}
-        initialParams={{
-          screen: props.route.params.screen,
-          hasBooking: props.route.params.hasBooking,
-        }}
-      />
+
+      {getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions) ? (
+        <Tab.Screen
+          name="Invest"
+          options={{
+            tabBarIcon: (props) => (
+              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
+            ),
+          }}
+          initialParams={{
+            screen: props.route.params?.screen,
+            hasBooking: props.route.params?.hasBooking,
+          }}
+          component={InvestLeads}
+          initialParams={{
+            screen: props.route.params.screen,
+            hasBooking: props.route.params.hasBooking,
+          }}
+        />
+      ) : null}
     </Tab.Navigator>
   )
 }
@@ -191,6 +222,7 @@ mapStateToProps = (store) => {
   return {
     count: store.listings.count,
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 

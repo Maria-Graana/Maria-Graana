@@ -16,6 +16,8 @@ import fuzzy from 'fuzzy'
 import Search from '../../components/Search'
 import NoResultsComponent from '../../components/NoResultsComponent'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
 
@@ -251,9 +253,16 @@ class Client extends React.Component {
     )
   }
 
+  createPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions)
+  }
+
   render() {
     const { customers, loading, totalCustomers, onEndReachedLoader, searchText } = this.state
     const { user } = this.props
+    let createPermission = this.createPermission()
+
     let data = []
     if (searchText !== '' && data && data.length === 0) {
       data = fuzzy.filter(searchText, customers, {
@@ -271,17 +280,17 @@ class Client extends React.Component {
             searchText={searchText}
             setSearchText={(value) => this.setState({ searchText: value })}
           />
-          {/* {Ability.canAdd(user.subRole, 'Client') ? ( */}
           <Fab
             active="true"
             containerStyle={{ zIndex: 20 }}
             style={{ backgroundColor: AppStyles.colors.primaryColor }}
             position="bottomRight"
-            onPress={this.addClient}
+            onPress={() => {
+              if (createPermission) this.addClient()
+            }}
           >
             <Ionicons name="md-add" color="#ffffff" />
           </Fab>
-          {/* ) : null} */}
           {data && data.length > 0 ? (
             <FlatList
               data={data}
@@ -327,6 +336,7 @@ class Client extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 

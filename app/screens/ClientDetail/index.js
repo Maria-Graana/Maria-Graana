@@ -10,6 +10,8 @@ import Ability from '../../hoc/Ability'
 import helper from '../../helper'
 import axios from 'axios'
 import Loader from '../../components/loader'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 class ClientDetail extends React.Component {
   constructor(props) {
@@ -95,9 +97,15 @@ class ClientDetail extends React.Component {
     }
   }
 
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.UPDATE, permissions)
+  }
+
   render() {
     const { user } = this.props
     const { client, loading, clientPhones } = this.state
+    let updatePermission = this.updatePermission()
     let belongs = this.checkClient()
     return !loading ? (
       <View
@@ -139,16 +147,14 @@ class ClientDetail extends React.Component {
             <Text style={styles.labelText}>{belongs}</Text>
           </View>
           <View style={styles.pad}>
-            {Ability.canEdit(user.subRole, 'Client') && (
-              <MaterialCommunityIcons
-                onPress={() => {
-                  this.navigateTo()
-                }}
-                name="square-edit-outline"
-                size={26}
-                color={AppStyles.colors.primaryColor}
-              />
-            )}
+            <MaterialCommunityIcons
+              onPress={() => {
+                if (updatePermission) this.navigateTo()
+              }}
+              name="square-edit-outline"
+              size={26}
+              color={AppStyles.colors.primaryColor}
+            />
           </View>
         </View>
       </View>
@@ -161,6 +167,7 @@ class ClientDetail extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 

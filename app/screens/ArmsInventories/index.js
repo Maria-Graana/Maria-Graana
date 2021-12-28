@@ -27,6 +27,8 @@ import PickerComponent from '../../components/Picker'
 import Search from '../../components/Search'
 import { isEmpty } from 'underscore'
 import StaticData from '../../StaticData'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -257,6 +259,16 @@ class ArmsInventories extends React.Component {
     })
   }
 
+  createPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions)
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.UPDATE, permissions)
+  }
+
   render() {
     const {
       propertiesList,
@@ -272,6 +284,7 @@ class ArmsInventories extends React.Component {
       selectedProperty,
     } = this.state
     const { user, route } = this.props
+    let createPermission = this.createPermission()
     return !loading ? (
       <View style={[styles.container, { marginBottom: 25 }]}>
         {showSearchBar ? (
@@ -366,17 +379,17 @@ class ArmsInventories extends React.Component {
           </View>
         )}
 
-        {Ability.canAdd(user.subRole, route.params.screen) ? (
-          <Fab
-            active="true"
-            containerStyle={{ zIndex: 20 }}
-            style={{ backgroundColor: AppStyles.colors.primaryColor }}
-            position="bottomRight"
-            onPress={this.goToInventoryForm}
-          >
-            <Ionicons name="md-add" color="#ffffff" />
-          </Fab>
-        ) : null}
+        <Fab
+          active="true"
+          containerStyle={{ zIndex: 20 }}
+          style={{ backgroundColor: AppStyles.colors.primaryColor }}
+          position="bottomRight"
+          onPress={() => {
+            if (createPermission) this.goToInventoryForm()
+          }}
+        >
+          <Ionicons name="md-add" color="#ffffff" />
+        </Fab>
 
         {/* ***** Main Tile Wrap */}
 
@@ -431,6 +444,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

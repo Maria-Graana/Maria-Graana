@@ -1,36 +1,28 @@
 /** @format */
 
-import * as RootNavigation from '../../navigation/RootNavigation'
-
-import { Alert, FlatList, Image, Text, View } from 'react-native'
-import * as Location from 'expo-location'
-import { Linking } from 'react-native'
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen'
-
-import Ability from '../../hoc/Ability'
-import { ActionSheet } from 'native-base'
-import AppStyles from '../../AppStyles'
-import { Fab } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
-import Loader from '../../components/loader'
-import NoResultsComponent from '../../components/NoResultsComponent'
-import PropertyTile from '../../components/PropertyTile'
-import React from 'react'
 import axios from 'axios'
+import * as Location from 'expo-location'
+import { ActionSheet } from 'native-base'
+import React from 'react'
+import { Alert, FlatList, Linking, Text, View } from 'react-native'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
-import helper from '../../helper'
-import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
-import StaticData from '../../StaticData'
 import { isEmpty } from 'underscore'
-import styles from './style'
-import PickerComponent from '../../components/Picker'
-import Search from '../../components/Search'
+import AppStyles from '../../AppStyles'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import GraanaPhoneOptionModal from '../../components/GraanaPhoneOptionModal'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
+import Loader from '../../components/loader'
+import NoResultsComponent from '../../components/NoResultsComponent'
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import PickerComponent from '../../components/Picker'
+import PropertyTile from '../../components/PropertyTile'
+import Search from '../../components/Search'
+import helper from '../../helper'
+import * as RootNavigation from '../../navigation/RootNavigation'
+import StaticData from '../../StaticData'
+import styles from './style'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1

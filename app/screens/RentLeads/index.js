@@ -29,6 +29,8 @@ import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import config from '../../config'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
@@ -661,7 +663,7 @@ class RentLeads extends React.Component {
       comment,
       newActionModal,
     } = this.state
-    const { user, navigation, route } = this.props
+    const { user, navigation, permissions } = this.props
 
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
@@ -803,42 +805,53 @@ class RentLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {user.organization && user.organization.isPP ? (
-          <Fab
-            active="true"
-            containerStyle={{ zIndex: 20 }}
-            style={{ backgroundColor: AppStyles.colors.primaryColor }}
-            position="bottomRight"
-            onPress={() => this.goToFormPage('AddRCMLead', 'RCM', null, null)}
-          >
-            <Ionicons name="md-add" color="#ffffff" />
-          </Fab>
-        ) : (
-          route.params?.screen !== 'MyDeals' && (
-            <FAB.Group
-              open={open}
-              icon="plus"
-              style={{ marginBottom: 16 }}
-              fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-              color={AppStyles.bgcWhite.backgroundColor}
-              actions={[
-                {
-                  icon: 'plus',
-                  label: 'Buy/Rent Lead',
-                  color: AppStyles.colors.primaryColor,
-                  onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-                },
-                {
-                  icon: 'plus',
-                  label: 'Investment Lead',
-                  color: AppStyles.colors.primaryColor,
-                  onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-                },
-              ]}
-              onStateChange={({ open }) => this.setState({ open })}
-            />
-          )
-        )}
+        {getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ||
+        getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ? (
+          <>
+            {user.organization && user.organization.isPP ? (
+              <Fab
+                active="true"
+                containerStyle={{ zIndex: 20 }}
+                style={{ backgroundColor: AppStyles.colors.primaryColor }}
+                position="bottomRight"
+                onPress={() => this.goToFormPage('AddRCMLead', 'RCM', null, null)}
+              >
+                <Ionicons name="md-add" color="#ffffff" />
+              </Fab>
+            ) : (
+              <FAB.Group
+                open={open}
+                icon="plus"
+                style={{ marginBottom: 16 }}
+                fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+                color={AppStyles.bgcWhite.backgroundColor}
+                actions={[
+                  {
+                    icon: 'plus',
+                    label: 'Buy/Rent Lead',
+                    color: AppStyles.colors.primaryColor,
+                    onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
+                  },
+                  {
+                    icon: 'plus',
+                    label: 'Investment Lead',
+                    color: AppStyles.colors.primaryColor,
+                    onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
+                  },
+                ]}
+                onStateChange={({ open }) => this.setState({ open })}
+              />
+            )}
+          </>
+        ) : null}
 
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
@@ -896,6 +909,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(RentLeads)

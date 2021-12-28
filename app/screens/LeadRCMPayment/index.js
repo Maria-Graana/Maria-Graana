@@ -18,7 +18,7 @@ import {
   Platform,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -27,7 +27,7 @@ import {
   clearInstrumentInformation,
   clearInstrumentsList,
   getInstrumentDetails,
-  setInstrumentInformation
+  setInstrumentInformation,
 } from '../../actions/addInstrument'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
@@ -51,6 +51,8 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import styles from './styles'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -668,6 +670,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   showConfirmationDialog = (item) => {
+    console.log('showConfirmationDialog')
     const { lead } = this.state
     const { user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
@@ -696,14 +699,22 @@ class LeadRCMPayment extends React.Component {
 
   renderSelectPaymentView = (item) => {
     const { lead } = this.state
+    const { permissions } = this.props
     return (
       <TouchableOpacity
         key={item.id.toString()}
-        onPress={
-          lead.shortlist_id === null
-            ? () => this.selectForPayment(item)
-            : () => this.showConfirmationDialog()
-        }
+        onPress={() => {
+          if (
+            getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.UPDATE,
+              permissions
+            )
+          ) {
+            if (lead.shortlist_id === null) this.selectForPayment(item)
+            else this.showConfirmationDialog()
+          }
+        }}
         style={styles.viewButtonStyle}
         activeOpacity={0.7}
       >
@@ -1860,6 +1871,24 @@ class LeadRCMPayment extends React.Component {
     this.setState({ newActionModal: value })
   }
 
+  readPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.READ,
+      permissions
+    )
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -1910,6 +1939,8 @@ class LeadRCMPayment extends React.Component {
     } = this.state
     const { navigation, user, contacts } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    let readPermission = this.readPermission()
+    let updatePermission = this.updatePermission()
 
     return !loading ? (
       <KeyboardAvoidingView
@@ -2064,6 +2095,9 @@ class LeadRCMPayment extends React.Component {
                         handleForm={this.handleBuyerForm}
                         advanceNotZero={advanceNotZero}
                         call={this.fetchPhoneNumbers}
+                        readPermission={readPermission}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     ) : (
                       <RentPaymentView
@@ -2089,6 +2123,9 @@ class LeadRCMPayment extends React.Component {
                         closeLegalDocument={this.closeLegalDocument}
                         buyerSellerCounts={buyerSellerCounts}
                         call={this.fetchPhoneNumbers}
+                        readPermission={readPermission}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     )
                   ) : null}
@@ -2178,6 +2215,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

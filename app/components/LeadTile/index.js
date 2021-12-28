@@ -12,6 +12,8 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
 import { Entypo } from '@expo/vector-icons'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 class LeadTile extends React.Component {
   constructor(props) {
@@ -31,6 +33,23 @@ class LeadTile extends React.Component {
     )
     size = size === '' ? '' : size + ' '
     return size
+  }
+
+  leadStatus = () => {
+    const { data } = this.props
+    if (
+      data.status === 'viewing' ||
+      data.status === 'propsure' ||
+      data.status === 'offer' ||
+      data.status === 'offer'
+    ) {
+      return 'Shortlisting'
+    }
+    if (data.status === 'meeting' || data.status === 'nurture') {
+      return 'In-Progress'
+    } else {
+      return helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
+    }
   }
 
   render() {
@@ -53,6 +72,7 @@ class LeadTile extends React.Component {
       checkAssignedLead,
       navigateToShareScreen,
       wanted,
+      permissions,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -83,6 +103,7 @@ class LeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+    let leadStatus = this.leadStatus()
     return (
       <TouchableOpacity
         disabled={screen === 'Leads' ? true : false}
@@ -116,13 +137,7 @@ class LeadTile extends React.Component {
                   numberOfLines={1}
                 >
                   {/* Disabled Sentry in development  Sentry in */}
-                  {data.status === 'token' ? (
-                    <Text>TOKEN</Text>
-                  ) : data.status === 'meeting' ? (
-                    data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-                  ) : (
-                    helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
-                  )}
+                  {leadStatus}
                 </Text>
                 {data.shared_with_armsuser_id && (
                   <View style={styles.sharedLead}>
@@ -345,7 +360,15 @@ class LeadTile extends React.Component {
                     <TouchableOpacity
                       style={styles.actionBtn}
                       onPress={() => {
-                        callNumber(data)
+                        if (
+                          getPermissionValue(
+                            PermissionFeatures.BUY_RENT_LEADS,
+                            PermissionActions.UPDATE,
+                            permissions
+                          ) &&
+                          data.assigned_to_armsuser_id == user.id
+                        )
+                          callNumber(data)
                       }}
                     >
                       <Image style={[styles.fireIcon, AppStyles.mlFive]} source={phone} />
@@ -366,6 +389,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

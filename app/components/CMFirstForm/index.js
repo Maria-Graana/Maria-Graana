@@ -88,10 +88,9 @@ class CMFirstForm extends Component {
       paymentPlanDuration,
       lead,
       openUnitsTable,
-      clientName,
       checkValidation,
       handleClientClick,
-      selectedClient
+      clientName
     } = this.props
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
@@ -383,19 +382,18 @@ class CMFirstForm extends Component {
         <TouchableInput
           placeholder="Client"
           onPress={() => handleClientClick()}
-          value={clientName ? clientName :firstFormData.clientName}
+          value={firstFormData.clientName}
           showError={checkValidation === true && firstFormData.customerId === ''}
-          errorMessage="Required Purchaiser"
+          errorMessage="Required"
         />
         </View>
-
         {/* **************************************** */}
-        {cnicEditable != false && (
+        {cnicEditable && (
           <SimpleInputText
             name={'cnic'}
             placeholder={'Client CNIC'}
             label={'CLIENT CNIC'}
-            value={firstFormData.cnic}
+            value={helper.normalizeCnic(firstFormData.cnic)}
             keyboardType={'numeric'}
             onChangeHandle={handleFirstForm}
             formatValue={''}
@@ -403,10 +401,15 @@ class CMFirstForm extends Component {
             fromatName={false}
           />
         )}
-        {(firstFormValidate === true) ||
-        (selectedClient && selectedClient.cnic === null) ? (
-          <ErrorMessage errorMessage={'Required CNIC'} />
-        ) : cnicValidate ? (
+         {/* {cnicEditable != false && firstFormData.cnic === null && (
+         <ErrorMessage errorMessage={'Required'} />
+        )}
+        {cnicValidate ? (
+          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        ) : null} */}
+        {firstFormData.cnic === null && firstFormValidate  ? (
+          <ErrorMessage errorMessage={'Required'} />
+        ) : cnicValidate && firstFormValidate ? (
           <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
         ) : null}
         <View

@@ -24,6 +24,8 @@ class CommissionTile extends Component {
       onPaymentLongPress,
       showAccountPhone = false,
       call,
+      updatePermission,
+      closedLeadEdit,
     } = this.props
     var showStatus =
       data && data.status != ''
@@ -46,9 +48,11 @@ class CommissionTile extends Component {
         }
         disabled={commissionEdit}
         onPress={() => {
-          data.status !== StaticData.leadClearedStatus && data.status !== 'notCleared'
-            ? editTile(data)
-            : null
+          if (updatePermission && closedLeadEdit) {
+            data.status !== StaticData.leadClearedStatus && data.status !== 'notCleared'
+              ? editTile(data)
+              : null
+          }
         }}
       >
         <View style={[styles.tileTopWrap, { backgroundColor: commissionEdit ? '#ddd' : '#fff' }]}>

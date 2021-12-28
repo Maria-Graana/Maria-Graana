@@ -94,7 +94,7 @@ export class ScheduledTasks extends Component {
       purposeTab = lead.purpose
     } else if (data.wantedId) {
       lead = { ...data.wanted }
-      purposeTab = lead.purpose
+      purposeTab = 'wanted'
     }
     navigation.navigate('LeadDetail', { lead, purposeTab })
   }
@@ -183,21 +183,24 @@ export class ScheduledTasks extends Component {
 
   render() {
     const { showMenu, leadType, leadId } = this.state
-    const { dispatch, diary } = this.props
+    const { dispatch, diary, route } = this.props
+    const { purposeTab } = route.params
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={style.container}>
-        <Fab
-          active="true"
-          containerStyle={{ zIndex: 20 }}
-          style={{
-            backgroundColor: AppStyles.colors.primaryColor,
-          }}
-          position="bottomRight"
-          onPress={() => this.goToAddEditDiaryScreen()}
-        >
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
+        {purposeTab != 'wanted' && (
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{
+              backgroundColor: AppStyles.colors.primaryColor,
+            }}
+            position="bottomRight"
+            onPress={() => this.goToAddEditDiaryScreen()}
+          >
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
+        )}
 
         <AddLeadCategoryModal
           visible={showClassificationModal}

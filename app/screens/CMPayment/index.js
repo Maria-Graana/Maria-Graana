@@ -80,7 +80,7 @@ class CMPayment extends Component {
             : '',
         floor: route.params?.unitData != null ? route.params?.unitData.floorId : '',
         unitType: route.params?.unitData != null ? 'fullUnit' : null,
-        pearl: '',
+        pearl: route.params?.unitData != null ? null : '',
         unit:
           route.params?.unitData != null
             ? route.params?.unitData.id
@@ -1893,10 +1893,9 @@ class CMPayment extends Component {
       callModal,
       meetings,
     } = this.state
-    
-    const { lead, navigation, contacts ,route} = this.props
-    const {screenName} = this.props.route.params
 
+    const { lead, navigation, contacts, route } = this.props
+    const { screenName } = this.props.route.params
 
     return (
       <View style={{ flex: 1 }}>

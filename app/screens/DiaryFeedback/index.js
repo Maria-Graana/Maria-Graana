@@ -360,74 +360,72 @@ class DiaryFeedback extends Component {
                         : feedback.tags &&
                           feedback.tags.map((tag, k) => {
                             return (
-                              (((tag === FA.CLIENT_IS_INTERESTED_IN_INVESTMENT ||
-                                feedback.section !== 'Reject') &&
-                                DiaryHelper.getLeadType(selectedDiary) === 'Wanted' &&
-                                selectedLead &&
-                                selectedLead.projectId) ||
-                                (tag !== FA.CLIENT_IS_INTERESTED_IN_INVESTMENT &&
-                                  selectedLead &&
-                                  !selectedLead.projectId)) && (
-                                <TouchableOpacity
-                                  key={k}
+                              // (((tag === FA.CLIENT_IS_INTERESTED_IN_INVESTMENT ||
+                              //   feedback.section !== 'Reject') &&
+                              //   DiaryHelper.getLeadType(selectedDiary) === 'Wanted' &&
+                              //   selectedLead &&
+                              //   selectedLead.projectId) ||
+                              //   (tag !== FA.CLIENT_IS_INTERESTED_IN_INVESTMENT &&
+                              //     selectedLead &&
+                              //     !selectedLead.projectId)) && (
+                              <TouchableOpacity
+                                key={k}
+                                style={[
+                                  styles.chipContainer,
+                                  {
+                                    borderColor: feedback.colorCode,
+                                    backgroundColor:
+                                      feedback.section === 'Actions'
+                                        ? '#026ff2'
+                                        : connectFeedback && tag === connectFeedback.tag
+                                        ? connectFeedback.colorCode
+                                        : 'white',
+                                  },
+                                ]}
+                                onPress={() => {
+                                  if (feedback.section === 'Actions') {
+                                    dispatch(
+                                      setConnectFeedback({
+                                        ...connectFeedback,
+                                        section: feedback.section,
+                                        colorCode: feedback.colorCode,
+                                        feedbackId: feedback.id,
+                                        tag: tag,
+                                        comments: connectFeedback.comments || tag,
+                                      })
+                                    ).then((res) => {
+                                      this.handleNextAction(tag.replace(/\s+/g, '_').toLowerCase())
+                                    })
+                                  } else
+                                    dispatch(
+                                      setConnectFeedback({
+                                        ...connectFeedback,
+                                        section: feedback.section,
+                                        colorCode: feedback.colorCode,
+                                        feedbackId: feedback.id,
+                                        tag: tag,
+                                        comments: connectFeedback.comments || tag,
+                                      })
+                                    )
+                                }}
+                              >
+                                <Text
                                   style={[
-                                    styles.chipContainer,
+                                    styles.chipName,
                                     {
-                                      borderColor: feedback.colorCode,
-                                      backgroundColor:
-                                        feedback.section === 'Actions'
-                                          ? '#026ff2'
-                                          : connectFeedback && tag === connectFeedback.tag
-                                          ? connectFeedback.colorCode
-                                          : 'white',
+                                      color:
+                                        feedback.section === 'Actions' ||
+                                        (connectFeedback && tag === connectFeedback.tag)
+                                          ? 'white'
+                                          : 'black',
                                     },
                                   ]}
-                                  onPress={() => {
-                                    if (feedback.section === 'Actions') {
-                                      dispatch(
-                                        setConnectFeedback({
-                                          ...connectFeedback,
-                                          section: feedback.section,
-                                          colorCode: feedback.colorCode,
-                                          feedbackId: feedback.id,
-                                          tag: tag,
-                                          comments: connectFeedback.comments || tag,
-                                        })
-                                      ).then((res) => {
-                                        this.handleNextAction(
-                                          tag.replace(/\s+/g, '_').toLowerCase()
-                                        )
-                                      })
-                                    } else
-                                      dispatch(
-                                        setConnectFeedback({
-                                          ...connectFeedback,
-                                          section: feedback.section,
-                                          colorCode: feedback.colorCode,
-                                          feedbackId: feedback.id,
-                                          tag: tag,
-                                          comments: connectFeedback.comments || tag,
-                                        })
-                                      )
-                                  }}
                                 >
-                                  <Text
-                                    style={[
-                                      styles.chipName,
-                                      {
-                                        color:
-                                          feedback.section === 'Actions' ||
-                                          (connectFeedback && tag === connectFeedback.tag)
-                                            ? 'white'
-                                            : 'black',
-                                      },
-                                    ]}
-                                  >
-                                    {tag}
-                                  </Text>
-                                </TouchableOpacity>
-                              )
+                                  {tag}
+                                </Text>
+                              </TouchableOpacity>
                             )
+                            // )
                           })}
                     </View>
                   </View>

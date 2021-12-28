@@ -381,6 +381,7 @@ class CMFirstForm extends Component {
         <View>
         <TouchableInput
           placeholder="Client"
+          label= {'clientName'}
           onPress={() => handleClientClick()}
           value={firstFormData.clientName}
           showError={checkValidation === true && firstFormData.customerId === ''}

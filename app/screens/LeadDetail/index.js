@@ -697,7 +697,7 @@ class LeadDetail extends React.Component {
             </View>
           </View>
         </ScrollView>
-        {screen === 'MenuLead' || screenName === 'MyDeals' ? null : (
+        {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' ? null : (
           <View style={styles.bottom}>
             <Button
               onPress={() => {

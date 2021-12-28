@@ -573,7 +573,7 @@ class CMBottomNav extends React.Component {
                     } else helper.leadClosedToast()
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}
-                  title="Re-assign"
+                  title="Re-Assign"
                 />
                 <Menu.Item
                   onPress={() => {
@@ -583,7 +583,7 @@ class CMBottomNav extends React.Component {
                     } else helper.leadClosedToast()
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}
-                  title="Refer"
+                  title="Refer Lead"
                 />
                 <Menu.Item
                   onPress={() => {
@@ -624,15 +624,38 @@ class CMBottomNav extends React.Component {
               }
             >
               {lead.projectId ? (
-                <Menu.Item
-                  onPress={() => {
-                    if (closedLeadEdit && readPermission) {
-                      goToHistory()
-                      this.openMenu(false)
-                    } else helper.leadClosedToast()
-                  }}
-                  title="Activity History"
-                />
+                <View>
+                 
+                  <Menu.Item
+                    onPress={() => {
+                      if (closedLeadEdit && assignPermission) {
+                        this.navigateToAssignLead(lead)
+                        this.openMenu(false)
+                      } else helper.leadClosedToast()
+                    }}
+                    // icon={require('../../../assets/img/callIcon.png')}
+                    title="Re-Assign"
+                  />
+                  <Menu.Item
+                    onPress={() => {
+                      if (closedLeadEdit && referPermission) {
+                        this.navigateToShareScreen(lead)
+                        this.openMenu(false)
+                      } else helper.leadClosedToast()
+                    }}
+                    // icon={require('../../../assets/img/callIcon.png')}
+                    title="Refer Lead"
+                  />
+                   <Menu.Item
+                    onPress={() => {
+                      if (closedLeadEdit && readPermission) {
+                        goToHistory()
+                        this.openMenu(false)
+                      } else helper.leadClosedToast()
+                    }}
+                    title="Activity History"
+                  />
+                </View>
               ) : null}
 
               {isFromViewingScreen ? (
@@ -643,7 +666,7 @@ class CMBottomNav extends React.Component {
                       this.openMenu(false)
                     } else helper.leadClosedToast()
                   }}
-                  icon={require('../../../assets/img/properties-icon-l.png')}
+                  // icon={require('../../../assets/img/properties-icon-l.png')}
                   title="Add Property"
                 />
               ) : null}
@@ -657,7 +680,7 @@ class CMBottomNav extends React.Component {
                       } else helper.leadClosedToast()
                     }}
                     // icon={require('../../../assets/img/callIcon.png')}
-                    title="Re-assign"
+                    title="Re-Assign"
                   />
                   <Menu.Item
                     onPress={() => {
@@ -667,7 +690,7 @@ class CMBottomNav extends React.Component {
                       } else helper.leadClosedToast()
                     }}
                     // icon={require('../../../assets/img/callIcon.png')}
-                    title="Refer"
+                    title="Refer Lead"
                   />
                   <Menu.Item
                     onPress={() => {

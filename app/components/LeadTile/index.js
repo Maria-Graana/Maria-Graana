@@ -223,6 +223,12 @@ class LeadTile extends React.Component {
                         />
                         <Menu.Item
                           onPress={() => {
+                            navigateTo(data), setIsMenuVisible(false, data)
+                          }}
+                          title="Book a Unit"
+                        />
+                        <Menu.Item
+                          onPress={() => {
                             navigateToShareScreen(data), setIsMenuVisible(false, data)
                           }}
                           title="Refer"

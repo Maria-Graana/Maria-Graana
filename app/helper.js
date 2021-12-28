@@ -19,6 +19,9 @@ import Ability from './hoc/Ability'
 import TimerNotification from './LocalNotifications'
 import { formatPrice } from './PriceFormate'
 import StaticData from './StaticData'
+import LeadIcon from '../assets/img/leads.png'
+import DealIcon from '../assets/img/deals.png'
+import ProjectInventoryIcon from '../assets/img/project-inventory.png'
 
 const helper = {
   successToast(message, duration = 3000) {
@@ -202,7 +205,7 @@ const helper = {
         case 'TeamDiary':
           return TeamDiaryImg
         case 'Leads':
-          return ClientsImg
+          return LeadIcon
         case 'InventoryTabs':
           return InventoryImg
         case 'Client':
@@ -212,7 +215,9 @@ const helper = {
         case 'Dashboard':
           return DashboardImg
         case 'MyDeals':
-          return ClientsImg
+          return DealIcon
+        case 'ProjectInventory':
+          return ProjectInventoryIcon
         default:
           break
       }

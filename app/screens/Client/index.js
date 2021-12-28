@@ -132,7 +132,7 @@ class Client extends React.Component {
       axios.get(`/api/leads/projects?customerId=${data.id}`).then((response) => {
         const res = response.data
         if (res.count > 0) {
-          navigation.navigate(screenName, {
+          navigation.replace(screenName, {
             screen: 'Invest',
             params: {
               client: data,
@@ -179,7 +179,7 @@ class Client extends React.Component {
       .get(`/api/leads/project/byId?id=${response.data.leadId}`)
       .then((res) => {
         dispatch(setlead(res.data))
-        navigation.navigate('CMLeadTabs', {
+        navigation.replace('CMLeadTabs', {
           screen: 'Payments',
           params: {
             lead: res.data,

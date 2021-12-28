@@ -42,14 +42,23 @@ export class ScheduledTasks extends Component {
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
       // for scheduled tasks on basis of lead id
-      const { cmLeadId = null, rcmLeadId = null, fromDate = null, toDate = null } = route.params
-      if (cmLeadId || rcmLeadId) {
+      const {
+        cmLeadId = null,
+        rcmLeadId = null,
+        fromDate = null,
+        toDate = null,
+        wcmLeadId = null,
+      } = route.params
+      if (cmLeadId || rcmLeadId || wcmLeadId) {
         if (cmLeadId) {
           this.setState({ leadId: cmLeadId, leadType: 'invest' })
           dispatch(getDiaryTasks({ leadId: cmLeadId, leadType: 'invest' }))
         } else if (rcmLeadId) {
           this.setState({ leadId: rcmLeadId, leadType: 'buyRent' })
           dispatch(getDiaryTasks({ leadId: rcmLeadId, leadType: 'buyRent' }))
+        } else if (wcmLeadId) {
+          this.setState({ leadId: wcmLeadId, leadType: 'wanted' })
+          dispatch(getDiaryTasks({ leadId: wcmLeadId, leadType: 'wanted' }))
         }
       } else {
         // from slots
@@ -85,7 +94,7 @@ export class ScheduledTasks extends Component {
       purposeTab = lead.purpose
     } else if (data.wantedId) {
       lead = { ...data.wanted }
-      purposeTab = lead.purpose
+      purposeTab = 'wanted'
     }
     navigation.navigate('LeadDetail', { lead, purposeTab })
   }
@@ -174,21 +183,24 @@ export class ScheduledTasks extends Component {
 
   render() {
     const { showMenu, leadType, leadId } = this.state
-    const { dispatch, diary } = this.props
+    const { dispatch, diary, route } = this.props
+    const { purposeTab } = route.params
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={style.container}>
-        <Fab
-          active="true"
-          containerStyle={{ zIndex: 20 }}
-          style={{
-            backgroundColor: AppStyles.colors.primaryColor,
-          }}
-          position="bottomRight"
-          onPress={() => this.goToAddEditDiaryScreen()}
-        >
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
+        {purposeTab != 'wanted' && (
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{
+              backgroundColor: AppStyles.colors.primaryColor,
+            }}
+            position="bottomRight"
+            onPress={() => this.goToAddEditDiaryScreen()}
+          >
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
+        )}
 
         <AddLeadCategoryModal
           visible={showClassificationModal}
@@ -226,6 +238,7 @@ export class ScheduledTasks extends Component {
                   dispatch(setSelectedDiary(diary))
                   dispatch(setClassificationModal(true))
                 }}
+                leadType={leadType}
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

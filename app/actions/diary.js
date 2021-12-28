@@ -124,6 +124,7 @@ export function getDiaryFeedbacks(payload) {
         ? 'Connect'
         : capitalizeWordsWithoutUnderscore(taskType, true)
     }&actionType=${actionType}&leadType=${leadType}`
+    //console.log(url)
     axios
       .get(url)
       .then((response) => {
@@ -139,6 +140,7 @@ export function getDiaryFeedbacks(payload) {
         }
       })
       .catch((error) => {})
+    return Promise.resolve(true)
   }
 }
 

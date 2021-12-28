@@ -52,7 +52,8 @@ class DiaryFeedback extends Component {
         this.handleNextAction('no_action_required')
       else if (connectFeedback.section === 'Reject') {
         this.setState({ isRWRModalVisible: true })
-      }
+      } else if (connectFeedback.section === 'Cancel Meeting')
+        this.handleNextAction('cancel_meeting')
       // else if (
       //   ['Follow up', 'Cancel Viewing', 'Cancel Meeting'].indexOf(connectFeedback.section) > -1
       // ) {
@@ -216,6 +217,67 @@ class DiaryFeedback extends Component {
               selectedLead,
               reason
             )
+          }
+        })
+      })
+    } else if (type === 'cancel_meeting') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          status: 'cancelled',
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            navigation.replace('TimeSlotManagement', {
+              data: {
+                userId: user.id,
+                taskCategory: 'leadTask',
+                reasonTag: connectFeedback.tag,
+                reasonId: connectFeedback.feedbackId,
+                taskType: 'follow_up',
+                armsLeadId:
+                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+                leadId:
+                  selectedDiary && selectedDiary.armsProjectLeadId
+                    ? selectedDiary.armsProjectLeadId
+                    : null,
+              },
+              taskType: 'follow_up',
+              isFromConnectFlow: true,
+            })
+          }
+        })
+      })
+    } else if (type === 'setup_viewing') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          status: 'completed',
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            // get all information for lead before moving to next screen
+            axios.get(`/api/leads/byId?id=${selectedLead.id}`).then((res) => {
+              if (res.data) {
+                dispatch(setlead(res.data))
+                navigation.replace('RCMLeadTabs', {
+                  screen: 'Viewing',
+                  params: { screenName: 'Viewing' },
+                })
+              }
+            })
           }
         })
       })

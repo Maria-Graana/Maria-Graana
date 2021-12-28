@@ -59,7 +59,10 @@ class DiaryTile extends React.Component {
               styles.tileWrap,
               {
                 borderLeftColor: DiaryHelper.displayTaskColor(diary),
-                backgroundColor: diary.status === 'completed' ? '#EEEEEE' : '#FFFFFF',
+                backgroundColor:
+                  diary.status === 'completed' || diary.status === 'cancelled'
+                    ? '#EEEEEE'
+                    : '#FFFFFF',
               },
             ]}
           >
@@ -82,7 +85,7 @@ class DiaryTile extends React.Component {
                   }
                 >
                   <View>
-                    {diary.status !== 'completed' && (
+                    {diary.status !== 'completed' && diary.status !== 'cancelled' && (
                       <Menu.Item
                         onPress={() => {
                           handleMenuActions('mark_as_done')
@@ -92,7 +95,9 @@ class DiaryTile extends React.Component {
                       />
                     )}
 
-                    {DiaryHelper.getLeadId(diary) && diary.status !== 'completed' ? (
+                    {DiaryHelper.getLeadId(diary) &&
+                    diary.status !== 'completed' &&
+                    diary.status !== 'cancelled' ? (
                       <Menu.Item
                         onPress={() => {
                           setClassification(diary)
@@ -104,13 +109,27 @@ class DiaryTile extends React.Component {
 
                     {diary.taskType === 'viewing' &&
                     diary.armsLeadId &&
-                    diary.status !== 'completed' ? (
+                    diary.status !== 'completed' &&
+                    diary.status !== 'cancelled' ? (
                       <Menu.Item
                         onPress={() => {
                           handleMenuActions('cancel_viewing')
                           hideMenu()
                         }}
                         title="Cancel Viewing"
+                      />
+                    ) : null}
+
+                    {diary.taskType === 'meeting' &&
+                    diary.armsProjectLeadId &&
+                    diary.status !== 'completed' &&
+                    diary.status !== 'cancelled' ? (
+                      <Menu.Item
+                        onPress={() => {
+                          handleMenuActions('cancel_meeting')
+                          hideMenu()
+                        }}
+                        title="Cancel Meeting"
                       />
                     ) : null}
 
@@ -122,7 +141,7 @@ class DiaryTile extends React.Component {
                       title="Task Details"
                     />
 
-                    {diary.status !== 'completed' && (
+                    {diary.status !== 'completed' && diary.status !== 'cancelled' && (
                       <Menu.Item
                         onPress={() => {
                           handleMenuActions('edit_task')
@@ -135,6 +154,7 @@ class DiaryTile extends React.Component {
                     {diary.taskType !== 'morning_meeting' &&
                     diary.taskType !== 'daily_update' &&
                     diary.taskType !== 'meeting_with_pp' &&
+                    diary.status !== 'cancelled' &&
                     diary.status !== 'completed' ? (
                       <View>
                         {!diary.wantedId ? (
@@ -159,7 +179,8 @@ class DiaryTile extends React.Component {
                     {(diary.taskType === 'morning_meeting' ||
                       diary.taskType === 'daily_update' ||
                       diary.taskType === 'meeting_with_pp') &&
-                      diary.status !== 'completed' && (
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' && (
                         <Menu.Item
                           onPress={() => {
                             handleMenuActions('delete')
@@ -214,7 +235,7 @@ class DiaryTile extends React.Component {
                     </Text>
                   )}
 
-                  {diary.status !== 'completed' ? (
+                  {diary.status !== 'completed' && diary.status !== 'cancelled' ? (
                     <TouchableOpacity
                       style={{ width: '10%' }}
                       onPress={() => initiateConnectFlow(diary)}

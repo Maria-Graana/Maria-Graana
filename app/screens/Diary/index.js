@@ -253,15 +253,49 @@ class Diary extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch } = this.props
+    const { navigation, diary, dispatch, connectFeedback } = this.props
     const { selectedDiary } = diary
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+      if (selectedDiary.taskCategory === 'simpleTask') {
+        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+      } else {
+        dispatch(
+          setConnectFeedback({
+            ...connectFeedback,
+            id: selectedDiary.id,
+          })
+        ).then((res) => {
+          dispatch(
+            getDiaryFeedbacks({
+              taskType: selectedDiary.taskType,
+              leadType: diaryHelper.getLeadType(selectedDiary),
+              actionType: 'Done',
+            })
+          ).then((res) => {
+            navigation.navigate('DiaryFeedback')
+          })
+        })
+      }
     } else if (action === 'cancel_viewing') {
       dispatch(cancelDiaryViewing({ selectedDate, agentId }))
     } else if (action === 'cancel_meeting') {
-      dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
+        })
+      )
+      dispatch(
+        getDiaryFeedbacks({
+          taskType: 'meeting',
+          leadType: diaryHelper.getLeadType(selectedDiary),
+          actionType: 'Cancel',
+        })
+      ).then((res) => {
+        navigation.navigate('DiaryFeedback')
+      })
+      // dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
       dispatch(clearDiaries())

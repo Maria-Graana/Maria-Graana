@@ -41,6 +41,7 @@ class DiaryTile extends React.Component {
       goToLeadDetails,
       initiateConnectFlow,
       screenName,
+      leadType,
     } = this.props
     //const { todayDate, selectedTime, showTask, description, active } = this.state
     //console.log(diary)
@@ -68,109 +69,111 @@ class DiaryTile extends React.Component {
                 diary.taskType
               )}${DiaryHelper.showClientName(diary)}`}</Text>
 
-              <View>
-                <Menu
-                  visible={showMenu && diary.id === selectedDiary.id}
-                  onDismiss={() => hideMenu()}
-                  anchor={
-                    <Ionicons
-                      onPress={() => showMenuOptions(diary)}
-                      name="ellipsis-vertical"
-                      size={22}
-                      color="black"
-                    />
-                  }
-                >
-                  <View>
-                    {diary.status !== 'completed' && (
-                      <Menu.Item
-                        onPress={() => {
-                          handleMenuActions('mark_as_done')
-                          hideMenu()
-                        }}
-                        title="Mark as Done"
+              {leadType != 'wanted' && (
+                <View>
+                  <Menu
+                    visible={showMenu && diary.id === selectedDiary.id}
+                    onDismiss={() => hideMenu()}
+                    anchor={
+                      <Ionicons
+                        onPress={() => showMenuOptions(diary)}
+                        name="ellipsis-vertical"
+                        size={22}
+                        color="black"
                       />
-                    )}
-
-                    {DiaryHelper.getLeadId(diary) && diary.status !== 'completed' ? (
-                      <Menu.Item
-                        onPress={() => {
-                          setClassification(diary)
-                          hideMenu()
-                        }}
-                        title="Set Classification"
-                      />
-                    ) : null}
-
-                    {diary.taskType === 'viewing' &&
-                    diary.armsLeadId &&
-                    diary.status !== 'completed' ? (
-                      <Menu.Item
-                        onPress={() => {
-                          handleMenuActions('cancel_viewing')
-                          hideMenu()
-                        }}
-                        title="Cancel Viewing"
-                      />
-                    ) : null}
-
-                    <Menu.Item
-                      onPress={() => {
-                        handleMenuActions('task_details')
-                        hideMenu()
-                      }}
-                      title="Task Details"
-                    />
-
-                    {diary.status !== 'completed' && (
-                      <Menu.Item
-                        onPress={() => {
-                          handleMenuActions('edit_task')
-                          hideMenu()
-                        }}
-                        title="Edit Task"
-                      />
-                    )}
-
-                    {diary.taskType !== 'morning_meeting' &&
-                    diary.taskType !== 'daily_update' &&
-                    diary.taskType !== 'meeting_with_pp' &&
-                    diary.status !== 'completed' ? (
-                      <View>
-                        {!diary.wantedId ? (
-                          <Menu.Item
-                            onPress={() => {
-                              handleMenuActions('refer_lead')
-                              hideMenu()
-                            }}
-                            title="Refer Lead"
-                          />
-                        ) : null}
+                    }
+                  >
+                    <View>
+                      {diary.status !== 'completed' && (
                         <Menu.Item
                           onPress={() => {
-                            handleMenuActions('reassign_lead')
+                            handleMenuActions('mark_as_done')
                             hideMenu()
                           }}
-                          title="Reassign Lead"
-                        />
-                      </View>
-                    ) : null}
-
-                    {(diary.taskType === 'morning_meeting' ||
-                      diary.taskType === 'daily_update' ||
-                      diary.taskType === 'meeting_with_pp') &&
-                      diary.status !== 'completed' && (
-                        <Menu.Item
-                          onPress={() => {
-                            handleMenuActions('delete')
-                            hideMenu()
-                          }}
-                          title="Delete"
+                          title="Mark as Done"
                         />
                       )}
-                  </View>
-                </Menu>
-              </View>
+
+                      {DiaryHelper.getLeadId(diary) && diary.status !== 'completed' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            setClassification(diary)
+                            hideMenu()
+                          }}
+                          title="Set Classification"
+                        />
+                      ) : null}
+
+                      {diary.taskType === 'viewing' &&
+                      diary.armsLeadId &&
+                      diary.status !== 'completed' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('cancel_viewing')
+                            hideMenu()
+                          }}
+                          title="Cancel Viewing"
+                        />
+                      ) : null}
+
+                      <Menu.Item
+                        onPress={() => {
+                          handleMenuActions('task_details')
+                          hideMenu()
+                        }}
+                        title="Task Details"
+                      />
+
+                      {diary.status !== 'completed' && (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('edit_task')
+                            hideMenu()
+                          }}
+                          title="Edit Task"
+                        />
+                      )}
+
+                      {diary.taskType !== 'morning_meeting' &&
+                      diary.taskType !== 'daily_update' &&
+                      diary.taskType !== 'meeting_with_pp' &&
+                      diary.status !== 'completed' ? (
+                        <View>
+                          {!diary.wantedId ? (
+                            <Menu.Item
+                              onPress={() => {
+                                handleMenuActions('refer_lead')
+                                hideMenu()
+                              }}
+                              title="Refer Lead"
+                            />
+                          ) : null}
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('reassign_lead')
+                              hideMenu()
+                            }}
+                            title="Reassign Lead"
+                          />
+                        </View>
+                      ) : null}
+
+                      {(diary.taskType === 'morning_meeting' ||
+                        diary.taskType === 'daily_update' ||
+                        diary.taskType === 'meeting_with_pp') &&
+                        diary.status !== 'completed' && (
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('delete')
+                              hideMenu()
+                            }}
+                            title="Delete"
+                          />
+                        )}
+                    </View>
+                  </Menu>
+                </View>
+              )}
             </View>
             {diary && diary.reasonTag ? (
               <View style={styles.taskResponseView}>
@@ -214,7 +217,7 @@ class DiaryTile extends React.Component {
                     </Text>
                   )}
 
-                  {diary.status !== 'completed' ? (
+                  {diary.status !== 'completed' && leadType !== 'wanted' ? (
                     <TouchableOpacity
                       style={{ width: '10%' }}
                       onPress={() => initiateConnectFlow(diary)}

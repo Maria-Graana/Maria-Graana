@@ -42,14 +42,23 @@ export class ScheduledTasks extends Component {
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
       // for scheduled tasks on basis of lead id
-      const { cmLeadId = null, rcmLeadId = null, fromDate = null, toDate = null } = route.params
-      if (cmLeadId || rcmLeadId) {
+      const {
+        cmLeadId = null,
+        rcmLeadId = null,
+        fromDate = null,
+        toDate = null,
+        wcmLeadId = null,
+      } = route.params
+      if (cmLeadId || rcmLeadId || wcmLeadId) {
         if (cmLeadId) {
           this.setState({ leadId: cmLeadId, leadType: 'invest' })
           dispatch(getDiaryTasks({ leadId: cmLeadId, leadType: 'invest' }))
         } else if (rcmLeadId) {
           this.setState({ leadId: rcmLeadId, leadType: 'buyRent' })
           dispatch(getDiaryTasks({ leadId: rcmLeadId, leadType: 'buyRent' }))
+        } else if (wcmLeadId) {
+          this.setState({ leadId: wcmLeadId, leadType: 'wanted' })
+          dispatch(getDiaryTasks({ leadId: wcmLeadId, leadType: 'wanted' }))
         }
       } else {
         // from slots
@@ -226,6 +235,7 @@ export class ScheduledTasks extends Component {
                   dispatch(setSelectedDiary(diary))
                   dispatch(setClassificationModal(true))
                 }}
+                leadType={leadType}
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

@@ -173,7 +173,7 @@ function LeadsNavigator(props) {
         }}
         options={{
           tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.wantedLeads} />
           ),
         }}
         component={WantedLeads}

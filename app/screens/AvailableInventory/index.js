@@ -6,6 +6,7 @@ import { Fab } from 'native-base'
 import React, { Component } from 'react'
 import { Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Row, Table } from 'react-native-table-component'
+import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
@@ -464,7 +465,14 @@ class AvailableInventory extends Component {
   }
 }
 
-export default AvailableInventory
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    permissions: store.user.permissions,
+  }
+}
+
+export default connect(mapStateToProps)(AvailableInventory)
 
 const styles = StyleSheet.create({
   mainContainer: {

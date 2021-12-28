@@ -35,7 +35,7 @@ export default styles = StyleSheet.create({
     height: 25,
   },
   bottomNavBtnText: {
-    fontSize: 16,
+    fontSize: 15,
     color: 'black',
   },
   forMenuIcon: {},

@@ -293,7 +293,7 @@ class InvestLeads extends React.Component {
       helper.errorToast('Something went wrong!')
     }
   }
-  navigateToBookUnit = (data) => {
+  navigateTo = (data) => {
     const { screen } = this.props.route.params
     const { navigation, route } = this.props
     const unitData = route.params.unitData
@@ -617,7 +617,7 @@ class InvestLeads extends React.Component {
                 purposeTab={'invest'}
                 user={user}
                 data={item}
-                navigateToBookUnit={this.navigateToBookUnit}
+                navigateTo={this.navigateTo}
                 navigateFromMenu={this.navigateFromMenu}
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}

@@ -63,6 +63,8 @@ export function getDiaryTasks(data) {
         endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}&status=pending`
       } else if (leadType === 'buyRent') {
         endPoint = `/api/diary/all?page=1&pageSize=100&buyrentId=${leadId}&status=pending`
+      } else if (leadType === 'wanted') {
+        endPoint = `/api/diary/all?page=1&pageSize=100&wantedId=${leadId}&status=pending`
       }
     }
 

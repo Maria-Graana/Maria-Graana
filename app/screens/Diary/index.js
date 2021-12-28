@@ -366,7 +366,7 @@ class Diary extends React.Component {
       purposeTab = lead.purpose
     } else if (data.wantedId) {
       lead = { ...data.wanted }
-      purposeTab = lead.purpose
+      purposeTab = 'wanted'
     }
     navigation.navigate('LeadDetail', { lead, purposeTab })
   }

@@ -35,15 +35,21 @@ const PaymentHelper = {
     let copyFirstForm = PaymentHelper.clearFirstFormData(lead)
     if (value === 'project') {
       copyFirstForm['project'] = firstForm.project
+      copyFirstForm['clientName'] = firstForm.clientName
+
     }
     if (value === 'floor') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['floor'] = firstForm.floor
+      copyFirstForm['clientName'] = firstForm.clientName
+
     }
     if (value === 'unitType') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['floor'] = firstForm.floor
       copyFirstForm['unitType'] = firstForm.unitType
+      copyFirstForm['clientName'] = firstForm.clientName
+
     }
     return copyFirstForm
   },

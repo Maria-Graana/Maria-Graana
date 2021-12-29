@@ -164,7 +164,7 @@ class InventoryTile extends React.Component {
                     if (updatePermission) goToAttachments('addSCA')
                     hideMenu()
                   }}
-                  icon={require('../../../assets/img/properties-icon-l.png')}
+                  // icon={require('../../../assets/img/properties-icon-l.png')}
                   title={'SCA Document'}
                 />
               </Menu>

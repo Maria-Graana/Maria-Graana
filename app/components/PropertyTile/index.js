@@ -137,39 +137,39 @@ class InventoryTile extends React.Component {
               />
             ) : null}
 
-            {screen === 'arms' ? (
-              <View
-                style={{
-                  alignSelf: 'flex-end',
-                  marginRight: 10,
+            {/* {screen === 'arms' ? ( */}
+            <View
+              style={{
+                alignSelf: 'flex-end',
+                marginRight: 10,
+              }}
+            >
+              <Menu
+                visible={showMenu && data.id === selectedProperty.id}
+                onDismiss={() => {
+                  if (updatePermission) hideMenu()
                 }}
-              >
-                <Menu
-                  visible={showMenu && data.id === selectedProperty.id}
-                  onDismiss={() => {
-                    if (updatePermission) hideMenu()
-                  }}
-                  anchor={
-                    <Entypo
-                      onPress={() => {
-                        if (updatePermission) showMenuOptions(data)
-                      }}
-                      name="dots-three-vertical"
-                      size={24}
-                    />
-                  }
-                >
-                  <Menu.Item
+                anchor={
+                  <Entypo
                     onPress={() => {
-                      if (updatePermission) goToAttachments('addSCA')
-                      hideMenu()
+                      if (updatePermission) showMenuOptions(data)
                     }}
-                    icon={require('../../../assets/img/properties-icon-l.png')}
-                    title={'Add SCA Document'}
+                    name="dots-three-vertical"
+                    size={24}
                   />
-                </Menu>
-              </View>
-            ) : null}
+                }
+              >
+                <Menu.Item
+                  onPress={() => {
+                    if (updatePermission) goToAttachments('addSCA')
+                    hideMenu()
+                  }}
+                  icon={require('../../../assets/img/properties-icon-l.png')}
+                  title={'SCA Document'}
+                />
+              </Menu>
+            </View>
+            {/* ) : null} */}
 
             {screen === 'fields' && data.status === 'onhold' ? (
               <View

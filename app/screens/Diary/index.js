@@ -85,18 +85,22 @@ class Diary extends React.Component {
     }
   }
   componentDidMount() {
-    const { navigation, dispatch } = this.props
-    const { route, user } = this.props
+    const { navigation, dispatch, route } = this.props
     const { agentId } = route.params
+    let { selectedDate } = this.state
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
-    dispatch(setSlotDiaryData(_today))
     this.getDiariesStats()
     this._unsubscribe = navigation.addListener('focus', () => {
-      let { selectedDate } = this.state
+      const { user, isFilterApplied, filters } = this.props
       dispatch(setSlotDiaryData(_today))
-      let dateSelected = selectedDate
+      let dateSelected = null
+      if (isFilterApplied) {
+        dateSelected = filters.date
+      } else {
+        dateSelected = selectedDate
+      }
       if ('openDate' in route.params) {
         const { openDate } = route.params
         dateSelected = moment(openDate).format(_format)
@@ -682,22 +686,21 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#FFFCE3',
     borderColor: '#FDD835',
-    padding: 10,
+    padding: 5,
     borderRadius: 4,
     borderWidth: 0.5,
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
   },
   teamViewImageAlert: {
-    width: 24,
-    height: 24,
+    width: 22,
+    height: 22,
     resizeMode: 'contain',
   },
   teamViewText: {
     fontFamily: AppStyles.fonts.defaultFont,
-    fontSize: 12,
-    padding: 5,
+    fontSize: 16,
+    padding: 7,
   },
 })
 
@@ -717,6 +720,7 @@ mapStateToProps = (store) => {
     isFilterApplied: store.diary.isFilterApplied,
     slotDiary: store.slotManagement.slotDiaryData,
     connectFeedback: store.diary.connectFeedback,
+    filters: store.diary.filters,
   }
 }
 

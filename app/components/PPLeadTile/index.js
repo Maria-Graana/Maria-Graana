@@ -138,7 +138,6 @@ class PPLeadTile extends React.Component {
       data.shared_with_armsuser_id == user.id ||
       propertyLead
     if (data.status === 'closed_won' || data.status === 'closed_lost') leadOwner = false
-    // console.log('data: ', data)
     return (
       <TouchableOpacity
         // onLongPress={() => handleLongPress(data)}

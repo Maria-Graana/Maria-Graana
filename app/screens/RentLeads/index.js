@@ -251,10 +251,17 @@ class RentLeads extends React.Component {
       ) {
         page = 'Payment'
       }
-      this.props.navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: data },
-      })
+      if (data && data.requiredProperties) {
+        this.props.navigation.navigate('PropertyTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      } else {
+        this.props.navigation.navigate('RCMLeadTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      }
     }
   }
 

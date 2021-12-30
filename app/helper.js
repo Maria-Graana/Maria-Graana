@@ -417,6 +417,19 @@ const helper = {
         })
     }
   },
+  checkAssignedSharedWithoutMsg(user, lead) {
+    if (user && lead) {
+      if (
+        user.id === lead.assigned_to_armsuser_id ||
+        user.id === lead.shared_with_armsuser_id ||
+        (lead && lead.requiredProperties)
+      )
+        return true
+      else {
+        return false
+      }
+    } else return false
+  },
   checkAssignedSharedStatus(user, lead) {
     if (user && lead) {
       if (
@@ -426,7 +439,11 @@ const helper = {
         this.leadClosedToast()
         return false
       }
-      if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
+      if (
+        user.id === lead.assigned_to_armsuser_id ||
+        user.id === lead.shared_with_armsuser_id ||
+        (lead && lead.requiredProperties)
+      )
         return true
       else {
         this.leadNotAssignedToast()
@@ -439,7 +456,7 @@ const helper = {
       if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
         return true
       else {
-        this.leadNotAssignedToast()
+        // this.leadNotAssignedToast()
         return false
       }
     } else return false
@@ -1083,6 +1100,43 @@ const helper = {
       }
     } else {
       return 'white'
+    }
+  },
+  skipShortlistedProperties(matchProperties, shortListedProperties) {
+    return _.filter(matchProperties, function (obj) {
+      return !_.findWhere(shortListedProperties, obj)
+    })
+  },
+  setBuyerAgent(lead, type, user) {
+    if (type === 'buyerSide') {
+      return lead.assigned_to_armsuser_id === user.id ? true : false
+    } else return false
+  },
+  setSellerAgent(lead, property, type, user) {
+    // console.log('lead: ', lead)
+    // console.log('property: ', property)
+    // console.log('type: ', type)
+    // console.log('user: ', user)
+    if (type === 'buyerSide') {
+      console.log('buyerSide')
+      if (lead.assigned_to_armsuser_id === user.id && property && !property.sellerFlowAgent)
+        return true
+      console.log('buyerSide 1')
+      if (
+        lead.assigned_to_armsuser_id === user.id &&
+        property &&
+        property.sellerFlowAgent &&
+        property.sellerFlowAgent.id === user.id
+      )
+        return true
+      else false
+      console.log('buyerSide 2')
+    } else {
+      console.log('buyerSide 3')
+      if (property && property.sellerFlowAgent && property.sellerFlowAgent.id === user.id)
+        return true
+      else false
+      console.log('buyerSide 4')
     }
   },
 }

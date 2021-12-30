@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
@@ -26,10 +28,10 @@ export default styles = StyleSheet.create({
   },
   blueColor: {
     color: '#0E73EE',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   lightColor: {
-    color: '#9E9EA0'
+    color: '#9E9EA0',
   },
   largeText: {
     fontSize: 18,
@@ -37,6 +39,7 @@ export default styles = StyleSheet.create({
   },
   contentMultiMain: {
     flexDirection: 'row',
+    flex: 1,
   },
   topIcons: {
     flexDirection: 'row',
@@ -88,7 +91,7 @@ export default styles = StyleSheet.create({
     // maxWidth: '65%',
     // minWidth: '40%',
     width: '100%',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   extraStatus: {
     maxWidth: '70%',
@@ -113,18 +116,18 @@ export default styles = StyleSheet.create({
     borderColor: '#2A7EF0',
     borderWidth: 1,
   },
-  actionBtn:{
+  actionBtn: {
     alignItems: 'center',
     paddingTop: 10,
     paddingBottom: 10,
   },
-  desBlue:{
-    color: '#0E73EE'
+  desBlue: {
+    color: '#0E73EE',
   },
-  desDark:{
-    color: '#000'
+  desDark: {
+    color: '#000',
   },
-  sharedLead:{
-    paddingVertical:0 
-  }
-});
+  sharedLead: {
+    paddingVertical: 0,
+  },
+})

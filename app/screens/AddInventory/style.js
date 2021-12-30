@@ -174,6 +174,9 @@ export default styles = StyleSheet.create({
     backgroundColor: '#0F73EE',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   propsureBtnText: {
     textAlign: 'center',
@@ -187,6 +190,9 @@ export default styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   manualBtnText: {
     textAlign: 'center',
@@ -236,6 +242,6 @@ export default styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#0F73EE',
     borderRadius: 10,
-    marginTop: 10,
+    marginVertical: 10,
   },
 })

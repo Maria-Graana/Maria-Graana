@@ -137,39 +137,39 @@ class InventoryTile extends React.Component {
               />
             ) : null}
 
-            {/* {screen === 'arms' ? ( */}
-            <View
-              style={{
-                alignSelf: 'flex-end',
-                marginRight: 10,
-              }}
-            >
-              <Menu
-                visible={showMenu && data.id === selectedProperty.id}
-                onDismiss={() => {
-                  if (updatePermission) hideMenu()
+            {screen === 'arms' ? (
+              <View
+                style={{
+                  alignSelf: 'flex-end',
+                  marginRight: 10,
                 }}
-                anchor={
-                  <Entypo
-                    onPress={() => {
-                      if (updatePermission) showMenuOptions(data)
-                    }}
-                    name="dots-three-vertical"
-                    size={24}
-                  />
-                }
               >
-                <Menu.Item
-                  onPress={() => {
-                    if (updatePermission) goToAttachments('addSCA')
-                    hideMenu()
+                <Menu
+                  visible={showMenu && data.id === selectedProperty.id}
+                  onDismiss={() => {
+                    if (updatePermission) hideMenu()
                   }}
-                  // icon={require('../../../assets/img/properties-icon-l.png')}
-                  title={'SCA Document'}
-                />
-              </Menu>
-            </View>
-            {/* ) : null} */}
+                  anchor={
+                    <Entypo
+                      onPress={() => {
+                        if (updatePermission) showMenuOptions(data)
+                      }}
+                      name="dots-three-vertical"
+                      size={24}
+                    />
+                  }
+                >
+                  <Menu.Item
+                    onPress={() => {
+                      if (updatePermission) goToAttachments('addSCA')
+                      hideMenu()
+                    }}
+                    // icon={require('../../../assets/img/properties-icon-l.png')}
+                    title={'SCA Document'}
+                  />
+                </Menu>
+              </View>
+            ) : null}
 
             {screen === 'fields' && data.status === 'onhold' ? (
               <View
@@ -286,6 +286,14 @@ class InventoryTile extends React.Component {
                   title="GeoTag"
                 />
               </View>
+              <Menu.Item
+                onPress={() => {
+                  if (updatePermission) goToAttachments('addSCA')
+                  hideGraanaMenu()
+                }}
+                // icon={require('../../../assets/img/properties-icon-l.png')}
+                title={'SCA Document'}
+              />
             </Menu>
           </View>
         ) : null}

@@ -76,6 +76,15 @@ class FieldsInventories extends React.Component {
     })
   }
 
+  goToAttachments = (purpose) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('LeadAttachments', {
+      navProperty: true,
+      purpose: purpose,
+      propertyId: this.state.selectedProperty.id,
+    })
+  }
+
   getFieldsListing = () => {
     const {
       propertiesList,
@@ -423,6 +432,7 @@ class FieldsInventories extends React.Component {
                 hideMenu={() => this.hideMenu()}
                 approveProperty={(id) => this.approveProperty(id)}
                 showHideRejectPropertyModal={(val) => this.showHideRejectPropertyModal(val)}
+                goToAttachments={this.goToAttachments}
               />
             )}
             onEndReached={() => {

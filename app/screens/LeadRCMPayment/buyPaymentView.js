@@ -65,15 +65,8 @@ class BuyPaymentView extends React.Component {
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
-    let buyerCommission =
-      lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
-        ? true
-        : false
-    let sellerCommission =
-      property.assigned_to_armsuser_id === user.id || !Ability.canEdit(subRole, 'Leads') || isPP
-        ? true
-        : false
+    let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user)
+    let sellerCommission = helper.setSellerAgent(lead, property, 'buyerSide', user)
     let singleCommission = buyerCommission && sellerCommission ? true : false
     const buyer = _.find(
       lead.commissions,

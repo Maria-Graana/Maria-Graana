@@ -221,19 +221,12 @@ function TimeSlotManagement(props) {
         verifyDetail(e)
       } else if (_.contains(tempAray, e)) {
       } else {
-        Alert.alert(
-          'Sorry',
-          'You cannot skip a slot\nPlease clear current selection if you want to continue',
-          [
-            { text: 'OK' },
-            {
-              text: 'Clear',
-              onPress: () => {
-                setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
-              },
-            },
-          ]
-        )
+        setSlotsData([e])
+        setSlots([e.id])
+        setIsSelected([e.id])
+        setSSlots([])
+        fortyPercent(e)
+        verifyDetail(e)
       }
     }
   }

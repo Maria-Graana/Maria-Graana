@@ -20,11 +20,11 @@ export default styles = StyleSheet.create({
   },
   contentView: {
     position: 'relative',
-    paddingLeft: 10,
   },
   fontBold: {
     fontSize: 13,
     color: 'grey',
+    paddingLeft: 10,
   },
   meetingCon: {
     fontSize: 16,
@@ -48,8 +48,8 @@ export default styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   doneImg: {
-    width: 16,
-    height: 16,
+    width: 18,
+    height: 18,
     resizeMode: 'contain',
   },
   doneBtn: {
@@ -94,7 +94,10 @@ export default styles = StyleSheet.create({
     fontSize: 15,
   },
   DayAndTime: {
+    flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 30,
   },
   textWrap: {
     flexDirection: 'row',
@@ -108,7 +111,7 @@ export default styles = StyleSheet.create({
   reasonWrap: {
     flexDirection: 'row',
     marginTop: 8,
-    marginLeft: 40,
+    marginLeft: 50,
   },
   reasonTag: {
     borderWidth: 2,
@@ -121,16 +124,22 @@ export default styles = StyleSheet.create({
   responseWrap: {
     paddingLeft: 15,
     marginTop: 3,
-    marginLeft: 22,
+    marginLeft: 35,
   },
   feedbackTag: {
     padding: 3,
-    marginLeft: 35,
+    marginLeft: 45,
     paddingTop: 5,
   },
   outcomeWrap: {
     paddingLeft: 15,
     marginTop: 3,
-    marginLeft: 22,
+    marginLeft: 33,
+  },
+  taskWrap: {
+    flexDirection: 'row',
+    width: 150,
+    paddingLeft: 10,
+    alignItems: 'center',
   },
 })

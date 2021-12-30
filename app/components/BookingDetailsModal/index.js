@@ -76,8 +76,15 @@ class BookingDetailsModal extends React.Component {
   }
 
   render() {
-    let { active, data, pearlModal, finalPrice, lead, toggleBookingDetailsModal, generateKFI } =
-      this.props
+    let {
+      active,
+      data,
+      pearlModal,
+      finalPrice,
+      lead,
+      toggleBookingDetailsModal,
+      generateKFI,
+    } = this.props
     if (!data.unit) active = false
     const { unit } = data
     const { imageUrl, showWebView } = this.state

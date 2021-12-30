@@ -694,7 +694,7 @@ function TimeSlotManagement(props) {
                                 : 'white',
 
                               borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
-                              borderWidth: isSelected.includes(e.id) ? 1.2 : 0.6,
+                              borderWidth: isSelected.includes(e.id) ? 1.6 : 0.6,
                             },
                           ]}
                           key={i}

@@ -60,7 +60,7 @@ export function setTimeSlots() {
   return (dispatch, getsState) => {
     axios
       .get('api/slotManagement/slot')
-      .then((response) => dataSlots(response.data, dispatch))
+      .then((response) => sortTimeData(response.data, dispatch))
       .catch((error) => {
         console.log('api/slotManagement/slot')
         console.log('error', error)

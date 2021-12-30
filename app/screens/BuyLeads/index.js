@@ -323,7 +323,7 @@ class BuyLeads extends React.Component {
               )
             )
             helper.callNumber(selectedClientContacts, contacts)
-            this.showStatusFeedbackModal(true, 'call')
+            // this.showStatusFeedbackModal(true, 'call')
           }
         })
       }
@@ -617,7 +617,7 @@ class BuyLeads extends React.Component {
       selectedLead,
     } = this.state
     const { user, permissions } = this.props
-
+    const {screen} = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -718,6 +718,8 @@ class BuyLeads extends React.Component {
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
+                    screenName = {screen}
+
                   />
                 ) : (
                   <PPLeadTile

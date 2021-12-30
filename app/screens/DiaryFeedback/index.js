@@ -17,6 +17,7 @@ import {
   FEEDBACK_ACTIONS,
   saveOrUpdateDiaryTask,
   setConnectFeedback,
+  setMultipleModalVisible,
 } from '../../actions/diary'
 import TouchableButton from '../../components/TouchableButton'
 import ReconnectModal from '../../components/ReconnectModal'
@@ -32,13 +33,6 @@ class DiaryFeedback extends Component {
       isReconnectModalVisible: false,
       isRWRModalVisible: false,
     }
-  }
-
-  componentWillUnmount() {
-    const { dispatch } = this.props
-    dispatch(setConnectFeedback({}))
-    // Implement clear diary feedbacks here
-    dispatch(clearDiaryFeedbacks())
   }
 
   setNextFlow = () => {
@@ -82,7 +76,7 @@ class DiaryFeedback extends Component {
   handleNextAction = (type, reason = '', isBlacklist = false) => {
     const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
     const { selectedDiary, selectedLead } = diary
-    if (type === 'connect_again' || type === 'no_action_required') {
+    if (type === 'connect_again') {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -97,6 +91,31 @@ class DiaryFeedback extends Component {
         if (res) {
           saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
             if (response) {
+              dispatch(clearDiaryFeedbacks())
+              navigation.goBack()
+              dispatch(setMultipleModalVisible(true))
+            }
+          })
+        }
+      })
+    }
+    if (type === 'no_action_required') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          makeHistory: true,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        if (res) {
+          saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
+            if (response) {
+              dispatch(setConnectFeedback({}))
+              dispatch(clearDiaryFeedbacks())
               navigation.goBack()
             }
           })
@@ -133,10 +152,14 @@ class DiaryFeedback extends Component {
               taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
               isFromConnectFlow: true,
             })
+            dispatch(setConnectFeedback({}))
+            dispatch(clearDiaryFeedbacks())
           }
         })
       })
     } else if (type === 'book_a_unit') {
+      dispatch(setConnectFeedback({}))
+      dispatch(clearDiaryFeedbacks())
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -149,6 +172,8 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          dispatch(setConnectFeedback({}))
+          dispatch(clearDiaryFeedbacks())
           if (res) {
             // get all information for lead before moving to next screen
             axios.get(`/api/leads/project/byId?id=${selectedLead.id}`).then((res) => {
@@ -164,39 +189,26 @@ class DiaryFeedback extends Component {
         })
       })
     } else if (type === 'reschedule_meeting') {
-      dispatch(
-        setConnectFeedback({
-          ...connectFeedback,
-          comments: connectFeedback.comments,
-          response: connectFeedback.comments,
-          feedbackId: connectFeedback.feedbackId,
-          feedbackTag: connectFeedback.tag,
+      navigation.replace('TimeSlotManagement', {
+        data: {
+          userId: user.id,
+          taskCategory: 'leadTask',
+          reasonTag: connectFeedback.tag,
+          reasonId: connectFeedback.feedbackId,
           makeHistory: true,
-          otherTasksToUpdate: [],
-        })
-      ).then((res) => {
-        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
-          if (res) {
-            navigation.replace('TimeSlotManagement', {
-              data: {
-                userId: user.id,
-                taskCategory: 'leadTask',
-                reasonTag: connectFeedback.tag,
-                reasonId: connectFeedback.feedbackId,
-                taskType: 'meeting',
-                armsLeadId:
-                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
-                leadId:
-                  selectedDiary && selectedDiary.armsProjectLeadId
-                    ? selectedDiary.armsProjectLeadId
-                    : null,
-              },
-              taskType: 'meeting',
-              isFromConnectFlow: true,
-            })
-          }
-        })
+          id: selectedDiary.id,
+          taskType: 'meeting',
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+          leadId:
+            selectedDiary && selectedDiary.armsProjectLeadId
+              ? selectedDiary.armsProjectLeadId
+              : null,
+        },
+        taskType: 'meeting',
+        isFromConnectFlow: true,
       })
+      dispatch(setConnectFeedback({}))
+      dispatch(clearDiaryFeedbacks())
     } else if (type === 'reject') {
       dispatch(
         setConnectFeedback({
@@ -219,6 +231,8 @@ class DiaryFeedback extends Component {
             )
           }
         })
+        dispatch(setConnectFeedback({}))
+        dispatch(clearDiaryFeedbacks())
       })
     } else if (type === 'cancel_meeting') {
       dispatch(
@@ -233,6 +247,8 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          dispatch(setConnectFeedback({}))
+          dispatch(clearDiaryFeedbacks())
           if (res) {
             navigation.replace('TimeSlotManagement', {
               data: {
@@ -267,6 +283,8 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          dispatch(setConnectFeedback({}))
+          dispatch(clearDiaryFeedbacks())
           if (res) {
             // get all information for lead before moving to next screen
             axios.get(`/api/leads/byId?id=${selectedLead.id}`).then((res) => {
@@ -280,6 +298,19 @@ class DiaryFeedback extends Component {
             })
           }
         })
+      })
+    } else if (type === 'reschedule_viewings') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        navigation.replace('RescheduleViewings')
       })
     }
   }
@@ -332,7 +363,6 @@ class DiaryFeedback extends Component {
           />
           <View style={[AppStyles.mainInputWrap]}>
             <TextInput
-              // ref={textInput}
               placeholderTextColor={'#a8a8aa'}
               style={[
                 AppStyles.formControl,
@@ -346,7 +376,6 @@ class DiaryFeedback extends Component {
               onChangeText={(text) =>
                 dispatch(setConnectFeedback({ ...connectFeedback, comments: text }))
               }
-              // value={connectFeedback && connectFeedback.comment ? connectFeedback.comment : null}
             />
           </View>
           {diaryFeedbacks &&
@@ -422,14 +451,6 @@ class DiaryFeedback extends Component {
                         : feedback.tags &&
                           feedback.tags.map((tag, k) => {
                             return (
-                              // (((tag === FA.CLIENT_IS_INTERESTED_IN_INVESTMENT ||
-                              //   feedback.section !== 'Reject') &&
-                              //   DiaryHelper.getLeadType(selectedDiary) === 'Wanted' &&
-                              //   selectedLead &&
-                              //   selectedLead.projectId) ||
-                              //   (tag !== FA.CLIENT_IS_INTERESTED_IN_INVESTMENT &&
-                              //     selectedLead &&
-                              //     !selectedLead.projectId)) && (
                               <TouchableOpacity
                                 key={k}
                                 style={[
@@ -487,7 +508,6 @@ class DiaryFeedback extends Component {
                                 </Text>
                               </TouchableOpacity>
                             )
-                            // )
                           })}
                     </View>
                   </View>

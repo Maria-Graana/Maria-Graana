@@ -143,6 +143,15 @@ const connectFeedback = (state = {}, action) => {
   }
 }
 
+const isMultiPhoneModalVisible = (state = false, action) => {
+  switch (action.type) {
+    case types.SET_MULTIPLE_PHONE_MODAL_VISIBLE:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   diary,
   overdueCount,
@@ -154,4 +163,5 @@ export default combineReducers({
   feedbackReasonFilter,
   diaryFeedbacks,
   connectFeedback,
+  isMultiPhoneModalVisible,
 })

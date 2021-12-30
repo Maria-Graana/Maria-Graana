@@ -42,6 +42,7 @@ import {
   initiateConnectFlow,
   setConnectFeedback,
   getDiaryFeedbacks,
+  setMultipleModalVisible,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -80,7 +81,6 @@ class Diary extends React.Component {
       endTime: '',
       isMenuVisible: false,
       isSortModalVisible: false,
-      isMultiPhoneModalVisible: false,
       isDelete: false,
     }
   }
@@ -403,7 +403,8 @@ class Diary extends React.Component {
   }
 
   showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
   }
 
   render() {
@@ -418,7 +419,6 @@ class Diary extends React.Component {
       dayName,
       isMenuVisible,
       isSortModalVisible,
-      isMultiPhoneModalVisible,
     } = this.state
     const {
       overdueCount,
@@ -432,6 +432,7 @@ class Diary extends React.Component {
       onEndReachedLoader,
       isFilterApplied,
       connectFeedback,
+      isMultiPhoneModalVisible,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     const { name = null } = route.params
@@ -716,6 +717,7 @@ mapStateToProps = (store) => {
     userShifts: store.slotManagement.userTimeShifts,
     diaryStat: store.diary.diaryStats,
     sortValue: store.diary.sort,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     onEndReachedLoader: store.diary.onEndReachedLoader,
     isFilterApplied: store.diary.isFilterApplied,
     slotDiary: store.slotManagement.slotDiaryData,

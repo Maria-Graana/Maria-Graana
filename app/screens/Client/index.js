@@ -41,7 +41,11 @@ class Client extends React.Component {
 
   componentDidMount() {
     const { navigation, route } = this.props
+    const { isUnitBooking } = route.params
     this._unsubscribe = navigation.addListener('focus', () => {
+      if (isUnitBooking) {
+        navigation.setOptions({ title: 'SELECT A CLIENT' })
+      }
       this.fetchCustomer()
     })
   }

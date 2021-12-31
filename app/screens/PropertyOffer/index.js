@@ -578,11 +578,18 @@ class PropertyOffer extends React.Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
+  openModalInFollowupMode = (value) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   render() {
@@ -739,7 +746,7 @@ class PropertyOffer extends React.Component {
             lead={lead}
             goToHistory={() => null}
             getCallHistory={() => null}
-            goToFollowup={() => this.openModalInFollowupMode()}
+            goToFollowUp={(value) => this.openModalInFollowupMode(value)}
           />
         </View>
 

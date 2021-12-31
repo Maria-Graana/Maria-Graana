@@ -682,7 +682,7 @@ class PropertyMatch extends React.Component {
   navigateToDetails = () => {
     this.props.navigation.navigate('LeadDetail', {
       lead: this.props.lead,
-      purposeTab: this.props.lead.purpose,
+      purposeTab: 'property',
       isFromLeadWorkflow: true,
       fromScreen: 'match',
     })

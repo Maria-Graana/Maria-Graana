@@ -18,6 +18,8 @@ import {
 import { connect } from 'react-redux'
 import EditIcon from '../../../assets/images/edit-icon.png'
 import WhiteCheck from '../../../assets/images/white-check.png'
+import CheckWhite from '../../../assets/img/check-white.png'
+import CheckBlue from '../../../assets/img/check-blue.png'
 import AppStyles from '../../AppStyles'
 import ErrorMessage from '../../components/ErrorMessage'
 import PickerComponent from '../../components/Picker/index'
@@ -51,69 +53,70 @@ class DetailForm extends Component {
   }
 
   geotaggingComponent = () => {
-    const { formData, handleMarkProperty, clearGeotaggData } = this.props
-    return formData.propsure_id ? (
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-        <TouchableOpacity
-          style={styles.geotaggedBtn}
-          onPress={() => {
-            this.props.navigation.navigate({
-              name: 'MapContainer',
-              params: {
-                mapValues: {
-                  lat: formData.lat,
-                  lng: formData.lng,
-                  propsure_id: formData.propsure_id,
-                },
-                geotaggingType: 'Propsure',
-              },
-            })
-          }}
-        >
-          <Text style={styles.geotaggedText}>PROPSURE GEOTAGGED</Text>
-          <Image source={WhiteCheck} style={styles.whiteCheckImg} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.editIconContainer}
-          onPress={
-            () => clearGeotaggData() //handleMarkProperty(!formData.locate_manually)
-          }
-        >
-          <Image source={EditIcon} style={styles.editIcon} />
-        </TouchableOpacity>
-      </View>
-    ) : formData.locate_manually ? (
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-        <TouchableOpacity
-          style={styles.geotaggedBtn}
-          onPress={() => {
-            this.props.navigation.navigate({
-              name: 'MapContainer',
-              params: {
-                mapValues: {
-                  lat: formData.lat,
-                  lng: formData.lng,
-                  propsure_id: formData.propsure_id,
-                },
-                geotaggingType: 'Manual',
-                screenName: 'AddProperty',
-              },
-            })
-          }}
-        >
-          <Text style={styles.geotaggedText}>MANUALLY GEOTAGGED</Text>
-          <Image source={WhiteCheck} style={styles.whiteCheckImg} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.editIconContainer}
-          onPress={
-            () => clearGeotaggData() // handleMarkProperty(!formData.locate_manually)
-          }
-        >
-          <Image source={EditIcon} style={styles.editIcon} />
-        </TouchableOpacity>
-      </View>
-    ) : (
+    const { formData } = this.props
+    // return formData.propsure_id ? (
+    //   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+    //     <TouchableOpacity
+    //       style={styles.geotaggedBtn}
+    //       onPress={() => {
+    //         this.props.navigation.navigate({
+    //           name: 'MapContainer',
+    //           params: {
+    //             mapValues: {
+    //               lat: formData.lat,
+    //               lng: formData.lng,
+    //               propsure_id: formData.propsure_id,
+    //             },
+    //             geotaggingType: 'Propsure',
+    //           },
+    //         })
+    //       }}
+    //     >
+    //       <Text style={styles.geotaggedText}>PROPSURE GEOTAGGED</Text>
+    //       <Image source={WhiteCheck} style={styles.whiteCheckImg} />
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.editIconContainer}
+    //       onPress={
+    //         () => clearGeotaggData() //handleMarkProperty(!formData.locate_manually)
+    //       }
+    //     >
+    //       <Image source={EditIcon} style={styles.editIcon} />
+    //     </TouchableOpacity>
+    //   </View>
+    // ) : formData.locate_manually ? (
+    //   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+    //     <TouchableOpacity
+    //       style={styles.geotaggedBtn}
+    //       onPress={() => {
+    //         this.props.navigation.navigate({
+    //           name: 'MapContainer',
+    //           params: {
+    //             mapValues: {
+    //               lat: formData.lat,
+    //               lng: formData.lng,
+    //               propsure_id: formData.propsure_id,
+    //             },
+    //             geotaggingType: 'Manual',
+    //             screenName: 'AddProperty',
+    //           },
+    //         })
+    //       }}
+    //     >
+    //       <Text style={styles.geotaggedText}>MANUALLY GEOTAGGED</Text>
+    //       <Image source={WhiteCheck} style={styles.whiteCheckImg} />
+    //     </TouchableOpacity>
+    //     <TouchableOpacity
+    //       style={styles.editIconContainer}
+    //       onPress={
+    //         () => clearGeotaggData() // handleMarkProperty(!formData.locate_manually)
+    //       }
+    //     >
+    //       <Image source={EditIcon} style={styles.editIcon} />
+    //     </TouchableOpacity>
+    //   </View>
+    // ) : (
+    return (
       <View style={styles.propsureManualBtnContainer}>
         <TouchableOpacity
           style={styles.propsureBtn}
@@ -129,6 +132,12 @@ class DetailForm extends Component {
           }}
         >
           <Text style={styles.propsureBtnText}>PROPSURE GEOTAGGING</Text>
+          {formData.propsure_id ? (
+            <Image
+              source={CheckWhite}
+              style={{ width: 15, height: 15, resizeMode: 'contain', marginLeft: 5 }}
+            />
+          ) : null}
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.manualBtn}
@@ -144,6 +153,12 @@ class DetailForm extends Component {
           }}
         >
           <Text style={styles.manualBtnText}>MANUAL GEOTAGGING</Text>
+          {formData.locate_manually ? (
+            <Image
+              source={CheckBlue}
+              style={{ width: 15, height: 15, resizeMode: 'contain', marginLeft: 5 }}
+            />
+          ) : null}
         </TouchableOpacity>
       </View>
     )

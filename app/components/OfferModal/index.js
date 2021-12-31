@@ -51,6 +51,8 @@ class OfferModal extends React.Component {
       customerNotNumeric,
       sellerNotNumeric,
       agreedNotNumeric,
+      showBuyerSide,
+      showSellerSide,
     } = this.props
     let subRole =
       property &&
@@ -58,18 +60,6 @@ class OfferModal extends React.Component {
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
 
-    // if lead assigned to current user then show customer (clients offer)
-    let showCustomer =
-      lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canView(subRole, 'Leads') || property.origin !== 'arms')
-        ? true
-        : false
-
-    // if lead assigned to current user OR lead assigned to current user and property origin must not be arms then show seller (clients offer)
-    let showSeller =
-      property.assigned_to_armsuser_id === user.id || !Ability.canView(subRole, 'Leads')
-        ? true
-        : false
     return (
       <Modal
         visible={active}
@@ -91,7 +81,7 @@ class OfferModal extends React.Component {
           {/* **************************************** */}
           <View style={[styles.mainTopHeader]}>
             {/* ******************Left Input */}
-            {showCustomer && !offerReadOnly ? (
+            {showBuyerSide && !offerReadOnly ? (
               <View style={styles.mainInputWrap}>
                 <Text style={styles.offerColor}>Client's Offers</Text>
                 <View style={styles.inputWrap}>
@@ -147,7 +137,7 @@ class OfferModal extends React.Component {
               </View>
             )}
             {/* {!theirsCheck ? ( */}
-            {showSeller && !offerReadOnly ? (
+            {showSellerSide && !offerReadOnly ? (
               <View style={styles.mainInputWrap}>
                 <Text style={styles.offerColor}>Owner's Offers</Text>
                 <View style={styles.inputWrap}>
@@ -248,7 +238,7 @@ class OfferModal extends React.Component {
           </View>
 
           {/* **************************************** */}
-          {showCustomer && showSeller ? (
+          {showBuyerSide && showSellerSide ? (
             <View style={[{ marginHorizontal: 10, marginBottom: 20 }]}>
               <Text style={styles.offerColorLast}>AGREED AMOUNT</Text>
               <View style={styles.inputWrapLast}>
@@ -276,7 +266,7 @@ class OfferModal extends React.Component {
                 disabled={offerReadOnly}
                 containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
                 label={'ACCEPT OFFER'}
-                onPress={() => agreedAmount(showCustomer === true ? 'showCustomer' : 'showSeller')}
+                onPress={() => agreedAmount(showBuyerSide === true ? 'showCustomer' : 'showSeller')}
                 loading={loading}
               />
             </View>

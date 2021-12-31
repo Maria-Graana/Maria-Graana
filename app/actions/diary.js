@@ -63,6 +63,8 @@ export function getDiaryTasks(data) {
         endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}&status=pending`
       } else if (leadType === 'buyRent') {
         endPoint = `/api/diary/all?page=1&pageSize=100&buyrentId=${leadId}&status=pending`
+      } else if (leadType === 'wanted') {
+        endPoint = `/api/diary/all?page=1&pageSize=100&wantedId=${leadId}&status=pending`
       }
     }
 
@@ -120,8 +122,11 @@ export function getDiaryFeedbacks(payload) {
     const { leadType = null, taskType = null, actionType = null } = payload
     const { selectedDiary } = getsState().diary.diary
     let url = `/api/feedbacks/fetch?taskType=${
-      taskType === 'follow_up' ? 'Connect' : capitalizeWordsWithoutUnderscore(taskType, true)
+      taskType === 'follow_up' && actionType != 'Done'
+        ? 'Connect'
+        : capitalizeWordsWithoutUnderscore(taskType, true)
     }&actionType=${actionType}&leadType=${leadType}`
+    //console.log(url)
     axios
       .get(url)
       .then((response) => {
@@ -137,6 +142,7 @@ export function getDiaryFeedbacks(payload) {
         }
       })
       .catch((error) => {})
+    return Promise.resolve(true)
   }
 }
 

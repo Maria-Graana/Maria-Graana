@@ -52,7 +52,8 @@ class DiaryFeedback extends Component {
         this.handleNextAction('no_action_required')
       else if (connectFeedback.section === 'Reject') {
         this.setState({ isRWRModalVisible: true })
-      }
+      } else if (connectFeedback.section === 'Cancel Meeting')
+        this.handleNextAction('cancel_meeting')
       // else if (
       //   ['Follow up', 'Cancel Viewing', 'Cancel Meeting'].indexOf(connectFeedback.section) > -1
       // ) {
@@ -219,6 +220,67 @@ class DiaryFeedback extends Component {
           }
         })
       })
+    } else if (type === 'cancel_meeting') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          status: 'cancelled',
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            navigation.replace('TimeSlotManagement', {
+              data: {
+                userId: user.id,
+                taskCategory: 'leadTask',
+                reasonTag: connectFeedback.tag,
+                reasonId: connectFeedback.feedbackId,
+                taskType: 'follow_up',
+                armsLeadId:
+                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+                leadId:
+                  selectedDiary && selectedDiary.armsProjectLeadId
+                    ? selectedDiary.armsProjectLeadId
+                    : null,
+              },
+              taskType: 'follow_up',
+              isFromConnectFlow: true,
+            })
+          }
+        })
+      })
+    } else if (type === 'setup_viewing') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          status: 'completed',
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            // get all information for lead before moving to next screen
+            axios.get(`/api/leads/byId?id=${selectedLead.id}`).then((res) => {
+              if (res.data) {
+                dispatch(setlead(res.data))
+                navigation.replace('RCMLeadTabs', {
+                  screen: 'Viewing',
+                  params: { screenName: 'Viewing' },
+                })
+              }
+            })
+          }
+        })
+      })
     }
   }
 
@@ -360,74 +422,72 @@ class DiaryFeedback extends Component {
                         : feedback.tags &&
                           feedback.tags.map((tag, k) => {
                             return (
-                              (((tag === FA.CLIENT_IS_INTERESTED_IN_INVESTMENT ||
-                                feedback.section !== 'Reject') &&
-                                DiaryHelper.getLeadType(selectedDiary) === 'Wanted' &&
-                                selectedLead &&
-                                selectedLead.projectId) ||
-                                (tag !== FA.CLIENT_IS_INTERESTED_IN_INVESTMENT &&
-                                  selectedLead &&
-                                  !selectedLead.projectId)) && (
-                                <TouchableOpacity
-                                  key={k}
+                              // (((tag === FA.CLIENT_IS_INTERESTED_IN_INVESTMENT ||
+                              //   feedback.section !== 'Reject') &&
+                              //   DiaryHelper.getLeadType(selectedDiary) === 'Wanted' &&
+                              //   selectedLead &&
+                              //   selectedLead.projectId) ||
+                              //   (tag !== FA.CLIENT_IS_INTERESTED_IN_INVESTMENT &&
+                              //     selectedLead &&
+                              //     !selectedLead.projectId)) && (
+                              <TouchableOpacity
+                                key={k}
+                                style={[
+                                  styles.chipContainer,
+                                  {
+                                    borderColor: feedback.colorCode,
+                                    backgroundColor:
+                                      feedback.section === 'Actions'
+                                        ? '#026ff2'
+                                        : connectFeedback && tag === connectFeedback.tag
+                                        ? connectFeedback.colorCode
+                                        : 'white',
+                                  },
+                                ]}
+                                onPress={() => {
+                                  if (feedback.section === 'Actions') {
+                                    dispatch(
+                                      setConnectFeedback({
+                                        ...connectFeedback,
+                                        section: feedback.section,
+                                        colorCode: feedback.colorCode,
+                                        feedbackId: feedback.id,
+                                        tag: tag,
+                                        comments: connectFeedback.comments || tag,
+                                      })
+                                    ).then((res) => {
+                                      this.handleNextAction(tag.replace(/\s+/g, '_').toLowerCase())
+                                    })
+                                  } else
+                                    dispatch(
+                                      setConnectFeedback({
+                                        ...connectFeedback,
+                                        section: feedback.section,
+                                        colorCode: feedback.colorCode,
+                                        feedbackId: feedback.id,
+                                        tag: tag,
+                                        comments: connectFeedback.comments || tag,
+                                      })
+                                    )
+                                }}
+                              >
+                                <Text
                                   style={[
-                                    styles.chipContainer,
+                                    styles.chipName,
                                     {
-                                      borderColor: feedback.colorCode,
-                                      backgroundColor:
-                                        feedback.section === 'Actions'
-                                          ? '#026ff2'
-                                          : connectFeedback && tag === connectFeedback.tag
-                                          ? connectFeedback.colorCode
-                                          : 'white',
+                                      color:
+                                        feedback.section === 'Actions' ||
+                                        (connectFeedback && tag === connectFeedback.tag)
+                                          ? 'white'
+                                          : 'black',
                                     },
                                   ]}
-                                  onPress={() => {
-                                    if (feedback.section === 'Actions') {
-                                      dispatch(
-                                        setConnectFeedback({
-                                          ...connectFeedback,
-                                          section: feedback.section,
-                                          colorCode: feedback.colorCode,
-                                          feedbackId: feedback.id,
-                                          tag: tag,
-                                          comments: connectFeedback.comments || tag,
-                                        })
-                                      ).then((res) => {
-                                        this.handleNextAction(
-                                          tag.replace(/\s+/g, '_').toLowerCase()
-                                        )
-                                      })
-                                    } else
-                                      dispatch(
-                                        setConnectFeedback({
-                                          ...connectFeedback,
-                                          section: feedback.section,
-                                          colorCode: feedback.colorCode,
-                                          feedbackId: feedback.id,
-                                          tag: tag,
-                                          comments: connectFeedback.comments || tag,
-                                        })
-                                      )
-                                  }}
                                 >
-                                  <Text
-                                    style={[
-                                      styles.chipName,
-                                      {
-                                        color:
-                                          feedback.section === 'Actions' ||
-                                          (connectFeedback && tag === connectFeedback.tag)
-                                            ? 'white'
-                                            : 'black',
-                                      },
-                                    ]}
-                                  >
-                                    {tag}
-                                  </Text>
-                                </TouchableOpacity>
-                              )
+                                  {tag}
+                                </Text>
+                              </TouchableOpacity>
                             )
+                            // )
                           })}
                     </View>
                   </View>

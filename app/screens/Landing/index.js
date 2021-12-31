@@ -40,10 +40,6 @@ class Landing extends React.Component {
           actions: 'INVENTORY',
         },
         {
-          tile: 'InventoryTabs',
-          actions: 'INVENTORY',
-        },
-        {
           tile: 'Project Inventory',
           actions: 'PROJECT_LEADS',
         },

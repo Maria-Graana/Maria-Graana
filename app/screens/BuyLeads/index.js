@@ -711,7 +711,7 @@ class BuyLeads extends React.Component {
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
-                    purposeTab={'rent'}
+                    purposeTab={'sale'}
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
@@ -725,7 +725,7 @@ class BuyLeads extends React.Component {
                   <PPLeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
-                    purposeTab={'rent'}
+                    purposeTab={'sale'}
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}

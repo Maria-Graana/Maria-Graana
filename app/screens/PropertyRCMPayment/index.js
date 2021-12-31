@@ -30,6 +30,8 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -65,7 +67,7 @@ class PropertyRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -1252,6 +1254,15 @@ class PropertyRCMPayment extends React.Component {
     })
   }
 
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -1295,6 +1306,8 @@ class PropertyRCMPayment extends React.Component {
       isMultiPhoneModalVisible,
     } = this.state
     const { user, contacts } = this.props
+    let updatePermission = this.updatePermission()
+
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -1425,6 +1438,8 @@ class PropertyRCMPayment extends React.Component {
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
                         call={this.fetchPhoneNumbers}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     ) : (
                       <RentPaymentView
@@ -1460,6 +1475,8 @@ class PropertyRCMPayment extends React.Component {
                         toggleMonthlyDetails={this.toggleMonthlyDetails}
                         rentMonthlyToggle={rentMonthlyToggle}
                         call={this.fetchPhoneNumbers}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     )
                   ) : null}
@@ -1521,6 +1538,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

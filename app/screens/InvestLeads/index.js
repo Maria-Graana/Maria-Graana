@@ -233,12 +233,14 @@ class InvestLeads extends React.Component {
 
  
   navigateFromMenu = (data, name) => {
+    const {screen} = this.props.route.params
     this.props.dispatch(setlead(data))
     this.props.navigation.navigate(name, {
       lead: data,
       purposeTab: 'invest',
       screen: 'InvestLeads',
       cmLeadId: data.id,
+      screenName : screen
     })
     this.setIsMenuVisible(false, data)
   }
@@ -533,7 +535,7 @@ class InvestLeads extends React.Component {
       isMenuVisible,
     } = this.state
     const { user, permissions } = this.props
-    const screen = this.props.route.params.screen
+    const {screen} = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>

@@ -192,10 +192,6 @@ function LeadsNavigator(props) {
             hasBooking: props.route.params?.hasBooking,
           }}
           component={InvestLeads}
-          initialParams={{
-            screen: props.route.params.screen,
-            hasBooking: props.route.params.hasBooking,
-          }}
         />
       ) : null}
     </Tab.Navigator>

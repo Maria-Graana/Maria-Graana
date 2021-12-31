@@ -140,19 +140,17 @@ class BuyerSellerTile extends React.Component {
                 />
               ) : (
                 <View style={{ paddingTop: 10 }}>
-                  {paymentCommission ? (
-                    <RCMBTN
-                      onClick={() => {
-                        if (updatePermission && closedLeadEdit)
-                          onAddCommissionPayment(tileType, 'commission')
-                      }}
-                      btnImage={RoundPlus}
-                      btnText={RCMBTNTitle}
-                      checkLeadClosedOrNot={false}
-                      hiddenBtn={onReadOnly}
-                      addBorder={true}
-                    />
-                  ) : null}
+                  <RCMBTN
+                    onClick={() => {
+                      if (updatePermission && closedLeadEdit)
+                        onAddCommissionPayment(tileType, 'commission')
+                    }}
+                    btnImage={RoundPlus}
+                    btnText={RCMBTNTitle}
+                    checkLeadClosedOrNot={false}
+                    hiddenBtn={onReadOnly}
+                    addBorder={true}
+                  />
                 </View>
               )
             ) : null}

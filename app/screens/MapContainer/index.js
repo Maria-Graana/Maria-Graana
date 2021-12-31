@@ -77,6 +77,17 @@ class MapContainer extends Component {
         )
       },
     })
+
+    if (
+      this.props.addPropertyParams?.latitude &&
+      this.props.route.params?.geotaggingType === 'Manual'
+    ) {
+      this.setState({
+        markerLat: this.props.addPropertyParams.latitude,
+        markerLong: this.props.addPropertyParams.longitude,
+        showMapModal: true,
+      })
+    }
   }
 
   render() {

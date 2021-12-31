@@ -28,7 +28,7 @@ class FirstScreenConfirmModal extends React.Component {
       firstScreenConfirmLoading,
       oneProductData,
       lead,
-      selectedClient
+      clientName
     } = this.props
     var project =
       getAllProject &&
@@ -96,8 +96,8 @@ class FirstScreenConfirmModal extends React.Component {
                 {formatPrice(data.finalPrice ? data.finalPrice : '')}
               </Text>
             </Text>
-            {(selectedClient) ? <Text style={styles.noramlText}>
-              Booking For: <Text style={styles.mainTextLarge}>{selectedClient && selectedClient.firstName} {selectedClient && selectedClient.lastName}</Text>
+            {(clientName) ? <Text style={styles.noramlText}>
+              Booking For: <Text style={styles.mainTextLarge}>{clientName}</Text>
             </Text> : null}
           </View>
           <View style={styles.confirmBtnView}>
@@ -127,7 +127,7 @@ class FirstScreenConfirmModal extends React.Component {
                   firstFormConfirmModal(false)
                 }}
               >
-                CANCEL
+                CANCEL 
               </Text>
             </TouchableOpacity>
           </View>

@@ -686,6 +686,8 @@ class LeadOffer extends React.Component {
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const showBuyerSide = helper.setBuyerAgent(lead, 'buyerSide', user)
+    const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'buyerSide', user)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -780,6 +782,8 @@ class LeadOffer extends React.Component {
           sellerNotNumeric={sellerNotNumeric}
           customerNotNumeric={customerNotNumeric}
           agreedNotNumeric={agreedNotNumeric}
+          showBuyerSide={showBuyerSide}
+          showSellerSide={showSellerSide}
         />
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}

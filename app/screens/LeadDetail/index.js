@@ -390,9 +390,15 @@ class LeadDetail extends React.Component {
     }
   }
 
+  setCustomerName = () => {
+    const { user } = this.props
+    const { customerName, lead } = this.state
+    if (helper.checkAssignedSharedWithoutMsg(user, lead)) return '---'
+    else return customerName === '' ? lead.customer && lead.customer.customerName : customerName
+  }
+
   render() {
-    let { type, lead, customerName, mainButtonText, fromScreen, loading, editDes, description } =
-      this.state
+    let { type, lead, mainButtonText, fromScreen, loading, editDes, description } = this.state
     const { user, route } = this.props
     const { purposeTab } = route.params
     const { screen } = route.params
@@ -415,6 +421,8 @@ class LeadDetail extends React.Component {
     }
     let leadStatus = this.leadStatus()
     let assignedByName = this.getAssignedByName(lead)
+    let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
+    let setCustomerName = this.setCustomerName()
 
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
@@ -424,11 +432,7 @@ class LeadDetail extends React.Component {
               <View style={styles.rowContainer}>
                 <View>
                   <Text style={styles.headingText}>Client Name </Text>
-                  <Text style={styles.labelText}>
-                    {customerName === ''
-                      ? lead.customer && lead.customer.customerName
-                      : customerName}
-                  </Text>
+                  <Text style={styles.labelText}>{setCustomerName}</Text>
                 </View>
                 {purposeTab !== 'property' && (
                   <TouchableOpacity
@@ -714,7 +718,7 @@ class LeadDetail extends React.Component {
             </View>
           </View>
         </ScrollView>
-        {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' ? null : (
+        {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
           <View style={styles.bottom}>
             <Button
               onPress={() => {

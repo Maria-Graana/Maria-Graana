@@ -196,10 +196,7 @@ const PaymentHelper = {
       type: CMPayment.type,
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
-      cnic:
-        lead.customer && lead.customer.cnic != null
-          ? lead.customer.cnic
-          : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
+      cnic: firstFormData.cnic,
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
@@ -244,10 +241,7 @@ const PaymentHelper = {
       type: CMPayment.type,
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
-      cnic:
-        lead.customer && lead.customer.cnic != null
-          ? lead.customer.cnic
-          : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
+      cnic: firstFormData.cnic,
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       productId: firstFormData.productId,

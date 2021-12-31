@@ -36,6 +36,7 @@ class BuyPaymentView extends React.Component {
       confirmTokenAction,
       closeLegalDocument,
       call,
+      closedLeadEdit,
     } = this.props
     let property = currentProperty[0]
     const isLeadClosed =
@@ -46,22 +47,8 @@ class BuyPaymentView extends React.Component {
       property.armsuser &&
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
-    let buyerCommission =
-      lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
-        ? true
-        : false
-    let sellerCommission =
-      property.assigned_to_armsuser_id === user.id ||
-      (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-      !Ability.canEdit(subRole, 'Leads')
-        ? true
-        : false
-    // if (sellerCommission === true) {
-    //   if (property.origin === null) {
-    //     sellerCommission = false
-    //   }
-    // }
+    let buyerCommission = helper.setBuyerAgent(lead, 'sellerSide', user)
+    let sellerCommission = helper.setSellerAgent(lead, property, 'sellerSide', user)
     const buyer = _.find(
       lead.commissions,
       (commission) => commission.addedBy === 'buyer' && commission.paymentCategory === 'commission'
@@ -78,6 +65,7 @@ class BuyPaymentView extends React.Component {
         commission.active
     )
     let showMenu = helper.showSellerTokenMenu(tokenPayment)
+
     return (
       <View>
         <InputField
@@ -131,7 +119,7 @@ class BuyPaymentView extends React.Component {
           closeLegalDocument={closeLegalDocument}
           onPaymentLongPress={onPaymentLongPress}
           payment={buyer}
-          paymentCommission={true}
+          paymentCommission={buyerCommission}
           onAddCommissionPayment={onAddCommissionPayment}
           editTile={editTile}
           lead={lead}
@@ -139,6 +127,7 @@ class BuyPaymentView extends React.Component {
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           call={call}
           leadType={'sellRentout'}
+          closedLeadEdit={closedLeadEdit}
         />
         <BuyerSellerTile
           singleCommission={false}
@@ -158,6 +147,7 @@ class BuyPaymentView extends React.Component {
           RCMBTNTitle={'ADD COMMISSION PAYMENT'}
           call={call}
           leadType={'sellRentout'}
+          closedLeadEdit={closedLeadEdit}
         />
       </View>
     )

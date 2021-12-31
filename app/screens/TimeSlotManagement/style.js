@@ -6,6 +6,7 @@ export default styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
+    paddingBottom: '53%',
   },
   timePageBtn: {
     justifyContent: 'center',
@@ -20,9 +21,10 @@ export default styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   minCol: {
-    minWidth: 50,
+    minWidth: 30,
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    minHeight: 50,
   },
   hourCol: {
     minWidth: 50,
@@ -37,8 +39,8 @@ export default styles = StyleSheet.create({
   },
   viewHourCol: {
     flexDirection: 'row',
-    padding: 10,
-    paddingLeft: 50,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   viewMinCol: {
     flexDirection: 'row',

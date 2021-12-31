@@ -11,6 +11,8 @@ import AppStyles from '../../AppStyles'
 import StaticData from '../../StaticData'
 import helper from '../../helper'
 import styles from './style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 const triggerStyles = {
   triggerText: {
@@ -166,62 +168,187 @@ class PropertyBottomNav extends React.Component {
   }
 
   render() {
-    const { navigateTo, goToFollowup, closedLeadEdit, user, lead } = this.props
+    const {
+      navigateTo,
+      goToFollowUp,
+      closedLeadEdit,
+      goToHistory,
+      user,
+      lead,
+      permissions,
+      goToAttachments,
+    } = this.props
     const { visible } = this.state
-
+    let readPermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.READ,
+      permissions
+    )
+    let referPermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.REFER,
+      permissions
+    )
+    let assignPermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.ASSIGN_REASSIGN,
+      permissions
+    )
+    let updatePermission = getPermissionValue(
+      lead.purpose === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+    let updateProperty = getPermissionValue(
+      PermissionFeatures.PROPERTIES,
+      PermissionActions.UPDATE,
+      permissions
+    )
     return (
       <View style={styles.bottomNavMain}>
         <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
-          <Image style={styles.bottomNavImg} source={require('../../../assets/img/details.png')} />
-          <Text style={styles.bottomNavBtnText}>CIF</Text>
+          <View style={{ alignItems: 'center' }}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/black/details.png')}
+            />
+            <Text style={styles.bottomNavBtnText}>Details</Text>
+          </View>
         </TouchableOpacity>
-        <PopupMenu style={styles.popMenu}>
-          <MenuTrigger text="Action" customStyles={triggerStyles} />
-          <MenuOptions customStyles={optionsStyles}>{this.listActionMenuItems()}</MenuOptions>
-        </PopupMenu>
+        <TouchableOpacity
+          // disabled={closedLeadEdit ? false : true}
+          style={styles.followBtn}
+          onPress={() => {
+            goToFollowUp()
+            // if (closedLeadEdit && readPermission) goToFollowup()
+          }}
+        >
+          <View style={styles.align}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/black/tasks.png')}
+            />
+            <Text style={styles.followText}>Tasks</Text>
+          </View>
+        </TouchableOpacity>
         <TouchableOpacity
           disabled={closedLeadEdit ? false : true}
           style={styles.followBtn}
           onPress={() => {
-            if (helper.propertyLeadNavAccess(user, lead)) helper.leadClosedToast()
-            else goToFollowup()
+            // goToHistory()
+            // console.log("HISTORY")
+            // if (closedLeadEdit && readPermission) goToHistory()
           }}
         >
-          <Text style={styles.followText}>Follow Up</Text>
+          <View style={styles.align}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/black/activity.png')}
+            />
+            <Text style={styles.followText}>Activity</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.rejectBtn}
+          disabled={closedLeadEdit ? false : true}
+          style={styles.followBtn}
           onPress={() => {
-            if (helper.propertyLeadNavAccess(user, lead)) helper.leadClosedToast()
-            else helper.leadNotAssignedToast()
+            // if (closedLeadEdit && readPermission) {
+            //   goToAttachments('view')
+            // }
           }}
         >
-          <Text style={styles.actionText}>Reject</Text>
+          <View style={styles.align}>
+            <Image
+              style={styles.bottomNavImg}
+              source={require('../../../assets/img/attachBottom.png')}
+            />
+            <Text style={styles.followText}>Files</Text>
+          </View>
         </TouchableOpacity>
-        <View style={[styles.bottomNavBtn2, visible === true && styles.forMenuIcon]}>
+        <View style={[styles.bottomNavBtn2, visible === true]}>
           <Menu
             visible={visible}
-            onDismiss={() => this.openMenu(false)}
+            onDismiss={() => {
+              // this.openMenu(false)
+            }}
             anchor={
-              <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
+              <TouchableOpacity
+                onPress={() => {
+                  // this.openMenu(true)
+                }}
+                style={styles.align}
+              >
                 {visible === true ? (
                   <Image
                     style={styles.bottomNavImg}
-                    source={require('../../../assets/img/menuIcon.png')}
+                    source={require('../../../assets/img/Blue/menu.png')}
                   />
                 ) : (
                   <Image
                     style={styles.bottomNavImg}
-                    source={require('../../../assets/img/menuIcon2.png')}
+                    source={require('../../../assets/img/black/menu.png')}
                   />
                 )}
-                <Text style={[styles.bottomNavBtnText, visible === true && styles.colorWhite]}>
+                <Text style={[styles.bottomNavBtnText, visible === true && { color: '#348ceb' }]}>
                   Menu
                 </Text>
               </TouchableOpacity>
             }
           >
-            <Menu.Item title="No Option" />
+            <View>
+              {/* {isFromViewingScreen ? (
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit && updateProperty) {
+                      goToPropertyScreen()
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/properties-icon-l.png')}
+                  title="Add Property"
+                />
+              ) : null} */}
+              <Menu.Item
+                disabled={true}
+                onPress={() => {
+                  if (closedLeadEdit && assignPermission) {
+                    this.navigateToAssignLead(lead)
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
+                }}
+                // icon={require('../../../assets/img/callIcon.png')}
+                title="Re-Assign"
+              />
+              <Menu.Item
+                disabled={true}
+                onPress={() => {
+                  if (closedLeadEdit && referPermission) {
+                    this.navigateToShareScreen(lead)
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
+                }}
+                // icon={require('../../../assets/img/callIcon.png')}
+                title="Refer Lead"
+              />
+              <Menu.Item
+                onPress={() => {
+                  if (closedLeadEdit) {
+                    this.onCategorySelected(lead)
+                    this.openMenu(false)
+                  } else helper.leadClosedToast()
+                }}
+                // icon={require('../../../assets/img/callIcon.png')}
+                title="Set Classification"
+              />
+            </View>
           </Menu>
         </View>
       </View>
@@ -234,6 +361,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

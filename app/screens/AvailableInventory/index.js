@@ -263,7 +263,7 @@ class AvailableInventory extends Component {
     const unit = this.fetchOneUnit(selectedRow)
     navigation.navigate('Client', {
       isUnitBooking: true,
-      screenName: 'Leads',
+      screenName: 'AvailableUnitLead',
       projectData: this.state.projectData,
       unit: unit,
     })

@@ -358,7 +358,7 @@ class LeadTile extends React.Component {
                   </Text>
                 </View>
               </View>
-              {screen === 'Leads' ? (
+              {screen === 'Leads' || screen === 'AvailableUnitLead' ? (
                 <></>
               ) : (
                 <View style={styles.phoneMain}>

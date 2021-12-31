@@ -84,6 +84,7 @@ class LeadTile extends React.Component {
       navigateToShareScreen,
       wanted,
       permissions,
+      screenName
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -383,7 +384,7 @@ class LeadTile extends React.Component {
                   </Text>
                 </View>
               </View>
-              {screen === 'Leads' ? (
+              {screen === 'Leads' || screenName === "Leads" ? (
                 <></>
               ) : (
                 <View style={styles.phoneMain}>

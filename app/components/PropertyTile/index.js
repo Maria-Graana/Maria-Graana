@@ -164,8 +164,8 @@ class InventoryTile extends React.Component {
                       if (updatePermission) goToAttachments('addSCA')
                       hideMenu()
                     }}
-                    icon={require('../../../assets/img/properties-icon-l.png')}
-                    title={'Add SCA Document'}
+                    // icon={require('../../../assets/img/properties-icon-l.png')}
+                    title={'SCA Document'}
                   />
                 </Menu>
               </View>
@@ -286,6 +286,14 @@ class InventoryTile extends React.Component {
                   title="GeoTag"
                 />
               </View>
+              <Menu.Item
+                onPress={() => {
+                  if (updatePermission) goToAttachments('addSCA')
+                  hideGraanaMenu()
+                }}
+                // icon={require('../../../assets/img/properties-icon-l.png')}
+                title={'SCA Document'}
+              />
             </Menu>
           </View>
         ) : null}

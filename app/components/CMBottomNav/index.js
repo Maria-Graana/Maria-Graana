@@ -534,29 +534,32 @@ class CMBottomNav extends React.Component {
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Refer Lead"
               />
-              {screenName === 'MyDeals' ? (
-                <Menu.Item
-                  onPress={() => {
-                    if (closedLeadEdit) {
-                      this.onCategorySelected(lead)
-                      this.openMenu(false)
-                    } else helper.leadClosedToast()
-                  }}
-                  // icon={require('../../../assets/img/callIcon.png')}
-                  title="Set Classification"
-                />
-              ) : (
-                <Menu.Item
-                  onPress={() => {
-                    if (closedLeadEdit && readPermission) {
-                      goToAttachments('view')
-                      this.openMenu(false)
-                    } else helper.leadClosedToast()
-                  }}
-                  // icon={require('../../../assets/img/callIcon.png')}
-                  title="View Attachments"
-                />
-              )}
+              {
+                screenName === 'MyDeals' ? (
+                  <Menu.Item
+                    onPress={() => {
+                      if (closedLeadEdit) {
+                        this.onCategorySelected(lead)
+                        this.openMenu(false)
+                      } else helper.leadClosedToast()
+                    }}
+                    // icon={require('../../../assets/img/callIcon.png')}
+                    title="Set Classification"
+                  />
+                ) : null
+                // (
+                //   <Menu.Item
+                //     onPress={() => {
+                //       if (closedLeadEdit && readPermission) {
+                //         goToAttachments('view')
+                //         this.openMenu(false)
+                //       } else helper.leadClosedToast()
+                //     }}
+                //     // icon={require('../../../assets/img/callIcon.png')}
+                //     title="View Attachments"
+                //   />
+                // )
+              }
             </View>
           </Menu>
         </View>

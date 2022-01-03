@@ -1,7 +1,16 @@
 /** @format */
 
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Image, TouchableHighlight } from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  TouchableHighlight,
+  Platform,
+  TextInput,
+} from 'react-native'
 import helper from '../../helper.js'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import { CheckBox } from 'native-base'
@@ -18,11 +27,11 @@ const RescheduleViewingTile = ({
   user,
   goToTimeSlots,
   contacts,
-  navigation,
   showCheckboxes = false,
   toggleCheckBox,
   selectedDiary,
   connectFeedback,
+  fromScreen,
   mode,
 }) => {
   const dispatch = useDispatch()
@@ -111,7 +120,9 @@ const RescheduleViewingTile = ({
           <TouchableOpacity
             style={styles.viewingAtBtn}
             onPress={() => {
-              mode === 'cancelViewing' ? null : goToTimeSlots(diary)
+              mode === 'cancelViewing' || fromScreen === 'DiaryFeedback'
+                ? null
+                : goToTimeSlots(diary)
             }}
           >
             <Text style={styles.viewingAtText2}>
@@ -246,6 +257,30 @@ const RescheduleViewingTile = ({
         </View>
       </TouchableOpacity>
       <View>{checkStatus(data)}</View>
+      {data.checkBox ? (
+        <View style={[AppStyles.mainInputWrap]}>
+          <TextInput
+            placeholderTextColor={'#a8a8aa'}
+            style={[
+              AppStyles.formControl,
+              Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+              AppStyles.formFontSettings,
+              styles.commentContainer,
+            ]}
+            multiline
+            //autoFocus
+            placeholder={'Comments'}
+            onChangeText={(text) =>
+              dispatch(
+                setConnectFeedback({
+                  ...connectFeedback,
+                  comments: text === '' ? connectFeedback.tag : text,
+                })
+              )
+            }
+          />
+        </View>
+      ) : null}
     </View>
   )
 }
@@ -387,6 +422,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  commentContainer: {
+    height: 100,
+    paddingTop: 10,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: AppStyles.colors.subTextColor,
+    color: AppStyles.colors.textColor,
+    textAlignVertical: 'top',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    fontFamily: 'OpenSans_regular',
   },
   viewDoneText: { color: 'white', fontFamily: AppStyles.fonts.defaultFont, fontSize: 18 },
 })

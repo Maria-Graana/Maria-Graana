@@ -277,7 +277,7 @@ class Diary extends React.Component {
               actionType: 'Done',
             })
           ).then((res) => {
-            navigation.navigate('DiaryFeedback')
+            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
           })
         })
       }

@@ -9,12 +9,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  FlatList,
 } from 'react-native'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
 import {
   clearDiaryFeedbacks,
   FEEDBACK_ACTIONS,
+  getPropertyViewings,
   saveOrUpdateDiaryTask,
   setConnectFeedback,
   setMultipleModalVisible,
@@ -26,47 +28,80 @@ import axios from 'axios'
 import RWRModal from '../../components/RWRModal'
 import helper from '../../helper'
 import DiaryHelper from '../Diary/diaryHelper'
+import RescheduleViewingTile from '../../components/RescheduleViewingTile'
+import Loader from '../../components/loader'
+import _ from 'underscore'
 class DiaryFeedback extends Component {
   constructor(props) {
     super(props)
     this.state = {
       isReconnectModalVisible: false,
       isRWRModalVisible: false,
+      loading: false,
+      propertyShortlistData: [],
     }
   }
 
-  setNextFlow = () => {
-    const { diaryFeedbacks, connectFeedback, dispatch } = this.props
-
-    if (Object.keys(connectFeedback).length) {
-      if (connectFeedback.section === "Couldn't Connect")
-        this.setState({ isReconnectModalVisible: true })
-      else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
-      else if (connectFeedback.section === 'No Action Required')
-        this.handleNextAction('no_action_required')
-      else if (connectFeedback.section === 'Reject') {
-        this.setState({ isRWRModalVisible: true })
-      } else if (connectFeedback.section === 'Cancel Meeting')
-        this.handleNextAction('cancel_meeting')
-      else if (connectFeedback.section === 'Cancel Viewing') {
-        this.handleNextAction('cancel_viewing')
+  componentDidMount() {
+    const { diary, route, user, connectFeedback, dispatch } = this.props
+    const { actionType = null } = route?.params
+    const { selectedDiary, selectedLead } = diary
+    if (
+      actionType &&
+      actionType === 'Done' &&
+      selectedDiary &&
+      selectedDiary.taskType === 'viewing'
+    ) {
+      if (selectedLead) {
+        this.setState({ loading: true }, async () => {
+          let data = await getPropertyViewings(selectedLead.id, user.id)
+          this.setState({ propertyShortlistData: data, loading: false }, () => {
+            if (selectedDiary && selectedDiary.propertyId) {
+              this.addProperty(true, selectedDiary.propertyId)
+              dispatch(setConnectFeedback({ ...connectFeedback, otherTasksToUpdate: [] }))
+            }
+          })
+        })
       }
-      // else if (
-      //   ['Follow up', 'Cancel Viewing', 'Cancel Meeting'].indexOf(connectFeedback.section) > -1
-      // ) {
-      //   if (
-      //     connectFeedback.section !== 'Cancel Viewing' ||
-      //     ['Done', 'Cancel'].indexOf(actionType) > -1
-      //   )
-      //     // exclude direct cancel(outside of connect flow) viewing case
-      //     setSlotModal(true)
-      //   else {
-      //     setRescheduleViewingModal(true)
-      //     props.fetchLeadScheduledProperties(diary.armsLeadId)
-      //     setCancelAction(true)
-      //   }
-      // }
-      //  else if (connectFeedback.section === 'refer') setInvestLeadModal(true)
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(clearDiaryFeedbacks())
+    dispatch(setConnectFeedback({}))
+  }
+
+  setNextFlow = () => {
+    const { diaryFeedbacks, connectFeedback, dispatch, route, diary } = this.props
+    const { actionType = null } = route?.params
+    const { selectedDiary, selectedLead } = diary
+
+    if (connectFeedback && connectFeedback.comments) {
+      if (Object.keys(connectFeedback).length) {
+        if (connectFeedback.section === "Couldn't Connect")
+          this.setState({ isReconnectModalVisible: true })
+        else if (
+          connectFeedback.section === 'Follow up' &&
+          actionType &&
+          actionType === 'Done' &&
+          selectedDiary &&
+          selectedDiary.taskType === 'viewing'
+        )
+          console.log('here=>', this.props.connectFeedback)
+        // else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
+        else if (connectFeedback.section === 'No Action Required')
+          this.handleNextAction('no_action_required')
+        else if (connectFeedback.section === 'Reject') {
+          this.setState({ isRWRModalVisible: true })
+        } else if (connectFeedback.section === 'Cancel Meeting')
+          this.handleNextAction('cancel_meeting')
+        else if (connectFeedback.section === 'Cancel Viewing') {
+          this.handleNextAction('cancel_viewing')
+        }
+      }
+    } else {
+      alert('Please select comment to continue!')
     }
   }
 
@@ -361,12 +396,29 @@ class DiaryFeedback extends Component {
     })
   }
 
+  addProperty = (val, id) => {
+    const { propertyShortlistData } = this.state
+    let newMatches = propertyShortlistData.map((property) => {
+      if (property.id === id) {
+        property.checkBox = val
+        return property
+      } else {
+        return property
+      }
+    })
+    this.setState({ propertyShortlistData: newMatches })
+  }
+
   render() {
-    const { diaryFeedbacks, connectFeedback, dispatch, diary } = this.props
+    const { diaryFeedbacks, connectFeedback, dispatch, diary, route, user, contacts } = this.props
     const { selectedDiary, selectedLead } = diary
-    const { isReconnectModalVisible, isRWRModalVisible } = this.state
+    const { isReconnectModalVisible, isRWRModalVisible, loading, propertyShortlistData } =
+      this.state
+    const { actionType = null } = route?.params
     const FA = FEEDBACK_ACTIONS
-    return (
+    return loading ? (
+      <Loader loading={loading} />
+    ) : (
       <View style={AppStyles.container}>
         <ScrollView>
           <ReconnectModal
@@ -383,23 +435,49 @@ class DiaryFeedback extends Component {
             }
             selectedReason={connectFeedback.tag ? connectFeedback.tag : null}
           />
-          <View style={[AppStyles.mainInputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-                styles.commentContainer,
-              ]}
-              multiline
-              //autoFocus
-              placeholder={'Comments'}
-              onChangeText={(text) =>
-                dispatch(setConnectFeedback({ ...connectFeedback, comments: text }))
-              }
+
+          {actionType &&
+          actionType === 'Done' &&
+          selectedDiary &&
+          selectedDiary.taskType === 'viewing' ? (
+            <FlatList
+              data={_.clone(propertyShortlistData)}
+              renderItem={({ item }) => (
+                <View style={{ marginVertical: 3 }}>
+                  <RescheduleViewingTile
+                    data={item}
+                    user={user}
+                    fromScreen={'DiaryFeedback'}
+                    toggleCheckBox={this.addProperty}
+                    showCheckboxes={true}
+                    connectFeedback={connectFeedback}
+                    selectedDiary={selectedDiary}
+                    contacts={contacts}
+                  />
+                </View>
+              )}
+              keyExtractor={(item, index) => item.id.toString()}
             />
-          </View>
+          ) : (
+            <View style={[AppStyles.mainInputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                  styles.commentContainer,
+                ]}
+                multiline
+                //autoFocus
+                placeholder={'Comments'}
+                onChangeText={(text) =>
+                  dispatch(setConnectFeedback({ ...connectFeedback, comments: text }))
+                }
+              />
+            </View>
+          )}
+
           {diaryFeedbacks &&
             Object.keys(diaryFeedbacks).map((key, j) => {
               return diaryFeedbacks[key].map((feedback, i) => {
@@ -597,6 +675,7 @@ mapStateToProps = (store) => {
     diary: store.diary.diary,
     diaryFeedbacks: store.diary.diaryFeedbacks,
     connectFeedback: store.diary.connectFeedback,
+    contacts: store.contacts.contacts,
   }
 }
 

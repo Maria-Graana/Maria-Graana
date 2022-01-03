@@ -176,6 +176,7 @@ class RescheduleViewings extends Component {
                 connectFeedback={connectFeedback}
                 selectedDiary={selectedDiary}
                 mode={mode}
+                fromScreen={'RescheduleViewings'}
                 contacts={contacts}
               />
             </View>

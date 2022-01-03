@@ -115,8 +115,6 @@ class LeadTile extends React.Component {
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
     let leadStatus = this.leadStatus()
-    console.log('data: ', data)
-
     return (
       <TouchableOpacity
         disabled={screen === 'Leads' ? true : false}

@@ -281,6 +281,7 @@ class DiaryFeedback extends Component {
           response: connectFeedback.comments,
           feedbackId: connectFeedback.feedbackId,
           feedbackTag: connectFeedback.tag,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
           status: 'completed',
           otherTasksToUpdate: [],
         })
@@ -309,6 +310,7 @@ class DiaryFeedback extends Component {
           comments: connectFeedback.comments,
           response: connectFeedback.comments,
           id: selectedDiary.id,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
           feedbackId: connectFeedback.feedbackId,
           feedbackTag: connectFeedback.tag,
           otherTasksToUpdate: [],
@@ -324,6 +326,7 @@ class DiaryFeedback extends Component {
           response: connectFeedback.comments,
           id: selectedDiary.id,
           feedbackId: connectFeedback.feedbackId,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
           status: 'cancelled',
           otherTasksToUpdate: [],
           feedbackTag: connectFeedback.tag,

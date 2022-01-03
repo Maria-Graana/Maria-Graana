@@ -94,23 +94,24 @@ class RescheduleViewings extends Component {
         ...connectFeedback,
         userId: user.id,
         taskCategory: 'leadTask',
-        reasonTag: connectFeedback.tag,
-        reasonId: connectFeedback.feedbackId,
+        feedbackTag: connectFeedback.tag,
+        feedbackId: connectFeedback.feedbackId,
         id: connectFeedback.id,
         makeHistory: false,
         status: 'cancelled',
         taskType: 'viewing',
         otherTasksToUpdate: [...connectFeedback.otherTasksToUpdate],
       }).then((res) => {
-        dispatch(
-          setConnectFeedback({
-            ...connectFeedback,
-            status: 'pending',
-            taskType: 'follow_up',
-            otherTasksToUpdate: [],
-            id: null,
-          })
-        ).then((res) => {
+        const copyObj = { ...connectFeedback }
+        copyObj.status = 'pending'
+        copyObj.otherTasksToUpdate = []
+        copyObj.reasonId = copyObj.feedbackId
+        copyObj.reasonTag = copyObj.tag
+        copyObj.taskType = 'follow_up'
+        delete copyObj.id
+        delete copyObj.feedbackId
+        delete copyObj.feedbackTag
+        dispatch(setConnectFeedback(copyObj)).then((res) => {
           navigation.replace('TimeSlotManagement', {
             data: { ...this.props.connectFeedback },
             taskType: 'follow_up',

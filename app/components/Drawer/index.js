@@ -64,7 +64,7 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )} */}
-          {Ability.canView(subRole, 'Diary') && (
+          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem
               screen={'Diary'}
               badges={count.diary}
@@ -85,7 +85,12 @@ class CustomDrawerContent extends React.Component {
             PermissionFeatures.PROJECT_LEADS,
             PermissionActions.READ,
             permissions
-          ) && (
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
             <DrawerIconItem
               screen={user && user.organization && user.organization.isPP ? 'Leads' : 'Leads'}
               badges={count.leads}
@@ -93,12 +98,17 @@ class CustomDrawerContent extends React.Component {
                 this.navigateTo('Leads', { params: { screen: 'Leads' } })
               }}
             />
-          )}
+          ) : null}
           {getPermissionValue(
             PermissionFeatures.PROJECT_LEADS,
             PermissionActions.READ,
             permissions
-          ) && (
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
             <DrawerIconItem
               screen={user && user.organization && user.organization.isPP ? 'Deals' : 'Deals'}
               badges={count.leads}
@@ -106,7 +116,7 @@ class CustomDrawerContent extends React.Component {
                 this.navigateTo('Leads', { params: { screen: 'MyDeals' } })
               }}
             />
-          )}
+          ) : null}
           {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.READ, permissions) && (
             <DrawerItem
               screen={'Clients'}
@@ -115,7 +125,11 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )}
-          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.READ, permissions) && (
+          {getPermissionValue(
+            PermissionFeatures.PROPERTIES,
+            PermissionActions.READ,
+            permissions
+          ) && (
             <DrawerIconItem
               screen={
                 user && user.organization && user.organization.isPP ? 'Properties' : 'Properties'

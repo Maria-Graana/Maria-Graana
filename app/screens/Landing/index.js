@@ -175,26 +175,57 @@ class Landing extends React.Component {
       const { tile, actions } = oneTile
       let label = tile
       tile = tile.replace(/ /g, '')
-      if (getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) {
-        if (label === 'InventoryTabs') label = 'Properties'
-        let oneTilee = {
-          screenName: tile,
+      if (oneTile.tile === 'Leads' || oneTile.tile === 'My Deals') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ||
+          getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions)
+        ) {
+          if (label === 'InventoryTabs') label = 'Properties'
+          let oneTilee = {
+            screenName: tile,
+          }
+          if (label === 'Team Diary') label = "Team's Diary"
+          if (tile === 'Leads') label = 'Leads'
+          if (tile === 'MyDeals') label = 'Deals'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
         }
-        if (label === 'Team Diary') label = "Team's Diary"
-        if (tile === 'Leads') label = 'Leads'
-        if (tile === 'MyDeals') label = 'Deals'
-        let oneTile = {
-          id: counter,
-          label: label,
-          pagePath: tile,
-          buttonImg: helper.tileImage(tile),
-          screenName: tile,
+      } else {
+        if (getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) {
+          if (label === 'InventoryTabs') label = 'Properties'
+          let oneTilee = {
+            screenName: tile,
+          }
+          if (label === 'Team Diary') label = "Team's Diary"
+          if (tile === 'Leads') label = 'Leads'
+          if (tile === 'MyDeals') label = 'Deals'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
         }
-        if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
-        else oneTile.badges = 0
-        if (oneTile.badges > 99) oneTile.badges = '99+'
-        tileData.push(oneTile)
-        counter++
       }
     }
     this.setState({ tiles: tileData })

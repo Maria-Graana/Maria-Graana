@@ -200,7 +200,7 @@ const formatFeedBacks = (diaryFeedbacks) => {
 
 export const saveOrUpdateDiaryTask = (taskData) => {
   let promise
-  if ('id' in taskData) {
+  if ('id' in taskData && taskData.id) {
     promise = axios.patch(`/api/diary/update?id=${taskData.id}`, taskData)
   } else {
     promise = axios.post(`/api/leads/task`, taskData)

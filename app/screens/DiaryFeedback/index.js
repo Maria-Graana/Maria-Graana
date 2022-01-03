@@ -48,6 +48,9 @@ class DiaryFeedback extends Component {
         this.setState({ isRWRModalVisible: true })
       } else if (connectFeedback.section === 'Cancel Meeting')
         this.handleNextAction('cancel_meeting')
+      else if (connectFeedback.section === 'Cancel Viewing') {
+        this.handleNextAction('cancel_viewing')
+      }
       // else if (
       //   ['Follow up', 'Cancel Viewing', 'Cancel Meeting'].indexOf(connectFeedback.section) > -1
       // ) {
@@ -305,12 +308,28 @@ class DiaryFeedback extends Component {
           ...connectFeedback,
           comments: connectFeedback.comments,
           response: connectFeedback.comments,
+          id: selectedDiary.id,
           feedbackId: connectFeedback.feedbackId,
           feedbackTag: connectFeedback.tag,
           otherTasksToUpdate: [],
         })
       ).then((res) => {
-        navigation.replace('RescheduleViewings')
+        navigation.replace('RescheduleViewings', { mode: 'rescheduleViewing' })
+      })
+    } else if (type === 'cancel_viewing') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          id: selectedDiary.id,
+          feedbackId: connectFeedback.feedbackId,
+          status: 'cancelled',
+          otherTasksToUpdate: [],
+          feedbackTag: connectFeedback.tag,
+        })
+      ).then((res) => {
+        navigation.replace('RescheduleViewings', { mode: 'cancelViewing' })
       })
     }
   }

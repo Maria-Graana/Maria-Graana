@@ -1,18 +1,33 @@
 /** @format */
 
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Image, TouchableHighlight } from 'react-native'
 import helper from '../../helper.js'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
+import { CheckBox } from 'native-base'
 import { formatPrice } from '../../PriceFormate'
 import AppStyles from '../../AppStyles'
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons'
 import moment from 'moment'
-import _ from 'underscore'
+import _, { filter } from 'underscore'
+import { useDispatch } from 'react-redux'
+import { setConnectFeedback } from '../../actions/diary.js'
 
-const RescheduleViewingTile = ({ data, user, goToTimeSlots }) => {
-  console.log(data)
+const RescheduleViewingTile = ({
+  data,
+  user,
+  goToTimeSlots,
+  contacts,
+  navigation,
+  showCheckboxes = false,
+  toggleCheckBox,
+  selectedDiary,
+  connectFeedback,
+  mode,
+}) => {
+  const dispatch = useDispatch()
   let imagesList = []
+  let selectedProperties = []
   const checkImages = () => {
     if (data.origin) {
       if (data.origin === 'arms') {
@@ -45,35 +60,70 @@ const RescheduleViewingTile = ({ data, user, goToTimeSlots }) => {
     }
     return imagesList
   }
+
+  const displayName = (data) => {
+    if (data.armsuser) {
+      return data.armsuser.firstName + ' ' + data.armsuser.lastName
+    } else if (data.user) {
+      return data.user.first_name + ' ' + data.user.last_name
+    } else {
+      return '- - -'
+    }
+  }
+
+  const displayPhoneNumber = (data) => {
+    if (data.armsuser) {
+      return data.armsuser.phoneNumber
+    } else if (data.user) {
+      return data.user.phone
+    } else {
+      return null
+    }
+  }
+
+  const call = (item) => {
+    let name = displayName(item)
+    let newContact = {
+      phone: displayPhoneNumber(item),
+      name: name !== '- - -' ? name : '',
+      url: `tel:${displayPhoneNumber(item)}`,
+      payload: [
+        {
+          label: 'mobile',
+          number: displayPhoneNumber(item),
+        },
+      ],
+    }
+    helper.callNumber(newContact, contacts)
+  }
+
   useEffect(() => {
     checkImages()
   }, [imagesList])
 
   const checkStatus = (property) => {
     // const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
-    if (helper.checkMyDiary(property, user)) {
-      let diaries = property.diaries
-      let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
-      return (
-        <View>
-          {diary && diary.status === 'pending' ? (
-            <TouchableOpacity
-              style={styles.viewingAtBtn}
-              onPress={() => {
-                goToTimeSlots(diary)
-              }}
-            >
-              <Text style={styles.viewingAtText2}>
-                Viewing at{' '}
-                <Text style={styles.viewingAtText1}>{moment(diary.start).format('LLL')}</Text>
-              </Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
-      )
-    }
+    let diaries = property.diaries
+    let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
+    return (
+      <View>
+        {diary && diary.status === 'pending' ? (
+          <TouchableOpacity
+            style={styles.viewingAtBtn}
+            onPress={() => {
+              mode === 'cancelViewing' ? null : goToTimeSlots(diary)
+            }}
+          >
+            <Text style={styles.viewingAtText2}>
+              Viewing at{' '}
+              <Text style={styles.viewingAtText1}>{moment(diary.start).format('LLL')}</Text>
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
+    )
   }
-
+  //console.log(data)
   return (
     <View>
       <TouchableOpacity style={[{ flexDirection: 'row', marginVertical: 2 }]}>
@@ -95,11 +145,76 @@ const RescheduleViewingTile = ({ data, user, goToTimeSlots }) => {
               { paddingBottom: 2, justifyContent: 'space-between' },
             ]}
           >
-            <View style={styles.textPadTop}>
-              <Text style={[styles.priceText]}>
-                {' '}
-                {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
-              </Text>
+            <View style={[styles.textPadTop]}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  // justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
+                <Text style={[styles.priceText]}>
+                  {' '}
+                  {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
+                </Text>
+                {showCheckboxes ? (
+                  <View style={{ width: '5%' }}>
+                    <CheckBox
+                      disabled={
+                        selectedDiary && selectedDiary.propertyId
+                          ? data.id == selectedDiary.propertyId
+                          : false
+                      }
+                      onPress={() => {
+                        toggleCheckBox(!data.checkBox, data.id)
+                        if (data.checkBox) {
+                          dispatch(
+                            setConnectFeedback({
+                              ...connectFeedback,
+                              otherTasksToUpdate: [
+                                ...connectFeedback.otherTasksToUpdate,
+                                {
+                                  comments: connectFeedback.comments,
+                                  response: connectFeedback.comments,
+                                  feedbackId: connectFeedback.feedbackId,
+                                  status: 'cancelled',
+                                  feedbackTag: connectFeedback.tag,
+                                  id: _.find(
+                                    data.diaries,
+                                    (item) => user.id === item.userId && item.status === 'pending'
+                                  ).id,
+                                },
+                              ],
+                            })
+                          )
+                        } else {
+                          let copyArray = [...connectFeedback.otherTasksToUpdate]
+                          copyArray = _.filter(
+                            copyArray,
+                            (item) =>
+                              item.id !==
+                              _.find(
+                                data.diaries,
+                                (item) => user.id === item.userId && item.status === 'pending'
+                              ).id
+                          )
+                          dispatch(
+                            setConnectFeedback({
+                              ...connectFeedback,
+                              otherTasksToUpdate: copyArray,
+                            })
+                          )
+                        }
+                      }}
+                      color={AppStyles.colors.primaryColor}
+                      style={[!data.checkBox ? styles.notCheckBox : styles.checkBox]}
+                      checked={data.checkBox}
+                    />
+                  </View>
+                ) : null}
+              </View>
+
               <Text numberOfLines={1} style={[styles.marlaText]}>
                 {' '}
                 {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For{' '}
@@ -121,6 +236,13 @@ const RescheduleViewingTile = ({ data, user, goToTimeSlots }) => {
               </View>
             </View>
           </View>
+          <TouchableHighlight
+            onPress={() => call(data)}
+            style={styles.phoneView}
+            underlayColor={AppStyles.colors.backgroundColor}
+          >
+            <Image source={require('../../../assets/img/call.png')} style={[styles.callImage]} />
+          </TouchableHighlight>
         </View>
       </TouchableOpacity>
       <View>{checkStatus(data)}</View>
@@ -160,6 +282,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: AppStyles.fonts.semiBoldFont,
     color: AppStyles.colors.primaryColor,
+    width: '99%',
   },
   marlaText: {
     fontSize: 17,
@@ -220,19 +343,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     marginVertical: 5,
-    marginRight: 7,
-  },
-  notCheckBox: {
-    width: 25,
-    height: 25,
-    borderColor: AppStyles.colors.primaryColor,
-    backgroundColor: '#fff',
+    marginRight: 5,
+    alignSelf: 'flex-end',
   },
   checkBox: {
-    width: 25,
-    height: 25,
-    borderColor: '#fff',
-    backgroundColor: '#fff',
+    width: 22,
+    height: 22,
+    alignItems: 'center',
   },
   textPadTop: {
     paddingTop: 5,

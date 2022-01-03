@@ -13,6 +13,8 @@ import _ from 'underscore'
 import MatchTile from '../../components/MatchTile'
 import Loader from '../../components/loader'
 import RescheduleViewingTile from '../../components/RescheduleViewingTile'
+import AppStyles from '../../AppStyles'
+import TouchableButton from '../../components/TouchableButton'
 
 class RescheduleViewings extends Component {
   constructor(props) {
@@ -24,14 +26,22 @@ class RescheduleViewings extends Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props
+    const { navigation, route } = this.props
+    const { mode = 'rescheduleViewing' } = route?.params
     this._unsubscribe = navigation.addListener('focus', () => {
+      navigation.setOptions({
+        title: mode === 'rescheduleViewing' ? 'Reschedule Viewings' : 'Cancel Viewing',
+      })
       const { diary, user } = this.props
-      const { selectedLead } = diary
+      const { selectedLead, selectedDiary } = diary
       if (selectedLead) {
         this.setState({ loading: true }, async () => {
           let data = await getPropertyViewings(selectedLead.id, user.id)
-          this.setState({ propertyShortlistData: data, loading: false })
+          this.setState({ propertyShortlistData: data, loading: false }, () => {
+            if (selectedDiary && selectedDiary.propertyId) {
+              this.addProperty(true, selectedDiary.propertyId)
+            }
+          })
         })
       }
     })
@@ -43,7 +53,6 @@ class RescheduleViewings extends Component {
   }
 
   checkImages = (data, organizantion) => {
-    console.log(organizantion)
     let imagesList = []
     if (organizantion) {
       if (organizantion === 'arms') {
@@ -77,30 +86,78 @@ class RescheduleViewings extends Component {
     return imagesList
   }
 
-  goToTimeSlots = (diary) => {
-    const { navigation, user, connectFeedback, dispatch } = this.props
-    navigation.navigate('TimeSlotManagement', {
-      data: {
+  goToTimeSlots = () => {
+    const { navigation, user, connectFeedback, dispatch, route } = this.props
+    const { mode = 'rescheduleViewing' } = route?.params
+    if (mode === 'cancelViewing') {
+      saveOrUpdateDiaryTask({
+        ...connectFeedback,
         userId: user.id,
         taskCategory: 'leadTask',
         reasonTag: connectFeedback.tag,
         reasonId: connectFeedback.feedbackId,
-        id: diary.id,
-        makeHistory: true,
+        id: connectFeedback.id,
+        makeHistory: false,
+        status: 'cancelled',
         taskType: 'viewing',
-        armsLeadId: diary && diary.armsLeadId ? diary.armsLeadId : null,
-        leadId: diary && diary.armsProjectLeadId ? diary.armsProjectLeadId : null,
-      },
-      taskType: 'viewing',
-      isFromConnectFlow: true,
-    })
-    dispatch(setConnectFeedback({}))
+        otherTasksToUpdate: [...connectFeedback.otherTasksToUpdate],
+      }).then((res) => {
+        dispatch(
+          setConnectFeedback({
+            ...connectFeedback,
+            status: 'pending',
+            taskType: 'follow_up',
+            otherTasksToUpdate: [],
+            id: null,
+          })
+        ).then((res) => {
+          navigation.replace('TimeSlotManagement', {
+            data: { ...this.props.connectFeedback },
+            taskType: 'follow_up',
+            isFromConnectFlow: true,
+          })
+        })
+      })
+    } else {
+      navigation.navigate('TimeSlotManagement', {
+        data: {
+          userId: user.id,
+          taskCategory: 'leadTask',
+          reasonTag: connectFeedback.tag,
+          reasonId: connectFeedback.feedbackId,
+          id: connectFeedback.id,
+          makeHistory: true,
+          status: 'pending',
+          taskType: 'viewing',
+          // otherTasksToUpdate: [...connectFeedback.otherTasksToUpdate],
+        },
+        taskType: 'viewing',
+        isFromConnectFlow: true,
+      })
+    }
+
+    // dispatch(setConnectFeedback({}))
     dispatch(clearDiaryFeedbacks())
+  }
+
+  addProperty = (val, id) => {
+    const { propertyShortlistData } = this.state
+    let newMatches = propertyShortlistData.map((property) => {
+      if (property.id === id) {
+        property.checkBox = val
+        return property
+      } else {
+        return property
+      }
+    })
+    this.setState({ propertyShortlistData: newMatches })
   }
 
   render() {
     const { propertyShortlistData, loading } = this.state
-    const { user } = this.props
+    const { user, contacts, navigation, route, diary, connectFeedback } = this.props
+    const { selectedDiary } = diary
+    const { mode = 'rescheduleViewing' } = route?.params
     return loading ? (
       <Loader loading={loading} />
     ) : (
@@ -109,11 +166,28 @@ class RescheduleViewings extends Component {
           data={_.clone(propertyShortlistData)}
           renderItem={({ item }) => (
             <View style={{ marginVertical: 3 }}>
-              <RescheduleViewingTile data={item} user={user} goToTimeSlots={this.goToTimeSlots} />
+              <RescheduleViewingTile
+                data={item}
+                user={user}
+                goToTimeSlots={this.goToTimeSlots}
+                toggleCheckBox={this.addProperty}
+                showCheckboxes={mode === 'cancelViewing' ? true : false}
+                connectFeedback={connectFeedback}
+                selectedDiary={selectedDiary}
+                mode={mode}
+                contacts={contacts}
+              />
             </View>
           )}
           keyExtractor={(item, index) => item.id.toString()}
         />
+        <View style={[AppStyles.mainInputWrap]}>
+          <TouchableButton
+            containerStyle={[AppStyles.formBtn]}
+            label={mode === 'cancelViewing' ? 'CANCEL VIEWING' : 'DONE'}
+            onPress={() => (mode === 'cancelViewing' ? this.goToTimeSlots() : navigation.goBack())}
+          />
+        </View>
       </View>
     )
   }
@@ -130,6 +204,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     diary: store.diary.diary,
     connectFeedback: store.diary.connectFeedback,
+    contacts: store.contacts.contacts,
   }
 }
 

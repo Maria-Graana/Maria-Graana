@@ -185,7 +185,6 @@ function TimeSlotManagement(props) {
       copyData.start = tempStartTime
       copyData.end = tempEndTime
       copyData.slots = tempSlot
-      //console.log(copyData)
       saveOrUpdateDiaryTask(copyData).then((response) => {
         if (response) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')

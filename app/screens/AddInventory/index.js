@@ -149,17 +149,14 @@ class AddInventory extends Component {
 
   updatePropertyLocation = () => {
     if (this.props.addPropertyParams) {
-      this.setState(
-        {
-          formData: {
-            lat: this.props.addPropertyParams.latitude,
-            lng: this.props.addPropertyParams.longitude,
-            locate_manually: this.props.addPropertyParams.locate_manually,
-          },
-          propsure_id: `${this.props.addPropertyParams.propsure_id ?? ''}`,
+      this.setState({
+        formData: {
+          lat: this.props.addPropertyParams.latitude,
+          lng: this.props.addPropertyParams.longitude,
+          locate_manually: this.props.addPropertyParams.locate_manually,
         },
-        () => console.log('focus form ==>', this.state.formData)
-      )
+        propsure_id: `${this.props.addPropertyParams.propsure_id ?? ''}`,
+      })
     }
   }
 

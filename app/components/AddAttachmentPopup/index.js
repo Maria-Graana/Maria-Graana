@@ -46,6 +46,8 @@ const AddAttachmentPopup = (props) => {
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <TextInput
+                defaultValue={purpose == 'addSCA' && 'Service Charge Agreement Document'}
+                editable={purpose == 'addSCA' ? false : true}
                 placeholderTextColor={'#a8a8aa'}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft, AppStyles.formFontSettings]}
                 placeholder={
@@ -112,7 +114,8 @@ const AddAttachmentPopup = (props) => {
               label={'DONE'}
               loading={doneLoading}
               onPress={() => {
-                formSubmit(), purpose == 'addSCA' && closeModal()
+                formSubmit()
+                purpose == 'addSCA' && formData.fileName && closeModal()
               }}
               containerStyle={styles.button}
             />

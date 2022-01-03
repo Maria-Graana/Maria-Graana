@@ -76,8 +76,15 @@ class BookingDetailsModal extends React.Component {
   }
 
   render() {
-    let { active, data, pearlModal, finalPrice, lead, toggleBookingDetailsModal, generateKFI } =
-      this.props
+    let {
+      active,
+      data,
+      pearlModal,
+      finalPrice,
+      lead,
+      toggleBookingDetailsModal,
+      updatePermission,
+    } = this.props
     if (!data.unit) active = false
     const { unit } = data
     const { imageUrl, showWebView } = this.state
@@ -530,7 +537,7 @@ class BookingDetailsModal extends React.Component {
         <View style={styles.kfiBTN}>
           <CMBTN
             onClick={() => {
-              this.props.generateKFI()
+              if (updatePermission) this.props.generateKFI()
             }}
             btnText={'DOWNLOAD KFI DOCUMENT'}
             checkLeadClosedOrNot={true}

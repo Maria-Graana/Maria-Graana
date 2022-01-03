@@ -23,30 +23,38 @@ class HeaderTitle extends React.Component {
     )
   }
 
+  setCustomerName = () => {
+    const { lead, user } = this.props
+    if (lead.assigned_to_armsuser_id === user.id) {
+      let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
+      if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
+      return headerName
+    } else return ''
+  }
+
   render() {
     const { lead } = this.props
-    let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
-    if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
+    let headerName = this.setCustomerName()
     let leadSize = this.leadSize(lead.size_unit)
     return (
       <View style={styles.mainView}>
-        <Text numberOfLines={1} style={styles.headerText}>
-          {headerName}
-        </Text>
         {!lead.projectId && !lead.projectName ? (
-          <Text numberOfLines={1} style={[styles.detailText]}>
+          <Text numberOfLines={1} style={[styles.headerText]}>
             {leadSize}
             {lead.subtype && helper.capitalize(lead.subtype)} {lead.purpose != null && 'to '}
             {lead.purpose === 'sale' ? 'Buy' : 'Rent'}
           </Text>
         ) : (
-          <Text numberOfLines={1} style={[styles.detailText]}>
+          <Text numberOfLines={1} style={[styles.headerText]}>
             {lead.project
               ? helper.capitalize(lead.project.name)
               : helper.capitalize(lead.projectName)}
             {lead.projectType ? ' - ' + helper.capitalize(lead.projectType) : ''}
           </Text>
         )}
+        <Text numberOfLines={1} style={styles.detailText}>
+          {headerName}
+        </Text>
       </View>
     )
   }

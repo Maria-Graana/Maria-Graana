@@ -41,7 +41,11 @@ class Client extends React.Component {
 
   componentDidMount() {
     const { navigation, route } = this.props
+    const { isUnitBooking } = route.params
     this._unsubscribe = navigation.addListener('focus', () => {
+      if (isUnitBooking) {
+        navigation.setOptions({ title: 'SELECT CLIENT' })
+      }
       this.fetchCustomer()
     })
   }
@@ -133,13 +137,10 @@ class Client extends React.Component {
         const res = response.data
         if (res.count > 0) {
           navigation.replace(screenName, {
-            screen: 'Invest',
-            params: {
-              client: data,
-              name: data.firstName + ' ' + data.lastName,
-              leadsData: res.rows,
-              unitData: unit,
-            },
+            client: data,
+            name: data.firstName + ' ' + data.lastName,
+            leadsData: res.rows,
+            unitData: unit,
           })
         } else {
           this.leadCreation(data, projectData, navigation, data, unit)

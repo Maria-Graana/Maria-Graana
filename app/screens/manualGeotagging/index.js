@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { connect } from 'react-redux'
 import Toast from 'react-native-easy-toast'
 import MapView, { Marker } from 'react-native-maps'
 import GpsIcon from './GpsIcon'
@@ -84,6 +85,22 @@ class ManualMap extends Component {
 
   componentDidMount() {
     this.getLocation()
+
+    if (this.props.addPropertyParams?.latitude) {
+      this.setState({
+        marker_lat: this.props.addPropertyParams.latitude,
+        marker_long: this.props.addPropertyParams.longitude,
+        region: {
+          latitude: this.props.addPropertyParams.latitude,
+          longitude: this.props.addPropertyParams.longitude,
+          latitudeDelta,
+          longitudeDelta,
+        },
+        placeSearch: '',
+        placesList: [],
+      })
+    }
+
     LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
   }
 
@@ -271,4 +288,8 @@ class ManualMap extends Component {
   }
 }
 
-export default ManualMap
+export default connect((store) => {
+  return {
+    addPropertyParams: store.property.addPropertyParams,
+  }
+})(ManualMap)

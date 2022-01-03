@@ -39,7 +39,7 @@ var BUTTONS = [
 ]
 var CANCEL_INDEX = 3
 
-class InvestLeads extends React.Component {
+class AvailableUnitLead extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -76,7 +76,6 @@ class InvestLeads extends React.Component {
   componentDidMount() {
     const { dispatch, route } = this.props
     const { client } = route.params
-
     if (client) {
       this.fetchAddedLeads(client)
     } else {
@@ -177,22 +176,22 @@ class InvestLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
-    const { hasBooking } = this.props.route.params
+    const { hasBooking, client } = this.props.route.params
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&customerId=${client.id}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&customerId=${client.id}`
       } else {
-        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&customerId=${client.id}`
       }
     } else {
       if (statusFilter === 'in_progress') {
-        query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&customerId=${client.id}`
       } else {
-        query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&customerId=${client.id}`
       }
     }
     axios
@@ -231,16 +230,13 @@ class InvestLeads extends React.Component {
     })
   }
 
- 
   navigateFromMenu = (data, name) => {
-    const {screen} = this.props.route.params
     this.props.dispatch(setlead(data))
     this.props.navigation.navigate(name, {
       lead: data,
       purposeTab: 'invest',
       screen: 'InvestLeads',
       cmLeadId: data.id,
-      screenName : screen
     })
     this.setIsMenuVisible(false, data)
   }
@@ -535,7 +531,7 @@ class InvestLeads extends React.Component {
       isMenuVisible,
     } = this.state
     const { user, permissions } = this.props
-    const {screen} = this.props.route.params
+    const screen = this.props.route.params.screen
     let buyRentFilterType = StaticData.buyRentFilterType
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
@@ -624,7 +620,7 @@ class InvestLeads extends React.Component {
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
-                screen={screen}
+                screen={'AvailableUnitLead'}
                 isMenuVisible={isMenuVisible}
                 setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
                 checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
@@ -651,7 +647,7 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {getPermissionValue(
+        {/* {getPermissionValue(
           PermissionFeatures.PROJECT_LEADS,
           PermissionActions.CREATE,
           permissions
@@ -683,7 +679,7 @@ class InvestLeads extends React.Component {
             ]}
             onStateChange={({ open }) => this.setState({ open })}
           />
-        ) : null}
+        ) : null} */}
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -747,4 +743,4 @@ mapStateToProps = (store) => {
     permissions: store.user.permissions,
   }
 }
-export default connect(mapStateToProps)(InvestLeads)
+export default connect(mapStateToProps)(AvailableUnitLead)

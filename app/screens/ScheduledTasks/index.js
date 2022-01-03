@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { FlatList, View, SafeAreaView } from 'react-native'
+import { FlatList, View, SafeAreaView, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import DiaryTile from '../../components/DiaryTile'
 import style from './style'
@@ -11,6 +11,7 @@ import axios from 'axios'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import { Fab } from 'native-base'
 import helper from '../../helper.js'
+import noData from '../../../assets/img/no-result-found.png'
 import {
   cancelDiaryMeeting,
   cancelDiaryViewing,
@@ -222,7 +223,7 @@ export class ScheduledTasks extends Component {
         />
         {loading ? (
           <Loader loading={loading} />
-        ) : (
+        ) : diaries && diaries.rows.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={diaries.rows}
@@ -244,6 +245,8 @@ export class ScheduledTasks extends Component {
             )}
             keyExtractor={(item, index) => item.id.toString()}
           />
+        ) : (
+          <Image source={noData} style={styles.noResultImg} />
         )}
       </SafeAreaView>
     )

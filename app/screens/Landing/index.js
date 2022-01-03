@@ -36,12 +36,16 @@ class Landing extends React.Component {
           actions: 'PROJECT_LEADS',
         },
         {
-          tile: 'InventoryTabs',
-          actions: 'INVENTORY',
+          tile: 'Clients',
+          actions: 'CLIENTS',
+        },
+        {
+          tile: 'Properties',
+          actions: 'PROPERTIES',
         },
         {
           tile: 'Project Inventory',
-          actions: 'PROJECT_LEADS',
+          actions: 'APP_PAGES',
         },
         {
           tile: 'Targets',
@@ -182,9 +186,13 @@ class Landing extends React.Component {
             PermissionActions.READ,
             permissions
           ) ||
-          getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions)
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ||
+          getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions)
         ) {
-          if (label === 'InventoryTabs') label = 'Properties'
           let oneTilee = {
             screenName: tile,
           }
@@ -205,7 +213,16 @@ class Landing extends React.Component {
           counter++
         }
       } else {
-        if (getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) {
+        if (
+          (oneTile.tile !== 'Project Inventory' &&
+            getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) ||
+          (oneTile.tile === 'Project Inventory' &&
+            getPermissionValue(
+              PermissionFeatures[actions],
+              PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
+              permissions
+            ))
+        ) {
           if (label === 'InventoryTabs') label = 'Properties'
           let oneTilee = {
             screenName: tile,
@@ -235,10 +252,10 @@ class Landing extends React.Component {
   navigateFunction = (name, screenName) => {
     console.log('screenName: ', screenName)
     const { navigation } = this.props
-    if (screenName === 'InventoryTabs') {
+    if (screenName === 'Properties') {
       navigation.navigate('InventoryTabs', {
         screen: 'ARMS',
-        params: { screen: screenName },
+        params: { screen: 'InventoryTabs' },
       })
     } else if (screenName === 'Leads') {
       navigation.navigate('Leads', {
@@ -255,7 +272,7 @@ class Landing extends React.Component {
         screen: 'AvailableInventory',
       })
     } else {
-      navigation.navigate(name, { screen: screenName })
+      navigation.navigate(name === 'Clients' ? 'Client' : name, { screen: screenName })
     }
   }
 

@@ -41,7 +41,6 @@ class AddDiary extends Component {
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     if (user.role == 'aira_role' && lead) {
-      console.log('here nnn')
       dispatch(getTimeShifts(lead.armsuser.id))
       dispatch(setSlotDiaryData(_today, lead.armsuser.id))
     }
@@ -53,6 +52,7 @@ class AddDiary extends Component {
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT TASK' })
     }
+    navigation.setOptions({ title: 'ADD TASK' })
     this.setState({ taskValues: tasksList })
     if (route.params.selectedDate) {
       dispatch(setSlotDiaryData(route.params.selectedDate))
@@ -258,7 +258,7 @@ class AddDiary extends Component {
 
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
-    const { route, slotsData } = this.props
+    const { route, slotsData, navigation } = this.props
 
     return (
       <KeyboardAwareScrollView
@@ -283,6 +283,7 @@ class AddDiary extends Component {
                 loading={loading}
                 goToSlotManagement={this.goToSlotManagement}
                 goToDiaryReasons={this.goToDiaryReasons}
+                goBackToDiary={() => navigation.goBack()}
                 slotsData={slotsData}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />

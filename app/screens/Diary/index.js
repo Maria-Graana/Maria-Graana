@@ -42,6 +42,7 @@ import {
   initiateConnectFlow,
   setConnectFeedback,
   getDiaryFeedbacks,
+  setMultipleModalVisible,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -80,23 +81,26 @@ class Diary extends React.Component {
       endTime: '',
       isMenuVisible: false,
       isSortModalVisible: false,
-      isMultiPhoneModalVisible: false,
       isDelete: false,
     }
   }
   componentDidMount() {
-    const { navigation, dispatch } = this.props
-    const { route, user } = this.props
+    const { navigation, dispatch, route } = this.props
     const { agentId } = route.params
+    let { selectedDate } = this.state
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
-    dispatch(setSlotDiaryData(_today))
     this.getDiariesStats()
     this._unsubscribe = navigation.addListener('focus', () => {
-      let { selectedDate } = this.state
+      const { user, isFilterApplied, filters } = this.props
       dispatch(setSlotDiaryData(_today))
-      let dateSelected = selectedDate
+      let dateSelected = null
+      if (isFilterApplied) {
+        dateSelected = filters.date
+      } else {
+        dateSelected = selectedDate
+      }
       if ('openDate' in route.params) {
         const { openDate } = route.params
         dateSelected = moment(openDate).format(_format)
@@ -273,7 +277,7 @@ class Diary extends React.Component {
               actionType: 'Done',
             })
           ).then((res) => {
-            navigation.navigate('DiaryFeedback')
+            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
           })
         })
       }
@@ -399,7 +403,8 @@ class Diary extends React.Component {
   }
 
   showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
   }
 
   render() {
@@ -414,7 +419,6 @@ class Diary extends React.Component {
       dayName,
       isMenuVisible,
       isSortModalVisible,
-      isMultiPhoneModalVisible,
     } = this.state
     const {
       overdueCount,
@@ -428,6 +432,7 @@ class Diary extends React.Component {
       onEndReachedLoader,
       isFilterApplied,
       connectFeedback,
+      isMultiPhoneModalVisible,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     const { name = null } = route.params
@@ -682,22 +687,21 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: '#FFFCE3',
     borderColor: '#FDD835',
-    padding: 10,
+    padding: 5,
     borderRadius: 4,
     borderWidth: 0.5,
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
   },
   teamViewImageAlert: {
-    width: 24,
-    height: 24,
+    width: 22,
+    height: 22,
     resizeMode: 'contain',
   },
   teamViewText: {
     fontFamily: AppStyles.fonts.defaultFont,
-    fontSize: 12,
-    padding: 5,
+    fontSize: 16,
+    padding: 7,
   },
 })
 
@@ -713,10 +717,12 @@ mapStateToProps = (store) => {
     userShifts: store.slotManagement.userTimeShifts,
     diaryStat: store.diary.diaryStats,
     sortValue: store.diary.sort,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     onEndReachedLoader: store.diary.onEndReachedLoader,
     isFilterApplied: store.diary.isFilterApplied,
     slotDiary: store.slotManagement.slotDiaryData,
     connectFeedback: store.diary.connectFeedback,
+    filters: store.diary.filters,
   }
 }
 

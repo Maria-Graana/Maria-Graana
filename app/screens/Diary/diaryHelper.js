@@ -115,7 +115,7 @@ const DiaryHelper = {
           armsLead.size !== 0 && armsLead.size !== StaticData.Constants.size_any_value
             ? helper.capitalize(armsLead.size_unit)
             : ''
-        } ${armsLead.subtype ? `${helper.capitalize(armsLead?.subtype)} in ` : ''} in ${
+        } ${armsLead.subtype ? `${helper.capitalize(armsLead?.subtype)} in ` : ''} ${
           armsLead.city?.name
         }`
       }

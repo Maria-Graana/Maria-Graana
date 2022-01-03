@@ -56,6 +56,7 @@ import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
 import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 import DiaryReasons from '../screens/DiaryReasons'
 import DiaryFeedback from '../screens/DiaryFeedback'
+import RescheduleViewings from '../screens/RescheduleViewings'
 import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 
 const Stack = createStackNavigator()
@@ -169,6 +170,16 @@ function MainStack() {
         component={DiaryFeedback}
         options={({ navigation, route }) => ({
           title: 'Connect Feedback',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
+        name="RescheduleViewings"
+        component={RescheduleViewings}
+        options={({ navigation, route }) => ({
+          title: 'Reschedule Viewings',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerTitleAlign: 'center',
         })}

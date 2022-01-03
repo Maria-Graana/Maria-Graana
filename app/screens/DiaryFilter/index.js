@@ -36,11 +36,14 @@ class DiaryFilter extends React.Component {
   clearFilter = () => {
     const { dispatch, route, navigation } = this.props
     const { agentId, isOverdue } = route.params
-    dispatch(setDairyFilterApplied(false))
-    dispatch(clearDiaryFilter())
-    dispatch(setDiaryFilterReason(null))
-    dispatch(getDiaryTasks({ selectedDate: _today, agentId, overdue: isOverdue }))
-    navigation.goBack()
+    dispatch(setDairyFilterApplied(false)).then((res) => {
+      dispatch(clearDiaryFilter())
+      dispatch(setDiaryFilterReason(null))
+      if (isOverdue) {
+        dispatch(getDiaryTasks({ selectedDate: _today, agentId, overdue: isOverdue }))
+      }
+      navigation.goBack()
+    })
   }
 
   onSearchPressed = () => {

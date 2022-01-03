@@ -45,6 +45,8 @@ const RentPaymentView = (props) => {
     toggleMonthlyDetails,
     rentMonthlyToggle,
     call,
+    updatePermission,
+    closedLeadEdit,
   } = props
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
@@ -55,17 +57,8 @@ const RentPaymentView = (props) => {
     property.armsuser &&
     property.armsuser.armsUserRole &&
     property.armsuser.armsUserRole.subRole
-  let buyerCommission =
-    lead.assigned_to_armsuser_id === user.id &&
-    (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
-      ? true
-      : false
-  let sellerCommission =
-    property.assigned_to_armsuser_id === user.id ||
-    (lead.assigned_to_armsuser_id === user.id && property.origin !== 'arms') ||
-    !Ability.canEdit(subRole, 'Leads')
-      ? true
-      : false
+  let buyerCommission = helper.setBuyerAgent(lead, 'sellerSide', user)
+  let sellerCommission = helper.setSellerAgent(lead, property, 'sellerSide', user)
   // if (sellerCommission === true) {
   //   if (property.origin === null) {
   //     sellerCommission = false
@@ -136,7 +129,7 @@ const RentPaymentView = (props) => {
         closeLegalDocument={closeLegalDocument}
         onPaymentLongPress={onPaymentLongPress}
         payment={buyer}
-        paymentCommission={false}
+        paymentCommission={buyerCommission}
         onAddCommissionPayment={onAddCommissionPayment}
         editTile={editTile}
         lead={lead}
@@ -144,6 +137,8 @@ const RentPaymentView = (props) => {
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
         call={call}
         leadType={'sellRentout'}
+        updatePermission={updatePermission}
+        closedLeadEdit={closedLeadEdit}
       />
       <BuyerSellerTile
         singleCommission={false}
@@ -163,6 +158,8 @@ const RentPaymentView = (props) => {
         RCMBTNTitle={'ADD COMMISSION PAYMENT'}
         call={call}
         leadType={'sellRentout'}
+        updatePermission={updatePermission}
+        closedLeadEdit={closedLeadEdit}
       />
     </View>
   )

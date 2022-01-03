@@ -33,64 +33,61 @@ class MeetingTile extends React.Component {
               <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
                 <View style={styles.border}>
                   <View>
-                    <View style={styles.taskTypeWrap}>
-                      {data.taskType === 'meeting' && (
-                        <Image
-                          source={require('../../../assets/img/meeting2.png')}
-                          style={styles.dotsImg}
-                        />
-                      )}
-                      {data.taskType === 'connect' && (
-                        <Image
-                          source={require('../../../assets/img/connect.png')}
-                          style={styles.dotsImg}
-                        />
-                      )}
-                      {data.taskType === 'follow_up' && (
-                        <Image
-                          source={require('../../../assets/img/followup2.png')}
-                          style={styles.dotsImg}
-                        />
-                      )}
-                      {data.taskType === 'viewing' && (
-                        <Image
-                          source={require('../../../assets/img/viewing2.png')}
-                          style={styles.dotsImg}
-                        />
-                      )}
-                      <View style={styles.taskType}>
-                        <Text style={[AppStyles.mrTen, styles.meetingCon]}>
-                          {`${DiaryHelper.removeUnderscore(data.taskType)
-                            .replace('Meeting', 'Meeting ')
-                            .replace('Connect', 'Connect ')}`}
-                        </Text>
-                        {data.status === 'completed' ? (
+                    <View style={[styles.taskTypeWrap]}>
+                      <View style={styles.taskWrap}>
+                        {data.taskType === 'meeting' && (
                           <Image
-                            source={require('../../../assets/img/done2.png')}
-                            style={styles.doneImg}
+                            source={require('../../../assets/img/meeting2.png')}
+                            style={styles.dotsImg}
                           />
-                        ) : null}
-                      </View>
-
-                      <View
-                        style={[
-                          styles.DayAndTime,
-                          data.status !== 'completed' ? { marginLeft: 90 } : { marginLeft: 75 },
-                        ]}
-                      >
-                        <Text style={styles.fontBold}>
-                          {` ${day} ${moment(data.date).format('MMM DD')},${helper
-                            .formatTime(data.start)
-                            .replace('pm', 'PM')
-                            .replace('am', 'AM')}`}{' '}
+                        )}
+                        {data.taskType === 'connect' && (
+                          <Image
+                            source={require('../../../assets/img/connect.png')}
+                            style={styles.dotsImg}
+                          />
+                        )}
+                        {data.taskType === 'follow_up' && (
+                          <Image
+                            source={require('../../../assets/img/followup2.png')}
+                            style={styles.dotsImg}
+                          />
+                        )}
+                        {data.taskType === 'viewing' && (
+                          <Image
+                            source={require('../../../assets/img/viewing2.png')}
+                            style={styles.dotsImg}
+                          />
+                        )}
+                        <Text style={[AppStyles.mlTen, styles.meetingCon]}>
+                          {`${DiaryHelper.removeUnderscore(data.taskType)}`}
                         </Text>
+                      </View>
+                      <View style={styles.taskType}>
+                        <View
+                         style={styles.DayAndTime}
+                         
+                        >
+                          <Text style={styles.fontBold}>
+                            {` ${day} ${moment(data.date).format('MMM DD')},${helper
+                              .formatTime(data.start)
+                              .replace('pm', 'PM')
+                              .replace('am', 'AM')}`}{' '}
+                          </Text>
+                          {data.status === 'completed' ? (
+                            <Image
+                              source={require('../../../assets/img/done2.png')}
+                              style={styles.doneImg}
+                            />
+                          ) : null}
+                        </View>
                       </View>
                     </View>
                     {data.reasonTag && data.status !== 'completed' && (
                       <View style={styles.reasonWrap}>
                         <Text>Reason :</Text>
                         <View style={[styles.reasonTag, { borderColor: data.reason.colorCode }]}>
-                          <Text> {data.reasonTag}</Text>
+                          <Text numberOfLines={1}> {data.reasonTag}</Text>
                         </View>
                       </View>
                     )}
@@ -103,7 +100,9 @@ class MeetingTile extends React.Component {
                         {data.feedbackTag && (
                           <View>
                             <View style={styles.feedbackTag}>
-                              <Text style={styles.blueColor}>{data.feedbackTag}</Text>
+                              <Text style={styles.blueColor} numberOfLines={1}>
+                                {data.feedbackTag}
+                              </Text>
                             </View>
                           </View>
                         )}

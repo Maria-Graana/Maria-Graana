@@ -196,15 +196,12 @@ const PaymentHelper = {
       type: CMPayment.type,
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
-      cnic:
-        lead.customer && lead.customer.cnic != null
-          ? lead.customer.cnic
-          : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
+      cnic: firstFormData.cnic,
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
       isPrimary,
-      purchaserId : selectedClient?.id
+      purchaserId : selectedClient ? selectedClient.id : lead.customer.id
     }
   },
   generateProductApiPayload(
@@ -244,10 +241,7 @@ const PaymentHelper = {
       type: CMPayment.type,
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
-      cnic:
-        lead.customer && lead.customer.cnic != null
-          ? lead.customer.cnic
-          : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
+      cnic: firstFormData.cnic,
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       productId: firstFormData.productId,
@@ -284,7 +278,7 @@ const PaymentHelper = {
           : null,
       possessionChargesPercentage: projectProduct.possessionCharges,
       downPaymentPercentage: projectProduct.downPayment,
-      purchaserId: selectedClient?.id
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
     }
   },
   normalizeProjectProducts(products) {
@@ -539,7 +533,7 @@ const PaymentHelper = {
         : null,
       unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
       installmentAmount: CMPayment.installmentAmount,
-      purchaserId: selectedClient?.id
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
     }
     return body
   },

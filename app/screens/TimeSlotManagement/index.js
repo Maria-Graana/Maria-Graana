@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
@@ -51,6 +51,9 @@ function TimeSlotManagement(props) {
   const [startDate, setStartDate] = useState(null)
   const [toDate, setToDate] = useState(null)
 
+  const scrollViewFirst = useRef()
+  const scrollViewSecond = useRef()
+
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
   const setSelectedDateData = (date, mode) => {
@@ -88,6 +91,7 @@ function TimeSlotManagement(props) {
   }, [selectedDate, dayName])
 
   const onEditSlots = (start, end) => {
+    const { dispatch } = props
     const allSlots = props.allTimeSlot
 
     for (var i = 0; i < allSlots.length; i++) {
@@ -97,6 +101,9 @@ function TimeSlotManagement(props) {
         isSelected.push(allSlots[i].id)
       }
     }
+    setStartDate(slotsData[0].startTime)
+    setToDate(slotsData[slotsData.length - 1].endTime)
+    diaryData(props.slotDiary, slots, dispatch)
   }
 
   const isTimeBetween = function (startTime, endTime, serverTime) {
@@ -114,10 +121,16 @@ function TimeSlotManagement(props) {
 
   const diaryData = (res, e, dispatch) => {
     dispatch(clearScheduledTasks())
+    let tasks = []
     for (var i = 0; i < res.length; i++) {
-      if (res[i].slotId == e.id) {
-        dispatch(setScheduledTasks(res[i]))
+      for (var j = 0; j < e.length; j++) {
+        if (res[i].slotId == e[j]) {
+          tasks.push(res[i])
+        }
       }
+    }
+    if (tasks.length) {
+      dispatch(setScheduledTasks(tasks))
     }
   }
 
@@ -138,9 +151,9 @@ function TimeSlotManagement(props) {
   const verifyDetail = (e) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
-      diaryData([], e, dispatch)
+      diaryData([], slots, dispatch)
     } else {
-      diaryData(props.slotDiary, e, dispatch)
+      diaryData(props.slotDiary, slots, dispatch)
     }
 
     const sortedAray = _.sortBy(slotsData, 'id')
@@ -217,19 +230,12 @@ function TimeSlotManagement(props) {
         verifyDetail(e)
       } else if (_.contains(tempAray, e)) {
       } else {
-        Alert.alert(
-          'Sorry',
-          'You cannot skip a slot\nPlease clear current selection if you want to continue',
-          [
-            { text: 'OK' },
-            {
-              text: 'Clear',
-              onPress: () => {
-                setSlotsData([]), setSlots([]), setIsSelected([]), setSSlots([])
-              },
-            },
-          ]
-        )
+        setSlotsData([e])
+        setSlots([e.id])
+        setIsSelected([e.id])
+        setSSlots([])
+        fortyPercent(e)
+        verifyDetail(e)
       }
     }
   }
@@ -641,77 +647,112 @@ function TimeSlotManagement(props) {
           onPress={(value) => setCalendarVisible(value)}
         />
       </View>
-      <ScrollView horizontal={true}>
-        <ScrollView>
-          <View style={styles.viewHourCol}>
-            {hourArray.map((o, i) => {
+      <View style={{ flexDirection: 'row' }}>
+        <ScrollView
+          style={{ marginTop: '9%' }}
+          scrollEnabled={false}
+          ref={scrollViewFirst}
+          onScroll={(e) => {
+            scrollViewSecond.current.scrollTo({
+              x: 0,
+              y: e.nativeEvent.contentOffset.y,
+              animated: false,
+            })
+          }}
+          scrollEventThrottle={16}
+        >
+          <View style={{ flexDirection: 'column' }}>
+            {minArray.map((i) => {
               return (
-                <View style={styles.hourCol} key={i}>
-                  <Text style={styles.timeText}>{o}</Text>
+                <View style={styles.minCol}>
+                  <Text style={styles.timeText}>{i}</Text>
                 </View>
               )
             })}
           </View>
-          {data &&
-            rotateArray.map((o, i) => {
-              return (
-                <View style={styles.viewMinCol} key={i}>
-                  <View style={styles.minCol}>
-                    <Text style={styles.timeText}>{minArray[i]}</Text>
-                  </View>
-                  {o.map((e, i) => {
-                    return (
-                      <TouchableOpacity
-                        activeOpacity={0.1}
-                        onPress={() => showDetailNew(e)}
-                        key={i}
-                      >
-                        <View
-                          style={[
-                            styles.hourRow,
-                            {
-                              backgroundColor: isSelected.includes(e.id)
-                                ? setSelectedColor()
-                                : setColor(e) == 'dailyupdate'
-                                ? '#dcf0ff'
-                                : setColor(e) == 'morningmeeting'
-                                ? '#dcf0ff'
-                                : setColor(e) == 'connect'
-                                ? '#deecd7'
-                                : setColor(e) == 'meeting'
-                                ? '#99c5fa'
-                                : setColor(e) == 'viewing'
-                                ? '#99c5fa'
-                                : setColor(e) == 'meetingwithpp'
-                                ? '#dcf0ff'
-                                : setColor(e) == 'followup'
-                                ? '#fff1c5'
-                                : setColor(e) == 'closed'
-                                ? '#e6e6e6'
-                                : setShift(e) == false
-                                ? '#f1f1f1'
-                                : 'white',
-
-                              borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
-                              borderWidth: isSelected.includes(e.id) ? 1.2 : 0.6,
-                            },
-                          ]}
-                          key={i}
-                        >
-                          {typeof setColor(e) == 'number' && (
-                            <View style={styles.taskLengthView}>
-                              <Text style={{ color: 'black' }}>{`+${setColor(e)}`}</Text>
-                            </View>
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                    )
-                  })}
-                </View>
-              )
-            })}
         </ScrollView>
-      </ScrollView>
+        <ScrollView horizontal={true}>
+          <View style={{ flexDirection: 'column' }}>
+            <View style={styles.viewHourCol}>
+              {hourArray.map((o, i) => {
+                return (
+                  <View style={styles.hourCol} key={i}>
+                    <Text style={styles.timeText}>{o}</Text>
+                  </View>
+                )
+              })}
+            </View>
+            <ScrollView
+              ref={scrollViewSecond}
+              bounces={false}
+              onScroll={(e) => {
+                scrollViewFirst.current.scrollTo({
+                  x: 0,
+                  y: e.nativeEvent.contentOffset.y,
+                  animated: false,
+                })
+              }}
+              scrollEventThrottle={16}
+            >
+              {data &&
+                rotateArray.map((o, i) => {
+                  return (
+                    <View style={styles.viewMinCol} key={i}>
+                      {o.map((e, i) => {
+                        return (
+                          <TouchableOpacity
+                            activeOpacity={0.1}
+                            onPress={() => showDetailNew(e)}
+                            key={i}
+                          >
+                            <View
+                              style={[
+                                styles.hourRow,
+                                {
+                                  backgroundColor: isSelected.includes(e.id)
+                                    ? setSelectedColor()
+                                    : setColor(e) == 'dailyupdate'
+                                    ? '#dcf0ff'
+                                    : setColor(e) == 'morningmeeting'
+                                    ? '#dcf0ff'
+                                    : setColor(e) == 'connect'
+                                    ? '#deecd7'
+                                    : setColor(e) == 'meeting'
+                                    ? '#99c5fa'
+                                    : setColor(e) == 'viewing'
+                                    ? '#99c5fa'
+                                    : setColor(e) == 'meetingwithpp'
+                                    ? '#dcf0ff'
+                                    : setColor(e) == 'followup'
+                                    ? '#fff1c5'
+                                    : setColor(e) == 'closed'
+                                    ? '#e6e6e6'
+                                    : setShift(e) == false
+                                    ? '#f1f1f1'
+                                    : 'white',
+
+                                  borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
+                                  borderWidth: isSelected.includes(e.id) ? 1.6 : 0.6,
+                                },
+                              ]}
+                              key={i}
+                            >
+                              {typeof setColor(e) == 'number' && (
+                                <View style={styles.taskLengthView}>
+                                  <Text style={{ color: 'black' }}>{`+${setColor(e)}`}</Text>
+                                </View>
+                              )}
+                            </View>
+                          </TouchableOpacity>
+                        )
+                      })}
+                    </View>
+                  )
+                })}
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
 
       <View style={styles.buttonInputWrap}>
         <TouchableButton

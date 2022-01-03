@@ -4,30 +4,55 @@ import * as types from '../types'
 import _ from 'underscore'
 import axios from 'axios'
 
-export function setSlotDiaryData(selectedDate) {
+export function setSlotDiaryData(selectedDate, id) {
   return (dispatch, getsState) => {
-    axios
-      .get(
-        `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
-      )
-      .then((response) => {
-        if (response.data[0] == undefined) {
-          dispatch({
-            type: types.CLEAR_SLOT_DATA_DIARY,
-          })
-        } else {
-          dispatch({
-            type: types.SET_SLOT_DIARY_DATA,
-            payload: response.data,
-          })
-        }
-      })
-      .catch((error) => {
-        console.log(
+    if (id) {
+      axios
+        .get(
+          `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}&userId=${id}`
+        )
+        .then((response) => {
+          if (response.data[0] == undefined) {
+            dispatch({
+              type: types.CLEAR_SLOT_DATA_DIARY,
+            })
+          } else {
+            dispatch({
+              type: types.SET_SLOT_DIARY_DATA,
+              payload: response.data,
+            })
+          }
+        })
+        .catch((error) => {
+          console.log(
+            `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
+          )
+          console.log('error', error)
+        })
+    } else {
+      axios
+        .get(
           `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
         )
-        console.log('error', error)
-      })
+        .then((response) => {
+          if (response.data[0] == undefined) {
+            dispatch({
+              type: types.CLEAR_SLOT_DATA_DIARY,
+            })
+          } else {
+            dispatch({
+              type: types.SET_SLOT_DIARY_DATA,
+              payload: response.data,
+            })
+          }
+        })
+        .catch((error) => {
+          console.log(
+            `api/slotManagement/user-slots-diaries?startDate=${selectedDate}&endDate=${selectedDate}`
+          )
+          console.log('error', error)
+        })
+    }
   }
 }
 
@@ -60,7 +85,7 @@ export function setTimeSlots() {
   return (dispatch, getsState) => {
     axios
       .get('api/slotManagement/slot')
-      .then((response) => dataSlots(response.data, dispatch))
+      .then((response) => sortTimeData(response.data, dispatch))
       .catch((error) => {
         console.log('api/slotManagement/slot')
         console.log('error', error)
@@ -110,20 +135,35 @@ export function clearScheduledTasks() {
   }
 }
 
-export function getTimeShifts() {
+export function getTimeShifts(id) {
   return (dispatch, getsState) => {
-    axios
-      .get('api/slotManagement/user-shifts')
-      .then((response) =>
-        dispatch({
-          type: types.SET_TIME_SHIFT,
-          payload: response.data,
+    if (id) {
+      axios
+        .get(`api/slotManagement/user-shifts?userId=${id}`)
+        .then((response) =>
+          dispatch({
+            type: types.SET_TIME_SHIFT,
+            payload: response.data,
+          })
+        )
+        .catch((error) => {
+          console.log(`api/slotManagement/user-shifts?userId=${id}`)
+          console.log('error', error)
         })
-      )
-      .catch((error) => {
-        console.log('api/slotManagement/user-shifts')
-        console.log('error', error)
-      })
+    } else {
+      axios
+        .get('api/slotManagement/user-shifts')
+        .then((response) =>
+          dispatch({
+            type: types.SET_TIME_SHIFT,
+            payload: response.data,
+          })
+        )
+        .catch((error) => {
+          console.log('api/slotManagement/user-shifts')
+          console.log('error', error)
+        })
+    }
   }
 }
 

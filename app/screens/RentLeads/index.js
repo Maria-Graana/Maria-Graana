@@ -251,10 +251,17 @@ class RentLeads extends React.Component {
       ) {
         page = 'Payment'
       }
-      this.props.navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: data },
-      })
+      if (data && data.requiredProperties) {
+        this.props.navigation.navigate('PropertyTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      } else {
+        this.props.navigation.navigate('RCMLeadTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      }
     }
   }
 
@@ -353,7 +360,7 @@ class RentLeads extends React.Component {
               )
             )
             helper.callNumber(selectedClientContacts, contacts)
-            this.showStatusFeedbackModal(true, 'call')
+            // this.showStatusFeedbackModal(true, 'call')
           }
         })
       }
@@ -664,7 +671,7 @@ class RentLeads extends React.Component {
       newActionModal,
     } = this.state
     const { user, navigation, permissions } = this.props
-
+    const {screen} = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -767,6 +774,7 @@ class RentLeads extends React.Component {
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
+                    screenName = {screen}
                   />
                 ) : (
                   <PPLeadTile

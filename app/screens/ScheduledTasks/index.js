@@ -149,8 +149,8 @@ export class ScheduledTasks extends Component {
   }
 
   goToAddEditDiaryScreen = (update, data = null) => {
-    const { navigation, dispatch, route } = this.props
-    const { cmLeadId = null, rcmLeadId = null } = route.params
+    const { navigation, dispatch, route, user } = this.props
+    const { cmLeadId = null, rcmLeadId = null, lead = null } = route.params
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
@@ -161,6 +161,7 @@ export class ScheduledTasks extends Component {
       cmLeadId: cmLeadId,
       rcmLeadId: rcmLeadId,
       screenName: 'ScheduledTasks',
+      lead: lead && user.role == 'aira_role' ? lead : null,
     })
   }
 
@@ -254,6 +255,7 @@ mapStateToProps = (store) => {
     diary: store.diary.diary,
     selectedDiary: store.diary.selectedDiary,
     selectedLead: store.diary.selectedLead,
+    user: store.user.user,
   }
 }
 

@@ -57,6 +57,7 @@ import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 import DiaryReasons from '../screens/DiaryReasons'
 import DiaryFeedback from '../screens/DiaryFeedback'
 import RescheduleViewings from '../screens/RescheduleViewings'
+import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 
 const Stack = createStackNavigator()
 
@@ -117,6 +118,19 @@ function MainStack() {
         })}
       />
       {/* ARMS-2180 end */}
+
+      {/* ARMS-2293 start */}
+      <Stack.Screen
+        name="AvailableUnitLead"
+        component={AvailableUnitLead}
+        options={({ navigation, route }) => ({
+          title: 'SELECT LEAD',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      {/* ARMS-2293 end */}
 
       <Stack.Screen
         name="OverdueTasks"
@@ -292,7 +306,7 @@ function MainStack() {
         options={({ navigation, route }) => ({
           title: 'LEAD DETAILS',
           // headerLeft : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerLeft: route.params.isFromLeadWorkflow
+          headerLeft: route.params && route.params.isFromLeadWorkflow
             ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
             : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,

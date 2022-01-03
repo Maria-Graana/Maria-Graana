@@ -27,6 +27,7 @@ export function getDiaryTasks(data) {
     let diaryRows = []
     const { page, pageSize, diaries } = getsState().diary.diary
     const { sort, isFilterApplied } = getsState().diary
+    const { setScheduled } = getsState().slotManagement
     const {
       selectedDate = null,
       agentId = null,
@@ -57,7 +58,15 @@ export function getDiaryTasks(data) {
         //console.log(endPoint)
       }
     } else if (fromDate && toDate) {
-      endPoint = `/api/diary/all?fromDate=${fromDate}&toDate=${toDate}`
+      let selectedSlotsSt = setScheduled
+      let queryParams = selectedSlotsSt
+        .map((dId) =>
+          dId.diary.map((dld) => {
+            return `diaryId[]=${dld.id}`
+          })
+        )
+        .join(`&`)
+      endPoint = `/api/diary/all?${queryParams}`
     } else {
       if (leadType === 'invest') {
         endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}&status=pending`

@@ -27,7 +27,7 @@ export default styles = StyleSheet.create({
   },
   detailsBtnView: {
     flex: 1,
-    alignSelf: 'flex-end',
+    flexDirection : "row-reverse"
   },
   smallText: {
     color: '#1F2029',

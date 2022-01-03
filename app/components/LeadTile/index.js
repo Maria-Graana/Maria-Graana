@@ -37,19 +37,30 @@ class LeadTile extends React.Component {
 
   leadStatus = () => {
     const { data } = this.props
-    if (
-      data.status === 'viewing' ||
-      data.status === 'propsure' ||
-      data.status === 'offer' ||
-      data.status === 'offer'
-    ) {
-      return 'Shortlisting'
+    if (data && data.status) {
+      if (
+        data.status === 'viewing' ||
+        data.status === 'propsure' ||
+        data.status === 'offer' ||
+        data.status === 'offer'
+      ) {
+        return 'Shortlisting'
+      }
+      if (data.status === 'meeting' || data.status === 'nurture') {
+        return 'In-Progress'
+      } else {
+        return helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
+      }
     }
-    if (data.status === 'meeting' || data.status === 'nurture') {
-      return 'In-Progress'
-    } else {
-      return helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
-    }
+  }
+
+  setCustomerName = () => {
+    const { user, data } = this.props
+    if (user.id === data.assigned_to_armsuser_id)
+      return (
+        data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
+      )
+    else return ' '
   }
 
   render() {
@@ -73,17 +84,18 @@ class LeadTile extends React.Component {
       navigateToShareScreen,
       wanted,
       permissions,
+      screenName,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
       data.shared_with_armsuser_id == user.id ||
-      propertyLead
+      (data && data.requiredProperties)
         ? styles.blueColor
         : AppStyles.darkColor
     var changeStatusColor =
       data.assigned_to_armsuser_id == user.id ||
       data.shared_with_armsuser_id == user.id ||
-      propertyLead
+      (data && data.requiredProperties)
         ? styles.tokenLabel
         : styles.tokenLabelDark
     var descriptionColor =
@@ -93,8 +105,7 @@ class LeadTile extends React.Component {
         ? styles.desBlue
         : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
-    let customerName =
-      data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
+    let customerName = this.setCustomerName()
     let areasLength =
       !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 1
         ? ` (+${Number(data.armsLeadAreas.length) - 1} ${
@@ -156,7 +167,23 @@ class LeadTile extends React.Component {
                     </Text>
                   </View>
                 )}
-
+                {data && data.requiredProperties && (
+                  <View style={styles.sharedLead}>
+                    <Text
+                      style={[
+                        AppStyles.mrFive,
+                        styles.viewStyle,
+                        {
+                          color: AppStyles.colors.primaryColor,
+                          fontSize: AppStyles.noramlSize.fontSize,
+                          fontFamily: AppStyles.fonts.lightFont,
+                        },
+                      ]}
+                    >
+                      Provide Listings
+                    </Text>
+                  </View>
+                )}
                 {data && data.leadCategory ? (
                   <View style={[styles.sharedLead, screen === 'Leads' && { padding: 0 }]}>
                     <Text
@@ -187,12 +214,27 @@ class LeadTile extends React.Component {
               <View style={styles.leftContent}>
                 {/* ****** Name Wrap */}
                 <View style={[styles.contentMain, AppStyles.mbTen, { flexDirection: 'row' }]}>
-                  <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
-                    {/* Disabled Sentry in development  Sentry in */}
-                    {customerName != ''
-                      ? customerName
-                      : data.customer && data.customer.customerName}
-                  </Text>
+                  {purposeTab === 'invest' ? (
+                    <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                      {data.projectId && data.minPrice && data.maxPrice ? (
+                        <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
+                          {helper.convertPriceToIntegerString(
+                            data.minPrice,
+                            data.maxPrice,
+                            StaticData.Constants.any_value
+                          )}
+                        </Text>
+                      ) : null}
+                    </View>
+                  ) : (
+                    <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
+                      {/* Disabled Sentry in development  Sentry in */}
+                      {leadSize}
+                      {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
+                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
+                    </Text>
+                  )}
+
                   {/* 3 dots menu */}
                   <View style={{ position: 'absolute', right: -55 }}>
                     {screen === 'Leads' && !wanted ? (
@@ -274,21 +316,6 @@ class LeadTile extends React.Component {
                 </View>
 
                 {/* ****** Price Wrap */}
-                {data.description != null && data.description != '' && purposeTab === 'invest' && (
-                  <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                    <Text
-                      style={[
-                        styles.normalText,
-                        AppStyles.darkColor,
-                        AppStyles.mrTen,
-                        descriptionColor,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {data.description}
-                    </Text>
-                  </View>
-                )}
                 {purposeTab != 'invest' ? (
                   <View style={[styles.contentMultiMain]}>
                     {!data.projectId && data.min_price && data.price ? (
@@ -305,11 +332,13 @@ class LeadTile extends React.Component {
                   <View style={[styles.contentMultiMain]}>
                     {data.projectId && data.minPrice && data.maxPrice ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                        {helper.convertPriceToIntegerString(
-                          data.minPrice,
-                          data.maxPrice,
-                          StaticData.Constants.any_value
-                        )}
+                        {purposeTab === 'invest' &&
+                          helper.capitalize(
+                            projectName != '' ? projectName : 'Project not specified'
+                          )}
+                        {data.projectType &&
+                          data.projectType != '' &&
+                          ` - ${helper.capitalize(data.projectType)}`}
                       </Text>
                     ) : null}
                   </View>
@@ -321,9 +350,13 @@ class LeadTile extends React.Component {
                       style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                       numberOfLines={1}
                     >
-                      {leadSize}
-                      {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
-                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
+                      {!data.projectId &&
+                      data.armsLeadAreas &&
+                      data.armsLeadAreas.length > 0 &&
+                      data.armsLeadAreas[0].area
+                        ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
+                        : ''}
+                      {!data.projectId && data.city && data.city.name}
                     </Text>
                   )}
                 </View>
@@ -333,18 +366,9 @@ class LeadTile extends React.Component {
                     style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                     numberOfLines={1}
                   >
-                    {!data.projectId &&
-                    data.armsLeadAreas &&
-                    data.armsLeadAreas.length > 0 &&
-                    data.armsLeadAreas[0].area
-                      ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
-                      : ''}
-                    {!data.projectId && data.city && data.city.name}
-                    {purposeTab === 'invest' &&
-                      helper.capitalize(projectName != '' ? projectName : 'Project not specified')}
-                    {data.projectType &&
-                      data.projectType != '' &&
-                      ` - ${helper.capitalize(data.projectType)}`}
+                    {customerName != ''
+                      ? customerName
+                      : data.customer && data.customer.customerName}
                   </Text>
                 </View>
                 {/* ****** Location Wrap */}
@@ -358,7 +382,8 @@ class LeadTile extends React.Component {
                   </Text>
                 </View>
               </View>
-              {screen === 'Leads' ? (
+
+              {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
                 <></>
               ) : (
                 <View style={styles.phoneMain}>

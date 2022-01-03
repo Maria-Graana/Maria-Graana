@@ -12,6 +12,7 @@ import AppStyles from '../../AppStyles'
 import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
 import Loader from '../../components/loader'
 import PickerComponent from '../../components/Picker'
+import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper.js'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
@@ -34,6 +35,9 @@ class AvailableInventory extends Component {
       showFilterModal: false,
       status: '',
       projectData: null,
+      active: false,
+      selectedRow: null,
+      disabled: true,
     }
   }
 
@@ -253,22 +257,28 @@ class AvailableInventory extends Component {
     return oneUnit
   }
 
-  onRowSelect = (val) => {
+  onRowSelect = () => {
     const { navigation } = this.props
-    const unit = this.fetchOneUnit(val)
+    const { selectedRow } = this.state
+    const unit = this.fetchOneUnit(selectedRow)
     navigation.navigate('Client', {
       isUnitBooking: true,
-      screenName: 'Leads',
+      screenName: 'AvailableUnitLead',
       projectData: this.state.projectData,
       unit: unit,
     })
   }
 
+  onSelection = (val) => {
+    const { active } = this.state
+    this.setState({ active: true, disabled: false, selectedRow: val })
+  }
+
   updatePermission = () => {
     const { permissions } = this.props
     return getPermissionValue(
-      PermissionFeatures.PROJECT_LEADS,
-      PermissionActions.UPDATE,
+      PermissionFeatures.APP_PAGES,
+      PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
       permissions
     )
   }
@@ -284,6 +294,9 @@ class AvailableInventory extends Component {
       loading,
       showFilterModal,
       status,
+      active,
+      selectedRow,
+      disabled,
     } = this.state
     const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
@@ -409,7 +422,7 @@ class AvailableInventory extends Component {
                               <TouchableOpacity
                                 activeOpacity={0.6}
                                 onPress={() => {
-                                  if (updatePermission) this.onRowSelect(rowData[0])
+                                  if (updatePermission) this.onSelection(rowData[0])
                                 }}
                                 key={index}
                               >
@@ -419,7 +432,17 @@ class AvailableInventory extends Component {
                                   widthArr={widthArr}
                                   style={[
                                     styles.row,
-                                    { backgroundColor: helper.setBookingStatusColor(rowData) },
+                                    {
+                                      backgroundColor:
+                                        active && selectedRow == rowData[0]
+                                          ? null
+                                          : helper.setBookingStatusColor(rowData),
+                                      borderColor:
+                                        active && selectedRow == rowData[0]
+                                          ? 'black'
+                                          : AppStyles.colors.primaryColor,
+                                      borderWidth: active && selectedRow == rowData[0] ? 1.2 : 0.6,
+                                    },
                                   ]}
                                   textStyle={styles.text}
                                 />
@@ -460,6 +483,19 @@ class AvailableInventory extends Component {
             <Ionicons name="ios-search" color="#ffffff" />
           </Fab>
         </View>
+        {updatePermission ? (
+          <View style={styles.buttonInputWrap}>
+            <TouchableButton
+              containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
+              label="Select"
+              borderColor="white"
+              containerBackgroundColor="#0f73ee"
+              borderWidth={1}
+              disabled={disabled}
+              onPress={() => this.onRowSelect()}
+            />
+          </View>
+        ) : null}
       </SafeAreaView>
     )
   }
@@ -513,8 +549,7 @@ const styles = StyleSheet.create({
   row: {
     height: 40,
     borderColor: AppStyles.colors.primaryColor,
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
+    borderWidth: 0.6,
   },
   tableBorder: {
     borderWidth: 1,
@@ -539,5 +574,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 15,
     borderRadius: 4,
+  },
+  buttonInputWrap: {
+    justifyContent: 'flex-end',
+  },
+  timePageBtn: {
+    justifyContent: 'center',
+    borderRadius: 4,
+    padding: 10,
+    marginLeft: 15,
+    marginRight: 15,
   },
 })

@@ -69,7 +69,7 @@ class LeadAttachments extends Component {
     if (navProperty) {
       this.fetchPropertyAttachement()
     } else {
-      this.fetchAttachmentEXT()
+      // this.fetchAttachmentEXT()
       this.fetchAttachments()
     }
   }
@@ -485,7 +485,8 @@ class LeadAttachments extends Component {
   }
 
   submitToAssignLegal = (data, comment) => {
-    const { lead } = this.props
+    const { lead, route } = this.props
+    const { navProperty = false } = route.params
     this.toggleComments(data, false)
     axios
       .patch(`/api/legal/document?documentId=${data.id}&leadId=${lead.id}`, {
@@ -493,7 +494,7 @@ class LeadAttachments extends Component {
         remarks: comment,
       })
       .then(() => {
-        this.fetchLead()
+        navProperty ? this.fetchPropertyAttachement() : this.fetchAttachments()
       })
       .catch((error) => {
         console.log(`ERROR: /api/leads/legalDocument?id=${data.id}`, error)

@@ -13,8 +13,16 @@ import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
-import { clearSlotData, setSlotDiaryData } from '../../actions/slotManagement'
+import {
+  alltimeSlots,
+  clearSlotData,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
 import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
+
+const _today = moment(new Date()).format('YYYY-MM-DD')
 
 class AddDiary extends Component {
   constructor(props) {
@@ -28,8 +36,15 @@ class AddDiary extends Component {
   }
 
   componentDidMount() {
-    const { route, navigation, dispatch } = this.props
-    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId } = route.params
+    const { route, navigation, dispatch, user } = this.props
+    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    if (user.role == 'aira_role' && lead) {
+      console.log('here nnn')
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    }
     if (rcmLeadId) {
       tasksList = StaticData.diaryTasksRCM
     } else if (cmLeadId) {
@@ -69,14 +84,14 @@ class AddDiary extends Component {
 
   generatePayload = (data) => {
     const { route, user, feedbackReasonFilter = null } = this.props
-    const { rcmLeadId, cmLeadId } = route.params
+    const { rcmLeadId, cmLeadId, lead } = route.params
     let payload = null
     if (route.params.update) {
       // payload for update contains id of diary from existing api call and other user data
       payload = Object.assign({}, data)
       payload.date = data.startTime
       payload.time = data.startTime
-      payload.userId = user.id
+      payload.userId = user.role == 'aira_role' && lead ? lead.armsuser.id : user.id
       payload.diaryTime = data.startTime
       payload.start = data.startTime
       payload.end = data.endTime
@@ -97,7 +112,7 @@ class AddDiary extends Component {
 
       payload = Object.assign({}, data)
       payload.date = data.startTime
-      payload.userId = user.id
+      payload.userId = user.role == 'aira_role' && lead ? lead.armsuser.id : user.id
       payload.time = data.startTime
       payload.diaryTime = data.startTime
       payload.start = data.startTime

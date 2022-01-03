@@ -104,6 +104,15 @@ class GraanaInventories extends React.Component {
     })
   }
 
+  goToAttachments = (purpose) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('LeadAttachments', {
+      navProperty: true,
+      purpose: purpose,
+      propertyId: this.state.selectedProperty.id,
+    })
+  }
+
   getPropertyGraanaListing = () => {
     const {
       propertiesList,
@@ -654,6 +663,7 @@ class GraanaInventories extends React.Component {
                 graanaVerifeyModal={this.graanaVerifeyModal}
                 whichProperties={'graanaProperties'}
                 selectedProperty={selectedProperty}
+                goToAttachments={this.goToAttachments}
               />
             )}
             onEndReached={() => {

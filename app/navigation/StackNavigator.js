@@ -224,7 +224,7 @@ function MainStack() {
         name="AddDiary"
         component={AddDiary}
         options={({ navigation, route }) => ({
-          title: 'NEW TASK',
+          title: 'ADD TASK',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
@@ -306,9 +306,10 @@ function MainStack() {
         options={({ navigation, route }) => ({
           title: 'LEAD DETAILS',
           // headerLeft : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerLeft: route.params && route.params.isFromLeadWorkflow
-            ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
-            : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft:
+            route.params && route.params.isFromLeadWorkflow
+              ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
+              : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}

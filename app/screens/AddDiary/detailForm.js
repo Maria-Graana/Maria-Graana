@@ -81,6 +81,7 @@ class DetailForm extends Component {
       editableData,
       feedbackReasonFilter,
       goToDiaryReasons,
+      goBackToDiary,
     } = this.props
     return (
       <View>
@@ -167,7 +168,7 @@ class DetailForm extends Component {
               style={styles.checkBox}
               onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
             />
-            <Text style={styles.checkBoxText}>Recurring</Text>
+            <Text style={styles.checkBoxText}>Recurring Task</Text>
           </TouchableOpacity>
         ) : null}
 
@@ -200,6 +201,16 @@ class DetailForm extends Component {
               label={buttonText}
               onPress={() => formSubmit(formData)}
               loading={loading}
+            />
+          </View>
+        )}
+
+        {formData.status === 'pending' && (
+          <View style={{ marginVertical: 10 }}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn]}
+              label={'CANCEL'}
+              onPress={() => goBackToDiary()}
             />
           </View>
         )}

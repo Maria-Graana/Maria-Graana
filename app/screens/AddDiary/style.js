@@ -30,7 +30,7 @@ export default styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 5,
     paddingBottom: 0,
-    fontFamily: AppStyles.fonts.defaultFont,
+    fontFamily: AppStyles.fonts.lightFont,
   },
   labelText: {
     fontSize: 14,

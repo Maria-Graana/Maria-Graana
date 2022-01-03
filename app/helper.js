@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 import { Toast } from 'native-base'
 import { Linking } from 'react-native'
 import _ from 'underscore'
-import ClientsImg from '../assets/img/client.png'
+import Clients from '../assets/img/client.png'
 import DashboardImg from '../assets/img/Dashboard.png'
 import DiaryImg from '../assets/img/diary.png'
 import LeadsImg from '../assets/img/lead-icon-l.png'
@@ -206,10 +206,10 @@ const helper = {
           return TeamDiaryImg
         case 'Leads':
           return LeadIcon
-        case 'InventoryTabs':
+        case 'Properties':
           return InventoryImg
-        case 'Client':
-          return ClientsImg
+        case 'Clients':
+          return Clients
         case 'Targets':
           return TargetsImg
         case 'Dashboard':

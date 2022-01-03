@@ -277,8 +277,8 @@ class AvailableInventory extends Component {
   updatePermission = () => {
     const { permissions } = this.props
     return getPermissionValue(
-      PermissionFeatures.PROJECT_LEADS,
-      PermissionActions.UPDATE,
+      PermissionFeatures.APP_PAGES,
+      PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
       permissions
     )
   }
@@ -483,18 +483,19 @@ class AvailableInventory extends Component {
             <Ionicons name="ios-search" color="#ffffff" />
           </Fab>
         </View>
-
-        <View style={styles.buttonInputWrap}>
-          <TouchableButton
-            containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
-            label="Select"
-            borderColor="white"
-            containerBackgroundColor="#0f73ee"
-            borderWidth={1}
-            disabled={disabled}
-            onPress={() => this.onRowSelect()}
-          />
-        </View>
+        {updatePermission ? (
+          <View style={styles.buttonInputWrap}>
+            <TouchableButton
+              containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
+              label="Select"
+              borderColor="white"
+              containerBackgroundColor="#0f73ee"
+              borderWidth={1}
+              disabled={disabled}
+              onPress={() => this.onRowSelect()}
+            />
+          </View>
+        ) : null}
       </SafeAreaView>
     )
   }

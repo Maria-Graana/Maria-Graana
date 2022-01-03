@@ -14,6 +14,7 @@ import PickerComponent from '../../components/Picker'
 import StaticData from '../../StaticData'
 import Search from '../../components/Search'
 import fuzzy from 'fuzzy'
+import { StackActions } from '@react-navigation/native';
 class AssignLead extends React.Component {
   constructor(props) {
     super(props)
@@ -54,7 +55,7 @@ class AssignLead extends React.Component {
         .then((res) => {
           this.setState(
             {
-              teamMembers: res.data,
+              teamMembers: res.data.rows,
             },
             () => {
               this.setState({ loading: false })
@@ -101,19 +102,17 @@ class AssignLead extends React.Component {
     const { leadId, type, screenName } = route.params
     var leadid = []
     leadid.push(leadId)
-    const url = type == 'investment' ? `/api/leads/project/shareLead` : `/api/leads/shareLead`
+    const url = type == 'Investment' ? `/api/leads/project/shareLead` : `/api/leads/shareLead`
     const body = {
-      sharedAt: new Date(),
       userId: selectedId,
       leadId,
-      last_edited_by: user.id,
     }
     axios
       .post(url, body, { params: { id: leadid } })
       .then((res) => {
         if (res.data) {
           helper.successToast('LEAD SHARED SUCCESSFULLY')
-          navigation.navigate(screenName)
+          navigation.dispatch(StackActions.pop(2));
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }

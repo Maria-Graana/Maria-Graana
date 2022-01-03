@@ -13,8 +13,16 @@ import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
-import { clearSlotData, setSlotDiaryData } from '../../actions/slotManagement'
+import {
+  alltimeSlots,
+  clearSlotData,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
 import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
+
+const _today = moment(new Date()).format('YYYY-MM-DD')
 
 class AddDiary extends Component {
   constructor(props) {
@@ -28,8 +36,15 @@ class AddDiary extends Component {
   }
 
   componentDidMount() {
-    const { route, navigation, dispatch } = this.props
-    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId } = route.params
+    const { route, navigation, dispatch, user } = this.props
+    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    if (user.role == 'aira_role' && lead) {
+      console.log('here nnn')
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    }
     if (rcmLeadId) {
       tasksList = StaticData.diaryTasksRCM
     } else if (cmLeadId) {

@@ -718,7 +718,7 @@ class LeadDetail extends React.Component {
             </View>
           </View>
         </ScrollView>
-        {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
+        {/* {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
           <View style={styles.bottom}>
             <Button
               onPress={() => {
@@ -729,7 +729,7 @@ class LeadDetail extends React.Component {
               <Text style={AppStyles.btnText}>{mainButtonText}</Text>
             </Button>
           </View>
-        )}
+        )} */}
       </View>
     ) : (
       <Loader loading={loading} />

@@ -237,6 +237,13 @@ const helper = {
       type: 'danger',
     })
   },
+  leadAiraToast(lead) {
+    Toast.show({
+      text: `You will perform any action on ${lead.firstName}${lead.lastName} behalf`,
+      duration: 3000,
+      type: 'danger',
+    })
+  },
   checkPrice(price, showPkr = false) {
     if (price === null || price === 0) {
       return '0'
@@ -442,6 +449,10 @@ const helper = {
   },
   checkAssignedSharedStatus(user, lead) {
     if (user && lead) {
+      if (user.role == 'aira_role' && user.id !== lead.assigned_to_armsuser_id) {
+        this.leadAiraToast(lead.armsuser)
+        return true
+      }
       if (
         lead.status === StaticData.Constants.lead_closed_lost ||
         lead.status === StaticData.Constants.lead_closed_won

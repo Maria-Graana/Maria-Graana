@@ -32,7 +32,7 @@ function LeadsNavigator(props) {
       navigation.setOptions({ title: 'DEALS' })
     }
   }, [])
-  const { count, user, permissions } = props
+  const { count, user, permissions, route } = props
   return user.subRole === 'business_centre_manager' ||
     user.subRole === 'business_centre_agent' ||
     user.subRole === 'call_centre_manager' ||
@@ -165,7 +165,8 @@ function LeadsNavigator(props) {
         />
       ) : null}
       {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
-      {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) ? (
+      {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) &&
+      route.params.screen != 'MyDeals' ? (
         <Tab.Screen
           name="Wanted"
           initialParams={{

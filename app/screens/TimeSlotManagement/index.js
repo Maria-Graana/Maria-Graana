@@ -91,6 +91,7 @@ function TimeSlotManagement(props) {
   }, [selectedDate, dayName])
 
   const onEditSlots = (start, end) => {
+    const { dispatch } = props
     const allSlots = props.allTimeSlot
 
     for (var i = 0; i < allSlots.length; i++) {
@@ -100,6 +101,9 @@ function TimeSlotManagement(props) {
         isSelected.push(allSlots[i].id)
       }
     }
+    setStartDate(slotsData[0].startTime)
+    setToDate(slotsData[slotsData.length - 1].endTime)
+    diaryData(props.slotDiary, slots, dispatch)
   }
 
   const isTimeBetween = function (startTime, endTime, serverTime) {
@@ -117,10 +121,16 @@ function TimeSlotManagement(props) {
 
   const diaryData = (res, e, dispatch) => {
     dispatch(clearScheduledTasks())
+    let tasks = []
     for (var i = 0; i < res.length; i++) {
-      if (res[i].slotId == e.id) {
-        dispatch(setScheduledTasks(res[i]))
+      for (var j = 0; j < e.length; j++) {
+        if (res[i].slotId == e[j]) {
+          tasks.push(res[i])
+        }
       }
+    }
+    if (tasks.length) {
+      dispatch(setScheduledTasks(tasks))
     }
   }
 
@@ -141,9 +151,9 @@ function TimeSlotManagement(props) {
   const verifyDetail = (e) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
-      diaryData([], e, dispatch)
+      diaryData([], slots, dispatch)
     } else {
-      diaryData(props.slotDiary, e, dispatch)
+      diaryData(props.slotDiary, slots, dispatch)
     }
 
     const sortedAray = _.sortBy(slotsData, 'id')

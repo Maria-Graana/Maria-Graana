@@ -357,6 +357,7 @@ class CMBottomNav extends React.Component {
       goToAttachments,
       permissions,
       screenName,
+      user,
     } = this.props
     const {
       visible,
@@ -442,7 +443,7 @@ class CMBottomNav extends React.Component {
         </TouchableOpacity>
         {screenName === 'MyDeals' ? (
           <TouchableOpacity
-            disabled={closedLeadEdit ? false : true}
+            disabled={user.role == 'aira_role' ? true : closedLeadEdit ? false : true}
             style={styles.followBtn}
             onPress={() => {
               if (closedLeadEdit && readPermission) {
@@ -460,7 +461,7 @@ class CMBottomNav extends React.Component {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            disabled={closedLeadEdit ? false : true}
+            disabled={user.role == 'aira_role' ? true : closedLeadEdit ? false : true}
             style={styles.rejectBtn}
             onPress={() => {
               if (closedLeadEdit && updatePermission) {
@@ -483,7 +484,10 @@ class CMBottomNav extends React.Component {
             visible={visible}
             onDismiss={() => this.openMenu(false)}
             anchor={
-              <TouchableOpacity onPress={() => this.openMenu(true)} style={styles.align}>
+              <TouchableOpacity
+                onPress={() => user.role != 'aira_role' && this.openMenu(true)}
+                style={styles.align}
+              >
                 {visible === true ? (
                   <Image
                     style={styles.bottomNavImg}

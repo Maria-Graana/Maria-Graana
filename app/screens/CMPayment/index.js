@@ -534,7 +534,6 @@ class CMPayment extends Component {
       agentId: user.id,
       cmLeadId: this.props.lead.id,
       addedBy: 'self',
-      tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
       screenName: 'Diary',
     })
@@ -1609,8 +1608,8 @@ class CMPayment extends Component {
     const { navigation, lead } = this.props
 
     navigation.navigate('ScheduledTasks', {
-      taskType: 'follow_up',
       lead,
+      cmLeadId: lead ? lead.id : null,
     })
     // this.setState({
     //   active: !this.state.active,

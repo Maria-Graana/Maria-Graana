@@ -1243,7 +1243,6 @@ class LeadPropsure extends React.Component {
     const { navigation, lead } = this.props
 
     navigation.navigate('ScheduledTasks', {
-      taskType: 'follow_up',
       lead,
       rcmLeadId: lead ? lead.id : null,
     })

@@ -81,15 +81,15 @@ class DiaryFeedback extends Component {
       if (Object.keys(connectFeedback).length) {
         if (connectFeedback.section === "Couldn't Connect")
           this.setState({ isReconnectModalVisible: true })
-        else if (
-          connectFeedback.section === 'Follow up' &&
-          actionType &&
-          actionType === 'Done' &&
-          selectedDiary &&
-          selectedDiary.taskType === 'viewing'
-        )
-          console.log('here=>', this.props.connectFeedback)
-        // else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
+        // else if (
+        //   connectFeedback.section === 'Follow up' &&
+        //   actionType &&
+        //   actionType === 'Done' &&
+        //   selectedDiary &&
+        //   selectedDiary.taskType === 'viewing'
+        // )
+        //   console.log('here=>', this.props.connectFeedback)
+        else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
         else if (connectFeedback.section === 'No Action Required')
           this.handleNextAction('no_action_required')
         else if (connectFeedback.section === 'Reject') {

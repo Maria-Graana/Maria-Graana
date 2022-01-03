@@ -435,21 +435,23 @@ class Diary extends React.Component {
       isMultiPhoneModalVisible,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
-    const { name = null } = route.params
+    const { name = null, screen } = route.params
 
     return (
       <SafeAreaView style={styles.container}>
-        <Fab
-          active="true"
-          containerStyle={{ zIndex: 20 }}
-          style={{
-            backgroundColor: AppStyles.colors.primaryColor,
-          }}
-          position="bottomRight"
-          onPress={() => this.goToAddEditDiaryScreen()}
-        >
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
+        {screen && screen !== 'TeamDiary' ? (
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{
+              backgroundColor: AppStyles.colors.primaryColor,
+            }}
+            position="bottomRight"
+            onPress={() => this.goToAddEditDiaryScreen()}
+          >
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
+        ) : null}
 
         <AddLeadCategoryModal
           visible={showClassificationModal}
@@ -582,7 +584,7 @@ class Diary extends React.Component {
               >
                 {` here `}
               </Text>
-              to see your Diary
+              to viewing your Diary
             </Text>
           </View>
         ) : null}

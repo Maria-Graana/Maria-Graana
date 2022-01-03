@@ -201,7 +201,7 @@ const PaymentHelper = {
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
       isPrimary,
-      purchaserId : selectedClient?.id
+      purchaserId : selectedClient ? selectedClient.id : lead.customer.id
     }
   },
   generateProductApiPayload(
@@ -278,7 +278,7 @@ const PaymentHelper = {
           : null,
       possessionChargesPercentage: projectProduct.possessionCharges,
       downPaymentPercentage: projectProduct.downPayment,
-      purchaserId: selectedClient?.id
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
     }
   },
   normalizeProjectProducts(products) {
@@ -533,7 +533,7 @@ const PaymentHelper = {
         : null,
       unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
       installmentAmount: CMPayment.installmentAmount,
-      purchaserId: selectedClient?.id
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
     }
     return body
   },

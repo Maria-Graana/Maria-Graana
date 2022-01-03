@@ -21,6 +21,7 @@ import CalendarComponent from '../../components/CalendarComponent'
 import moment from 'moment'
 import DiaryTile from '../../components/DiaryTile'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
+import noData from '../../../assets/img/no-result-found.png'
 import Loader from '../../components/loader'
 import {
   deleteDiaryTask,
@@ -591,7 +592,7 @@ class Diary extends React.Component {
 
         {loading ? (
           <Loader loading={loading} />
-        ) : (
+        ) : diaries && diaries.rows.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={diaries.rows}
@@ -634,7 +635,10 @@ class Diary extends React.Component {
             onEndReachedThreshold={0.5}
             keyExtractor={(item, index) => item.id.toString()}
           />
+        ) : (
+          <Image source={noData} style={styles.noResultImg} />
         )}
+
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
 
         <TouchableOpacity
@@ -704,6 +708,12 @@ const styles = StyleSheet.create({
     fontFamily: AppStyles.fonts.defaultFont,
     fontSize: 16,
     padding: 7,
+  },
+  noResultImg: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'center',
+    flex: 1,
   },
 })
 

@@ -56,4 +56,10 @@ export default styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'white',
   },
+  noResultImg: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+    marginTop: 150,
+  },
 })

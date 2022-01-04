@@ -223,7 +223,7 @@ export class ScheduledTasks extends Component {
         />
         {loading ? (
           <Loader loading={loading} />
-        ) : diaries && diaries.rows.length > 0 ? (
+        ) : diaries && diaries.rows && diaries.rows.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={diaries.rows}

@@ -72,14 +72,14 @@ export default styles = StyleSheet.create({
   },
   taskResponse: {
     paddingHorizontal: 10,
-    fontFamily: AppStyles.fonts.defaultFont,
+    fontFamily: AppStyles.fonts.semiBoldFont,
     fontSize: 12,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: 12,
     borderWidth: 0.5,
-    borderColor: 'transparent',
+    paddingHorizontal: 10,
     textAlign: 'center',
-    backgroundColor: '#FFC61B',
+    // backgroundColor: '#FFC61B',
   },
   requirements: {
     fontFamily: AppStyles.fonts.defaultFont,

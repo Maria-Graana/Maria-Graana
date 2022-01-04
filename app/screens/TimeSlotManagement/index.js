@@ -22,6 +22,7 @@ import moment from 'moment'
 import _ from 'underscore'
 import { saveOrUpdateDiaryTask } from '../../actions/diary'
 import helper from '../../helper'
+import diaryHelper from '../Diary/diaryHelper'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -70,6 +71,21 @@ function TimeSlotManagement(props) {
   const setCalendarVisible = (value) => {
     setIsCalendarVisible(value)
   }
+
+  useEffect(() => {
+    const { dispatch, navigation, route } = props
+    const { taskType } = route?.params
+    if (taskType) {
+      navigation.setOptions({
+        title:
+          taskType === 'morning_meeting' ||
+          taskType === 'meeting_with_pp' ||
+          taskType === 'daily_update'
+            ? 'Book Time Slot'
+            : `Select Slot for ${diaryHelper.showTaskType(taskType)} Task`,
+      })
+    }
+  }, [])
 
   useEffect(() => {
     const { dispatch, route } = props

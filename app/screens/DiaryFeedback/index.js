@@ -9,14 +9,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  FlatList,
 } from 'react-native'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
 import {
   clearDiaryFeedbacks,
   FEEDBACK_ACTIONS,
+  getPropertyViewings,
   saveOrUpdateDiaryTask,
   setConnectFeedback,
+  setMultipleModalVisible,
 } from '../../actions/diary'
 import TouchableButton from '../../components/TouchableButton'
 import ReconnectModal from '../../components/ReconnectModal'
@@ -25,51 +28,80 @@ import axios from 'axios'
 import RWRModal from '../../components/RWRModal'
 import helper from '../../helper'
 import DiaryHelper from '../Diary/diaryHelper'
+import RescheduleViewingTile from '../../components/RescheduleViewingTile'
+import Loader from '../../components/loader'
+import _ from 'underscore'
 class DiaryFeedback extends Component {
   constructor(props) {
     super(props)
     this.state = {
       isReconnectModalVisible: false,
       isRWRModalVisible: false,
+      loading: false,
+      propertyShortlistData: [],
+    }
+  }
+
+  componentDidMount() {
+    const { diary, route, user, connectFeedback, dispatch } = this.props
+    const { actionType = null } = route?.params
+    const { selectedDiary, selectedLead } = diary
+    if (
+      actionType &&
+      actionType === 'Done' &&
+      selectedDiary &&
+      selectedDiary.taskType === 'viewing'
+    ) {
+      if (selectedLead) {
+        this.setState({ loading: true }, async () => {
+          let data = await getPropertyViewings(selectedLead.id, user.id)
+          this.setState({ propertyShortlistData: data, loading: false }, () => {
+            if (selectedDiary && selectedDiary.propertyId) {
+              this.addProperty(true, selectedDiary.propertyId)
+              dispatch(setConnectFeedback({ ...connectFeedback, otherTasksToUpdate: [] }))
+            }
+          })
+        })
+      }
     }
   }
 
   componentWillUnmount() {
     const { dispatch } = this.props
-    dispatch(setConnectFeedback({}))
-    // Implement clear diary feedbacks here
     dispatch(clearDiaryFeedbacks())
+    dispatch(setConnectFeedback({}))
   }
 
   setNextFlow = () => {
-    const { diaryFeedbacks, connectFeedback, dispatch } = this.props
+    const { diaryFeedbacks, connectFeedback, dispatch, route, diary } = this.props
+    const { actionType = null } = route?.params
+    const { selectedDiary, selectedLead } = diary
 
-    if (Object.keys(connectFeedback).length) {
-      if (connectFeedback.section === "Couldn't Connect")
-        this.setState({ isReconnectModalVisible: true })
-      else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
-      else if (connectFeedback.section === 'No Action Required')
-        this.handleNextAction('no_action_required')
-      else if (connectFeedback.section === 'Reject') {
-        this.setState({ isRWRModalVisible: true })
-      } else if (connectFeedback.section === 'Cancel Meeting')
-        this.handleNextAction('cancel_meeting')
-      // else if (
-      //   ['Follow up', 'Cancel Viewing', 'Cancel Meeting'].indexOf(connectFeedback.section) > -1
-      // ) {
-      //   if (
-      //     connectFeedback.section !== 'Cancel Viewing' ||
-      //     ['Done', 'Cancel'].indexOf(actionType) > -1
-      //   )
-      //     // exclude direct cancel(outside of connect flow) viewing case
-      //     setSlotModal(true)
-      //   else {
-      //     setRescheduleViewingModal(true)
-      //     props.fetchLeadScheduledProperties(diary.armsLeadId)
-      //     setCancelAction(true)
-      //   }
-      // }
-      //  else if (connectFeedback.section === 'refer') setInvestLeadModal(true)
+    if (connectFeedback && connectFeedback.comments) {
+      if (Object.keys(connectFeedback).length) {
+        if (connectFeedback.section === "Couldn't Connect")
+          this.setState({ isReconnectModalVisible: true })
+        // else if (
+        //   connectFeedback.section === 'Follow up' &&
+        //   actionType &&
+        //   actionType === 'Done' &&
+        //   selectedDiary &&
+        //   selectedDiary.taskType === 'viewing'
+        // )
+        //   console.log('here=>', this.props.connectFeedback)
+        else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
+        else if (connectFeedback.section === 'No Action Required')
+          this.handleNextAction('no_action_required')
+        else if (connectFeedback.section === 'Reject') {
+          this.setState({ isRWRModalVisible: true })
+        } else if (connectFeedback.section === 'Cancel Meeting')
+          this.handleNextAction('cancel_meeting')
+        else if (connectFeedback.section === 'Cancel Viewing') {
+          this.handleNextAction('cancel_viewing')
+        }
+      }
+    } else {
+      alert('Please select comment to continue!')
     }
   }
 
@@ -82,7 +114,7 @@ class DiaryFeedback extends Component {
   handleNextAction = (type, reason = '', isBlacklist = false) => {
     const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
     const { selectedDiary, selectedLead } = diary
-    if (type === 'connect_again' || type === 'no_action_required') {
+    if (type === 'connect_again') {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -97,6 +129,31 @@ class DiaryFeedback extends Component {
         if (res) {
           saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
             if (response) {
+              dispatch(clearDiaryFeedbacks())
+              navigation.goBack()
+              dispatch(setMultipleModalVisible(true))
+            }
+          })
+        }
+      })
+    }
+    if (type === 'no_action_required') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          makeHistory: true,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        if (res) {
+          saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
+            if (response) {
+              dispatch(setConnectFeedback({}))
+              dispatch(clearDiaryFeedbacks())
               navigation.goBack()
             }
           })
@@ -133,10 +190,14 @@ class DiaryFeedback extends Component {
               taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
               isFromConnectFlow: true,
             })
+            dispatch(setConnectFeedback({}))
+            dispatch(clearDiaryFeedbacks())
           }
         })
       })
     } else if (type === 'book_a_unit') {
+      dispatch(setConnectFeedback({}))
+      dispatch(clearDiaryFeedbacks())
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -149,6 +210,8 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          dispatch(setConnectFeedback({}))
+          dispatch(clearDiaryFeedbacks())
           if (res) {
             // get all information for lead before moving to next screen
             axios.get(`/api/leads/project/byId?id=${selectedLead.id}`).then((res) => {
@@ -164,39 +227,26 @@ class DiaryFeedback extends Component {
         })
       })
     } else if (type === 'reschedule_meeting') {
-      dispatch(
-        setConnectFeedback({
-          ...connectFeedback,
-          comments: connectFeedback.comments,
-          response: connectFeedback.comments,
-          feedbackId: connectFeedback.feedbackId,
-          feedbackTag: connectFeedback.tag,
+      navigation.replace('TimeSlotManagement', {
+        data: {
+          userId: user.id,
+          taskCategory: 'leadTask',
+          reasonTag: connectFeedback.tag,
+          reasonId: connectFeedback.feedbackId,
           makeHistory: true,
-          otherTasksToUpdate: [],
-        })
-      ).then((res) => {
-        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
-          if (res) {
-            navigation.replace('TimeSlotManagement', {
-              data: {
-                userId: user.id,
-                taskCategory: 'leadTask',
-                reasonTag: connectFeedback.tag,
-                reasonId: connectFeedback.feedbackId,
-                taskType: 'meeting',
-                armsLeadId:
-                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
-                leadId:
-                  selectedDiary && selectedDiary.armsProjectLeadId
-                    ? selectedDiary.armsProjectLeadId
-                    : null,
-              },
-              taskType: 'meeting',
-              isFromConnectFlow: true,
-            })
-          }
-        })
+          id: selectedDiary.id,
+          taskType: 'meeting',
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+          leadId:
+            selectedDiary && selectedDiary.armsProjectLeadId
+              ? selectedDiary.armsProjectLeadId
+              : null,
+        },
+        taskType: 'meeting',
+        isFromConnectFlow: true,
       })
+      dispatch(setConnectFeedback({}))
+      dispatch(clearDiaryFeedbacks())
     } else if (type === 'reject') {
       dispatch(
         setConnectFeedback({
@@ -219,6 +269,8 @@ class DiaryFeedback extends Component {
             )
           }
         })
+        dispatch(setConnectFeedback({}))
+        dispatch(clearDiaryFeedbacks())
       })
     } else if (type === 'cancel_meeting') {
       dispatch(
@@ -233,6 +285,8 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          dispatch(setConnectFeedback({}))
+          dispatch(clearDiaryFeedbacks())
           if (res) {
             navigation.replace('TimeSlotManagement', {
               data: {
@@ -262,11 +316,14 @@ class DiaryFeedback extends Component {
           response: connectFeedback.comments,
           feedbackId: connectFeedback.feedbackId,
           feedbackTag: connectFeedback.tag,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
           status: 'completed',
           otherTasksToUpdate: [],
         })
       ).then((res) => {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          dispatch(setConnectFeedback({}))
+          dispatch(clearDiaryFeedbacks())
           if (res) {
             // get all information for lead before moving to next screen
             axios.get(`/api/leads/byId?id=${selectedLead.id}`).then((res) => {
@@ -280,6 +337,37 @@ class DiaryFeedback extends Component {
             })
           }
         })
+      })
+    } else if (type === 'reschedule_viewings') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          id: selectedDiary.id,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+          otherTasksToUpdate: [],
+        })
+      ).then((res) => {
+        navigation.replace('RescheduleViewings', { mode: 'rescheduleViewing' })
+      })
+    } else if (type === 'cancel_viewing') {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          id: selectedDiary.id,
+          feedbackId: connectFeedback.feedbackId,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+          status: 'cancelled',
+          otherTasksToUpdate: [],
+          feedbackTag: connectFeedback.tag,
+        })
+      ).then((res) => {
+        navigation.replace('RescheduleViewings', { mode: 'cancelViewing' })
       })
     }
   }
@@ -308,12 +396,29 @@ class DiaryFeedback extends Component {
     })
   }
 
+  addProperty = (val, id) => {
+    const { propertyShortlistData } = this.state
+    let newMatches = propertyShortlistData.map((property) => {
+      if (property.id === id) {
+        property.checkBox = val
+        return property
+      } else {
+        return property
+      }
+    })
+    this.setState({ propertyShortlistData: newMatches })
+  }
+
   render() {
-    const { diaryFeedbacks, connectFeedback, dispatch, diary } = this.props
+    const { diaryFeedbacks, connectFeedback, dispatch, diary, route, user, contacts } = this.props
     const { selectedDiary, selectedLead } = diary
-    const { isReconnectModalVisible, isRWRModalVisible } = this.state
+    const { isReconnectModalVisible, isRWRModalVisible, loading, propertyShortlistData } =
+      this.state
+    const { actionType = null } = route?.params
     const FA = FEEDBACK_ACTIONS
-    return (
+    return loading ? (
+      <Loader loading={loading} />
+    ) : (
       <View style={AppStyles.container}>
         <ScrollView>
           <ReconnectModal
@@ -330,25 +435,49 @@ class DiaryFeedback extends Component {
             }
             selectedReason={connectFeedback.tag ? connectFeedback.tag : null}
           />
-          <View style={[AppStyles.mainInputWrap]}>
-            <TextInput
-              // ref={textInput}
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-                styles.commentContainer,
-              ]}
-              multiline
-              //autoFocus
-              placeholder={'Comments'}
-              onChangeText={(text) =>
-                dispatch(setConnectFeedback({ ...connectFeedback, comments: text }))
-              }
-              // value={connectFeedback && connectFeedback.comment ? connectFeedback.comment : null}
+
+          {actionType &&
+          actionType === 'Done' &&
+          selectedDiary &&
+          selectedDiary.taskType === 'viewing' ? (
+            <FlatList
+              data={_.clone(propertyShortlistData)}
+              renderItem={({ item }) => (
+                <View style={{ marginVertical: 3 }}>
+                  <RescheduleViewingTile
+                    data={item}
+                    user={user}
+                    fromScreen={'DiaryFeedback'}
+                    toggleCheckBox={this.addProperty}
+                    showCheckboxes={true}
+                    connectFeedback={connectFeedback}
+                    selectedDiary={selectedDiary}
+                    contacts={contacts}
+                  />
+                </View>
+              )}
+              keyExtractor={(item, index) => item.id.toString()}
             />
-          </View>
+          ) : (
+            <View style={[AppStyles.mainInputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                  styles.commentContainer,
+                ]}
+                multiline
+                //autoFocus
+                placeholder={'Comments'}
+                onChangeText={(text) =>
+                  dispatch(setConnectFeedback({ ...connectFeedback, comments: text }))
+                }
+              />
+            </View>
+          )}
+
           {diaryFeedbacks &&
             Object.keys(diaryFeedbacks).map((key, j) => {
               return diaryFeedbacks[key].map((feedback, i) => {
@@ -422,14 +551,6 @@ class DiaryFeedback extends Component {
                         : feedback.tags &&
                           feedback.tags.map((tag, k) => {
                             return (
-                              // (((tag === FA.CLIENT_IS_INTERESTED_IN_INVESTMENT ||
-                              //   feedback.section !== 'Reject') &&
-                              //   DiaryHelper.getLeadType(selectedDiary) === 'Wanted' &&
-                              //   selectedLead &&
-                              //   selectedLead.projectId) ||
-                              //   (tag !== FA.CLIENT_IS_INTERESTED_IN_INVESTMENT &&
-                              //     selectedLead &&
-                              //     !selectedLead.projectId)) && (
                               <TouchableOpacity
                                 key={k}
                                 style={[
@@ -487,7 +608,6 @@ class DiaryFeedback extends Component {
                                 </Text>
                               </TouchableOpacity>
                             )
-                            // )
                           })}
                     </View>
                   </View>
@@ -555,6 +675,7 @@ mapStateToProps = (store) => {
     diary: store.diary.diary,
     diaryFeedbacks: store.diary.diaryFeedbacks,
     connectFeedback: store.diary.connectFeedback,
+    contacts: store.contacts.contacts,
   }
 }
 

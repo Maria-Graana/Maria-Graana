@@ -32,7 +32,7 @@ function LeadsNavigator(props) {
       navigation.setOptions({ title: 'DEALS' })
     }
   }, [])
-  const { count, user, permissions } = props
+  const { count, user, permissions, route } = props
   return user.subRole === 'business_centre_manager' ||
     user.subRole === 'business_centre_agent' ||
     user.subRole === 'call_centre_manager' ||
@@ -165,20 +165,22 @@ function LeadsNavigator(props) {
         />
       ) : null}
       {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
-      <Tab.Screen
-        name="Wanted"
-        initialParams={{
-          screen: props.route.params?.screen,
-          hasBooking: props.route.params?.hasBooking,
-        }}
-        options={{
-          tabBarIcon: (props) => (
-            <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.wantedLeads} />
-          ),
-        }}
-        component={WantedLeads}
-      />
-
+      {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) &&
+      route.params.screen != 'MyDeals' ? (
+        <Tab.Screen
+          name="Wanted"
+          initialParams={{
+            screen: props.route.params?.screen,
+            hasBooking: props.route.params?.hasBooking,
+          }}
+          options={{
+            tabBarIcon: (props) => (
+              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.wantedLeads} />
+            ),
+          }}
+          component={WantedLeads}
+        />
+      ) : null}
       {getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions) ? (
         <Tab.Screen
           name="Invest"

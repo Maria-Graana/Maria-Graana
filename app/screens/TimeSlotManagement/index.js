@@ -91,6 +91,7 @@ function TimeSlotManagement(props) {
   }, [selectedDate, dayName])
 
   const onEditSlots = (start, end) => {
+    const { dispatch } = props
     const allSlots = props.allTimeSlot
 
     for (var i = 0; i < allSlots.length; i++) {
@@ -100,6 +101,9 @@ function TimeSlotManagement(props) {
         isSelected.push(allSlots[i].id)
       }
     }
+    setStartDate(slotsData[0].startTime)
+    setToDate(slotsData[slotsData.length - 1].endTime)
+    diaryData(props.slotDiary, slots, dispatch)
   }
 
   const isTimeBetween = function (startTime, endTime, serverTime) {
@@ -117,10 +121,16 @@ function TimeSlotManagement(props) {
 
   const diaryData = (res, e, dispatch) => {
     dispatch(clearScheduledTasks())
+    let tasks = []
     for (var i = 0; i < res.length; i++) {
-      if (res[i].slotId == e.id) {
-        dispatch(setScheduledTasks(res[i]))
+      for (var j = 0; j < e.length; j++) {
+        if (res[i].slotId == e[j]) {
+          tasks.push(res[i])
+        }
       }
+    }
+    if (tasks.length) {
+      dispatch(setScheduledTasks(tasks))
     }
   }
 
@@ -141,9 +151,9 @@ function TimeSlotManagement(props) {
   const verifyDetail = (e) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
-      diaryData([], e, dispatch)
+      diaryData([], slots, dispatch)
     } else {
-      diaryData(props.slotDiary, e, dispatch)
+      diaryData(props.slotDiary, slots, dispatch)
     }
 
     const sortedAray = _.sortBy(slotsData, 'id')
@@ -188,7 +198,6 @@ function TimeSlotManagement(props) {
       copyData.start = tempStartTime
       copyData.end = tempEndTime
       copyData.slots = tempSlot
-      //console.log(copyData)
       saveOrUpdateDiaryTask(copyData).then((response) => {
         if (response) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')
@@ -606,9 +615,28 @@ function TimeSlotManagement(props) {
       return '#deecd7'
     } else if (task == 'closed') {
       return '#e6e6e6'
-    } else if (task === 'meeting' || task === 'viewing') {
+    } else if (
+      task === 'meeting' ||
+      task === 'viewing' ||
+      task === 'reassign' ||
+      task === 're-assign'
+    ) {
       return '#99c5fa'
     }
+  }
+
+  const navigateTo = () => {
+    const { navigation, dispatch } = props
+    if (props.slotDiary == null) {
+      diaryData([], slots, dispatch)
+    } else {
+      diaryData(props.slotDiary, slots, dispatch)
+    }
+
+    navigation.navigate('ScheduledTasks', {
+      fromDate: startDate,
+      toDate: toDate,
+    })
   }
 
   return (
@@ -710,6 +738,10 @@ function TimeSlotManagement(props) {
                                     ? '#deecd7'
                                     : setColor(e) == 'meeting'
                                     ? '#99c5fa'
+                                    : setColor(e) == 'reassign'
+                                    ? '#99c5fa'
+                                    : setColor(e) == 're-assign'
+                                    ? '#99c5fa'
                                     : setColor(e) == 'viewing'
                                     ? '#99c5fa'
                                     : setColor(e) == 'meetingwithpp'
@@ -754,12 +786,7 @@ function TimeSlotManagement(props) {
           borderWidth={1}
           label="Show Details"
           disabled={disabled}
-          onPress={() =>
-            props.navigation.navigate('ScheduledTasks', {
-              fromDate: startDate,
-              toDate: toDate,
-            })
-          }
+          onPress={() => navigateTo()}
         />
         <TouchableButton
           containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}

@@ -56,6 +56,7 @@ import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
 import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 import DiaryReasons from '../screens/DiaryReasons'
 import DiaryFeedback from '../screens/DiaryFeedback'
+import RescheduleViewings from '../screens/RescheduleViewings'
 import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 
 const Stack = createStackNavigator()
@@ -175,6 +176,16 @@ function MainStack() {
       />
 
       <Stack.Screen
+        name="RescheduleViewings"
+        component={RescheduleViewings}
+        options={({ navigation, route }) => ({
+          title: 'Reschedule Viewings',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
+      <Stack.Screen
         name="DiaryReasons"
         component={DiaryReasons}
         options={({ navigation, route }) => ({
@@ -213,7 +224,7 @@ function MainStack() {
         name="AddDiary"
         component={AddDiary}
         options={({ navigation, route }) => ({
-          title: 'NEW TASK',
+          title: 'ADD TASK',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
@@ -295,9 +306,10 @@ function MainStack() {
         options={({ navigation, route }) => ({
           title: 'LEAD DETAILS',
           // headerLeft : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerLeft: route.params && route.params.isFromLeadWorkflow
-            ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
-            : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft:
+            route.params && route.params.isFromLeadWorkflow
+              ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
+              : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}

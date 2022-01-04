@@ -27,6 +27,7 @@ export function getDiaryTasks(data) {
     let diaryRows = []
     const { page, pageSize, diaries } = getsState().diary.diary
     const { sort, isFilterApplied } = getsState().diary
+    const { setScheduled } = getsState().slotManagement
     const {
       selectedDate = null,
       agentId = null,
@@ -56,8 +57,16 @@ export function getDiaryTasks(data) {
         endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         //console.log(endPoint)
       }
-    } else if (fromDate && toDate) {
-      endPoint = `/api/diary/all?fromDate=${fromDate}&toDate=${toDate}`
+    } else if (fromDate && toDate && setScheduled) {
+      let selectedSlotsSt = setScheduled
+      let queryParams = selectedSlotsSt
+        .map((dId) =>
+          dId.diary.map((dld) => {
+            return `diaryId[]=${dld.id}`
+          })
+        )
+        .join(`&`)
+      endPoint = `/api/diary/all?${queryParams}`
     } else {
       if (leadType === 'invest') {
         endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}&status=pending`
@@ -120,7 +129,7 @@ export function clearDiaries() {
 export function getDiaryFeedbacks(payload) {
   return (dispatch, getsState) => {
     const { leadType = null, taskType = null, actionType = null } = payload
-    const { selectedDiary } = getsState().diary.diary
+    //const { selectedDiary } = getsState().diary.diary
     let url = `/api/feedbacks/fetch?taskType=${
       taskType === 'follow_up' && actionType != 'Done'
         ? 'Connect'
@@ -133,11 +142,7 @@ export function getDiaryFeedbacks(payload) {
         if (response) {
           dispatch({
             type: types.SET_DIARY_FEEDBACKS,
-            payload: formatFeedBacks(
-              response.data,
-              capitalizeWordsWithoutUnderscore(taskType, true),
-              selectedDiary.status
-            ),
+            payload: formatFeedBacks(response.data),
           })
         }
       })
@@ -156,33 +161,22 @@ export function setConnectFeedback(data) {
   }
 }
 
-const formatFeedBacks = (diaryFeedbacks, taskType, taskStatus) => {
+const formatFeedBacks = (diaryFeedbacks) => {
   const FA = FEEDBACK_ACTIONS
   let additionalActions = null
   let actionAdded = false
   let updatedDiaryFeedbacks = diaryFeedbacks
   let rejectFeedback = null
   let noActionRequired = null
-
   // filter actions on base of task type
   diaryFeedbacks &&
     Object.keys(diaryFeedbacks).map((key, i) => {
       if (key === 'Actions' && diaryFeedbacks[key]) {
-        additionalActions = diaryFeedbacks[key].filter((action) => {
-          let tags = JSON.parse(action.tags[0])
-          if (taskType === 'Meeting' && taskStatus === 'completed')
-            return FA.SETUP_ANOTHER_MEETING in tags
-          else if (taskType === 'Meeting' && taskStatus !== 'completed')
-            return FA.RESCHEDULE_MEETING in tags
-          else if (taskType === 'Viewing' && taskStatus === 'completed')
-            return FA.SHORTLIST_PROPERTIES in tags
-          else if (taskType === 'Viewing' && taskStatus !== 'completed')
-            return FA.RESCHEDULE_VIEWING in tags
-          else return true
-        })
+        additionalActions = diaryFeedbacks[key]
         delete diaryFeedbacks[key]
       }
     })
+
   // sorting
   if (additionalActions) {
     updatedDiaryFeedbacks = diaryFeedbacks
@@ -203,6 +197,10 @@ const formatFeedBacks = (diaryFeedbacks, taskType, taskStatus) => {
           delete diaryFeedbacks[key]
         } else updatedDiaryFeedbacks[key] = diaryFeedbacks[key]
       })
+
+    if (!diaryFeedbacks || !Object.keys(diaryFeedbacks).length) {
+      updatedDiaryFeedbacks['Actions'] = additionalActions
+    }
     if (noActionRequired) updatedDiaryFeedbacks['No Action Required'] = noActionRequired
     if (rejectFeedback) updatedDiaryFeedbacks['Reject'] = rejectFeedback
   }
@@ -354,6 +352,15 @@ export function clearDiaryFilter() {
   }
 }
 
+export function setMultipleModalVisible(value) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_MULTIPLE_PHONE_MODAL_VISIBLE,
+      payload: value,
+    })
+  }
+}
+
 export function getOverdueCount(agentId) {
   return (dispatch, getsState) => {
     let endPoint = ``
@@ -393,27 +400,63 @@ export const setSortValue = (value) => {
   }
 }
 
+export const getPropertyViewings = (leadId, userId) => {
+  let endPoint = ``
+  let matches = []
+  endPoint = `/api/leads/${leadId}/shortlist`
+  let promise = axios
+    .get(`${endPoint}`)
+    .then((res) => {
+      if (res.data) {
+        matches = helper.propertyIdCheck(res.data.rows)
+        return getActiveBookingProperties(matches, userId)
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+      return Promise.reject(error)
+    })
+  return promise
+}
+
+const getActiveBookingProperties = (properties, userId) => {
+  return properties
+    ? properties.filter(
+        (p) =>
+          p.diaries &&
+          p.diaries.filter(
+            (d) => ['completed', 'cancelled'].indexOf(d.status) === -1 && d.userId === userId
+          ).length
+      )
+    : []
+}
+
 export function setCategory(data) {
   return (dispatch, getsState) => {
     const { selectedLead } = getsState().diary.diary
-    const { category, selectedDate = null, agentId = null, overdue = false, leadType = null } = data
+    const {
+      category,
+      selectedDate = null,
+      agentId = null,
+      overdue = false,
+      leadId,
+      leadType = null,
+    } = data
     if (selectedLead) {
       let endPoint = ``
       let body = {
         leadCategory: category,
       }
       endPoint = selectedLead.projectId ? `/api/leads/project` : `api/leads`
-      var leadId = []
-      leadId.push(selectedLead.id)
+      var leadIdArr = []
+      leadIdArr.push(selectedLead.id)
       axios
-        .patch(endPoint, body, { params: { id: leadId } })
+        .patch(endPoint, body, { params: { id: leadIdArr } })
         .then((res) => {
           dispatch(setClassificationModal(false))
           if (res.status === 200) {
             helper.successToast(`Lead Category added`)
-            dispatch(
-              getDiaryTasks({ selectedDate, agentId, overdue, leadId: selectedLead.id, leadType })
-            )
+            dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
           } else {
             helper.successToast(`Something went wrong!`)
           }

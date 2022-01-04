@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { FlatList, View, SafeAreaView } from 'react-native'
+import { FlatList, View, SafeAreaView, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import DiaryTile from '../../components/DiaryTile'
 import style from './style'
@@ -11,6 +11,7 @@ import axios from 'axios'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import { Fab } from 'native-base'
 import helper from '../../helper.js'
+import noData from '../../../assets/img/no-result-found.png'
 import {
   cancelDiaryMeeting,
   cancelDiaryViewing,
@@ -149,8 +150,8 @@ export class ScheduledTasks extends Component {
   }
 
   goToAddEditDiaryScreen = (update, data = null) => {
-    const { navigation, dispatch, route } = this.props
-    const { cmLeadId = null, rcmLeadId = null } = route.params
+    const { navigation, dispatch, route, user } = this.props
+    const { cmLeadId = null, rcmLeadId = null, lead = null } = route.params
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
@@ -161,6 +162,7 @@ export class ScheduledTasks extends Component {
       cmLeadId: cmLeadId,
       rcmLeadId: rcmLeadId,
       screenName: 'ScheduledTasks',
+      lead: lead && user.role == 'aira_role' ? lead : null,
     })
   }
 
@@ -212,6 +214,7 @@ export class ScheduledTasks extends Component {
               setCategory({
                 category: value,
                 leadType,
+                leadId: selectedLead.id,
               })
             )
           }
@@ -221,7 +224,7 @@ export class ScheduledTasks extends Component {
         />
         {loading ? (
           <Loader loading={loading} />
-        ) : (
+        ) : diaries && diaries.rows && diaries.rows.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={diaries.rows}
@@ -243,6 +246,8 @@ export class ScheduledTasks extends Component {
             )}
             keyExtractor={(item, index) => item.id.toString()}
           />
+        ) : (
+          <Image source={noData} style={styles.noResultImg} />
         )}
       </SafeAreaView>
     )
@@ -254,6 +259,7 @@ mapStateToProps = (store) => {
     diary: store.diary.diary,
     selectedDiary: store.diary.selectedDiary,
     selectedLead: store.diary.selectedLead,
+    user: store.user.user,
   }
 }
 

@@ -38,6 +38,8 @@ import PaymentHelper from './PaymentHelper'
 import moment from 'moment-timezone'
 import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import { Buffer } from 'buffer'
 import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
@@ -246,7 +248,7 @@ class CMPayment extends Component {
       copyObject.clientName = name
       this.setState({ firstFormData: copyObject })
       if (client.cnic != null) {
-        this.setState({ cnicEditable: false , cnicValidate : false})
+        this.setState({ cnicEditable: false, cnicValidate: false })
       } else {
         this.setState({ cnicEditable: true })
       }
@@ -532,7 +534,6 @@ class CMPayment extends Component {
       agentId: user.id,
       cmLeadId: this.props.lead.id,
       addedBy: 'self',
-      tasksList: StaticData.taskValuesCMLead,
       taskType: taskType != '' ? taskType : null,
       screenName: 'Diary',
     })
@@ -1607,8 +1608,8 @@ class CMPayment extends Component {
     const { navigation, lead } = this.props
 
     navigation.navigate('ScheduledTasks', {
-      taskType: 'follow_up',
       lead,
+      cmLeadId: lead ? lead.id : null,
     })
     // this.setState({
     //   active: !this.state.active,
@@ -1823,6 +1824,20 @@ class CMPayment extends Component {
     }
   }
 
+  readPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions)
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.PROJECT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -1893,9 +1908,10 @@ class CMPayment extends Component {
       callModal,
       meetings,
     } = this.state
-
     const { lead, navigation, contacts, route } = this.props
     const { screenName } = this.props.route.params
+    let readPermission = this.readPermission()
+    let updatePermission = this.updatePermission()
 
     return (
       <View style={{ flex: 1 }}>
@@ -1923,7 +1939,8 @@ class CMPayment extends Component {
             finalPrice={finalPrice}
             generateKFI={this.generateKFI}
             navigation={navigation}
-            clientName = {firstFormData.clientName}
+            clientName={firstFormData.clientName}
+            updatePermission={updatePermission}
           />
           <SchedulePayment
             active={showSchedule}
@@ -1961,8 +1978,7 @@ class CMPayment extends Component {
               pearlUnitPrice={pearlUnitPrice}
               oneProductData={oneProductData}
               submitFirstForm={this.firstFormValidateModal}
-              clientName = {firstFormData.clientName}
-
+              clientName={firstFormData.clientName}
             />
           ) : null}
           <LeadRCMPaymentPopup
@@ -2047,6 +2063,7 @@ class CMPayment extends Component {
                     openUnitsTable={this.openUnitsTable}
                     checkValidation={checkValidation}
                     handleClientClick={this.handleClientClick}
+                    updatePermission={updatePermission}
                   />
                 )}
                 {secondForm && (
@@ -2063,6 +2080,7 @@ class CMPayment extends Component {
                     outStandingTax={outStandingTax}
                     toggleSchedulePayment={this.toggleSchedulePayment}
                     call={this.fetchPhoneNumbers}
+                    updatePermission={updatePermission}
                   />
                 )}
               </View>
@@ -2151,6 +2169,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

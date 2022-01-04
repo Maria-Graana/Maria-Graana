@@ -108,9 +108,10 @@ class LeadDetail extends React.Component {
     axios
       .get(`${url}?id=${lead.id}`)
       .then((res) => {
-        let responseData = purposeTab == 'wanted' ? res.data.rows[0] : res.data
+        let responseData =
+          purposeTab == 'wanted' ? (res.data.rows.length > 0 ? res.data.rows[0] : {}) : res.data
         let leadType = type
-        if (!responseData.paidProject) {
+        if (!responseData.paidProject && purposeTab !== 'wanted') {
           responseData.paidProject = responseData.project
         }
         this.props.dispatch(setlead(responseData))
@@ -718,7 +719,7 @@ class LeadDetail extends React.Component {
             </View>
           </View>
         </ScrollView>
-        {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
+        {/* {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
           <View style={styles.bottom}>
             <Button
               onPress={() => {
@@ -729,7 +730,7 @@ class LeadDetail extends React.Component {
               <Text style={AppStyles.btnText}>{mainButtonText}</Text>
             </Button>
           </View>
-        )}
+        )} */}
       </View>
     ) : (
       <Loader loading={loading} />

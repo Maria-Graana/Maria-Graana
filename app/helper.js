@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 import { Toast } from 'native-base'
 import { Linking } from 'react-native'
 import _ from 'underscore'
-import ClientsImg from '../assets/img/client.png'
+import Clients from '../assets/img/client.png'
 import DashboardImg from '../assets/img/Dashboard.png'
 import DiaryImg from '../assets/img/diary.png'
 import LeadsImg from '../assets/img/lead-icon-l.png'
@@ -206,10 +206,10 @@ const helper = {
           return TeamDiaryImg
         case 'Leads':
           return LeadIcon
-        case 'InventoryTabs':
+        case 'Properties':
           return InventoryImg
-        case 'Client':
-          return ClientsImg
+        case 'Clients':
+          return Clients
         case 'Targets':
           return TargetsImg
         case 'Dashboard':
@@ -233,6 +233,13 @@ const helper = {
   leadNotAssignedToast() {
     Toast.show({
       text: 'Lead is not assigned to you',
+      duration: 3000,
+      type: 'danger',
+    })
+  },
+  leadAiraToast(lead) {
+    Toast.show({
+      text: `You will perform any action on ${lead.firstName}${lead.lastName} behalf`,
       duration: 3000,
       type: 'danger',
     })
@@ -442,6 +449,10 @@ const helper = {
   },
   checkAssignedSharedStatus(user, lead) {
     if (user && lead) {
+      if (user.role == 'aira_role' && user.id !== lead.assigned_to_armsuser_id) {
+        this.leadAiraToast(lead.armsuser)
+        return true
+      }
       if (
         lead.status === StaticData.Constants.lead_closed_lost ||
         lead.status === StaticData.Constants.lead_closed_won

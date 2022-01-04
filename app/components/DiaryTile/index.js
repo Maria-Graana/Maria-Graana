@@ -139,6 +139,16 @@ class DiaryTile extends React.Component {
                         />
                       )}
 
+                      {diary.taskCategory === 'leadTask' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('activity_history')
+                            hideMenu()
+                          }}
+                          title="Activity History"
+                        />
+                      ) : null}
+
                       {diary.taskType !== 'morning_meeting' &&
                       diary.taskType !== 'daily_update' &&
                       diary.taskType !== 'meeting_with_pp' &&

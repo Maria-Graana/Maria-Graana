@@ -44,6 +44,7 @@ import {
   setConnectFeedback,
   getDiaryFeedbacks,
   setMultipleModalVisible,
+  getActivityHistory,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import {
@@ -61,6 +62,7 @@ import { DiarySortModal } from '../../components/DiarySortModal'
 import helper, { formatDateTime } from '../../helper'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import diaryHelper from './diaryHelper'
+import HistoryModal from '../../components/HistoryModal'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -83,6 +85,8 @@ class Diary extends React.Component {
       isMenuVisible: false,
       isSortModalVisible: false,
       isDelete: false,
+      activityHistoryData: [],
+      isActivityHistoryModalVisible: false,
     }
   }
   componentDidMount() {
@@ -259,7 +263,7 @@ class Diary extends React.Component {
 
   handleMenuActions = (action) => {
     const { navigation, diary, dispatch, connectFeedback } = this.props
-    const { selectedDiary } = diary
+    const { selectedDiary, selectedLead } = diary
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
@@ -321,6 +325,12 @@ class Diary extends React.Component {
       this.navigateToReferAssignLead('refer')
     } else if (action === 'reassign_lead') {
       this.navigateToReferAssignLead('reassign')
+    } else if (action === 'activity_history') {
+      getActivityHistory(selectedLead, diaryHelper.getLeadType(selectedDiary)).then((res) => {
+        if (res) {
+          this.setState({ isActivityHistoryModalVisible: true, activityHistoryData: res.data })
+        }
+      })
     } else if (action === 'delete') {
       Alert.alert(
         'Delete Task',
@@ -420,6 +430,8 @@ class Diary extends React.Component {
       dayName,
       isMenuVisible,
       isSortModalVisible,
+      isActivityHistoryModalVisible,
+      activityHistoryData,
     } = this.state
     const {
       overdueCount,
@@ -432,7 +444,6 @@ class Diary extends React.Component {
       sortValue,
       onEndReachedLoader,
       isFilterApplied,
-      connectFeedback,
       isMultiPhoneModalVisible,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
@@ -488,6 +499,13 @@ class Diary extends React.Component {
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}
+        />
+
+        <HistoryModal
+          navigation={navigation}
+          data={activityHistoryData}
+          closePopup={(value) => this.setState({ isActivityHistoryModalVisible: value })}
+          openPopup={isActivityHistoryModalVisible}
         />
 
         <DiarySortModal

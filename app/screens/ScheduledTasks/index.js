@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { FlatList, View, SafeAreaView, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import DiaryTile from '../../components/DiaryTile'
-import style from './style'
+import styles from './style'
 import axios from 'axios'
 import AddLeadCategoryModal from '../../components/AddLeadCategoryModal'
 import { Fab } from 'native-base'
@@ -189,7 +189,7 @@ export class ScheduledTasks extends Component {
     const { purposeTab } = route.params
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
-      <SafeAreaView style={style.container}>
+      <SafeAreaView style={styles.container}>
         {purposeTab != 'wanted' && (
           <Fab
             active="true"

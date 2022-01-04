@@ -14,7 +14,7 @@ import PickerComponent from '../../components/Picker'
 import StaticData from '../../StaticData'
 import Search from '../../components/Search'
 import fuzzy from 'fuzzy'
-import { StackActions } from '@react-navigation/native';
+import { StackActions } from '@react-navigation/native'
 class AssignLead extends React.Component {
   constructor(props) {
     super(props)
@@ -55,7 +55,7 @@ class AssignLead extends React.Component {
         .then((res) => {
           this.setState(
             {
-              teamMembers: res.data.rows,
+              teamMembers: purpose === 'reassign' ? res.data : res.data.rows
             },
             () => {
               this.setState({ loading: false })
@@ -84,7 +84,7 @@ class AssignLead extends React.Component {
       .then((response) => {
         if (response.status === 200) {
           helper.successToast('LEAD ASSIGNED SUCCESSFULLY')
-          navigation.navigate(screenName)
+          navigation.dispatch(StackActions.pop(2))
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }
@@ -112,7 +112,7 @@ class AssignLead extends React.Component {
       .then((res) => {
         if (res.data) {
           helper.successToast('LEAD SHARED SUCCESSFULLY')
-          navigation.dispatch(StackActions.pop(2));
+          navigation.dispatch(StackActions.pop(2))
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }

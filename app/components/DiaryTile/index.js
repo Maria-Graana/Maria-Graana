@@ -85,6 +85,22 @@ class DiaryTile extends React.Component {
                     }
                   >
                     <View>
+                      <Menu.Item
+                        onPress={() => {
+                          handleMenuActions('task_details')
+                          hideMenu()
+                        }}
+                        title="Task Details"
+                      />
+                      {diary.status !== 'completed' && diary.status !== 'cancelled' && (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('edit_task')
+                            hideMenu()
+                          }}
+                          title="Edit Task"
+                        />
+                      )}
                       {diary.status !== 'completed' && diary.status !== 'cancelled' && (
                         <Menu.Item
                           onPress={() => {
@@ -120,6 +136,7 @@ class DiaryTile extends React.Component {
                           title="Cancel Viewing"
                         />
                       ) : null}
+
 
                       <Menu.Item
                         onPress={() => {

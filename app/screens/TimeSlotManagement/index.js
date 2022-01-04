@@ -631,9 +631,28 @@ function TimeSlotManagement(props) {
       return '#deecd7'
     } else if (task == 'closed') {
       return '#e6e6e6'
-    } else if (task === 'meeting' || task === 'viewing') {
+    } else if (
+      task === 'meeting' ||
+      task === 'viewing' ||
+      task === 'reassign' ||
+      task === 're-assign'
+    ) {
       return '#99c5fa'
     }
+  }
+
+  const navigateTo = () => {
+    const { navigation, dispatch } = props
+    if (props.slotDiary == null) {
+      diaryData([], slots, dispatch)
+    } else {
+      diaryData(props.slotDiary, slots, dispatch)
+    }
+
+    navigation.navigate('ScheduledTasks', {
+      fromDate: startDate,
+      toDate: toDate,
+    })
   }
 
   return (
@@ -735,6 +754,10 @@ function TimeSlotManagement(props) {
                                     ? '#deecd7'
                                     : setColor(e) == 'meeting'
                                     ? '#99c5fa'
+                                    : setColor(e) == 'reassign'
+                                    ? '#99c5fa'
+                                    : setColor(e) == 're-assign'
+                                    ? '#99c5fa'
                                     : setColor(e) == 'viewing'
                                     ? '#99c5fa'
                                     : setColor(e) == 'meetingwithpp'
@@ -779,12 +802,7 @@ function TimeSlotManagement(props) {
           borderWidth={1}
           label="Show Details"
           disabled={disabled}
-          onPress={() =>
-            props.navigation.navigate('ScheduledTasks', {
-              fromDate: startDate,
-              toDate: toDate,
-            })
-          }
+          onPress={() => navigateTo()}
         />
         <TouchableButton
           containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}

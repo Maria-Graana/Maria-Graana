@@ -235,17 +235,23 @@ class CMBottomNav extends React.Component {
 
   navigateToAssignLead = (lead) => {
     const { navigation } = this.props
-    const { showAssignToButton } = this.state
-    if (showAssignToButton === true) {
-      navigation.navigate('AssignLead', {
-        leadId: lead.id,
-        type: 'sale',
-        screen: 'LeadDetail',
-        purpose: 'reassign',
-      })
-    } else {
-      helper.errorToast('Lead Already Assign')
-    }
+    navigation.navigate('AssignLead', {
+      leadId: lead.id,
+      type: 'sale',
+      screen: 'LeadDetail',
+      purpose: 'reassign',
+    })
+    // const { showAssignToButton } = this.state
+    // if (showAssignToButton === true) {
+    //   navigation.navigate('AssignLead', {
+    //     leadId: lead.id,
+    //     type: 'sale',
+    //     screen: 'LeadDetail',
+    //     purpose: 'reassign',
+    //   })
+    // } else {
+    //   helper.errorToast('Lead Already Assign')
+    // }
   }
 
   goToFormPage = (page, status, client, clientId) => {
@@ -520,10 +526,14 @@ class CMBottomNav extends React.Component {
               ) : null}
               <Menu.Item
                 onPress={() => {
-                  if (closedLeadEdit && assignPermission) {
+                  if (closedLeadEdit) {
                     this.navigateToAssignLead(lead)
                     this.openMenu(false)
                   } else helper.leadClosedToast()
+                  // if (closedLeadEdit && assignPermission) {
+                  //   this.navigateToAssignLead(lead)
+                  //   this.openMenu(false)
+                  // } else helper.leadClosedToast()
                 }}
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Re-Assign"
@@ -543,7 +553,8 @@ class CMBottomNav extends React.Component {
                   <Menu.Item
                     onPress={() => {
                       if (closedLeadEdit) {
-                        this.onCategorySelected(lead)
+                        this.setState({ isLeadCategoryModalVisible: true })
+                        // this.onCategorySelected(lead)
                         this.openMenu(false)
                       } else helper.leadClosedToast()
                     }}

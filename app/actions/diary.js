@@ -57,7 +57,7 @@ export function getDiaryTasks(data) {
         endPoint = `/api/diary/all?date[]=${selectedDate}&agentId=${agentId}&orderBy=${sort}&page=${page}&pageSize=${pageSize}`
         //console.log(endPoint)
       }
-    } else if (fromDate && toDate) {
+    } else if (fromDate && toDate && setScheduled) {
       let selectedSlotsSt = setScheduled
       let queryParams = selectedSlotsSt
         .map((dId) =>

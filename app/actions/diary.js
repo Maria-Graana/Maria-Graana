@@ -434,24 +434,29 @@ const getActiveBookingProperties = (properties, userId) => {
 export function setCategory(data) {
   return (dispatch, getsState) => {
     const { selectedLead } = getsState().diary.diary
-    const { category, selectedDate = null, agentId = null, overdue = false, leadType = null } = data
+    const {
+      category,
+      selectedDate = null,
+      agentId = null,
+      overdue = false,
+      leadId,
+      leadType = null,
+    } = data
     if (selectedLead) {
       let endPoint = ``
       let body = {
         leadCategory: category,
       }
       endPoint = selectedLead.projectId ? `/api/leads/project` : `api/leads`
-      var leadId = []
-      leadId.push(selectedLead.id)
+      var leadIdArr = []
+      leadIdArr.push(selectedLead.id)
       axios
-        .patch(endPoint, body, { params: { id: leadId } })
+        .patch(endPoint, body, { params: { id: leadIdArr } })
         .then((res) => {
           dispatch(setClassificationModal(false))
           if (res.status === 200) {
             helper.successToast(`Lead Category added`)
-            dispatch(
-              getDiaryTasks({ selectedDate, agentId, overdue, leadId: selectedLead.id, leadType })
-            )
+            dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
           } else {
             helper.successToast(`Something went wrong!`)
           }

@@ -214,6 +214,7 @@ export class ScheduledTasks extends Component {
               setCategory({
                 category: value,
                 leadType,
+                leadId: selectedLead.id,
               })
             )
           }

@@ -43,8 +43,6 @@ class DiaryTile extends React.Component {
       screenName,
       leadType,
     } = this.props
-    //const { todayDate, selectedTime, showTask, description, active } = this.state
-    //console.log(diary)
     return (
       <View style={styles.mainContainer}>
         <View style={styles.rowTwo}>
@@ -97,15 +95,16 @@ class DiaryTile extends React.Component {
                         />
                       )}
 
-                      {DiaryHelper.getLeadId(diary) &&
-                      diary.status !== 'completed' &&
-                      diary.status !== 'cancelled' ? (
+                      {(diary.status !== 'completed' &&
+                        diary.status !== 'cancelled' &&
+                        diary.taskType === 'viewing') ||
+                      diary.taskType === 'meeting' ? (
                         <Menu.Item
                           onPress={() => {
-                            setClassification(diary)
+                            initiateConnectFlow(diary)
                             hideMenu()
                           }}
-                          title="Set Classification"
+                          title="Connect"
                         />
                       ) : null}
 
@@ -127,7 +126,7 @@ class DiaryTile extends React.Component {
                           handleMenuActions('task_details')
                           hideMenu()
                         }}
-                        title="Task Details"
+                        title="Additional Information"
                       />
 
                       {diary.status !== 'completed' && diary.status !== 'cancelled' && (
@@ -165,6 +164,18 @@ class DiaryTile extends React.Component {
                         </View>
                       ) : null}
 
+                      {DiaryHelper.getLeadId(diary) &&
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            setClassification(diary)
+                            hideMenu()
+                          }}
+                          title="Set Classification"
+                        />
+                      ) : null}
+
                       {(diary.taskType === 'morning_meeting' ||
                         diary.taskType === 'daily_update' ||
                         diary.taskType === 'meeting_with_pp') &&
@@ -188,7 +199,7 @@ class DiaryTile extends React.Component {
                 <Text
                   style={[
                     styles.taskResponse,
-                    { backgroundColor: diary.reason ? diary.reason.colorCode : 'transparent' },
+                    { borderColor: diary.reason ? diary.reason.colorCode : 'transparent' },
                   ]}
                 >
                   {diary.reasonTag}
@@ -227,7 +238,9 @@ class DiaryTile extends React.Component {
 
                   {diary.status !== 'completed' &&
                   diary.status !== 'cancelled' &&
-                  leadType !== 'wanted' ? (
+                  leadType !== 'wanted' &&
+                  diary.taskType !== 'viewing' &&
+                  diary.taskType !== 'meeting' ? (
                     <TouchableOpacity
                       style={{ width: '10%' }}
                       onPress={() => initiateConnectFlow(diary)}

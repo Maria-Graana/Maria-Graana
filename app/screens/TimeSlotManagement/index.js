@@ -615,7 +615,12 @@ function TimeSlotManagement(props) {
       return '#deecd7'
     } else if (task == 'closed') {
       return '#e6e6e6'
-    } else if (task === 'meeting' || task === 'viewing') {
+    } else if (
+      task === 'meeting' ||
+      task === 'viewing' ||
+      task === 'reassign' ||
+      task === 're-assign'
+    ) {
       return '#99c5fa'
     }
   }
@@ -732,6 +737,10 @@ function TimeSlotManagement(props) {
                                     : setColor(e) == 'connect'
                                     ? '#deecd7'
                                     : setColor(e) == 'meeting'
+                                    ? '#99c5fa'
+                                    : setColor(e) == 'reassign'
+                                    ? '#99c5fa'
+                                    : setColor(e) == 're-assign'
                                     ? '#99c5fa'
                                     : setColor(e) == 'viewing'
                                     ? '#99c5fa'

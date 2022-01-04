@@ -620,6 +620,20 @@ function TimeSlotManagement(props) {
     }
   }
 
+  const navigateTo = () => {
+    const { navigation, dispatch } = props
+    if (props.slotDiary == null) {
+      diaryData([], slots, dispatch)
+    } else {
+      diaryData(props.slotDiary, slots, dispatch)
+    }
+
+    navigation.navigate('ScheduledTasks', {
+      fromDate: startDate,
+      toDate: toDate,
+    })
+  }
+
   return (
     <View style={styles.container}>
       <CalendarComponent
@@ -763,12 +777,7 @@ function TimeSlotManagement(props) {
           borderWidth={1}
           label="Show Details"
           disabled={disabled}
-          onPress={() =>
-            props.navigation.navigate('ScheduledTasks', {
-              fromDate: startDate,
-              toDate: toDate,
-            })
-          }
+          onPress={() => navigateTo()}
         />
         <TouchableButton
           containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}

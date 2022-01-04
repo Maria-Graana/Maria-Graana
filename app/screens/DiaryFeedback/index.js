@@ -66,11 +66,11 @@ class DiaryFeedback extends Component {
     }
   }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props
-    dispatch(clearDiaryFeedbacks())
-    dispatch(setConnectFeedback({}))
-  }
+  // componentWillUnmount() {
+  //   const { dispatch } = this.props
+  //   dispatch(clearDiaryFeedbacks())
+  //   dispatch(setConnectFeedback({}))
+  // }
 
   setNextFlow = () => {
     const { diaryFeedbacks, connectFeedback, dispatch, route, diary } = this.props

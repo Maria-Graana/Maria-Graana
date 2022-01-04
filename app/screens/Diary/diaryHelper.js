@@ -195,8 +195,8 @@ const DiaryHelper = {
   },
   getReportDuration(diary) {
     if (diary && diary.start && diary.end) {
-      return `${moment(diary.start).format('hh:mm')} to  ${moment(diary.end).format(
-        'hh:mm'
+      return `${moment(diary.start).format('hh:mm a')} to  ${moment(diary.end).format(
+        'hh:mm a'
       )} (${moment(diary.start).format('dddd MMM Do')})`
     } else {
       return '-'

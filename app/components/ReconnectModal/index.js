@@ -11,6 +11,9 @@ const ReconnectModal = ({ isReconnectModalVisible, setIsReconnectModalVisible })
   return (
     <Modal isVisible={isReconnectModalVisible}>
       <View style={styles.modalMain}>
+        <View style={styles.row}>
+          <Text style={styles.title}>What would you like to do next ?</Text>
+        </View>
         <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn]}
@@ -45,5 +48,16 @@ const styles = StyleSheet.create({
     shadowColor: '#333333',
     shadowOpacity: 1,
     padding: 15,
+  },
+  row: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+  },
+  title: {
+    width: '90%',
+    color: AppStyles.colors.textColor,
+    fontFamily: AppStyles.fonts.boldFont,
+    fontSize: AppStyles.fontSize.large,
   },
 })

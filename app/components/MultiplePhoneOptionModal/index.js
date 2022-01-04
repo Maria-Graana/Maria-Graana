@@ -45,7 +45,7 @@ const MultiplePhoneOptionModal = ({
           } else {
             Linking.openURL(url)
             showMultiPhoneModal(false)
-            navigation.navigate('DiaryFeedback')
+            navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
           }
         })
         .catch((err) => console.error('An error occurred', err))

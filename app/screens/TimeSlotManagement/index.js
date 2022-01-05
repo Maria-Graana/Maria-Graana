@@ -46,7 +46,7 @@ function TimeSlotManagement(props) {
   const [tempDate, setTempDate] = useState(null)
   const [tempStartTime, setTempStartTime] = useState(null)
   const [tempEndTime, setTempEndTime] = useState(null)
-  const [tempSlot, setTempSlot] = useState(null)
+  const [tempSlot, setTempSlot] = useState([])
   const [sSlots, setSSlots] = useState([])
 
   const [startDate, setStartDate] = useState(null)
@@ -54,6 +54,7 @@ function TimeSlotManagement(props) {
 
   const scrollViewFirst = useRef()
   const scrollViewSecond = useRef()
+  const scrollHorizontal = useRef()
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -102,9 +103,84 @@ function TimeSlotManagement(props) {
       const start = moment(temp.startTime).format('H:mm:ss')
       const end = moment(temp.endTime).format('H:mm:ss')
 
+      checkSlotArea(start)
       onEditSlots(start, end)
+    } else {
+      checkShift()
     }
   }, [selectedDate, dayName])
+
+  const checkSlotArea = (start) => {
+    const min = start.split(':')
+    if (parseInt(min[1]) > 30) {
+      scrollViewFirst.current.scrollTo({
+        x: 0,
+        y: 100,
+        animated: false,
+      })
+      scrollViewSecond.current.scrollTo({
+        x: 0,
+        y: 100,
+        animated: false,
+      })
+    }
+    scrollHorizontal.current.scrollTo({
+      x: parseInt(min[0]) * 50,
+      y: 0,
+      animated: false,
+    })
+  }
+
+  const checkShift = () => {
+    const data = props.userShifts
+    let array = []
+
+    for (var i = 0; i < data.length; i++) {
+      if (dayName == data[i].dayName) {
+        array.push(data[i])
+      }
+    }
+
+    var shiftArr = array.sort((first, sec) => {
+      var a = first.armsShift.startTime.split(':')[0]
+      var b = sec.armsShift.startTime.split(':')[0]
+      return a - b
+    })
+
+    if (array.length > 0) {
+      if (array && array[0].armsShift && array.length == 2) {
+        const start = shiftArr[0].armsShift.startTime
+        const xp = start.split(':')
+        scrollHorizontal.current.scrollTo({
+          x: parseInt(xp[0]) * 50,
+          y: 0,
+          animated: false,
+        })
+      } else if (array && array[0].armsShift && array.length == 3) {
+        const start = shiftArr[0].armsShift.startTime
+        const xp = start.split(':')
+        scrollHorizontal.current.scrollTo({
+          x: parseInt(xp[0]) * 50,
+          y: 0,
+          animated: false,
+        })
+      } else if (array && array[0].armsShift && array.length == 1) {
+        const start = shiftArr[0].armsShift.startTime
+        const xp = start.split(':')
+        scrollHorizontal.current.scrollTo({
+          x: parseInt(xp[0]) * 50,
+          y: 0,
+          animated: false,
+        })
+      }
+    } else {
+      scrollHorizontal.current.scrollTo({
+        x: 9 * 50,
+        y: 0,
+        animated: false,
+      })
+    }
+  }
 
   const onEditSlots = (start, end) => {
     const { dispatch } = props
@@ -119,7 +195,11 @@ function TimeSlotManagement(props) {
     }
     setStartDate(slotsData[0].startTime)
     setToDate(slotsData[slotsData.length - 1].endTime)
-    diaryData(props.slotDiary, slots, dispatch)
+    if (props.slotDiary == null) {
+      diaryData([], slots, dispatch)
+    } else {
+      diaryData(props.slotDiary, slots, dispatch)
+    }
   }
 
   const isTimeBetween = function (startTime, endTime, serverTime) {
@@ -172,7 +252,12 @@ function TimeSlotManagement(props) {
       diaryData(props.slotDiary, slots, dispatch)
     }
 
-    const sortedAray = _.sortBy(slotsData, 'id')
+    setActualData()
+  }
+
+  const setActualData = () => {
+    const { dispatch } = props
+    const sortedAray = _.sortBy(slotsData, 'startTime')
 
     const _format = 'YYYY-MM-DD'
     const date = selectedDate
@@ -201,10 +286,36 @@ function TimeSlotManagement(props) {
     setTempSlot(slots)
     setStartDate(sDate)
     setToDate(eDate)
+
+    dispatch(setSlotData(date, startTime, endTime, slots))
+    dispatch(setDataSlotsArray(sortedAray))
   }
 
   const onDone = () => {
-    const { dispatch, navigation, route } = props
+    setActualData()
+    const dataActual = []
+    const _format = 'YYYY-MM-DD'
+    const { dispatch, navigation, route, allTimeSlot } = props
+    if (slots.length > 0) {
+      for (var i = 0; i < slots.length; i++) {
+        for (var j = 0; j < allTimeSlot.length; j++) {
+          if (slots[i] == allTimeSlot[j].id) {
+            dataActual.push(allTimeSlot[j])
+          }
+        }
+      }
+    }
+    const sortedAray = _.sortBy(dataActual, 'startTime')
+    const date = selectedDate
+    const nextDate = moment(selectedDate, _format).add(1, 'days').format(_format)
+    const startTime = formatDateAndTime(selectedDate, sortedAray && sortedAray[0].startTime)
+    const endTime = formatDateAndTime(
+      compareTime(sortedAray[0].startTime, sortedAray[sortedAray.length - 1].endTime)
+        ? nextDate
+        : selectedDate,
+      sortedAray && sortedAray[sortedAray.length - 1].endTime
+    )
+
     const { data = null, isFromConnectFlow = false } = route.params
     if (data && isFromConnectFlow) {
       let copyData = Object.assign({}, data)
@@ -223,8 +334,10 @@ function TimeSlotManagement(props) {
         }
       })
     } else {
-      dispatch(setSlotData(tempDate, tempStartTime, tempEndTime, tempSlot))
-      dispatch(setDataSlotsArray(slotsData))
+      if (sortedAray) {
+        dispatch(setSlotData(date, startTime, endTime, slots))
+        dispatch(setDataSlotsArray(sortedAray))
+      }
       navigation.goBack()
     }
   }
@@ -248,6 +361,7 @@ function TimeSlotManagement(props) {
       } else {
         setSlotsData([e])
         setSlots([e.id])
+        setTempSlot([e.id])
         setIsSelected([e.id])
         setSSlots([])
         fortyPercent(e)
@@ -706,7 +820,7 @@ function TimeSlotManagement(props) {
             })}
           </View>
         </ScrollView>
-        <ScrollView horizontal={true}>
+        <ScrollView horizontal={true} ref={scrollHorizontal}>
           <View style={{ flexDirection: 'column' }}>
             <View style={styles.viewHourCol}>
               {hourArray.map((o, i) => {

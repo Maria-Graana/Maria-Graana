@@ -91,7 +91,7 @@ const RentPaymentView = (props) => {
 
   return (
     <View>
-      <MonthlyTile />
+      {/* <MonthlyTile /> */}
       <View style={{ paddingVertical: 5 }} />
       {!tokenPayment ? (
         <RCMBTN

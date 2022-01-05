@@ -48,6 +48,7 @@ var CANCEL_INDEX = 3
 class RentLeads extends React.Component {
   constructor(props) {
     super(props)
+    const { permissions } = this.props
     this.state = {
       leadsData: [],
       statusFilter: '',
@@ -77,6 +78,17 @@ class RentLeads extends React.Component {
       statusFilterType: 'id',
       comment: null,
       newActionModal: false,
+      fabActions: [],
+      createBuyRentLead: getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
+      createProjectLead: getPermissionValue(
+        PermissionFeatures.PROJECT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
     }
   }
 
@@ -86,6 +98,7 @@ class RentLeads extends React.Component {
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()
+      this.setFabActions()
     })
   }
 
@@ -643,6 +656,30 @@ class RentLeads extends React.Component {
     this.setState({ statusFilterType: status })
   }
 
+  setFabActions = () => {
+    const { createBuyRentLead, createProjectLead } = this.state
+    let fabActions = []
+    if (createBuyRentLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Buy/Rent Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+      })
+    }
+    if (createProjectLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Investment Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+      })
+    }
+    this.setState({
+      fabActions: fabActions,
+    })
+  }
+
   render() {
     const {
       leadsData,
@@ -669,9 +706,12 @@ class RentLeads extends React.Component {
       statusFilterType,
       comment,
       newActionModal,
+      fabActions,
+      createBuyRentLead,
+      createProjectLead,
     } = this.state
     const { user, navigation, permissions } = this.props
-    const {screen} = this.props.route.params
+    const { screen } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -774,7 +814,7 @@ class RentLeads extends React.Component {
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
-                    screenName = {screen}
+                    screenName={screen}
                   />
                 ) : (
                   <PPLeadTile
@@ -813,54 +853,17 @@ class RentLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {getPermissionValue(
-          PermissionFeatures.PROJECT_LEADS,
-          PermissionActions.CREATE,
-          permissions
-        ) ||
-        getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.CREATE,
-          permissions
-        ) ? (
-          <>
-            {user.organization && user.organization.isPP ? (
-              <Fab
-                active="true"
-                containerStyle={{ zIndex: 20 }}
-                style={{ backgroundColor: AppStyles.colors.primaryColor }}
-                position="bottomRight"
-                onPress={() => this.goToFormPage('AddRCMLead', 'RCM', null, null)}
-              >
-                <Ionicons name="md-add" color="#ffffff" />
-              </Fab>
-            ) : (
-              <FAB.Group
-                open={open}
-                icon="plus"
-                style={{ marginBottom: 16 }}
-                fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-                color={AppStyles.bgcWhite.backgroundColor}
-                actions={[
-                  {
-                    icon: 'plus',
-                    label: 'Buy/Rent Lead',
-                    color: AppStyles.colors.primaryColor,
-                    onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-                  },
-                  {
-                    icon: 'plus',
-                    label: 'Investment Lead',
-                    color: AppStyles.colors.primaryColor,
-                    onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-                  },
-                ]}
-                onStateChange={({ open }) => this.setState({ open })}
-              />
-            )}
-          </>
+        {createProjectLead || createBuyRentLead ? (
+          <FAB.Group
+            open={open}
+            icon="plus"
+            style={{ marginBottom: 16 }}
+            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+            color={AppStyles.bgcWhite.backgroundColor}
+            actions={fabActions}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
         ) : null}
-
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={selectedClientContacts.payload}

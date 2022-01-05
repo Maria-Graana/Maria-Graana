@@ -54,6 +54,7 @@ function TimeSlotManagement(props) {
 
   const scrollViewFirst = useRef()
   const scrollViewSecond = useRef()
+  const scrollHorizontal = useRef()
 
   const rotateArray = data && data[0].map((val, index) => data.map((row) => row[index]))
 
@@ -104,7 +105,56 @@ function TimeSlotManagement(props) {
 
       onEditSlots(start, end)
     }
+
+    checkShift()
   }, [selectedDate, dayName])
+
+  const checkShift = () => {
+    const data = props.userShifts
+    let array = []
+
+    for (var i = 0; i < data.length; i++) {
+      if (dayName == data[i].dayName) {
+        array.push(data[i])
+      }
+    }
+
+    var shiftArr = _.sortBy(array, 'startTime')
+
+    if (array.length > 0) {
+      if (array && array[0].armsShift && array.length == 2) {
+        const start = shiftArr[0].armsShift.startTime
+        const xp = start.split(':')
+        scrollHorizontal.current.scrollTo({
+          x: parseInt(xp[0]) * 50,
+          y: 0,
+          animated: false,
+        })
+      } else if (array && array[0].armsShift && array.length == 3) {
+        const start = shiftArr[0].armsShift.startTime
+        const xp = start.split(':')
+        scrollHorizontal.current.scrollTo({
+          x: parseInt(xp[0]) * 50,
+          y: 0,
+          animated: false,
+        })
+      } else if (array && array[0].armsShift && array.length == 1) {
+        const start = shiftArr[0].armsShift.startTime
+        const xp = start.split(':')
+        scrollHorizontal.current.scrollTo({
+          x: parseInt(xp[0]) * 50,
+          y: 0,
+          animated: false,
+        })
+      }
+    } else {
+      scrollHorizontal.current.scrollTo({
+        x: 9 * 50,
+        y: 0,
+        animated: false,
+      })
+    }
+  }
 
   const onEditSlots = (start, end) => {
     const { dispatch } = props
@@ -744,7 +794,7 @@ function TimeSlotManagement(props) {
             })}
           </View>
         </ScrollView>
-        <ScrollView horizontal={true}>
+        <ScrollView horizontal={true} ref={scrollHorizontal}>
           <View style={{ flexDirection: 'column' }}>
             <View style={styles.viewHourCol}>
               {hourArray.map((o, i) => {

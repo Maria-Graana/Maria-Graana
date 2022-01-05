@@ -103,11 +103,33 @@ function TimeSlotManagement(props) {
       const start = moment(temp.startTime).format('H:mm:ss')
       const end = moment(temp.endTime).format('H:mm:ss')
 
+      checkSlotArea(start)
       onEditSlots(start, end)
+    } else {
+      checkShift()
     }
-
-    checkShift()
   }, [selectedDate, dayName])
+
+  const checkSlotArea = (start) => {
+    const min = start.split(':')
+    if (parseInt(min[1]) > 30) {
+      scrollViewFirst.current.scrollTo({
+        x: 0,
+        y: 100,
+        animated: false,
+      })
+      scrollViewSecond.current.scrollTo({
+        x: 0,
+        y: 100,
+        animated: false,
+      })
+    }
+    scrollHorizontal.current.scrollTo({
+      x: parseInt(min[0]) * 50,
+      y: 0,
+      animated: false,
+    })
+  }
 
   const checkShift = () => {
     const data = props.userShifts
@@ -119,7 +141,11 @@ function TimeSlotManagement(props) {
       }
     }
 
-    var shiftArr = _.sortBy(array, 'startTime')
+    var shiftArr = array.sort((first, sec) => {
+      var a = first.armsShift.startTime.split(':')[0]
+      var b = sec.armsShift.startTime.split(':')[0]
+      return a - b
+    })
 
     if (array.length > 0) {
       if (array && array[0].armsShift && array.length == 2) {

@@ -29,6 +29,7 @@ import { isEmpty } from 'underscore'
 import StaticData from '../../StaticData'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -50,6 +51,12 @@ class ArmsInventories extends React.Component {
       selectedArea: null,
       showMenu: false,
       selectedProperty: null,
+      armsModalActive: false,
+      PropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
@@ -131,6 +138,69 @@ class ArmsInventories extends React.Component {
 
   goToInventoryForm = () => {
     RootNavigation.navigate('AddInventory')
+  }
+  armsVerifeyModal = (status, id) => {
+    const { propertiesList } = this.state
+    if (status === true) {
+      var filterProperty = propertiesList.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        PropertyData: filterProperty,
+        armsModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        armsModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  armsStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitarmsStatusAmount('other')
+    }
+  }
+  handleForm = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
+  }
+  submitarmsStatusAmount = (check) => {
+    const { PropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: 'arms'
+    }
+    if (check === 'amount') {
+      ;(endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`), body
+    } else {
+      endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`
+    }
+    formData['amount'] = ''
+    axios.patch(endpoint).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          armsModalActive: false,
+          formData,
+        },
+        () => {
+          helper.successToast(res.data)
+        }
+      )
+    })
   }
 
   deleteProperty = (id) => {
@@ -282,6 +352,10 @@ class ArmsInventories extends React.Component {
       selectedArea,
       showMenu,
       selectedProperty,
+      armsModalActive,
+      PropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
     const { user, route } = this.props
     let createPermission = this.createPermission()
@@ -410,6 +484,7 @@ class ArmsInventories extends React.Component {
                 hideMenu={() => this.hideMenu()}
                 selectedProperty={selectedProperty}
                 goToAttachments={this.goToAttachments}
+                graanaVerifeyModal={this.armsVerifeyModal}
               />
             )}
             onEndReached={() => {
@@ -431,6 +506,16 @@ class ArmsInventories extends React.Component {
         ) : (
           <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
         )}
+        <GraanaPropertiesModal
+          active={armsModalActive}
+          data={PropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleForm}
+          graanaVerifeyModal={this.armsVerifeyModal}
+          submitStatus={this.armsStatusSubmit}
+          submitGraanaStatusAmount={this.submitarmsStatusAmount}
+        />
 
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
       </View>

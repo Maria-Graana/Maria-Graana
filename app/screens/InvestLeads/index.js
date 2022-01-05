@@ -42,6 +42,7 @@ var CANCEL_INDEX = 3
 class InvestLeads extends React.Component {
   constructor(props) {
     super(props)
+    const { permissions } = this.props
     this.state = {
       leadsData: [],
       purposeTab: 'invest',
@@ -70,6 +71,17 @@ class InvestLeads extends React.Component {
       comment: null,
       newActionModal: false,
       isMenuVisible: false,
+      fabActions: [],
+      createBuyRentLead: getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
+      createProjectLead: getPermissionValue(
+        PermissionFeatures.PROJECT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
     }
   }
 
@@ -84,6 +96,7 @@ class InvestLeads extends React.Component {
         dispatch(getListingsCount())
         this.getServerTime()
         this.onFocus()
+        this.setFabActions()
       })
     }
   }
@@ -231,16 +244,15 @@ class InvestLeads extends React.Component {
     })
   }
 
- 
   navigateFromMenu = (data, name) => {
-    const {screen} = this.props.route.params
+    const { screen } = this.props.route.params
     this.props.dispatch(setlead(data))
     this.props.navigation.navigate(name, {
       lead: data,
       purposeTab: 'invest',
       screen: 'InvestLeads',
       cmLeadId: data.id,
-      screenName : screen
+      screenName: screen,
     })
     this.setIsMenuVisible(false, data)
   }
@@ -509,6 +521,74 @@ class InvestLeads extends React.Component {
     navigation.navigate('CMLeadTabs', { screen: 'Payments' })
   }
 
+  createProjectLead = () => {
+    const { permissions } = this.props
+    const { fabActions } = this.state
+    if (
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)
+    ) {
+      this.setState({
+        fabActions: [
+          {
+            icon: 'plus',
+            label: 'Investment Lead',
+            color: AppStyles.colors.primaryColor,
+            onPress: () => {
+              if (createProjectLead) this.goToFormPage('AddCMLead', 'CM', null)
+            },
+          },
+        ],
+      })
+      return true
+    }
+  }
+
+  createBuyRentLead = () => {
+    const { permissions } = this.props
+    const { fabActions } = this.state
+    if (
+      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.CREATE, permissions)
+    ) {
+      this.setState({
+        fabActions: [
+          {
+            icon: 'plus',
+            label: 'Buy/Rent Lead',
+            color: AppStyles.colors.primaryColor,
+            onPress: () => {
+              if (createBuyRentLead) this.goToFormPage('AddRCMLead', 'RCM', null)
+            },
+          },
+        ],
+      })
+      return true
+    }
+  }
+
+  setFabActions = () => {
+    const { createBuyRentLead, createProjectLead } = this.state
+    let fabActions = []
+    if (createBuyRentLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Buy/Rent Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+      })
+    }
+    if (createProjectLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Investment Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+      })
+    }
+    this.setState({
+      fabActions: fabActions,
+    })
+  }
+
   render() {
     const {
       leadsData,
@@ -533,10 +613,14 @@ class InvestLeads extends React.Component {
       comment,
       newActionModal,
       isMenuVisible,
+      fabActions,
+      createBuyRentLead,
+      createProjectLead,
     } = this.state
     const { user, permissions } = this.props
-    const {screen} = this.props.route.params
+    const { screen } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
+
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
@@ -651,36 +735,14 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {getPermissionValue(
-          PermissionFeatures.PROJECT_LEADS,
-          PermissionActions.CREATE,
-          permissions
-        ) ||
-        getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.CREATE,
-          permissions
-        ) ? (
+        {createProjectLead || createBuyRentLead ? (
           <FAB.Group
             open={open}
             icon="plus"
             style={{ marginBottom: 16 }}
             fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
             color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              {
-                icon: 'plus',
-                label: 'Buy/Rent Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
-              },
-              {
-                icon: 'plus',
-                label: 'Investment Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
-              },
-            ]}
+            actions={fabActions}
             onStateChange={({ open }) => this.setState({ open })}
           />
         ) : null}

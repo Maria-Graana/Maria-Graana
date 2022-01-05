@@ -244,6 +244,17 @@ export function initiateConnectFlow() {
   }
 }
 
+export const getActivityHistory = (lead, leadType) => {
+  let url = ''
+  if (leadType === 'BuyRent') {
+    url = `/api/leads/tasks?rcmLeadId=${lead.id}`
+  } else {
+    url = `/api/leads/tasks?cmLeadId=${lead.id}`
+  }
+  let promise = axios.get(url)
+  return promise
+}
+
 export const capitalizeWordsWithoutUnderscore = (str, skip = false) => {
   return (
     str &&

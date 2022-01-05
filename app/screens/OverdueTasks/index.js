@@ -23,13 +23,17 @@ import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
   cancelDiaryMeeting,
   cancelDiaryViewing,
+  clearDiaries,
   clearDiaryFilter,
   deleteDiaryTask,
+  getActivityHistory,
+  getDiaryFeedbacks,
   getDiaryTasks,
   increasePageCount,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
+  setConnectFeedback,
   setDairyFilterApplied,
   setOnEndReachedLoader,
   setPageCount,
@@ -39,6 +43,10 @@ import {
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import moment from 'moment'
 import { DiarySortModal } from '../../components/DiarySortModal'
+import { clearSlotDiaryData, setSlotData, setSlotDiaryData } from '../../actions/slotManagement'
+import HistoryModal from '../../components/HistoryModal'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import diaryHelper from '../Diary/diaryHelper'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -51,6 +59,8 @@ class OverdueTasks extends React.Component {
       showMenu: false,
       selectedDiary: null,
       isSortModalVisible: false,
+      activityHistoryData: [],
+      isActivityHistoryModalVisible: false,
     }
   }
   componentDidMount() {
@@ -73,35 +83,94 @@ class OverdueTasks extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch } = this.props
-    const { selectedDiary } = diary
-    const { agentId } = this.state
+    const { navigation, diary, dispatch, connectFeedback } = this.props
+    const { selectedDiary, selectedLead } = diary
+    const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone({ agentId, overdue: true }))
+      if (selectedDiary.taskCategory === 'simpleTask') {
+        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+      } else {
+        dispatch(
+          setConnectFeedback({
+            ...connectFeedback,
+            id: selectedDiary.id,
+          })
+        ).then((res) => {
+          dispatch(
+            getDiaryFeedbacks({
+              taskType: selectedDiary.taskType,
+              leadType: diaryHelper.getLeadType(selectedDiary),
+              actionType: 'Done',
+            })
+          ).then((res) => {
+            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+          })
+        })
+      }
     } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing({ agentId, overdue: true }))
+      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
     } else if (action === 'cancel_meeting') {
-      dispatch(cancelDiaryMeeting({ agentId, overdue: true }))
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
+        })
+      )
+      dispatch(
+        getDiaryFeedbacks({
+          taskType: 'meeting',
+          leadType: diaryHelper.getLeadType(selectedDiary),
+          actionType: 'Cancel',
+        })
+      ).then((res) => {
+        navigation.navigate('DiaryFeedback')
+      })
     } else if (action === 'task_details') {
-      navigation.navigate('TaskDetails', { diary: selectedDiary })
+      const { selectedDate } = this.state
+      dispatch(clearDiaries())
+      if (selectedDiary) {
+        dispatch(
+          setSlotData(
+            moment(selectedDiary.date).format('YYYY-MM-DD'),
+            selectedDiary.start,
+            selectedDiary.end,
+            []
+          )
+        )
+      }
+      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate })
     } else if (action === 'edit_task') {
+      this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')
     } else if (action === 'reassign_lead') {
       this.navigateToReferAssignLead('reassign')
+    } else if (action === 'activity_history') {
+      getActivityHistory(selectedLead, diaryHelper.getLeadType(selectedDiary)).then((res) => {
+        if (res) {
+          this.setState({ isActivityHistoryModalVisible: true, activityHistoryData: res.data })
+        }
+      })
     } else if (action === 'delete') {
       Alert.alert(
         'Delete Task',
         'Are you sure you want to delete this task ?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', onPress: () => dispatch(deleteDiaryTask({ agentId, overdue: true })) },
+          {
+            text: 'Delete',
+            onPress: () => {
+              dispatch(deleteDiaryTask({ selectedDate, agentId }))
+              dispatch(clearSlotDiaryData())
+              dispatch(setSlotDiaryData(selectedDate))
+              this.setState({ isDelete: true })
+            },
+          },
         ],
         { cancelable: false }
       )
     }
   }
-
   navigateToReferAssignLead = (mode) => {
     const { navigation } = this.props
     const { selectedLead, selectedDiary } = this.props.diary
@@ -166,9 +235,40 @@ class OverdueTasks extends React.Component {
     this.setState({ isSortModalVisible: value })
   }
 
+  goToAddEditDiaryScreen = (update, data = null) => {
+    const { navigation, dispatch } = this.props
+    const { selectedDate } = this.state
+    dispatch(clearDiaries())
+    if (data) {
+      dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
+    }
+    navigation.navigate('AddDiary', { update, data, selectedDate })
+  }
+
+  showMultiPhoneModal = (value) => {
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
+  }
+
   render() {
-    const { selectedDate, showMenu, agentId, isSortModalVisible } = this.state
-    const { diary, dispatch, route, onEndReachedLoader, sortValue, isFilterApplied } = this.props
+    const {
+      selectedDate,
+      showMenu,
+      agentId,
+      isSortModalVisible,
+      isActivityHistoryModalVisible,
+      activityHistoryData,
+    } = this.state
+    const {
+      diary,
+      dispatch,
+      route,
+      onEndReachedLoader,
+      sortValue,
+      isFilterApplied,
+      isMultiPhoneModalVisible,
+      navigation,
+    } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
@@ -198,6 +298,19 @@ class OverdueTasks extends React.Component {
           agentId={agentId}
           sortValue={sortValue}
           showSortModalVisible={(value) => this.showSortModalVisible(value)}
+        />
+
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
+          navigation={navigation}
+        />
+
+        <HistoryModal
+          navigation={navigation}
+          data={activityHistoryData}
+          closePopup={(value) => this.setState({ isActivityHistoryModalVisible: value })}
+          openPopup={isActivityHistoryModalVisible}
         />
 
         <View style={styles.rowOne}>
@@ -299,11 +412,18 @@ mapStateToProps = (store) => {
     diary: store.diary.diary,
     selectedDiary: store.diary.selectedDiary,
     selectedLead: store.diary.selectedLead,
+    overdueCount: store.diary.overdueCount,
     page: store.diary.page,
     pageSize: store.diary.pageSize,
+    userShifts: store.slotManagement.userTimeShifts,
+    diaryStat: store.diary.diaryStats,
     sortValue: store.diary.sort,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     onEndReachedLoader: store.diary.onEndReachedLoader,
     isFilterApplied: store.diary.isFilterApplied,
+    slotDiary: store.slotManagement.slotDiaryData,
+    connectFeedback: store.diary.connectFeedback,
+    filters: store.diary.filters,
   }
 }
 

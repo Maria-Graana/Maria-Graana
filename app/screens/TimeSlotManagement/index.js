@@ -112,18 +112,18 @@ function TimeSlotManagement(props) {
 
   const checkSlotArea = (start) => {
     const min = start.split(':')
-    if (parseInt(min[1]) > 30) {
-      scrollViewFirst.current.scrollTo({
-        x: 0,
-        y: 100,
-        animated: false,
-      })
-      scrollViewSecond.current.scrollTo({
-        x: 0,
-        y: 100,
-        animated: false,
-      })
-    }
+    // if (parseInt(min[1]) > 30) {
+    //   scrollViewFirst.current.scrollTo({
+    //     x: 0,
+    //     y: 100,
+    //     animated: false,
+    //   })
+    //   scrollViewSecond.current.scrollTo({
+    //     x: 0,
+    //     y: 100,
+    //     animated: false,
+    //   })
+    // }
     scrollHorizontal.current.scrollTo({
       x: parseInt(min[0]) * 50,
       y: 0,

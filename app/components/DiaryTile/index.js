@@ -95,10 +95,9 @@ class DiaryTile extends React.Component {
                         />
                       )}
 
-                      {(diary.status !== 'completed' &&
-                        diary.status !== 'cancelled' &&
-                        diary.taskType === 'viewing') ||
-                      diary.taskType === 'meeting' ? (
+                      {diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' &&
+                      (diary.taskType === 'viewing' || diary.taskType === 'meeting') ? (
                         <Menu.Item
                           onPress={() => {
                             initiateConnectFlow(diary)

@@ -77,7 +77,7 @@ export function getDiaryTasks(data) {
       }
     }
 
-    console.log('endpoint', endPoint)
+    //console.log('endpoint', endPoint)
 
     if (page === 1) {
       dispatch({
@@ -520,7 +520,6 @@ export function setCategory(data) {
       leadId,
       leadType = null,
     } = data
-    console.log(data)
     if (selectedLead) {
       let endPoint = ``
       let body = {
@@ -529,7 +528,6 @@ export function setCategory(data) {
       endPoint = selectedDiary.armsProjectLeadId ? `/api/leads/project` : `api/leads`
       var leadIdArr = []
       leadIdArr.push(selectedLead.id)
-      console.log('endPoint=>', endPoint)
       axios
         .patch(endPoint, body, { params: { id: leadIdArr } })
         .then((res) => {

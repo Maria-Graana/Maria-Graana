@@ -93,7 +93,6 @@ export class ScheduledTasks extends Component {
 
   showMenuOptions = (data) => {
     const { dispatch } = this.props
-    console.log('data=>', data)
     dispatch(setSelectedDiary(data))
     this.setState({ showMenu: true })
   }

@@ -159,7 +159,11 @@ class DiaryFeedback extends Component {
           })
         }
       })
-    } else if (type === 'set_follow_up' || type === 'add_meeting') {
+    } else if (
+      type === 'set_follow_up' ||
+      type === 'add_meeting' ||
+      type === 'setup_another_meeting'
+    ) {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,

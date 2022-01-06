@@ -13,19 +13,35 @@ import { Fab } from 'native-base'
 import helper from '../../helper.js'
 import noData from '../../../assets/img/no-result-found.png'
 import {
+  addInvestmentGuide,
   cancelDiaryMeeting,
   cancelDiaryViewing,
   clearDiaries,
   deleteDiaryTask,
+  getActivityHistory,
+  getDiaryFeedbacks,
   getDiaryTasks,
+  initiateConnectFlow,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
+  setConnectFeedback,
+  setMultipleModalVisible,
+  setReferenceGuideData,
   setSelectedDiary,
 } from '../../actions/diary'
 import Loader from '../../components/loader'
-import { clearSlotData, setSlotData, setSlotDiaryData } from '../../actions/slotManagement'
+import {
+  clearSlotData,
+  clearSlotDiaryData,
+  setSlotData,
+  setSlotDiaryData,
+} from '../../actions/slotManagement'
 import moment from 'moment'
+import diaryHelper from '../Diary/diaryHelper'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import HistoryModal from '../../components/HistoryModal'
 
 export class ScheduledTasks extends Component {
   constructor(props) {
@@ -35,6 +51,8 @@ export class ScheduledTasks extends Component {
       isDelete: false,
       leadId: null,
       leadType: null,
+      activityHistoryData: [],
+      isActivityHistoryModalVisible: false,
     }
   }
 
@@ -101,16 +119,69 @@ export class ScheduledTasks extends Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch } = this.props
-    const { selectedDiary } = diary
-    const { leadType, leadId } = this.state
+    const { navigation, diary, dispatch, connectFeedback, referenceGuide } = this.props
+    const { selectedDiary, selectedLead } = diary
+    const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
-      dispatch(markDiaryTaskAsDone({ leadId, leadType }))
+      if (selectedDiary.taskCategory === 'simpleTask') {
+        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+      } else {
+        dispatch(
+          setConnectFeedback({
+            ...connectFeedback,
+            id: selectedDiary.id,
+          })
+        ).then((res) => {
+          if (selectedDiary.taskType === 'meeting' && !selectedLead.guideReference) {
+            // check if reference number exists for meeting task when marking task as done, show modal if not
+            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
+          } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+            // reference number exists for the selected lead, so directly marking it as done
+            dispatch(
+              getDiaryFeedbacks({
+                taskType: selectedDiary.taskType,
+                leadType: diaryHelper.getLeadType(selectedDiary),
+                actionType: 'Done',
+              })
+            ).then((res) => {
+              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+            })
+          } else {
+            // for all other cases
+            dispatch(
+              getDiaryFeedbacks({
+                taskType: selectedDiary.taskType,
+                leadType: diaryHelper.getLeadType(selectedDiary),
+                actionType: 'Done',
+              })
+            ).then((res) => {
+              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+            })
+          }
+        })
+      }
     } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing({ leadId, leadType }))
+      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
     } else if (action === 'cancel_meeting') {
-      dispatch(cancelDiaryMeeting({ leadId, leadType }))
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
+        })
+      )
+      dispatch(
+        getDiaryTasks({
+          taskType: 'meeting',
+          leadType: diaryHelper.getLeadType(selectedDiary),
+          actionType: 'Cancel',
+        })
+      ).then((res) => {
+        navigation.navigate('DiaryFeedback')
+      })
+      // dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
+      const { selectedDate } = this.state
+      dispatch(clearDiaries())
       if (selectedDiary) {
         dispatch(
           setSlotData(
@@ -121,13 +192,19 @@ export class ScheduledTasks extends Component {
           )
         )
       }
-      navigation.navigate('TaskDetails', { diary: selectedDiary })
+      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
       this.navigateToReferAssignLead('refer')
     } else if (action === 'reassign_lead') {
       this.navigateToReferAssignLead('reassign')
+    } else if (action === 'activity_history') {
+      getActivityHistory(selectedLead, diaryHelper.getLeadType(selectedDiary)).then((res) => {
+        if (res) {
+          this.setState({ isActivityHistoryModalVisible: true, activityHistoryData: res.data })
+        }
+      })
     } else if (action === 'delete') {
       Alert.alert(
         'Delete Task',
@@ -137,10 +214,10 @@ export class ScheduledTasks extends Component {
           {
             text: 'Delete',
             onPress: () => {
-              dispatch(deleteDiaryTask({ leadId, leadType }))
-              // dispatch(clearSlotData())
-              // dispatch(setSlotDiaryData(selectedDate))
-              // this.setState({ isDelete: true })
+              dispatch(deleteDiaryTask({ selectedDate, agentId }))
+              dispatch(clearSlotDiaryData())
+              dispatch(setSlotDiaryData(selectedDate))
+              this.setState({ isDelete: true })
             },
           },
         ],
@@ -183,9 +260,16 @@ export class ScheduledTasks extends Component {
     })
   }
 
+  showMultiPhoneModal = (value) => {
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
+  }
+
   render() {
-    const { showMenu, leadType, leadId } = this.state
-    const { dispatch, diary, route } = this.props
+    const { showMenu, leadType, leadId, isActivityHistoryModalVisible, activityHistoryData } =
+      this.state
+    const { dispatch, diary, route, referenceGuide, navigation, isMultiPhoneModalVisible } =
+      this.props
     const { purposeTab } = route.params
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
@@ -214,7 +298,7 @@ export class ScheduledTasks extends Component {
               setCategory({
                 category: value,
                 leadType,
-                leadId: selectedLead.id,
+                leadId,
               })
             )
           }
@@ -222,6 +306,42 @@ export class ScheduledTasks extends Component {
             selectedLead && selectedLead.leadCategory ? selectedLead.leadCategory : null
           }
         />
+
+        <ReferenceGuideModal
+          isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
+          hideReferenceGuideModal={() =>
+            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
+          }
+          addInvestmentGuide={(guideNo, attachments) =>
+            dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
+              dispatch(
+                getDiaryFeedbacks({
+                  taskType: selectedDiary.taskType,
+                  leadType: diaryHelper.getLeadType(selectedDiary),
+                  actionType: 'Done',
+                })
+              ).then((res) => {
+                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+              })
+            })
+          }
+          referenceGuideLoading={referenceGuide.referenceGuideLoading}
+          referenceErrorMessage={referenceGuide.referenceErrorMessage}
+        />
+
+        <MultiplePhoneOptionModal
+          isMultiPhoneModalVisible={isMultiPhoneModalVisible}
+          showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
+          navigation={navigation}
+        />
+
+        <HistoryModal
+          navigation={navigation}
+          data={activityHistoryData}
+          closePopup={(value) => this.setState({ isActivityHistoryModalVisible: value })}
+          openPopup={isActivityHistoryModalVisible}
+        />
+
         {loading ? (
           <Loader loading={loading} />
         ) : diaries && diaries.rows && diaries.rows.length > 0 ? (
@@ -233,13 +353,27 @@ export class ScheduledTasks extends Component {
                 diary={item}
                 showMenu={showMenu}
                 showMenuOptions={(value) => this.showMenuOptions(value)}
-                selectedDiary={selectedDiary}
-                hideMenu={() => this.hideMenu()}
-                goToLeadDetails={this.navigateToLeadDetail}
                 handleMenuActions={(action) => this.handleMenuActions(action)}
                 setClassification={(diary) => {
                   dispatch(setSelectedDiary(diary))
                   dispatch(setClassificationModal(true))
+                }}
+                goToLeadDetails={this.navigateToLeadDetail}
+                selectedDiary={selectedDiary}
+                screenName={'scheduledTasks'}
+                hideMenu={() => this.hideMenu()}
+                initiateConnectFlow={(diary) => {
+                  dispatch(setSelectedDiary(diary))
+                  dispatch(initiateConnectFlow()).then((res) => {
+                    this.showMultiPhoneModal(true)
+                    dispatch(
+                      getDiaryFeedbacks({
+                        taskType: diary.taskType,
+                        leadType: diaryHelper.getLeadType(diary),
+                        actionType: 'Connect',
+                      })
+                    )
+                  })
                 }}
                 leadType={leadType}
               />
@@ -256,10 +390,14 @@ export class ScheduledTasks extends Component {
 
 mapStateToProps = (store) => {
   return {
+    user: store.user.user,
     diary: store.diary.diary,
     selectedDiary: store.diary.selectedDiary,
     selectedLead: store.diary.selectedLead,
-    user: store.user.user,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
+    slotDiary: store.slotManagement.slotDiaryData,
+    connectFeedback: store.diary.connectFeedback,
+    referenceGuide: store.diary.referenceGuide,
   }
 }
 

@@ -231,26 +231,40 @@ class DiaryFeedback extends Component {
         })
       })
     } else if (type === 'reschedule_meeting') {
-      navigation.replace('TimeSlotManagement', {
-        data: {
-          userId: user.id,
-          taskCategory: 'leadTask',
-          reasonTag: connectFeedback.tag,
-          reasonId: connectFeedback.feedbackId,
-          makeHistory: true,
-          id: selectedDiary.id,
-          taskType: 'meeting',
-          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
-          leadId:
-            selectedDiary && selectedDiary.armsProjectLeadId
-              ? selectedDiary.armsProjectLeadId
-              : null,
-        },
-        taskType: 'meeting',
-        isFromConnectFlow: true,
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          comments: connectFeedback.comments,
+          response: connectFeedback.comments,
+          leadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+          feedbackId: connectFeedback.feedbackId,
+          feedbackTag: connectFeedback.tag,
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            navigation.replace('TimeSlotManagement', {
+              data: {
+                userId: user.id,
+                taskCategory: 'leadTask',
+                reasonTag: connectFeedback.tag,
+                reasonId: connectFeedback.feedbackId,
+                makeHistory: true,
+                id: selectedDiary.id,
+                taskType: 'meeting',
+                leadId:
+                  selectedDiary && selectedDiary.armsProjectLeadId
+                    ? selectedDiary.armsProjectLeadId
+                    : null,
+              },
+              taskType: 'meeting',
+              isFromConnectFlow: true,
+            })
+            dispatch(setConnectFeedback({}))
+            dispatch(clearDiaryFeedbacks())
+          }
+        })
       })
-      dispatch(setConnectFeedback({}))
-      dispatch(clearDiaryFeedbacks())
     } else if (type === 'reject') {
       dispatch(
         setConnectFeedback({

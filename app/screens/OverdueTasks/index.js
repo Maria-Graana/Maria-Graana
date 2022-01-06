@@ -21,6 +21,7 @@ import helper from '../../helper.js'
 import Loader from '../../components/loader'
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 import {
+  addInvestmentGuide,
   cancelDiaryMeeting,
   cancelDiaryViewing,
   clearDiaries,
@@ -37,6 +38,7 @@ import {
   setDairyFilterApplied,
   setOnEndReachedLoader,
   setPageCount,
+  setReferenceGuideData,
   setSelectedDiary,
   setSortValue,
 } from '../../actions/diary'
@@ -47,6 +49,7 @@ import { clearSlotDiaryData, setSlotData, setSlotDiaryData } from '../../actions
 import HistoryModal from '../../components/HistoryModal'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import diaryHelper from '../Diary/diaryHelper'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -83,7 +86,7 @@ class OverdueTasks extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch, connectFeedback } = this.props
+    const { navigation, diary, dispatch, connectFeedback, referenceGuide } = this.props
     const { selectedDiary, selectedLead } = diary
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
@@ -96,15 +99,32 @@ class OverdueTasks extends React.Component {
             id: selectedDiary.id,
           })
         ).then((res) => {
-          dispatch(
-            getDiaryFeedbacks({
-              taskType: selectedDiary.taskType,
-              leadType: diaryHelper.getLeadType(selectedDiary),
-              actionType: 'Done',
+          if (selectedDiary.taskType === 'meeting' && !selectedLead.guideReference) {
+            // check if reference number exists for meeting task when marking task as done, show modal if not
+            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
+          } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+            // reference number exists for the selected lead, so directly marking it as done
+            dispatch(
+              getDiaryFeedbacks({
+                taskType: selectedDiary.taskType,
+                leadType: diaryHelper.getLeadType(selectedDiary),
+                actionType: 'Done',
+              })
+            ).then((res) => {
+              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
             })
-          ).then((res) => {
-            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-          })
+          } else {
+            // for all other cases
+            dispatch(
+              getDiaryFeedbacks({
+                taskType: selectedDiary.taskType,
+                leadType: diaryHelper.getLeadType(selectedDiary),
+                actionType: 'Done',
+              })
+            ).then((res) => {
+              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+            })
+          }
         })
       }
     } else if (action === 'cancel_viewing') {
@@ -268,6 +288,7 @@ class OverdueTasks extends React.Component {
       isFilterApplied,
       isMultiPhoneModalVisible,
       navigation,
+      referenceGuide,
     } = this.props
     const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
     return (
@@ -304,6 +325,28 @@ class OverdueTasks extends React.Component {
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}
+        />
+
+        <ReferenceGuideModal
+          isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
+          hideReferenceGuideModal={() =>
+            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
+          }
+          addInvestmentGuide={(guideNo, attachments) =>
+            dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
+              dispatch(
+                getDiaryFeedbacks({
+                  taskType: selectedDiary.taskType,
+                  leadType: diaryHelper.getLeadType(selectedDiary),
+                  actionType: 'Done',
+                })
+              ).then((res) => {
+                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+              })
+            })
+          }
+          referenceGuideLoading={referenceGuide.referenceGuideLoading}
+          referenceErrorMessage={referenceGuide.referenceErrorMessage}
         />
 
         <HistoryModal
@@ -424,6 +467,7 @@ mapStateToProps = (store) => {
     slotDiary: store.slotManagement.slotDiaryData,
     connectFeedback: store.diary.connectFeedback,
     filters: store.diary.filters,
+    referenceGuide: store.diary.referenceGuide,
   }
 }
 

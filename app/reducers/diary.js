@@ -29,6 +29,12 @@ let filtersData = {
   customerPhoneNumber: null,
 }
 
+let referenceGuideData = {
+  isReferenceModalVisible: false,
+  referenceGuideLoading: false,
+  referenceErrorMessage: null,
+}
+
 const diary = (state = diaryData, action) => {
   switch (action.type) {
     case types.SET_DIARY_LOADER:
@@ -61,6 +67,15 @@ const diary = (state = diaryData, action) => {
 const overdueCount = (state = 0, action) => {
   switch (action.type) {
     case types.SET_DIARY_OVERDUE_COUNT:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+const referenceGuide = (state = referenceGuideData, action) => {
+  switch (action.type) {
+    case types.SET_REFERENCE_GUIDE_DATA:
       return action.payload
     default:
       return state
@@ -164,4 +179,5 @@ export default combineReducers({
   diaryFeedbacks,
   connectFeedback,
   isMultiPhoneModalVisible,
+  referenceGuide,
 })

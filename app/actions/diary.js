@@ -69,15 +69,15 @@ export function getDiaryTasks(data) {
       endPoint = `/api/diary/all?${queryParams}`
     } else {
       if (leadType === 'invest') {
-        endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}&status=pending`
+        endPoint = `/api/diary/all?page=1&pageSize=100&projectId=${leadId}`
       } else if (leadType === 'buyRent') {
-        endPoint = `/api/diary/all?page=1&pageSize=100&buyrentId=${leadId}&status=pending`
+        endPoint = `/api/diary/all?page=1&pageSize=100&buyrentId=${leadId}`
       } else if (leadType === 'wanted') {
-        endPoint = `/api/diary/all?page=1&pageSize=100&wantedId=${leadId}&status=pending`
+        endPoint = `/api/diary/all?page=1&pageSize=100&wantedId=${leadId}`
       }
     }
 
-    //console.log('endpoint', endPoint)
+    console.log('endpoint', endPoint)
 
     if (page === 1) {
       dispatch({
@@ -346,6 +346,73 @@ export const mapFiltersToQuery = (filters) => {
   }
 }
 
+export const setReferenceGuideData = (data) => {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.SET_REFERENCE_GUIDE_DATA,
+      payload: data,
+    })
+    return Promise.resolve(true)
+  }
+}
+
+export const addInvestmentGuide = (data) => {
+  return (dispatch, getsState) => {
+    const { guideNo, attachments } = data
+    let promise = null
+    const { referenceGuide } = getsState().diary
+    const { selectedLead } = getsState().diary.diary
+    const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${selectedLead.id}&guideReference=${guideNo}`
+    dispatch(setReferenceGuideData({ ...referenceGuide, referenceGuideLoading: true })).then(
+      (res) => {
+        promise = axios
+          .post(referenceNumberUrl)
+          .then((response) => {
+            if (response && response.data.status) {
+              dispatch(
+                setReferenceGuideData({
+                  ...referenceGuide,
+                  isReferenceModalVisible: false,
+                  referenceGuideLoading: false,
+                  referenceErrorMessage: null,
+                })
+              )
+
+              attachments.map((item) => {
+                // upload attachments after reference number is added successfully
+                let attachment = {
+                  name: item.fileName,
+                  type: 'file/' + item.fileName.split('.').pop(),
+                  uri: item.uri,
+                }
+                let fd = new FormData()
+                fd.append('file', attachment)
+                let attachmentUrl = `/api/diary/addGuideAttachment?cmLeadId=${lead.id}&guideReference=${guideNo}&title=${attachment.name}&fileName=${attachment.name}`
+                axios.post(attachmentUrl, fd).then((response) => {
+                  if (!response.status) {
+                    helper.errorToast('Failed to upload attachment!')
+                  }
+                })
+              })
+            } else {
+              dispatch(
+                setReferenceGuideData({
+                  ...referenceGuide,
+                  referenceGuideLoading: false,
+                  referenceErrorMessage: null,
+                })
+              )
+            }
+          })
+          .catch((error) => {
+            console.log('error', error)
+          })
+      }
+    )
+    return Promise.resolve(promise)
+  }
+}
+
 export function setDiaryFilter(data) {
   return (dispatch, getsState) => {
     dispatch({
@@ -444,7 +511,7 @@ const getActiveBookingProperties = (properties, userId) => {
 
 export function setCategory(data) {
   return (dispatch, getsState) => {
-    const { selectedLead } = getsState().diary.diary
+    const { selectedLead, selectedDiary } = getsState().diary.diary
     const {
       category,
       selectedDate = null,
@@ -453,14 +520,16 @@ export function setCategory(data) {
       leadId,
       leadType = null,
     } = data
+    console.log(data)
     if (selectedLead) {
       let endPoint = ``
       let body = {
         leadCategory: category,
       }
-      endPoint = selectedLead.projectId ? `/api/leads/project` : `api/leads`
+      endPoint = selectedDiary.armsProjectLeadId ? `/api/leads/project` : `api/leads`
       var leadIdArr = []
       leadIdArr.push(selectedLead.id)
+      console.log('endPoint=>', endPoint)
       axios
         .patch(endPoint, body, { params: { id: leadIdArr } })
         .then((res) => {

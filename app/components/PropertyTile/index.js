@@ -167,6 +167,12 @@ class InventoryTile extends React.Component {
                     // icon={require('../../../assets/img/properties-icon-l.png')}
                     title={'SCA Document'}
                   />
+                  <Menu.Item
+                    onPress={() => {
+                      if (updatePermission) graanaVerifeyModal(true, data.id), hideMenu()
+                    }}
+                    title="Verify Property"
+                  />
                 </Menu>
               </View>
             ) : null}

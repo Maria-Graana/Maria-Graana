@@ -280,6 +280,7 @@ class InventoryTile extends React.Component {
                   <Menu.Item
                     onPress={() => {
                       if (updatePermission) graanaVerifeyModal(true, data.id)
+                      hideGraanaMenu()
                     }}
                     title="Verify Property"
                   />
@@ -288,6 +289,7 @@ class InventoryTile extends React.Component {
                 <Menu.Item
                   onPress={() => {
                     if (updatePermission) propertyGeoTagging(data)
+                    hideGraanaMenu()
                   }}
                   title="GeoTag"
                 />

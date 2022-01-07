@@ -177,19 +177,19 @@ class ArmsInventories extends React.Component {
     this.setState({ formData: newFormData })
   }
   submitarmsStatusAmount = (check) => {
-    const { PropertyData, formData } = this.state
+    const { PropertyData, formData , propertiesList} = this.state
     var endpoint = ''
     var body = {
       amount: formData.amount,
       propertyType: 'arms'
     }
     if (check === 'amount') {
-      ;(endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`), body
+      (endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`)
     } else {
       endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`
     }
     formData['amount'] = ''
-    axios.patch(endpoint).then((res) => {
+    axios.patch(endpoint , body).then((res) => {
       this.setState(
         {
           forStatusPrice: false,
@@ -197,7 +197,9 @@ class ArmsInventories extends React.Component {
           formData,
         },
         () => {
+          this.getPropertyArmsListing()
           helper.successToast(res.data)
+
         }
       )
     })

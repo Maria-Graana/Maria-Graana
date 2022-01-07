@@ -45,17 +45,24 @@ class AssignLead extends React.Component {
   fetchTeam = () => {
     const { user, route } = this.props
     const { purpose } = route.params
+    const { type } = route.params
+    var leadType = ''
+    if (type === 'Investment') {
+      leadType = 'Project'
+    } else {
+      leadType = 'BuyRent'
+    }
     if (purpose) {
       const url =
         purpose === 'reassign'
           ? `/api/role/sub-users?roleId=${user.armsUserRoleId}&addManager=true`
-          : `/api/user/agents?sharing=${true}`
+          : `/api/user/agents?sharing=${true}&leadType=${leadType}`
       axios
         .get(url)
         .then((res) => {
           this.setState(
             {
-              teamMembers: purpose === 'reassign' ? res.data : res.data.rows
+              teamMembers: purpose === 'reassign' ? res.data : res.data.rows,
             },
             () => {
               this.setState({ loading: false })

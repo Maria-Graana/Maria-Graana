@@ -31,6 +31,7 @@ import {
   getDiaryFeedbacks,
   getDiaryTasks,
   increasePageCount,
+  initiateConnectFlow,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
@@ -135,7 +136,21 @@ class OverdueTasks extends React.Component {
         })
       }
     } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
+        })
+      )
+      dispatch(
+        getDiaryFeedbacks({
+          taskType: 'viewing',
+          leadType: diaryHelper.getLeadType(selectedDiary),
+          actionType: 'Cancel',
+        })
+      ).then((res) => {
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
+      })
     } else if (action === 'cancel_meeting') {
       dispatch(
         setConnectFeedback({
@@ -150,7 +165,7 @@ class OverdueTasks extends React.Component {
           actionType: 'Cancel',
         })
       ).then((res) => {
-        navigation.navigate('DiaryFeedback')
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
       })
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
@@ -405,12 +420,12 @@ class OverdueTasks extends React.Component {
                 selectedDiary={selectedDiary}
                 screenName={'overduetasks'}
                 hideMenu={() => this.hideMenu()}
-                setClassification={(value) =>
-                  this.setState({
-                    isLeadCategoryModalVisible: true,
-                    selectedDiary: value,
+                initiateConnectFlow={(diary) => {
+                  dispatch(setSelectedDiary(diary))
+                  dispatch(initiateConnectFlow()).then((res) => {
+                    this.showMultiPhoneModal(true)
                   })
-                }
+                }}
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

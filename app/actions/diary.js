@@ -129,7 +129,6 @@ export function clearDiaries() {
 export function getDiaryFeedbacks(payload) {
   return (dispatch, getsState) => {
     const { leadType = null, taskType = null, actionType = null } = payload
-    //const { selectedDiary } = getsState().diary.diary
     let url = `/api/feedbacks/fetch?taskType=${
       taskType === 'follow_up' && actionType != 'Done'
         ? 'Connect'

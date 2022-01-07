@@ -48,6 +48,7 @@ class DiaryFeedback extends Component {
       this.props
     const { actionType = null } = route?.params
 
+    console.log(connectFeedback)
     if (
       actionType &&
       actionType === 'Done' &&
@@ -85,7 +86,7 @@ class DiaryFeedback extends Component {
   setNextFlow = () => {
     const { diaryFeedbacks, connectFeedback, dispatch, route, diary, selectedDiary, selectedLead } =
       this.props
-    const { actionType = null } = route?.params
+    const { actionType = 'Connect' } = route?.params
 
     if (
       Object.keys(connectFeedback).length &&
@@ -553,7 +554,7 @@ class DiaryFeedback extends Component {
     } = this.props
     const { isReconnectModalVisible, isRWRModalVisible, loading, propertyShortlistData } =
       this.state
-    const { actionType = null } = route?.params
+    const { actionType = 'Connect' } = route?.params
     const FA = FEEDBACK_ACTIONS
     return loading ? (
       <Loader loading={loading} />

@@ -167,8 +167,22 @@ export class ScheduledTasks extends Component {
           }
         })
       }
-    } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
+    } else if ((action === 'cancel_viewing', { actionType: 'Cancel' })) {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
+        })
+      )
+      dispatch(
+        getDiaryFeedbacks({
+          taskType: 'viewing',
+          leadType: diaryHelper.getLeadType(selectedDiary),
+          actionType: 'Cancel',
+        })
+      ).then((res) => {
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
+      })
     } else if (action === 'cancel_meeting') {
       dispatch(
         setConnectFeedback({
@@ -183,7 +197,7 @@ export class ScheduledTasks extends Component {
           actionType: 'Cancel',
         })
       ).then((res) => {
-        navigation.navigate('DiaryFeedback')
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
       })
       // dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
@@ -380,13 +394,6 @@ export class ScheduledTasks extends Component {
                   dispatch(setSelectedDiary(diary))
                   dispatch(initiateConnectFlow()).then((res) => {
                     this.showMultiPhoneModal(true)
-                    dispatch(
-                      getDiaryFeedbacks({
-                        taskType: diary.taskType,
-                        leadType: diaryHelper.getLeadType(diary),
-                        actionType: 'Connect',
-                      })
-                    )
                   })
                 }}
                 leadType={leadType}

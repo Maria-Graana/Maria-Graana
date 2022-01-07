@@ -328,9 +328,8 @@ class Diary extends React.Component {
           actionType: 'Cancel',
         })
       ).then((res) => {
-        navigation.navigate('DiaryFeedback')
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
       })
-      // dispatch(cancelDiaryViewing({ selectedDate, agentId }))
     } else if (action === 'cancel_meeting') {
       dispatch(
         setConnectFeedback({
@@ -345,9 +344,8 @@ class Diary extends React.Component {
           actionType: 'Cancel',
         })
       ).then((res) => {
-        navigation.navigate('DiaryFeedback')
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
       })
-      // dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
       dispatch(clearDiaries())

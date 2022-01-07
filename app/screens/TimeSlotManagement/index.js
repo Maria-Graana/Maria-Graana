@@ -725,10 +725,20 @@ function TimeSlotManagement(props) {
     } else {
       if (color[0] && color[0].diary) {
         if (color[0].diary.length > 1) {
-          return color[0].diary.length
+          var count = 0
+          for (var i = 0; i < color[0].diary.length; i++) {
+            if (
+              color[0].diary[i].status !== 'completed' &&
+              color[0].diary[i].status !== 'cancelled'
+            ) {
+              count++
+            }
+          }
+          return count
         } else {
           const str = color[0].diary[0].taskType.replace(/[_ ]+/g, '').toLowerCase()
-          return str
+          const stat = color[0].diary[0].status.toLowerCase()
+          if (stat !== 'completed' && stat !== 'cancelled') return str
         }
       }
     }

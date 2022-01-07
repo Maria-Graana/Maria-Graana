@@ -20,6 +20,7 @@ import {
   saveOrUpdateDiaryTask,
   setConnectFeedback,
   setMultipleModalVisible,
+  setSelectedDiary,
 } from '../../actions/diary'
 import TouchableButton from '../../components/TouchableButton'
 import ReconnectModal from '../../components/ReconnectModal'
@@ -43,9 +44,10 @@ class DiaryFeedback extends Component {
   }
 
   componentDidMount() {
-    const { diary, route, user, connectFeedback, dispatch } = this.props
+    const { diary, route, user, connectFeedback, dispatch, selectedDiary, selectedLead } =
+      this.props
     const { actionType = null } = route?.params
-    const { selectedDiary, selectedLead } = diary
+
     if (
       actionType &&
       actionType === 'Done' &&
@@ -66,54 +68,65 @@ class DiaryFeedback extends Component {
     }
   }
 
-  // componentWillUnmount() {
-  //   const { dispatch } = this.props
-  //   dispatch(clearDiaryFeedbacks())
-  //   dispatch(setConnectFeedback({}))
-  // }
+  componentWillUnmount() {
+    const { diary, route, dispatch, selectedDiary, selectedLead } = this.props
+    const { actionType = null } = route?.params
+    if (
+      actionType &&
+      actionType === 'Done' &&
+      selectedDiary &&
+      selectedDiary.taskType === 'viewing'
+    ) {
+      dispatch(clearDiaryFeedbacks())
+      dispatch(setConnectFeedback({}))
+    }
+  }
 
   setNextFlow = () => {
-    const { diaryFeedbacks, connectFeedback, dispatch, route, diary } = this.props
+    const { diaryFeedbacks, connectFeedback, dispatch, route, diary, selectedDiary, selectedLead } =
+      this.props
     const { actionType = null } = route?.params
-    const { selectedDiary, selectedLead } = diary
 
-    if (connectFeedback && connectFeedback.comments) {
-      if (Object.keys(connectFeedback).length) {
-        if (connectFeedback.section === "Couldn't Connect")
-          this.setState({ isReconnectModalVisible: true })
-        // else if (
-        //   connectFeedback.section === 'Follow up' &&
-        //   actionType &&
-        //   actionType === 'Done' &&
-        //   selectedDiary &&
-        //   selectedDiary.taskType === 'viewing'
-        // )
-        //   console.log('here=>', this.props.connectFeedback)
-        else if (connectFeedback.section === 'Follow up') this.handleNextAction('set_follow_up')
-        else if (connectFeedback.section === 'No Action Required')
-          this.handleNextAction('no_action_required')
-        else if (connectFeedback.section === 'Reject') {
-          this.setState({ isRWRModalVisible: true })
-        } else if (connectFeedback.section === 'Cancel Meeting')
-          this.handleNextAction('cancel_meeting')
-        else if (connectFeedback.section === 'Cancel Viewing') {
-          this.handleNextAction('cancel_viewing')
-        }
+    if (
+      Object.keys(connectFeedback).length &&
+      connectFeedback.comments &&
+      connectFeedback.feedbackId
+    ) {
+      if (connectFeedback.section === "Couldn't Connect")
+        this.setState({ isReconnectModalVisible: true })
+      else if (
+        actionType &&
+        actionType === 'Done' &&
+        selectedDiary &&
+        selectedDiary.taskType === 'viewing'
+      ) {
+        this.handleNextAction({ type: 'done_viewing', section: connectFeedback.section })
+      } else if (connectFeedback.section === 'Follow up')
+        this.handleNextAction({ type: 'set_follow_up' })
+      else if (connectFeedback.section === 'No Action Required')
+        this.handleNextAction({ type: 'no_action_required' })
+      else if (connectFeedback.section === 'Reject') {
+        this.setState({ isRWRModalVisible: true })
+      } else if (connectFeedback.section === 'Cancel Meeting')
+        this.handleNextAction({ type: 'cancel_meeting' })
+      else if (connectFeedback.section === 'Cancel Viewing') {
+        this.handleNextAction({ type: 'cancel_viewing' })
       }
     } else {
-      alert('Please select comment to continue!')
+      alert('reason is mandatory to continue!')
     }
   }
 
   setIsReconnectModalVisible = (value, type) => {
     this.setState({ isReconnectModalVisible: value }, () => {
-      this.handleNextAction(type)
+      this.handleNextAction({ type })
     })
   }
 
-  handleNextAction = (type, reason = '', isBlacklist = false) => {
+  handleNextAction = (data) => {
     const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
     const { selectedDiary, selectedLead } = diary
+    const { type, reason = '', isBlacklist = false, section } = data
     if (type === 'connect_again') {
       dispatch(
         setConnectFeedback({
@@ -122,16 +135,26 @@ class DiaryFeedback extends Component {
           comments: connectFeedback.comments,
           response: connectFeedback.comments,
           feedbackId: connectFeedback.feedbackId,
-          feedbackTag: connectFeedback.tag,
-          otherTasksToUpdate: [],
+          response: connectFeedback.tag,
         })
       ).then((res) => {
         if (res) {
           saveOrUpdateDiaryTask(this.props.connectFeedback).then((response) => {
             if (response) {
-              dispatch(clearDiaryFeedbacks())
-              navigation.goBack()
-              dispatch(setMultipleModalVisible(true))
+              let copyConnectObj = { ...this.props.connectFeedback }
+              delete copyConnectObj.makeHistory
+              delete copyConnectObj.comments
+              delete copyConnectObj.response
+              delete copyConnectObj.feedbackId
+              delete copyConnectObj.response
+              delete copyConnectObj.tag
+              delete copyConnectObj.colorCode
+              delete copyConnectObj.section
+              dispatch(setConnectFeedback(copyConnectObj)).then((res) => {
+                dispatch(clearDiaryFeedbacks())
+                dispatch(setMultipleModalVisible(true))
+                navigation.goBack()
+              })
             }
           })
         }
@@ -387,6 +410,95 @@ class DiaryFeedback extends Component {
       ).then((res) => {
         navigation.replace('RescheduleViewings', { mode: 'cancelViewing' })
       })
+    } else if (type === 'done_viewing' && (section === 'Follow up' || section === 'Reject')) {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          response: connectFeedback.comments,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+          status: 'completed',
+          feedbackTag: connectFeedback.tag,
+        })
+      ).then((res) => {
+        if (section === 'Follow up') {
+          saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+            if (res) {
+              const copyObj = { ...this.props.connectFeedback }
+              copyObj.status = 'pending'
+              copyObj.otherTasksToUpdate = []
+              copyObj.reasonId = copyObj.feedbackId
+              copyObj.reasonTag = copyObj.tag
+              copyObj.taskType = 'follow_up'
+              delete copyObj.id
+              delete copyObj.feedbackId
+              delete copyObj.feedbackTag
+              dispatch(setConnectFeedback(copyObj)).then((res) => {
+                navigation.replace('TimeSlotManagement', {
+                  data: { ...this.props.connectFeedback },
+                  taskType: 'follow_up',
+                  isFromConnectFlow: true,
+                })
+              })
+            }
+          })
+          // dispatch(clearDiaryFeedbacks())
+        } else if (section === 'Reject') {
+          this.setState({ isRWRModalVisible: true })
+        }
+      })
+    } else if (
+      type === 'shortlist_properties' ||
+      type === 'offer' ||
+      type === 'setup_more_viewings' ||
+      type === 'propsure' ||
+      type === 'select_property_for_transaction'
+    ) {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          response: connectFeedback.comments,
+          id: selectedDiary.id,
+          armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+          status: 'completed',
+          feedbackTag: connectFeedback.tag,
+        })
+      ).then((res) => {
+        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+          if (res) {
+            axios.get(`api/leads/byId?id=${selectedLead.id}`).then((response) => {
+              if (response.data) {
+                dispatch(setlead(response.data))
+                if (type === 'shortlist_properties') {
+                  navigation.replace('RCMLeadTabs', {
+                    screen: 'Match',
+                    params: { screenName: 'Match' },
+                  })
+                } else if (type === 'offer') {
+                  navigation.replace('RCMLeadTabs', {
+                    screen: 'Offer',
+                    params: { screenName: 'Offer' },
+                  })
+                } else if (type === 'setup_more_viewings') {
+                  navigation.replace('RCMLeadTabs', {
+                    screen: 'Viewing',
+                    params: { screenName: 'Viewing' },
+                  })
+                } else if (type === 'propsure') {
+                  navigation.replace('RCMLeadTabs', {
+                    screen: 'Propsure',
+                    params: { screenName: 'Propsure' },
+                  })
+                } else if (type === 'select_property_for_transaction') {
+                  navigation.replace('RCMLeadTabs', {
+                    screen: 'Payment',
+                    params: { screenName: 'Payment' },
+                  })
+                }
+              }
+            })
+          }
+        })
+      })
     }
   }
 
@@ -428,8 +540,17 @@ class DiaryFeedback extends Component {
   }
 
   render() {
-    const { diaryFeedbacks, connectFeedback, dispatch, diary, route, user, contacts } = this.props
-    const { selectedDiary, selectedLead } = diary
+    const {
+      diaryFeedbacks,
+      connectFeedback,
+      dispatch,
+      diary,
+      route,
+      user,
+      contacts,
+      selectedDiary,
+      selectedLead,
+    } = this.props
     const { isReconnectModalVisible, isRWRModalVisible, loading, propertyShortlistData } =
       this.state
     const { actionType = null } = route?.params
@@ -441,6 +562,7 @@ class DiaryFeedback extends Component {
         <ScrollView>
           <ReconnectModal
             isReconnectModalVisible={isReconnectModalVisible}
+            taskType={selectedDiary ? selectedDiary.taskType : null}
             setIsReconnectModalVisible={(value, type) =>
               this.setIsReconnectModalVisible(value, type)
             }
@@ -449,7 +571,7 @@ class DiaryFeedback extends Component {
             isVisible={isRWRModalVisible}
             showHideModal={(value) => this.setState({ isRWRModalVisible: value })}
             rejectLead={(reason, isBlacklist) =>
-              this.handleNextAction('reject', reason, isBlacklist)
+              this.handleNextAction({ type: 'reject', reason, isBlacklist })
             }
             selectedReason={connectFeedback.tag ? connectFeedback.tag : null}
           />
@@ -534,7 +656,11 @@ class DiaryFeedback extends Component {
                                       comments: connectFeedback.comments || tag,
                                     })
                                   ).then((res) => {
-                                    this.handleNextAction(tag.replace(/\s+/g, '_').toLowerCase())
+                                    tag
+                                      ? this.handleNextAction({
+                                          type: tag.replace(/\s+/g, '_').toLowerCase(),
+                                        })
+                                      : alert('reason is mandatory to continue!')
                                   })
                                 } else
                                   dispatch(
@@ -595,7 +721,11 @@ class DiaryFeedback extends Component {
                                         comments: connectFeedback.comments || tag,
                                       })
                                     ).then((res) => {
-                                      this.handleNextAction(tag.replace(/\s+/g, '_').toLowerCase())
+                                      tag
+                                        ? this.handleNextAction({
+                                            type: tag.replace(/\s+/g, '_').toLowerCase(),
+                                          })
+                                        : alert('reason is mandatory to continue!')
                                     })
                                   } else
                                     dispatch(
@@ -691,6 +821,8 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     diary: store.diary.diary,
+    selectedDiary: store.diary.selectedDiary,
+    selectedLead: store.diary.selectedLead,
     diaryFeedbacks: store.diary.diaryFeedbacks,
     connectFeedback: store.diary.connectFeedback,
     contacts: store.contacts.contacts,

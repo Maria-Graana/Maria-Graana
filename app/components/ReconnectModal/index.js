@@ -7,7 +7,7 @@ import TouchableButton from '../TouchableButton'
 import helper from '../../helper'
 import AppStyles from '../../AppStyles'
 
-const ReconnectModal = ({ isReconnectModalVisible, setIsReconnectModalVisible }) => {
+const ReconnectModal = ({ isReconnectModalVisible, setIsReconnectModalVisible, taskType }) => {
   return (
     <Modal isVisible={isReconnectModalVisible}>
       <View style={styles.modalMain}>
@@ -17,18 +17,50 @@ const ReconnectModal = ({ isReconnectModalVisible, setIsReconnectModalVisible })
         <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn]}
-            label={'CONNECT AGAIN'}
+            label={'Connect Again'}
             onPress={() => setIsReconnectModalVisible(false, 'connect_again')}
           />
         </View>
 
-        <View style={[AppStyles.mainInputWrap]}>
-          <TouchableButton
-            containerStyle={[AppStyles.formBtn]}
-            label={'SET FOLLOW UP'}
-            onPress={() => setIsReconnectModalVisible(false, 'set_follow_up')}
-          />
-        </View>
+        {taskType !== 'meeting' && taskType !== 'viewing' ? (
+          <View style={[AppStyles.mainInputWrap]}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn]}
+              label={'Set Follow up'}
+              onPress={() => setIsReconnectModalVisible(false, 'set_follow_up')}
+            />
+          </View>
+        ) : null}
+
+        {taskType === 'meeting' ? (
+          <View style={[AppStyles.mainInputWrap]}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn]}
+              label={'Cancel Meeting'}
+              onPress={() => setIsReconnectModalVisible(false, 'cancel_meeting')}
+            />
+          </View>
+        ) : null}
+
+        {taskType === 'viewing' ? (
+          <View style={[AppStyles.mainInputWrap]}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn]}
+              label={'Cancel Viewing'}
+              onPress={() => setIsReconnectModalVisible(false, 'cancel_viewing')}
+            />
+          </View>
+        ) : null}
+
+        {taskType === 'viewing' || taskType === 'meeting' ? (
+          <View style={[AppStyles.mainInputWrap]}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn]}
+              label={'Do Nothing'}
+              onPress={() => setIsReconnectModalVisible(false, 'no_action_required')}
+            />
+          </View>
+        ) : null}
       </View>
     </Modal>
   )

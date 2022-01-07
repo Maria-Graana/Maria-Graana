@@ -86,8 +86,15 @@ class OverdueTasks extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch, connectFeedback, referenceGuide } = this.props
-    const { selectedDiary, selectedLead } = diary
+    const {
+      navigation,
+      diary,
+      dispatch,
+      connectFeedback,
+      referenceGuide,
+      selectedDiary,
+      selectedLead,
+    } = this.props
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
@@ -192,8 +199,7 @@ class OverdueTasks extends React.Component {
     }
   }
   navigateToReferAssignLead = (mode) => {
-    const { navigation } = this.props
-    const { selectedLead, selectedDiary } = this.props.diary
+    const { navigation, selectedLead, selectedDiary } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
       type = 'investment'
@@ -289,8 +295,10 @@ class OverdueTasks extends React.Component {
       isMultiPhoneModalVisible,
       navigation,
       referenceGuide,
+      selectedDiary,
+      selectedLead,
     } = this.props
-    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
+    const { diaries, loading, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal

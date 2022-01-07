@@ -32,8 +32,7 @@ class RescheduleViewings extends Component {
       navigation.setOptions({
         title: mode === 'rescheduleViewing' ? 'Reschedule Viewings' : 'Cancel Viewing',
       })
-      const { diary, user } = this.props
-      const { selectedLead, selectedDiary } = diary
+      const { diary, user, selectedLead, selectedDiary } = this.props
       if (selectedLead) {
         this.setState({ loading: true }, async () => {
           let data = await getPropertyViewings(selectedLead.id, user.id)
@@ -50,40 +49,6 @@ class RescheduleViewings extends Component {
   componentWillUnmount() {
     const { dispatch } = this.props
     dispatch(setConnectFeedback({}))
-  }
-
-  checkImages = (data, organizantion) => {
-    let imagesList = []
-    if (organizantion) {
-      if (organizantion === 'arms') {
-        if (data.images.length > 0) {
-          imagesList = data.images.map((item) => {
-            return item.url
-          })
-        }
-      } else {
-        if (data.property_images.length > 0) {
-          imagesList = data.property_images.map((item) => {
-            return item.url
-          })
-        }
-      }
-    } else {
-      if (data.arms_id) {
-        if (data.images.length > 0) {
-          imagesList = data.images.map((item) => {
-            return item.url
-          })
-        }
-      } else {
-        if (data.property_images.length > 0) {
-          imagesList = data.property_images.map((item) => {
-            return item.url
-          })
-        }
-      }
-    }
-    return imagesList
   }
 
   goToTimeSlots = () => {
@@ -156,8 +121,7 @@ class RescheduleViewings extends Component {
 
   render() {
     const { propertyShortlistData, loading } = this.state
-    const { user, contacts, navigation, route, diary, connectFeedback } = this.props
-    const { selectedDiary } = diary
+    const { user, contacts, navigation, route, diary, connectFeedback, selectedDiary } = this.props
     const { mode = 'rescheduleViewing' } = route?.params
     return loading ? (
       <Loader loading={loading} />
@@ -205,6 +169,8 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     diary: store.diary.diary,
+    selectedDiary: store.diary.selectedDiary,
+    selectedLead: store.diary.selectedLead,
     connectFeedback: store.diary.connectFeedback,
     contacts: store.contacts.contacts,
   }

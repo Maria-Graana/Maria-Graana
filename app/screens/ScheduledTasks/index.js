@@ -119,8 +119,15 @@ export class ScheduledTasks extends Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch, connectFeedback, referenceGuide } = this.props
-    const { selectedDiary, selectedLead } = diary
+    const {
+      navigation,
+      diary,
+      dispatch,
+      connectFeedback,
+      referenceGuide,
+      selectedDiary,
+      selectedLead,
+    } = this.props
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
@@ -244,8 +251,7 @@ export class ScheduledTasks extends Component {
   }
 
   navigateToReferAssignLead = (mode) => {
-    const { navigation } = this.props
-    const { selectedLead, selectedDiary } = this.props.diary
+    const { navigation, selectedLead, selectedDiary } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
       type = 'investment'
@@ -268,10 +274,18 @@ export class ScheduledTasks extends Component {
   render() {
     const { showMenu, leadType, leadId, isActivityHistoryModalVisible, activityHistoryData } =
       this.state
-    const { dispatch, diary, route, referenceGuide, navigation, isMultiPhoneModalVisible } =
-      this.props
+    const {
+      dispatch,
+      diary,
+      route,
+      referenceGuide,
+      navigation,
+      isMultiPhoneModalVisible,
+      selectedDiary,
+      selectedLead,
+    } = this.props
     const { purposeTab } = route.params
-    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
+    const { diaries, loading, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
         {purposeTab != 'wanted' && (

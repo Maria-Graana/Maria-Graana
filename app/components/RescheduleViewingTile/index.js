@@ -35,36 +35,20 @@ const RescheduleViewingTile = ({
   mode,
 }) => {
   const dispatch = useDispatch()
-  let imagesList = []
   let selectedProperties = []
   const checkImages = () => {
-    if (data.origin) {
-      if (data.origin === 'arms') {
-        if (data.images.length > 0) {
-          imagesList = data.images.map((item) => {
-            return item.url
-          })
-        }
-      } else {
-        if (data.property_images.length > 0) {
-          imagesList = data.property_images.map((item) => {
-            return item.url
-          })
-        }
+    let imagesList = []
+    if (data.arms_id) {
+      if (data.images.length > 0) {
+        imagesList = data.images.map((item) => {
+          return item.url
+        })
       }
     } else {
-      if (data.arms_id) {
-        if (data.images.length > 0) {
-          imagesList = data.images.map((item) => {
-            return item.url
-          })
-        }
-      } else {
-        if (data.property_images.length > 0) {
-          imagesList = data.property_images.map((item) => {
-            return item.url
-          })
-        }
+      if (data.property_images.length > 0) {
+        imagesList = data.property_images.map((item) => {
+          return item.url
+        })
       }
     }
     return imagesList
@@ -106,10 +90,6 @@ const RescheduleViewingTile = ({
     helper.callNumber(newContact, contacts)
   }
 
-  useEffect(() => {
-    checkImages()
-  }, [imagesList])
-
   const checkStatus = (property) => {
     // const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
     let diaries = property.diaries
@@ -134,7 +114,7 @@ const RescheduleViewingTile = ({
       </View>
     )
   }
-  //console.log(data)
+  let imagesList = checkImages()
   return (
     <View>
       <TouchableOpacity style={[{ flexDirection: 'row', marginVertical: 2 }]}>
@@ -180,42 +160,88 @@ const RescheduleViewingTile = ({
                       onPress={() => {
                         toggleCheckBox(!data.checkBox, data.id)
                         if (data.checkBox) {
-                          dispatch(
-                            setConnectFeedback({
-                              ...connectFeedback,
-                              otherTasksToUpdate: [
-                                ...connectFeedback.otherTasksToUpdate,
-                                {
-                                  comments: connectFeedback.comments,
-                                  response: connectFeedback.comments,
-                                  feedbackId: connectFeedback.feedbackId,
-                                  status: 'cancelled',
-                                  feedbackTag: connectFeedback.tag,
-                                  id: _.find(
-                                    data.diaries,
-                                    (item) => user.id === item.userId && item.status === 'pending'
-                                  ).id,
-                                },
-                              ],
-                            })
-                          )
+                          if (mode === 'cancelViewing') {
+                            dispatch(
+                              setConnectFeedback({
+                                ...connectFeedback,
+                                otherTasksToUpdate: [
+                                  ...connectFeedback.otherTasksToUpdate,
+                                  {
+                                    comments: connectFeedback.comments,
+                                    response: connectFeedback.comments,
+                                    feedbackId: connectFeedback.feedbackId,
+                                    status: 'cancelled',
+                                    feedbackTag: connectFeedback.tag,
+                                    id: _.find(
+                                      data.diaries,
+                                      (item) => user.id === item.userId && item.status === 'pending'
+                                    ).id,
+                                  },
+                                ],
+                              })
+                            )
+                          } else {
+                            console.log('i am here for checking')
+                            // done viewing
+                            dispatch(
+                              setConnectFeedback({
+                                ...connectFeedback,
+                                otherTasksToUpdate: [
+                                  ...connectFeedback.otherTasksToUpdate,
+                                  {
+                                    comments: connectFeedback.comments,
+                                    response: connectFeedback.comments,
+                                    feedbackId: connectFeedback.feedbackId,
+                                    feedbackTag: connectFeedback.tag,
+                                    status: 'completed',
+                                    feedbackTag: connectFeedback.tag,
+                                    id: _.find(
+                                      data.diaries,
+                                      (item) => user.id === item.userId && item.status === 'pending'
+                                    ).id,
+                                  },
+                                ],
+                              })
+                            )
+                          }
                         } else {
-                          let copyArray = [...connectFeedback.otherTasksToUpdate]
-                          copyArray = _.filter(
-                            copyArray,
-                            (item) =>
-                              item.id !==
-                              _.find(
-                                data.diaries,
-                                (item) => user.id === item.userId && item.status === 'pending'
-                              ).id
-                          )
-                          dispatch(
-                            setConnectFeedback({
-                              ...connectFeedback,
-                              otherTasksToUpdate: copyArray,
-                            })
-                          )
+                          if (mode === 'cancelViewing') {
+                            let copyArray = [...connectFeedback.otherTasksToUpdate]
+                            copyArray = _.filter(
+                              copyArray,
+                              (item) =>
+                                item.id !==
+                                _.find(
+                                  data.diaries,
+                                  (item) => user.id === item.userId && item.status === 'pending'
+                                ).id
+                            )
+                            dispatch(
+                              setConnectFeedback({
+                                ...connectFeedback,
+                                otherTasksToUpdate: copyArray,
+                              })
+                            )
+                          } else {
+                            // viewing done case
+                            console.log('i am here for unchecking')
+                            let copyArray = [...connectFeedback.otherTasksToUpdate]
+                            copyArray = _.filter(
+                              copyArray,
+                              (item) =>
+                                item.id !==
+                                _.find(
+                                  data.diaries,
+                                  (item) => user.id === item.userId && item.status === 'pending'
+                                ).id
+                            )
+                            dispatch(
+                              setConnectFeedback({
+                                ...connectFeedback,
+                                otherTasksToUpdate: copyArray,
+                              })
+                            )
+                          }
                         }
                       }}
                       color={AppStyles.colors.primaryColor}
@@ -257,7 +283,7 @@ const RescheduleViewingTile = ({
         </View>
       </TouchableOpacity>
       <View>{checkStatus(data)}</View>
-      {data.checkBox ? (
+      {data.checkBox && mode !== 'cancelViewing' ? (
         <View style={[AppStyles.mainInputWrap]}>
           <TextInput
             placeholderTextColor={'#a8a8aa'}
@@ -270,14 +296,35 @@ const RescheduleViewingTile = ({
             multiline
             //autoFocus
             placeholder={'Comments'}
-            onChangeText={(text) =>
-              dispatch(
-                setConnectFeedback({
-                  ...connectFeedback,
-                  comments: text === '' ? connectFeedback.tag : text,
-                })
-              )
-            }
+            onChangeText={(text) => {
+              if (selectedDiary.propertyId !== data.id) {
+                let diaryId = _.find(
+                  data.diaries,
+                  (item) => user.id === item.userId && item.status === 'pending'
+                ).id
+                let copyArray = [...connectFeedback.otherTasksToUpdate]
+                let objToFind = copyArray.find((item) => item.id === diaryId)
+                objToFind.comments = text === '' ? connectFeedback.tag : text
+                objToFind.response = text === '' ? connectFeedback.tag : text
+
+                dispatch(
+                  setConnectFeedback({
+                    ...connectFeedback,
+                    otherTasksToUpdate: [
+                      ...connectFeedback.otherTasksToUpdate.filter((item) => item.id !== diaryId),
+                      objToFind,
+                    ],
+                  })
+                )
+              } else {
+                dispatch(
+                  setConnectFeedback({
+                    ...connectFeedback,
+                    comments: text === '' ? connectFeedback.tag : text,
+                  })
+                )
+              }
+            }}
           />
         </View>
       ) : null}

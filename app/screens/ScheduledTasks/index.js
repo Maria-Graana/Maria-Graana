@@ -167,7 +167,7 @@ export class ScheduledTasks extends Component {
           }
         })
       }
-    } else if ((action === 'cancel_viewing', { actionType: 'Cancel' })) {
+    } else if (action === 'cancel_viewing') {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -191,7 +191,7 @@ export class ScheduledTasks extends Component {
         })
       )
       dispatch(
-        getDiaryTasks({
+        getDiaryFeedbacks({
           taskType: 'meeting',
           leadType: diaryHelper.getLeadType(selectedDiary),
           actionType: 'Cancel',
@@ -199,7 +199,6 @@ export class ScheduledTasks extends Component {
       ).then((res) => {
         navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
       })
-      // dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
       dispatch(clearDiaries())

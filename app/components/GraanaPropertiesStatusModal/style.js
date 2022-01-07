@@ -40,6 +40,7 @@ export default styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 10,
     paddingRight: 10,
+    alignItems : 'center'
   },
   headingText: {
     color: '#fff',

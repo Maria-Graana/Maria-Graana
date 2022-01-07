@@ -266,8 +266,15 @@ class Diary extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch, connectFeedback, referenceGuide } = this.props
-    const { selectedDiary, selectedLead } = diary
+    const {
+      navigation,
+      diary,
+      dispatch,
+      connectFeedback,
+      referenceGuide,
+      selectedDiary,
+      selectedLead,
+    } = this.props
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
@@ -308,7 +315,21 @@ class Diary extends React.Component {
         })
       }
     } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
+        })
+      )
+      dispatch(
+        getDiaryFeedbacks({
+          taskType: 'viewing',
+          leadType: diaryHelper.getLeadType(selectedDiary),
+          actionType: 'Cancel',
+        })
+      ).then((res) => {
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
+      })
     } else if (action === 'cancel_meeting') {
       dispatch(
         setConnectFeedback({
@@ -323,9 +344,8 @@ class Diary extends React.Component {
           actionType: 'Cancel',
         })
       ).then((res) => {
-        navigation.navigate('DiaryFeedback')
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
       })
-      // dispatch(cancelDiaryMeeting({ selectedDate, agentId }))
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
       dispatch(clearDiaries())
@@ -374,8 +394,7 @@ class Diary extends React.Component {
   }
 
   navigateToReferAssignLead = (mode) => {
-    const { navigation } = this.props
-    const { selectedLead, selectedDiary } = this.props.diary
+    const { navigation, selectedDiary, selectedLead } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
       type = 'investment'
@@ -467,8 +486,10 @@ class Diary extends React.Component {
       isFilterApplied,
       isMultiPhoneModalVisible,
       referenceGuide,
+      selectedDiary,
+      selectedLead,
     } = this.props
-    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
+    const { diaries, loading, showClassificationModal, page } = diary
     const { name = null, screen } = route.params
 
     return (
@@ -676,13 +697,6 @@ class Diary extends React.Component {
                   dispatch(setSelectedDiary(diary))
                   dispatch(initiateConnectFlow()).then((res) => {
                     this.showMultiPhoneModal(true)
-                    dispatch(
-                      getDiaryFeedbacks({
-                        taskType: diary.taskType,
-                        leadType: diaryHelper.getLeadType(diary),
-                        actionType: 'Connect',
-                      })
-                    )
                   })
                 }}
               />

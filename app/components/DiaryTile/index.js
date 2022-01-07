@@ -120,6 +120,19 @@ class DiaryTile extends React.Component {
                         />
                       ) : null}
 
+                      {diary.taskType === 'meeting' &&
+                      diary.armsProjectLeadId &&
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('cancel_meeting')
+                            hideMenu()
+                          }}
+                          title="Cancel Meeting"
+                        />
+                      ) : null}
+
                       <Menu.Item
                         onPress={() => {
                           handleMenuActions('task_details')

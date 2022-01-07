@@ -41,12 +41,6 @@ const diary = (state = diaryData, action) => {
       return { ...diaryData, loading: action.payload }
     case types.GET_DIARIES:
       return { ...diaryData, diaries: action.payload }
-    case types.SET_SELECTED_DIARY:
-      return {
-        ...state,
-        selectedDiary: action.payload.diary,
-        selectedLead: action.payload.lead,
-      }
     case types.SET_CLASSIFICATION_MODAL:
       return {
         ...state,
@@ -59,6 +53,24 @@ const diary = (state = diaryData, action) => {
       }
     case types.CLEAR_DIARIES:
       return { ...diaryData, diaries: action.payload }
+    default:
+      return state
+  }
+}
+
+const selectedDiary = (state = null, action) => {
+  switch (action.type) {
+    case types.SET_SELECTED_DIARY:
+      return action.payload
+    default:
+      return state
+  }
+}
+
+const selectedLead = (state = null, action) => {
+  switch (action.type) {
+    case types.SET_SELECTED_LEAD:
+      return action.payload
     default:
       return state
   }
@@ -180,4 +192,6 @@ export default combineReducers({
   connectFeedback,
   isMultiPhoneModalVisible,
   referenceGuide,
+  selectedDiary,
+  selectedLead,
 })

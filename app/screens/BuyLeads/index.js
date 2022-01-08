@@ -798,7 +798,7 @@ class BuyLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {createProjectLead || createBuyRentLead ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
           <FAB.Group
             open={open}
             icon="plus"

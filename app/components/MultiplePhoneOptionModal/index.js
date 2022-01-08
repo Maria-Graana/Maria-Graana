@@ -12,6 +12,7 @@ import whatsapp from '../../../assets/img/whatsapp-02.png'
 import { connect, useDispatch } from 'react-redux'
 import { getDiaryFeedbacks, setConnectFeedback } from '../../actions/diary'
 import helper from '../../helper'
+import diaryHelper from '../../screens/Diary/diaryHelper'
 
 const MultiplePhoneOptionModal = ({
   isMultiPhoneModalVisible,
@@ -19,38 +20,47 @@ const MultiplePhoneOptionModal = ({
   connectFeedback,
   contacts,
   navigation,
-  diary,
+  selectedDiary,
 }) => {
   const { contactsInformation } = connectFeedback
   const dispatch = useDispatch()
 
   const callOnSelectedNumber = (item, calledOn) => {
     let url = null
-    const { selectedDiary = null } = diary
-    dispatch(
-      setConnectFeedback({
-        ...connectFeedback,
-        calledNumber: item.number,
-        calledOn,
-        id: selectedDiary.id,
-      })
-    )
-    url = calledOn === 'phone' ? 'tel:' + item.number : 'whatsapp://send?phone=' + item.number
-    if (url && url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            helper.errorToast(`No application available to dial phone number`)
-            console.log("Can't handle url: " + url)
-          } else {
-            Linking.openURL(url)
-            showMultiPhoneModal(false)
-            navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
-          }
+    if (selectedDiary) {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          calledNumber: item.number,
+          calledOn,
+          id: selectedDiary.id,
         })
-        .catch((err) => console.error('An error occurred', err))
-    } else {
-      helper.errorToast(`No Phone Number`)
+      )
+      url = calledOn === 'phone' ? 'tel:' + item.number : 'whatsapp://send?phone=' + item.number
+      if (url && url != 'tel:null') {
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            if (!supported) {
+              helper.errorToast(`No application available to dial phone number`)
+              console.log("Can't handle url: " + url)
+            } else {
+              Linking.openURL(url)
+              showMultiPhoneModal(false)
+              dispatch(
+                getDiaryFeedbacks({
+                  taskType: selectedDiary.taskType,
+                  leadType: diaryHelper.getLeadType(selectedDiary),
+                  actionType: 'Connect',
+                })
+              ).then((res) => {
+                navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
+              })
+            }
+          })
+          .catch((err) => console.error('An error occurred', err))
+      } else {
+        helper.errorToast(`No Phone Number`)
+      }
     }
   }
 
@@ -105,7 +115,7 @@ const MultiplePhoneOptionModal = ({
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
-    diary: store.diary.diary,
+    selectedDiary: store.diary.selectedDiary,
     connectFeedback: store.diary.connectFeedback,
     contacts: store.contacts.contacts,
   }

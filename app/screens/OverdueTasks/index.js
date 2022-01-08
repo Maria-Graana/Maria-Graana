@@ -31,6 +31,7 @@ import {
   getDiaryFeedbacks,
   getDiaryTasks,
   increasePageCount,
+  initiateConnectFlow,
   markDiaryTaskAsDone,
   setCategory,
   setClassificationModal,
@@ -86,8 +87,15 @@ class OverdueTasks extends React.Component {
   }
 
   handleMenuActions = (action) => {
-    const { navigation, diary, dispatch, connectFeedback, referenceGuide } = this.props
-    const { selectedDiary, selectedLead } = diary
+    const {
+      navigation,
+      diary,
+      dispatch,
+      connectFeedback,
+      referenceGuide,
+      selectedDiary,
+      selectedLead,
+    } = this.props
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
@@ -128,7 +136,21 @@ class OverdueTasks extends React.Component {
         })
       }
     } else if (action === 'cancel_viewing') {
-      dispatch(cancelDiaryViewing({ selectedDate, agentId }))
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
+        })
+      )
+      dispatch(
+        getDiaryFeedbacks({
+          taskType: 'viewing',
+          leadType: diaryHelper.getLeadType(selectedDiary),
+          actionType: 'Cancel',
+        })
+      ).then((res) => {
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
+      })
     } else if (action === 'cancel_meeting') {
       dispatch(
         setConnectFeedback({
@@ -143,7 +165,7 @@ class OverdueTasks extends React.Component {
           actionType: 'Cancel',
         })
       ).then((res) => {
-        navigation.navigate('DiaryFeedback')
+        navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
       })
     } else if (action === 'task_details') {
       const { selectedDate } = this.state
@@ -192,8 +214,7 @@ class OverdueTasks extends React.Component {
     }
   }
   navigateToReferAssignLead = (mode) => {
-    const { navigation } = this.props
-    const { selectedLead, selectedDiary } = this.props.diary
+    const { navigation, selectedLead, selectedDiary } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
       type = 'investment'
@@ -289,8 +310,10 @@ class OverdueTasks extends React.Component {
       isMultiPhoneModalVisible,
       navigation,
       referenceGuide,
+      selectedDiary,
+      selectedLead,
     } = this.props
-    const { diaries, loading, selectedDiary, selectedLead, showClassificationModal, page } = diary
+    const { diaries, loading, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal
@@ -397,12 +420,12 @@ class OverdueTasks extends React.Component {
                 selectedDiary={selectedDiary}
                 screenName={'overduetasks'}
                 hideMenu={() => this.hideMenu()}
-                setClassification={(value) =>
-                  this.setState({
-                    isLeadCategoryModalVisible: true,
-                    selectedDiary: value,
+                initiateConnectFlow={(diary) => {
+                  dispatch(setSelectedDiary(diary))
+                  dispatch(initiateConnectFlow()).then((res) => {
+                    this.showMultiPhoneModal(true)
                   })
-                }
+                }}
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

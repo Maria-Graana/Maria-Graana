@@ -129,7 +129,6 @@ export function clearDiaries() {
 export function getDiaryFeedbacks(payload) {
   return (dispatch, getsState) => {
     const { leadType = null, taskType = null, actionType = null } = payload
-    //const { selectedDiary } = getsState().diary.diary
     let url = `/api/feedbacks/fetch?taskType=${
       taskType === 'follow_up' && actionType != 'Done'
         ? 'Connect'
@@ -162,7 +161,6 @@ export function setConnectFeedback(data) {
 }
 
 const formatFeedBacks = (diaryFeedbacks) => {
-  const FA = FEEDBACK_ACTIONS
   let additionalActions = null
   let actionAdded = false
   let updatedDiaryFeedbacks = diaryFeedbacks
@@ -228,7 +226,7 @@ export function clearDiaryFeedbacks() {
 export function initiateConnectFlow() {
   return (dispatch, getsState) => {
     const { connectFeedback } = getsState().diary
-    const { selectedLead } = getsState().diary.diary
+    const { selectedLead } = getsState().diary
     if (selectedLead && selectedLead.customer) {
       let contactsInformation = helper.createContactPayload(selectedLead.customer)
       dispatch(
@@ -276,12 +274,14 @@ export function setSelectedDiary(diary) {
     } else if (diary.wantedId) {
       lead = { ...diary.wanted }
     }
+
     dispatch({
       type: types.SET_SELECTED_DIARY,
-      payload: {
-        diary,
-        lead,
-      },
+      payload: diary,
+    })
+    dispatch({
+      type: types.SET_SELECTED_LEAD,
+      payload: lead,
     })
   }
 }
@@ -361,7 +361,7 @@ export const addInvestmentGuide = (data) => {
     const { guideNo, attachments } = data
     let promise = null
     const { referenceGuide } = getsState().diary
-    const { selectedLead } = getsState().diary.diary
+    const { selectedLead } = getsState().diary
     const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${selectedLead.id}&guideReference=${guideNo}`
     dispatch(setReferenceGuideData({ ...referenceGuide, referenceGuideLoading: true })).then(
       (res) => {
@@ -511,7 +511,7 @@ const getActiveBookingProperties = (properties, userId) => {
 
 export function setCategory(data) {
   return (dispatch, getsState) => {
-    const { selectedLead, selectedDiary } = getsState().diary.diary
+    const { selectedLead, selectedDiary } = getsState().diary
     const {
       category,
       selectedDate = null,
@@ -549,7 +549,7 @@ export function setCategory(data) {
 
 export const markDiaryTaskAsDone = (data) => {
   return (dispatch, getsState) => {
-    const { selectedDiary } = getsState().diary.diary
+    const { selectedDiary } = getsState().diary
     const {
       selectedDate = null,
       agentId = null,
@@ -584,7 +584,7 @@ export const markDiaryTaskAsDone = (data) => {
 
 export const deleteDiaryTask = (data) => {
   return (dispatch, getsState) => {
-    const { selectedDiary } = getsState().diary.diary
+    const { selectedDiary } = getsState().diary
     const {
       selectedDate = null,
       agentId = null,
@@ -611,7 +611,7 @@ export const deleteDiaryTask = (data) => {
 
 export const cancelDiaryViewing = (data) => {
   return (dispatch, getsState) => {
-    const { selectedDiary, selectedLead } = getsState().diary.diary
+    const { selectedDiary, selectedLead } = getsState().diary
     const {
       selectedDate = null,
       agentId = null,
@@ -638,7 +638,7 @@ export const cancelDiaryViewing = (data) => {
 
 export const cancelDiaryMeeting = (data) => {
   return (dispatch, getsState) => {
-    const { selectedDiary, selectedLead } = getsState().diary.diary
+    const { selectedDiary, selectedLead } = getsState().diary
     const {
       selectedDate = null,
       agentId = null,

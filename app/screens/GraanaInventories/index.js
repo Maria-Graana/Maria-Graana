@@ -303,14 +303,15 @@ class GraanaInventories extends React.Component {
     var endpoint = ''
     var body = {
       amount: formData.amount,
+      propertyType: 'graana'
     }
     if (check === 'amount') {
-      ;(endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`), body
+      ;(endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`)
     } else {
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`
     }
     formData['amount'] = ''
-    axios.patch(endpoint).then((res) => {
+    axios.patch(endpoint , body).then((res) => {
       this.setState(
         {
           forStatusPrice: false,
@@ -318,6 +319,7 @@ class GraanaInventories extends React.Component {
           formData,
         },
         () => {
+          this.getPropertyGraanaListing()
           helper.successToast(res.data)
         }
       )

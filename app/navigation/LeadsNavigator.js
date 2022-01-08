@@ -26,13 +26,17 @@ const TabBarBadge = ({ count, color }) => {
 }
 
 function LeadsNavigator(props) {
-  useEffect(() => {
-    const { navigation, route } = props
-    if (route.params.screen == 'MyDeals') {
-      navigation.setOptions({ title: 'DEALS' })
-    }
-  }, [])
+  // useEffect(() => {
+  //   const { navigation, route } = props
+  //   if (route.params.screen == 'MyDeals') {
+  //     navigation.setOptions({ title: 'DEALS' })
+  //   }
+  // }, [])
   const { count, user, permissions, route } = props
+  const { navigation } = props
+  if (route.params.screen == 'MyDeals') {
+    navigation.setOptions({ title: 'DEALS' })
+  }
   return user.subRole === 'business_centre_manager' ||
     user.subRole === 'business_centre_agent' ||
     user.subRole === 'call_centre_manager' ||

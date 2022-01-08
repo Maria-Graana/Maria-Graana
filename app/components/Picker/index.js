@@ -33,7 +33,6 @@ class PickerComponent extends React.Component {
       customStyle,
       customIconStyle,
       clearOnChange,
-      formatObject = false,
       enabled = true,
     } = this.props
     const items = data || []
@@ -61,9 +60,7 @@ class PickerComponent extends React.Component {
 
     if (items.length) {
       data.map((item, key) => {
-        let pickerItem = (
-          <Picker.Item key={key} value={formatObject ? item : item.value} label={item.name} />
-        )
+        let pickerItem = <Picker.Item key={key} value={item.value} label={item.name} />
         pickerItems.push(pickerItem)
       })
     }

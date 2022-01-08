@@ -727,10 +727,7 @@ function TimeSlotManagement(props) {
         if (color[0].diary.length > 1) {
           var count = 0
           for (var i = 0; i < color[0].diary.length; i++) {
-            if (
-              color[0].diary[i].status !== 'completed' &&
-              color[0].diary[i].status !== 'cancelled'
-            ) {
+            if (color[0].diary[i].status !== 'cancelled') {
               count++
             }
           }
@@ -738,7 +735,7 @@ function TimeSlotManagement(props) {
         } else {
           const str = color[0].diary[0].taskType.replace(/[_ ]+/g, '').toLowerCase()
           const stat = color[0].diary[0].status.toLowerCase()
-          if (stat !== 'completed' && stat !== 'cancelled') return str
+          if (stat !== 'cancelled') return str
         }
       }
     }

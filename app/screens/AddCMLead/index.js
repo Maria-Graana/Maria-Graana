@@ -149,15 +149,16 @@ class AddCMLead extends Component {
       axios
         .post(`/api/leads/project`, formData)
         .then((res) => {
-          if (res.data.message) {
-            Alert.alert(
-              'Lead cannot be created as same lead already exists:',
-              `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
-              [{ text: 'OK', style: 'cancel' }],
-              { cancelable: false }
-            )
-          } else helper.successToast('Lead created successfully')
+          helper.successToast('Lead created successfully')
           RootNavigation.navigate('Leads')
+          // if (res.data.message) {
+          //   Alert.alert(
+          //     'Lead cannot be created as same lead already exists:',
+          //     `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
+          //     [{ text: 'OK', style: 'cancel' }],
+          //     { cancelable: false }
+          //   )
+          // } else 
         })
         .catch((error) => {
           console.log(error)

@@ -22,7 +22,7 @@ class HistoryModal extends React.Component {
   render() {
     const { openPopup, closePopup, lead, user, data } = this.props
     const { doneStatusId, visibleStatus } = this.state
-    let leadAssign = helper.checkAssignedSharedStatus(user, lead)
+    // let leadAssign = helper.checkAssignedSharedStatus(user, lead)
     return (
       <Modal visible={openPopup} animationType="slide" onRequestClose={this.props.closePopup}>
         <SafeAreaView style={[AppStyles.mb1, styles.container]}>
@@ -40,9 +40,7 @@ class HistoryModal extends React.Component {
             <FlatList
               style={styles.flatStyle}
               data={data}
-              renderItem={({ item }, index) => (
-                <HistoryTile data={item} leadClosedCheck={leadAssign} />
-              )}
+              renderItem={({ item }, index) => <HistoryTile data={item} />}
               keyExtractor={(_, index) => index}
             />
           ) : (

@@ -423,7 +423,7 @@ class Diary extends React.Component {
       lead = { ...data.wanted }
       purposeTab = 'wanted'
     }
-    navigation.navigate('LeadDetail', { lead, purposeTab })
+    navigation.navigate('LeadDetail', { lead, purposeTab , screenName : "diary"})
   }
 
   navigateToFiltersScreen = () => {

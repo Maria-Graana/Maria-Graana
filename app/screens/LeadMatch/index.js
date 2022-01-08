@@ -838,8 +838,7 @@ class LeadMatch extends React.Component {
                       AppStyles.mrFive,
                     ]}
                   >
-                    {' '}
-                    Graana DU{' '}
+                    Graana
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -854,8 +853,7 @@ class LeadMatch extends React.Component {
                       AppStyles.mrFive,
                     ]}
                   >
-                    {' '}
-                    ARMS{' '}
+                    ARMS
                   </Text>
                 </TouchableOpacity>
               </View>

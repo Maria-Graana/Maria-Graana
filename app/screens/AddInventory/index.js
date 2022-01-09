@@ -156,9 +156,9 @@ class AddInventory extends Component {
       copyPropertyObj.lat = this.props.addPropertyParams.latitude
       copyPropertyObj.lng = this.props.addPropertyParams.longitude
       copyPropertyObj.locate_manually = this.props.addPropertyParams.locate_manually
-      copyPropertyObj.propsure_id = `${
-        this.props.addPropertyParams.propsure_id ? this.props.addPropertyParams.propsure_id : null
-      }`
+      copyPropertyObj.propsure_id = this.props.addPropertyParams.propsure_id
+        ? this.props.addPropertyParams.propsure_id
+        : null
       this.setState({
         formData: copyPropertyObj,
       })
@@ -425,8 +425,7 @@ class AddInventory extends Component {
     delete formData.floors
     delete formData.year_built
     delete formData.downpayment
-    console.log(property)
-    console.log('formData=>', formData)
+
     if (route.params.update) {
       axios
         .patch(`/api/inventory/${property.id}`, formData)

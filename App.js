@@ -18,6 +18,7 @@ import {
   setCustomTouchableOpacity,
 } from 'react-native-global-props'
 import { Provider as PaperProvider } from 'react-native-paper'
+import AppJson from './app.json'
 import { MenuProvider } from 'react-native-popup-menu'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider } from 'react-redux'
@@ -67,8 +68,8 @@ export default class App extends React.Component {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + JSON.parse(token)
       }
     })
-    // axios.defaults.headers['version'] = AppJson.expo.version
-    axios.defaults.headers['version'] = '2.2.0'
+    axios.defaults.headers['version'] = AppJson.expo.version
+    // axios.defaults.headers['version'] = '2.2.0'
     axios.interceptors.request.use(
       (config) =>
         new Promise((resolve) => {

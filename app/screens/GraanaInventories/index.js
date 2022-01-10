@@ -1,36 +1,28 @@
 /** @format */
 
-import * as RootNavigation from '../../navigation/RootNavigation'
-
-import { Alert, FlatList, Image, Text, View } from 'react-native'
-import * as Location from 'expo-location'
-import { Linking } from 'react-native'
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen'
-
-import Ability from '../../hoc/Ability'
-import { ActionSheet } from 'native-base'
-import AppStyles from '../../AppStyles'
-import { Fab } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
-import Loader from '../../components/loader'
-import NoResultsComponent from '../../components/NoResultsComponent'
-import PropertyTile from '../../components/PropertyTile'
-import React from 'react'
 import axios from 'axios'
+import * as Location from 'expo-location'
+import { ActionSheet } from 'native-base'
+import React from 'react'
+import { Alert, FlatList, Linking, Text, View } from 'react-native'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
-import helper from '../../helper'
-import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
-import StaticData from '../../StaticData'
 import { isEmpty } from 'underscore'
-import styles from './style'
-import PickerComponent from '../../components/Picker'
-import Search from '../../components/Search'
+import AppStyles from '../../AppStyles'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import GraanaPhoneOptionModal from '../../components/GraanaPhoneOptionModal'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
+import Loader from '../../components/loader'
+import NoResultsComponent from '../../components/NoResultsComponent'
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import PickerComponent from '../../components/Picker'
+import PropertyTile from '../../components/PropertyTile'
+import Search from '../../components/Search'
+import helper from '../../helper'
+import * as RootNavigation from '../../navigation/RootNavigation'
+import StaticData from '../../StaticData'
+import styles from './style'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -109,6 +101,15 @@ class GraanaInventories extends React.Component {
     this.setState({
       page: 1,
       totalProperties: 0,
+    })
+  }
+
+  goToAttachments = (purpose) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('LeadAttachments', {
+      navProperty: true,
+      purpose: purpose,
+      propertyId: this.state.selectedProperty.id,
     })
   }
 
@@ -302,14 +303,15 @@ class GraanaInventories extends React.Component {
     var endpoint = ''
     var body = {
       amount: formData.amount,
+      propertyType: 'graana'
     }
     if (check === 'amount') {
-      ;(endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`), body
+      ;(endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`)
     } else {
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`
     }
     formData['amount'] = ''
-    axios.patch(endpoint).then((res) => {
+    axios.patch(endpoint , body).then((res) => {
       this.setState(
         {
           forStatusPrice: false,
@@ -317,6 +319,7 @@ class GraanaInventories extends React.Component {
           formData,
         },
         () => {
+          this.getPropertyGraanaListing()
           helper.successToast(res.data)
         }
       )
@@ -662,6 +665,7 @@ class GraanaInventories extends React.Component {
                 graanaVerifeyModal={this.graanaVerifeyModal}
                 whichProperties={'graanaProperties'}
                 selectedProperty={selectedProperty}
+                goToAttachments={this.goToAttachments}
               />
             )}
             onEndReached={() => {

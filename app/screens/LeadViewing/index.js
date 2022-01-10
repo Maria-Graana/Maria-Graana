@@ -28,6 +28,8 @@ import GeoTaggingModal from '../../components/GeotaggingModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getDiaryFeedbacks, setConnectFeedback } from '../../actions/diary'
+import diaryHelper from '../Diary/diaryHelper'
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -243,9 +245,13 @@ class LeadViewing extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -389,12 +395,15 @@ class LeadViewing extends React.Component {
   }
 
   toggleCheckListModal = (toggleState, data) => {
-    this.setState({
-      isCheckListModalVisible: toggleState,
-      currentProperty: data ? data : null,
-      selectedCheckList: [],
-      userFeedback: null,
-    })
+    // this.setState(
+    //   {
+    // isCheckListModalVisible: toggleState,
+    //   currentProperty: data ? data : null,
+    //   selectedCheckList: [],
+    //   userFeedback: null,
+    // },
+    this.doneViewing(data ? data : null)
+    // )
   }
 
   checkStatus = (property) => {
@@ -501,59 +510,49 @@ class LeadViewing extends React.Component {
   }
 
   doneViewing = (property) => {
-    const { user } = this.props
-    const { selectedCheckList, userFeedback } = this.state
+    const { user, dispatch, navigation } = this.props
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
-      if (
-        diary.status === 'pending' &&
-        selectedCheckList.length === StaticData.areaManagerCheckList.length &&
-        userFeedback !== '' &&
-        userFeedback !== null
-      ) {
-        let checkList = {}
-        selectedCheckList.map((item, index) => {
-          checkList[item] = true
+      if (diary.status === 'pending') {
+        dispatch(
+          setConnectFeedback({
+            id: diary.id,
+          })
+        )
+        dispatch(
+          getDiaryFeedbacks({
+            taskType: 'viewing',
+            leadType: diaryHelper.getLeadType(diary),
+            actionType: 'Done',
+          })
+        ).then((res) => {
+          this.toggleMenu(false, property.id)
+          navigation.navigate('DiaryFeedback', { actionType: 'Done' })
         })
-        let stringifiedObj = JSON.stringify(checkList)
-        let body = {
-          status: 'completed',
-          checkList: stringifiedObj,
-          customer_feedback: userFeedback,
-        }
-        axios
-          .patch(`/api/diary/update?id=${diary.id}`, body)
-          .then((res) => {
-            this.setState({ loading: true })
-            this.toggleCheckListModal(false, null)
-            this.fetchProperties()
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      } else {
-        alert('Please fill the checklist and user feedback to continue!')
       }
     }
   }
 
   cancelViewing = (property) => {
-    const { lead } = this.props
+    const { lead, navigation, dispatch } = this.props
     if (property.diaries.length) {
       if (property.diaries[0].status === 'pending') {
-        axios
-          .delete(
-            `/api/diary/delete?id=${property.diaries[0].id}&propertyId=${property.id}&leadId=${lead.id}`
-          )
-          .then((res) => {
-            this.setState({ loading: true })
-            helper.deleteLocalNotification(property.diaries[0].id)
-            this.fetchProperties()
+        dispatch(
+          setConnectFeedback({
+            id: property.diaries[0].id,
           })
-          .catch((error) => {
-            console.log(error)
+        )
+        dispatch(
+          getDiaryFeedbacks({
+            taskType: 'viewing',
+            leadType: diaryHelper.getLeadType(property.diaries[0]),
+            actionType: 'Cancel',
           })
+        ).then((res) => {
+          this.toggleMenu(false, property.id)
+          navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
+        })
       }
     }
   }
@@ -592,8 +591,8 @@ class LeadViewing extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 
@@ -786,10 +785,11 @@ class LeadViewing extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
   }
 

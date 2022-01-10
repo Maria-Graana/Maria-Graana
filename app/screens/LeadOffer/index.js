@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import * as React from 'react'
-import { FlatList, Image, Linking, Text, TouchableOpacity, View, Alert } from 'react-native'
+import { Alert, FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -14,15 +14,14 @@ import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import OfferModal from '../../components/OfferModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './styles'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import { formatPrice } from '../../components/PriceFormate'
-import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
@@ -319,9 +318,13 @@ class LeadOffer extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -421,8 +424,8 @@ class LeadOffer extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 
@@ -593,11 +596,18 @@ class LeadOffer extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   // ************ Function for Reject modal ************
@@ -676,6 +686,8 @@ class LeadOffer extends React.Component {
     } = this.state
     const { lead, navigation, user } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const showBuyerSide = helper.setBuyerAgent(lead, 'buyerSide', user)
+    const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'buyerSide', user)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -770,6 +782,8 @@ class LeadOffer extends React.Component {
           sellerNotNumeric={sellerNotNumeric}
           customerNotNumeric={customerNotNumeric}
           agreedNotNumeric={agreedNotNumeric}
+          showBuyerSide={showBuyerSide}
+          showSellerSide={showSellerSide}
         />
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}

@@ -36,6 +36,7 @@ class PickerComponent extends React.Component {
       enabled = true,
     } = this.props
     const items = data || []
+
     let pickerItems = []
     let clearOnChangeProp = clearOnChange || false
     const placeholderLabel = placeholder || 'Select'

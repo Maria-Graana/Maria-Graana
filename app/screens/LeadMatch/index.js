@@ -643,14 +643,17 @@ class LeadMatch extends React.Component {
       update: false,
       rcmLeadId: lead.id,
       agentId: user.id,
-      addedBy: 'self',
       screenName: 'Diary',
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { navigation, lead } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -676,8 +679,8 @@ class LeadMatch extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 
@@ -725,11 +728,17 @@ class LeadMatch extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   // ************ Function for Reject modal ************
@@ -829,8 +838,7 @@ class LeadMatch extends React.Component {
                       AppStyles.mrFive,
                     ]}
                   >
-                    {' '}
-                    Graana DU{' '}
+                    Graana
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -845,8 +853,7 @@ class LeadMatch extends React.Component {
                       AppStyles.mrFive,
                     ]}
                   >
-                    {' '}
-                    ARMS{' '}
+                    ARMS
                   </Text>
                 </TouchableOpacity>
               </View>

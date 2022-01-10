@@ -15,6 +15,7 @@ import CheckListModal from '../../components/CheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
+import HistoryModal from '../../components/HistoryModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import PropAgentTile from '../../components/PropAgentTile/index'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
@@ -112,6 +113,12 @@ class PropertyViewing extends React.Component {
           loading: false,
         })
       })
+  }
+  getCallHistory = () => {
+    const { lead } = this.props
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
+    })
   }
 
   fetchLead = () => {
@@ -214,9 +221,13 @@ class PropertyViewing extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'propertyLeads' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -740,13 +751,25 @@ class PropertyViewing extends React.Component {
       isFollowUpMode: false,
     })
   }
+  goToHistory = () => {
+    const { callModal } = this.state
+    this.setState({ callModal: !callModal })
+  }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
+  openModalInFollowupMode = (value) => {
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   render() {
@@ -912,6 +935,13 @@ class PropertyViewing extends React.Component {
           lead={lead}
           leadType={'RCM'}
         />
+        <HistoryModal
+          getCallHistory={this.getCallHistory}
+          navigation={navigation}
+          data={meetings}
+          closePopup={this.goToHistory}
+          openPopup={callModal}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
             goToAttachments={this.goToAttachments}
@@ -924,9 +954,8 @@ class PropertyViewing extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={() => null}
-            getCallHistory={() => null}
-            goToFollowup={() => this.openModalInFollowupMode()}
+            goToHistory={this.goToHistory}
+            goToFollowUp={(value) => this.openModalInFollowupMode(value)}
           />
         </View>
         <LeadRCMPaymentPopup

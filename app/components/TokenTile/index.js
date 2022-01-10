@@ -77,10 +77,11 @@ class TokenTile extends Component {
       showMenu,
       data,
       confirmTokenAction,
-      menuData,
       singleCommission = false,
       onSubmitNewToken,
       isLeadClosed,
+      updatePermission,
+      closedLeadEdit,
     } = this.props
     let showStatus = { label: '', value: '' }
     showStatus = this.findStatusLabel()
@@ -96,11 +97,13 @@ class TokenTile extends Component {
         disabled={commissionEdit || isLeadClosed}
         style={{ zIndex: 10, flex: 1 }}
         onPress={() => {
-          data.status === 'at_buyer_agent' ||
-          data.status === 'pendingSales' ||
-          data.status === 'notCleared'
-            ? editTile(data)
-            : null
+          if (updatePermission && closedLeadEdit) {
+            data.status === 'at_buyer_agent' ||
+            data.status === 'pendingSales' ||
+            data.status === 'notCleared'
+              ? editTile(data)
+              : null
+          }
         }}
       >
         <View

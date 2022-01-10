@@ -4,10 +4,9 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
 import AppStyles from '../../AppStyles'
-import dots from '../../../assets/img/dots.png'
 import moment from 'moment'
-import StaticData from '../../StaticData'
 import helper from '../../helper'
+import DiaryHelper from '../../screens/Diary/diaryHelper'
 
 class MeetingTile extends React.Component {
   constructor(props) {
@@ -15,37 +14,110 @@ class MeetingTile extends React.Component {
   }
 
   render() {
-    const { data, openStatus, editFunction, leadClosedCheck } = this.props
-    let taskTypeData = []
-    data.taskType === 'meeting'
-      ? (taskTypeData = StaticData.meetingStatus)
-      : (taskTypeData = StaticData.callStatus)
-
-    let response = data && data.response != null && data.response.replace(/_+/g, ' ')
-
+    const { data } = this.props
+    const d = new Date(data.createdAt)
+    const weekday = new Array(7)
+    weekday[0] = 'Sun'
+    weekday[1] = 'Mon'
+    weekday[2] = 'Tue'
+    weekday[3] = 'Wed'
+    weekday[4] = 'Thu'
+    weekday[5] = 'Fri'
+    weekday[6] = 'Sat'
+    let day = weekday[d.getDay()]
     return (
-      <TouchableOpacity onPress={() => null}>
-        <View style={[styles.mainTileView]}>
-          <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
-            <View style={styles.border}>
-              <Text style={[AppStyles.mrTen, styles.meetingCon]}>
-                {data.taskType === 'called' && data.calledOn === 'whatsapp' ? 'Whatsapp' : ''}
-                {data.taskType === 'called' && (data.calledOn === 'phone' || data.calledOn === null)
-                  ? 'Called'
-                  : ''}
-                {data.taskType !== 'called' ? data.taskType : ''}
-                {data.calledNumber ? ` (${data.calledNumber})` : null}
-              </Text>
-              <Text style={[styles.fontBold]}>
-                @ {`${helper.formatTime(data.start)} ${moment(data.date).format('MMM DD')}`}{' '}
-              </Text>
+      <TouchableOpacity>
+        <View>
+          {data.taskType && (
+            <View style={[styles.mainTileView]}>
+              <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
+                <View style={styles.border}>
+                  <View>
+                    <View style={[styles.taskTypeWrap]}>
+                      <View style={styles.taskWrap}>
+                        {data.taskType === 'meeting' && (
+                          <Image
+                            source={require('../../../assets/img/meeting2.png')}
+                            style={styles.dotsImg}
+                          />
+                        )}
+                        {data.taskType === 'connect' && (
+                          <Image
+                            source={require('../../../assets/img/connect.png')}
+                            style={styles.dotsImg}
+                          />
+                        )}
+                        {data.taskType === 'follow_up' && (
+                          <Image
+                            source={require('../../../assets/img/followup2.png')}
+                            style={styles.dotsImg}
+                          />
+                        )}
+                        {data.taskType === 'viewing' && (
+                          <Image
+                            source={require('../../../assets/img/viewing2.png')}
+                            style={styles.dotsImg}
+                          />
+                        )}
+                        <Text style={[AppStyles.mlTen, styles.meetingCon]}>
+                          {`${DiaryHelper.removeUnderscore(data.taskType)}`}
+                        </Text>
+                      </View>
+                      <View style={styles.taskType}>
+                        <View
+                         style={styles.DayAndTime}
+                         
+                        >
+                          <Text style={styles.fontBold}>
+                            {` ${day} ${moment(data.date).format('MMM DD')},${helper
+                              .formatTime(data.start)
+                              .replace('pm', 'PM')
+                              .replace('am', 'AM')}`}{' '}
+                          </Text>
+                          {data.status === 'completed' ? (
+                            <Image
+                              source={require('../../../assets/img/done2.png')}
+                              style={styles.doneImg}
+                            />
+                          ) : null}
+                        </View>
+                      </View>
+                    </View>
+                    {data.reasonTag && data.status !== 'completed' && (
+                      <View style={styles.reasonWrap}>
+                        <Text>Reason :</Text>
+                        <View style={[styles.reasonTag, { borderColor: data.reason.colorCode }]}>
+                          <Text numberOfLines={1}> {data.reasonTag}</Text>
+                        </View>
+                      </View>
+                    )}
+                    {data.feedbackTag === data.response ? (
+                      <View style={styles.responseWrap}>
+                        <Text>{data.response}</Text>
+                      </View>
+                    ) : (
+                      <View>
+                        {data.feedbackTag && (
+                          <View>
+                            <View style={styles.feedbackTag}>
+                              <Text style={styles.blueColor} numberOfLines={1}>
+                                {data.feedbackTag}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
+                        {data.response && (
+                          <View style={styles.outcomeWrap}>
+                            <Text>{data.response}</Text>
+                          </View>
+                        )}
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </View>
             </View>
-          </View>
-          <View>
-            <Text style={[styles.doneText, response != 'DNC' && styles.uperCase]}>
-              {data.response !== null ? helper.showStatus(response) : 'Called'}
-            </Text>
-          </View>
+          )}
         </View>
       </TouchableOpacity>
     )

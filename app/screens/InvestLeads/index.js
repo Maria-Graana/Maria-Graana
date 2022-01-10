@@ -1,35 +1,35 @@
 /** @format */
 
-import React from 'react'
-import styles from './style'
-import moment from 'moment'
-import { View, Text, TouchableOpacity, Image, SafeAreaView, Linking, FlatList } from 'react-native'
-import { connect } from 'react-redux'
-import AppStyles from '../../AppStyles'
-import PickerComponent from '../../components/Picker/index'
-import { ActionSheet } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
-import SortImg from '../../../assets/img/sort.png'
-import LoadingNoResult from '../../components/LoadingNoResult'
-import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
-import LeadTile from '../../components/LeadTile'
 import axios from 'axios'
-import helper from '../../helper'
-import StaticData from '../../StaticData'
+import { ActionSheet } from 'native-base'
+import React from 'react'
+import { FlatList, Image, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
-import Loader from '../../components/loader'
-import SortModal from '../../components/SortModal'
-import { setlead } from '../../actions/lead'
-import Search from '../../components/Search'
-import Ability from '../../hoc/Ability'
-import { getItem, storeItem } from '../../actions/user'
-import { getListingsCount } from '../../actions/listings'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
-import DateSearchFilter from '../../components/DateSearchFilter'
+import { connect } from 'react-redux'
+import SortImg from '../../../assets/img/sort.png'
 import { setCallPayload } from '../../actions/callMeetingFeedback'
+import { setlead } from '../../actions/lead'
+import { getListingsCount } from '../../actions/listings'
+import { getItem, storeItem } from '../../actions/user'
+import AppStyles from '../../AppStyles'
+import DateSearchFilter from '../../components/DateSearchFilter'
+import LeadTile from '../../components/LeadTile'
+import LoadingNoResult from '../../components/LoadingNoResult'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import PickerComponent from '../../components/Picker/index'
+import Search from '../../components/Search'
+import SortModal from '../../components/SortModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import helper from '../../helper'
+import Ability from '../../hoc/Ability'
+import StaticData from '../../StaticData'
+import styles from './style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = [
   'Assign to team member',
@@ -42,6 +42,7 @@ var CANCEL_INDEX = 3
 class InvestLeads extends React.Component {
   constructor(props) {
     super(props)
+    const { permissions } = this.props
     this.state = {
       leadsData: [],
       purposeTab: 'invest',
@@ -69,20 +70,60 @@ class InvestLeads extends React.Component {
       statusFilterType: 'id',
       comment: null,
       newActionModal: false,
+      isMenuVisible: false,
+      fabActions: [],
+      createBuyRentLead: getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
+      createProjectLead: getPermissionValue(
+        PermissionFeatures.PROJECT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
     }
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      dispatch(getListingsCount())
-      this.getServerTime()
-      this.onFocus()
-    })
+    const { dispatch, route } = this.props
+    const { client } = route.params
+
+    if (client) {
+      this.fetchAddedLeads(client)
+    } else {
+      this._unsubscribe = this.props.navigation.addListener('focus', () => {
+        dispatch(getListingsCount())
+        this.getServerTime()
+        this.onFocus()
+        this.setFabActions()
+      })
+    }
   }
 
   componentWillUnmount() {
     this.clearStateValues()
+  }
+
+  fetchAddedLeads = (client) => {
+    const { page, leadsData, statusFilter } = this.state
+    this.setState({ loading: true })
+    axios
+      .get(`/api/leads/projects?customerId=${client.id}`)
+      .then((res) => {
+        this.setState({
+          leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+          loading: false,
+          onEndReachedLoader: false,
+          totalLeads: res.data.count,
+          statusFilter: statusFilter,
+        })
+      })
+      .catch((res) => {
+        this.setState({
+          loading: false,
+        })
+      })
   }
 
   onFocus = async () => {
@@ -99,7 +140,13 @@ class InvestLeads extends React.Component {
       })
     }
   }
-
+  setIsMenuVisible = (value, data) => {
+    const { dispatch } = this.props
+    dispatch(setlead(data))
+    this.setState({
+      isMenuVisible: value,
+    })
+  }
   getServerTime = () => {
     axios
       .get(`/api/user/serverTime?fullTime=true`)
@@ -143,18 +190,23 @@ class InvestLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
+    const { hasBooking } = this.props.route.params
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads/projects?searchBy=name&q=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      if (statusFilter === 'in_progress') {
+        query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      } else {
+        query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      }
     }
     axios
       .get(`${query}`)
@@ -192,29 +244,17 @@ class InvestLeads extends React.Component {
     })
   }
 
-  navigateTo = (data) => {
-    const { navigation } = this.props
+  navigateFromMenu = (data, name) => {
+    const { screen } = this.props.route.params
     this.props.dispatch(setlead(data))
-    let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'invest' })
-    } else {
-      if (
-        data.status === 'token' ||
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payments'
-      } else {
-        page = 'Meetings'
-      }
-
-      navigation.navigate('CMLeadTabs', {
-        screen: page,
-        params: { lead: data },
-      })
-    }
+    this.props.navigation.navigate(name, {
+      lead: data,
+      purposeTab: 'invest',
+      screen: 'InvestLeads',
+      cmLeadId: data.id,
+      screenName: screen,
+    })
+    this.setIsMenuVisible(false, data)
   }
 
   handleLongPress = (val) => {
@@ -255,7 +295,9 @@ class InvestLeads extends React.Component {
           navigation.navigate('AssignLead', {
             leadId: data.id,
             type: 'Investment',
-            screen: 'InvestLeads',
+            purpose: 'refer',
+            screenName: 'Invest',
+            // screen: 'MenuLead',
           })
         }
       } else {
@@ -263,6 +305,37 @@ class InvestLeads extends React.Component {
       }
     } else {
       helper.errorToast('Something went wrong!')
+    }
+  }
+  navigateTo = (data) => {
+    const { screen } = this.props.route.params
+    const { navigation, route } = this.props
+    const unitData = route.params.unitData
+
+    this.props.dispatch(setlead(data))
+    let page = ''
+    if (data.readAt === null) {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'invest',
+        screenName: screen,
+      })
+    } else {
+      if (
+        data.status === 'token' ||
+        data.status === 'payment' ||
+        data.status === 'closed_won' ||
+        data.status === 'closed_lost'
+      ) {
+        page = 'Payments'
+      } else {
+        page = 'Meetings'
+      }
+
+      navigation.navigate('CMLeadTabs', {
+        screen: unitData ? 'Payments' : page,
+        params: { lead: data, unitData: unitData, screenName: screen },
+      })
     }
   }
 
@@ -319,7 +392,8 @@ class InvestLeads extends React.Component {
       navigation.navigate('AssignLead', {
         leadId: lead.id,
         type: 'Investment',
-        screen: 'LeadDetail',
+        purpose: 'reassign',
+        screenName: 'Invest',
       })
     } else {
       helper.errorToast('Lead Already Assign')
@@ -447,6 +521,74 @@ class InvestLeads extends React.Component {
     navigation.navigate('CMLeadTabs', { screen: 'Payments' })
   }
 
+  createProjectLead = () => {
+    const { permissions } = this.props
+    const { fabActions } = this.state
+    if (
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)
+    ) {
+      this.setState({
+        fabActions: [
+          {
+            icon: 'plus',
+            label: 'Investment Lead',
+            color: AppStyles.colors.primaryColor,
+            onPress: () => {
+              if (createProjectLead) this.goToFormPage('AddCMLead', 'CM', null)
+            },
+          },
+        ],
+      })
+      return true
+    }
+  }
+
+  createBuyRentLead = () => {
+    const { permissions } = this.props
+    const { fabActions } = this.state
+    if (
+      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.CREATE, permissions)
+    ) {
+      this.setState({
+        fabActions: [
+          {
+            icon: 'plus',
+            label: 'Buy/Rent Lead',
+            color: AppStyles.colors.primaryColor,
+            onPress: () => {
+              if (createBuyRentLead) this.goToFormPage('AddRCMLead', 'RCM', null)
+            },
+          },
+        ],
+      })
+      return true
+    }
+  }
+
+  setFabActions = () => {
+    const { createBuyRentLead, createProjectLead } = this.state
+    let fabActions = []
+    if (createBuyRentLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Buy/Rent Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+      })
+    }
+    if (createProjectLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Investment Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+      })
+    }
+    this.setState({
+      fabActions: fabActions,
+    })
+  }
+
   render() {
     const {
       leadsData,
@@ -470,9 +612,15 @@ class InvestLeads extends React.Component {
       statusFilterType,
       comment,
       newActionModal,
+      isMenuVisible,
+      fabActions,
+      createBuyRentLead,
+      createProjectLead,
     } = this.state
-    const { user, lead } = this.props
+    const { user, permissions } = this.props
+    const { screen } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
+
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
@@ -556,9 +704,15 @@ class InvestLeads extends React.Component {
                 user={user}
                 data={item}
                 navigateTo={this.navigateTo}
+                navigateFromMenu={this.navigateFromMenu}
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
+                screen={screen}
+                isMenuVisible={isMenuVisible}
+                setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
+                checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
+                navigateToShareScreen={(data) => this.navigateToShareScreen(data)}
               />
             )}
             onEndReached={() => {
@@ -581,28 +735,17 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        <FAB.Group
-          open={open}
-          icon="plus"
-          style={{ marginBottom: 16 }}
-          fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-          color={AppStyles.bgcWhite.backgroundColor}
-          actions={[
-            {
-              icon: 'plus',
-              label: 'Buy/Rent Lead',
-              color: AppStyles.colors.primaryColor,
-              onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
-            },
-            {
-              icon: 'plus',
-              label: 'Investment Lead',
-              color: AppStyles.colors.primaryColor,
-              onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
-            },
-          ]}
-          onStateChange={({ open }) => this.setState({ open })}
-        />
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+          <FAB.Group
+            open={open}
+            icon="plus"
+            style={{ marginBottom: 16 }}
+            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+            color={AppStyles.bgcWhite.backgroundColor}
+            actions={fabActions}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
+        ) : null}
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -662,6 +805,8 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

@@ -19,14 +19,12 @@ export default styles = StyleSheet.create({
   bottomNavBtn: {
     width: '20%',
     alignItems: 'center',
-    paddingBottom: 15,
-    paddingTop: 15,
+    paddingTop: 8,
   },
   bottomNavBtn2: {
     width: '20%',
     alignItems: 'center',
-    paddingBottom: 15,
-    paddingTop: 15,
+    paddingTop: 8,
   },
   align: {
     alignItems: 'center',
@@ -37,13 +35,10 @@ export default styles = StyleSheet.create({
     height: 25,
   },
   bottomNavBtnText: {
-    color: AppStyles.colors.primaryColor,
-    fontSize: 14,
-    fontFamily: AppStyles.fonts.boldFont,
+    fontSize: 15,
+    color: 'black',
   },
-  forMenuIcon: {
-    backgroundColor: '#0E73EE',
-  },
+  forMenuIcon: {},
   colorWhite: {
     color: '#fff',
   },
@@ -61,19 +56,16 @@ export default styles = StyleSheet.create({
   followBtn: {
     width: '20%',
     alignItems: 'center',
-    backgroundColor: '#F0B512',
-    borderRadius: 5,
     marginHorizontal: 1,
     justifyContent: 'center',
-    padding: 5,
-    paddingTop: 9,
+    padding: 10,
+    paddingTop: 5,
   },
   rejectBtn: {
     width: '20%',
     alignItems: 'center',
     paddingBottom: 15,
     paddingTop: 15,
-    backgroundColor: '#D73344',
     borderRadius: 5,
     marginHorizontal: 1,
     justifyContent: 'center',
@@ -81,11 +73,9 @@ export default styles = StyleSheet.create({
   },
   actionText: {
     color: '#fff',
-    fontFamily: AppStyles.fonts.boldFont,
     fontSize: 16,
   },
   followText: {
-    fontFamily: AppStyles.fonts.boldFont,
     fontSize: 16,
     textAlign: 'center',
   },

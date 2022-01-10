@@ -10,15 +10,16 @@ const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
 
-export default function CMLeadTabs() {
+export default function CMLeadTabs(props) {
+  const {screenName} = props.route.params.params
   return (
     <Tab.Navigator
       tabBarOptions={{
         scrollEnabled: false,
-        labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
+        labelStyle: { fontSize: 15, fontFamily: AppStyles.fonts.semiBoldFont },
         activeTintColor: AppStyles.colors.primaryColor,
         inactiveTintColor: AppStyles.colors.subTextColor,
-        tabStyle: { width: width / 2, paddingLeft: 0, paddingRight: 0 },
+        tabStyle: { paddingLeft: 0, paddingRight: 0 },
         indicatorStyle: {
           borderBottomColor: '#ffffff',
           borderBottomWidth: 2,
@@ -26,8 +27,8 @@ export default function CMLeadTabs() {
         // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
       }}
     >
-      <Tab.Screen name="Meetings" options={{ title: 'Nurture' }} component={Meetings} />
-      <Tab.Screen name="Payments" component={CMPayment} />
+      {/* <Tab.Screen name="Meetings" options={{ title: 'Nurture' }} component={Meetings} /> */}
+      <Tab.Screen name="Payments" component={CMPayment} initialParams = {{screenName : screenName}} />
     </Tab.Navigator>
   )
 }

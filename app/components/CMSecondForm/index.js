@@ -29,6 +29,7 @@ class CMSecondForm extends React.Component {
       outStandingTax,
       toggleSchedulePayment,
       call,
+      updatePermission,
     } = this.props
     const { payment, projectProduct } = lead
     return (
@@ -98,13 +99,17 @@ class CMSecondForm extends React.Component {
 
           <View style={{ backgroundColor: '#fff', marginHorizontal: 10 }}>
             <CMBTN
-              onClick={() => addPaymentModalToggle(true, 'payment')}
+              onClick={() => {
+                if (updatePermission) addPaymentModalToggle(true, 'payment')
+              }}
               btnImage={RoundPlus}
               btnText={'ADD PAYMENT'}
               checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
             <CMBTN
-              onClick={() => addPaymentModalToggle(true, 'tax')}
+              onClick={() => {
+                if (updatePermission) addPaymentModalToggle(true, 'tax')
+              }}
               btnImage={RoundPlus}
               btnText={'ADD TAX'}
               checkLeadClosedOrNot={checkLeadClosedOrNot}

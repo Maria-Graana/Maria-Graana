@@ -47,6 +47,9 @@ class BuyPaymentView extends React.Component {
       handleForm,
       advanceNotZero,
       call,
+      readPermission,
+      updatePermission,
+      closedLeadEdit,
     } = this.props
     let property = currentProperty[0]
     let subRole =
@@ -62,15 +65,8 @@ class BuyPaymentView extends React.Component {
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
-    let buyerCommission =
-      lead.assigned_to_armsuser_id === user.id &&
-      (Ability.canEdit(subRole, 'Leads') || property.origin !== 'arms')
-        ? true
-        : false
-    let sellerCommission =
-      property.assigned_to_armsuser_id === user.id || !Ability.canEdit(subRole, 'Leads') || isPP
-        ? true
-        : false
+    let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user)
+    let sellerCommission = helper.setSellerAgent(lead, property, 'buyerSide', user)
     let singleCommission = buyerCommission && sellerCommission ? true : false
     const buyer = _.find(
       lead.commissions,
@@ -102,6 +98,9 @@ class BuyPaymentView extends React.Component {
           lead={lead}
           agreedNotZero={agreedNotZero}
           advanceNotZero={advanceNotZero}
+          readPermission={readPermission}
+          updatePermission={updatePermission}
+          closedLeadEdit={closedLeadEdit}
         />
         <View style={styles.monthlyTile}>
           <View style={{ justifyContent: 'space-between' }}>
@@ -115,7 +114,9 @@ class BuyPaymentView extends React.Component {
         <View style={{ paddingVertical: 5 }} />
         {!tokenPayment ? (
           <RCMBTN
-            onClick={() => onAddCommissionPayment('buyer', 'token')}
+            onClick={() => {
+              if (updatePermission && closedLeadEdit) onAddCommissionPayment('buyer', 'token')
+            }}
             btnImage={RoundPlus}
             btnText={'ADD TOKEN'}
             checkLeadClosedOrNot={false}
@@ -127,7 +128,9 @@ class BuyPaymentView extends React.Component {
           <TokenTile
             data={tokenPayment}
             editTile={editTile}
-            onPaymentLongPress={() => onPaymentLongPress(tokenPayment)}
+            onPaymentLongPress={() => {
+              if (updatePermission && closedLeadEdit) onPaymentLongPress(tokenPayment)
+            }}
             commissionEdit={!buyerCommission}
             title={tokenPayment ? 'Token' : ''}
             toggleTokenMenu={toggleTokenMenu}
@@ -137,6 +140,7 @@ class BuyPaymentView extends React.Component {
             singleCommission={singleCommission}
             onSubmitNewToken={onAddCommissionPayment}
             isLeadClosed={isLeadClosed}
+            updatePermission={updatePermission}
           />
         ) : null}
         <BuyerSellerTile
@@ -158,6 +162,9 @@ class BuyPaymentView extends React.Component {
           buyerSellerCounts={buyerSellerCounts}
           call={call}
           leadType={'rcm'}
+          readPermission={readPermission}
+          updatePermission={updatePermission}
+          closedLeadEdit={closedLeadEdit}
         />
         <BuyerSellerTile
           singleCommission={singleCommission}
@@ -184,6 +191,9 @@ class BuyPaymentView extends React.Component {
           buyerSellerCounts={buyerSellerCounts}
           call={call}
           leadType={'rcm'}
+          readPermission={readPermission}
+          updatePermission={updatePermission}
+          closedLeadEdit={closedLeadEdit}
         />
       </View>
     )

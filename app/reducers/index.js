@@ -15,6 +15,8 @@ import PropsurePayment from './propsurePayment'
 import Notification from './notification'
 import Instruments from './addInstrument'
 import callMeetingStatus from './callMeetingFeedback'
+import slotManagement from './slotManagement' // ARMS-2180
+import diary from './diary'
 
 export default combineReducers({
   lead,
@@ -31,4 +33,6 @@ export default combineReducers({
   Notification,
   Instruments,
   callMeetingStatus,
+  slotManagement, // ARMS-2180
+  diary,
 })

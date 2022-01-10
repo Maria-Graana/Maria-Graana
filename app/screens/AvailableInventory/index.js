@@ -1,29 +1,22 @@
 /** @format */
 
-import axios from 'axios'
-import React, { Component } from 'react'
-import {
-  Text,
-  StyleSheet,
-  View,
-  ScrollView,
-  Image,
-  SafeAreaView,
-  TouchableHighlight,
-} from 'react-native'
-import _ from 'underscore'
-import { Fab } from 'native-base'
-import AppStyles from '../../AppStyles'
 import { Ionicons } from '@expo/vector-icons'
+import axios from 'axios'
+import { Fab } from 'native-base'
+import React, { Component } from 'react'
+import { Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Row, Table } from 'react-native-table-component'
+import { connect } from 'react-redux'
+import _ from 'underscore'
+import AppStyles from '../../AppStyles'
+import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
 import Loader from '../../components/loader'
 import PickerComponent from '../../components/Picker'
-import { Row, Table } from 'react-native-table-component'
-import PaymentMethods from '../../PaymentMethods'
+import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper.js'
-import Search from '../../components/Search'
-import StaticData from '../../StaticData'
-import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
-import { formatNumericPrice, formatPrice } from '../../components/PriceFormate'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import PaymentMethods from '../../PaymentMethods'
 
 class AvailableInventory extends Component {
   constructor(props) {
@@ -41,6 +34,10 @@ class AvailableInventory extends Component {
       loading: true,
       showFilterModal: false,
       status: '',
+      projectData: null,
+      active: false,
+      selectedRow: null,
+      disabled: true,
     }
   }
 
@@ -62,6 +59,7 @@ class AvailableInventory extends Component {
             pickerProjects: projectArray,
             allProjects: res.data.items,
             selectedProject: projectArray && projectArray.length > 0 ? projectArray[0].value : null,
+            projectData: projectArray && projectArray.length > 0 ? projectArray[0] : null,
           },
           () => {
             this.getFloors(this.state.selectedProject)
@@ -203,9 +201,20 @@ class AvailableInventory extends Component {
   }
 
   handleProjectChange = (item) => {
+    const { pickerProjects } = this.state
     this.setState({ selectedProject: item, selectedFloor: null, loading: true }, () => {
       this.getFloors(this.state.selectedProject)
     })
+
+    this.setProjectData(item, pickerProjects)
+  }
+
+  setProjectData = (item, pickerProjects) => {
+    for (var i = 0; i < pickerProjects.length; i++) {
+      if (item == pickerProjects[i].value) {
+        this.setState({ projectData: pickerProjects[i] })
+      }
+    }
   }
 
   handleFloorChange = (item) => {
@@ -237,6 +246,43 @@ class AvailableInventory extends Component {
     this.setState({ showFilterModal: value })
   }
 
+  fetchOneUnit = (unit) => {
+    const { allUnits } = this.state
+    let oneUnit = {}
+    if (allUnits && allUnits.length) {
+      oneUnit = allUnits.find((item) => {
+        return item.name == unit && item
+      })
+    }
+    return oneUnit
+  }
+
+  onRowSelect = () => {
+    const { navigation } = this.props
+    const { selectedRow } = this.state
+    const unit = this.fetchOneUnit(selectedRow)
+    navigation.navigate('Client', {
+      isUnitBooking: true,
+      screenName: 'AvailableUnitLead',
+      projectData: this.state.projectData,
+      unit: unit,
+    })
+  }
+
+  onSelection = (val) => {
+    const { active } = this.state
+    this.setState({ active: true, disabled: false, selectedRow: val })
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.APP_PAGES,
+      PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
+      permissions
+    )
+  }
+
   render() {
     const {
       pickerProjects,
@@ -248,9 +294,14 @@ class AvailableInventory extends Component {
       loading,
       showFilterModal,
       status,
+      active,
+      selectedRow,
+      disabled,
     } = this.state
-
+    const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
+    let updatePermission = this.updatePermission()
+
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainContainer}>
@@ -366,18 +417,49 @@ class AvailableInventory extends Component {
 
                       <ScrollView style={styles.dataWrapper}>
                         <Table borderStyle={styles.tableBorder}>
-                          {tableData.map((rowData, index) => (
-                            <Row
-                              key={index}
-                              data={rowData}
-                              widthArr={widthArr}
-                              style={[
-                                styles.row,
-                                { backgroundColor: helper.setBookingStatusColor(rowData) },
-                              ]}
-                              textStyle={styles.text}
-                            />
-                          ))}
+                          {tableData.map((rowData, index) =>
+                            rowData[rowData.length - 1] == 'Available' ? (
+                              <TouchableOpacity
+                                activeOpacity={0.6}
+                                onPress={() => {
+                                  if (updatePermission) this.onSelection(rowData[0])
+                                }}
+                                key={index}
+                              >
+                                <Row
+                                  key={index}
+                                  data={rowData}
+                                  widthArr={widthArr}
+                                  style={[
+                                    styles.row,
+                                    {
+                                      backgroundColor:
+                                        active && selectedRow == rowData[0]
+                                          ? null
+                                          : helper.setBookingStatusColor(rowData),
+                                      borderColor:
+                                        active && selectedRow == rowData[0]
+                                          ? 'black'
+                                          : AppStyles.colors.primaryColor,
+                                      borderWidth: active && selectedRow == rowData[0] ? 1.2 : 0.6,
+                                    },
+                                  ]}
+                                  textStyle={styles.text}
+                                />
+                              </TouchableOpacity>
+                            ) : (
+                              <Row
+                                key={index}
+                                data={rowData}
+                                widthArr={widthArr}
+                                style={[
+                                  styles.row,
+                                  { backgroundColor: helper.setBookingStatusColor(rowData) },
+                                ]}
+                                textStyle={styles.text}
+                              />
+                            )
+                          )}
                         </Table>
                       </ScrollView>
                     </View>
@@ -401,12 +483,32 @@ class AvailableInventory extends Component {
             <Ionicons name="ios-search" color="#ffffff" />
           </Fab>
         </View>
+        {updatePermission ? (
+          <View style={styles.buttonInputWrap}>
+            <TouchableButton
+              containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
+              label="Select"
+              borderColor="white"
+              containerBackgroundColor="#0f73ee"
+              borderWidth={1}
+              disabled={disabled}
+              onPress={() => this.onRowSelect()}
+            />
+          </View>
+        ) : null}
       </SafeAreaView>
     )
   }
 }
 
-export default AvailableInventory
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    permissions: store.user.permissions,
+  }
+}
+
+export default connect(mapStateToProps)(AvailableInventory)
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -447,8 +549,7 @@ const styles = StyleSheet.create({
   row: {
     height: 40,
     borderColor: AppStyles.colors.primaryColor,
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
+    borderWidth: 0.6,
   },
   tableBorder: {
     borderWidth: 1,
@@ -473,5 +574,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 15,
     borderRadius: 4,
+  },
+  buttonInputWrap: {
+    justifyContent: 'flex-end',
+  },
+  timePageBtn: {
+    justifyContent: 'center',
+    borderRadius: 4,
+    padding: 10,
+    marginLeft: 15,
+    marginRight: 15,
   },
 })

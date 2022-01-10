@@ -1,15 +1,18 @@
 /** @format */
 
 import React from 'react'
-import { View, Text, FlatList, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
-import { AntDesign, Entypo } from '@expo/vector-icons'
+import { View, Text, FlatList, TouchableOpacity } from 'react-native'
 import ListItem from '../ListItem/index'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import moment from 'moment'
 import helper from '../../helper'
-import AddTaskModal from '../AddTaskModal'
+import { Ionicons } from '@expo/vector-icons'
+import { Menu } from 'react-native-paper'
+import DiaryHelper from '../../screens/Diary/diaryHelper'
 
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
 class DiaryTile extends React.Component {
   constructor(props) {
     super(props)
@@ -25,152 +28,257 @@ class DiaryTile extends React.Component {
 
   componentDidMount() {}
 
-  onChange = (date, mode) => {}
-
-  updateDiary = (data) => {
-    this.props.updateDiary(data)
-  }
-
-  // showPopup = (val) => {
-  //     this.props.showPopup(val)
-  // }
-
-  handleLongPress = (val) => {
-    this.props.onLongPress(val)
-  }
-
-  showAddTask = (showTask, time, description) => {
-    this.setState({ showTask, selectedTime: time, description })
-  }
-
-  handleDescriptionChange = (text) => {
-    this.setState({ description: text })
-  }
-
-  closeModal = () => {
-    this.setState({ active: false })
-  }
-
-  removeUnderscore(str) {
-    var i,
-      frags = str.split('_')
-    for (i = 0; i < frags.length; i++) {
-      frags[i] = frags[i].charAt(0).toUpperCase() + frags[i].slice(1)
-    }
-    return frags.join(' ')
-  }
-
-  showTaskType = (val) => {
-    let finalValue = ''
-    if (val && val.taskType) {
-      finalValue = this.removeUnderscore(val.taskType)
-      if (finalValue === 'Meeting With Pp') {
-        return 'Meeting With PP'
-      } else {
-        return finalValue
-      }
-    } else {
-      return finalValue
-    }
-  }
-
   render() {
-    const { data, onLeadLinkPressed, addTask, editTask } = this.props
-    const { todayDate, selectedTime, showTask, description, active } = this.state
+    const {
+      diary,
+      hideMenu,
+      selectedDiary,
+      selectedLead,
+      showMenuOptions,
+      showMenu,
+      setClassification,
+      handleMenuActions,
+      goToLeadDetails,
+      initiateConnectFlow,
+      screenName,
+      leadType,
+    } = this.props
     return (
-      <View style={AppStyles.mb1}>
-        <AddTaskModal
-          active={active}
-          closeModal={() => this.closeModal()}
-          handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
-          description={description}
-          addTask={(description) => {
-            addTask(description, selectedTime)
-          }}
-        />
-        <TouchableWithoutFeedback
-          style={AppStyles.mb1}
-          onPress={() => this.showAddTask(false, null, null)}
-        >
-          <FlatList
-            data={data}
-            renderItem={(item, index) => (
-              <View>
-                {item.item.task && item.item.task.length ? (
-                  <View style={styles.container}>
-                    <TouchableOpacity
-                      onPress={() => this.setState({ active: true, selectedTime: item.item.time })}
-                      style={styles.timeWrap}
-                    >
-                      <Text style={styles.timeText}>{item.item.time}</Text>
-                    </TouchableOpacity>
-                    {item.item.task.map((val, index) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => editTask(val)}
-                          onLongPress={() => this.handleLongPress(val)}
-                          key={index}
-                          activeOpacity={0.7}
-                          style={[styles.tileWrap, { borderLeftColor: val.statusColor }]}
-                        >
-                          <View style={styles.innerTile}>
-                            <Text style={styles.showTime}>
-                              {moment(val.start).format('hh:mm a')} -{' '}
-                              {moment(val.end).format('hh:mm a')}{' '}
-                            </Text>
-                            <Text
-                              style={[
-                                styles.statusText,
-                                { color: val.statusColor, borderColor: val.statusColor },
-                              ]}
-                            >
-                              {helper.setStatusText(val, todayDate)}
-                            </Text>
-                          </View>
-                          <Text style={styles.meetingText}>{val.subject}</Text>
-                          {val && val.notes ? (
-                            <Text numberOfLines={1} style={styles.meetingText}>
-                              {val.notes}
-                            </Text>
+      <View style={styles.mainContainer}>
+        <View style={styles.rowTwo}>
+          <View style={styles.timeView}>
+            {screenName === 'overduetasks' ? (
+              <Text style={styles.time}>{moment(diary.start).format('DD MMM')}</Text>
+            ) : null}
+            <Text style={styles.time}>{moment(diary.start).format('hh:mm a')}</Text>
+            <Text style={styles.duration}>{DiaryHelper.calculateTimeDifference(diary)}</Text>
+          </View>
+          <View
+            style={[
+              styles.tileWrap,
+              {
+                borderLeftColor: DiaryHelper.displayTaskColor(diary),
+                backgroundColor:
+                  diary.status === 'completed' || diary.status === 'cancelled'
+                    ? '#EEEEEE'
+                    : '#FFFFFF',
+              },
+            ]}
+          >
+            <View style={styles.rowWidth100}>
+              <Text numberOfLines={1} style={styles.taskType}>{`${DiaryHelper.showTaskType(
+                diary.taskType
+              )}${DiaryHelper.showClientName(diary)}`}</Text>
+
+              {leadType != 'wanted' && (
+                <View>
+                  <Menu
+                    visible={showMenu && diary.id === selectedDiary.id}
+                    onDismiss={() => hideMenu()}
+                    anchor={
+                      <Ionicons
+                        onPress={() => showMenuOptions(diary)}
+                        name="ellipsis-vertical"
+                        size={22}
+                        color="black"
+                      />
+                    }
+                  >
+                    <View>
+                      {diary.status !== 'completed' && diary.status !== 'cancelled' && (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('mark_as_done')
+                            hideMenu()
+                          }}
+                          title="Mark as Done"
+                        />
+                      )}
+
+                      {diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' &&
+                      (diary.taskType === 'viewing' || diary.taskType === 'meeting') ? (
+                        <Menu.Item
+                          onPress={() => {
+                            initiateConnectFlow(diary)
+                            hideMenu()
+                          }}
+                          title="Connect"
+                        />
+                      ) : null}
+
+                      {diary.taskType === 'viewing' &&
+                      diary.armsLeadId &&
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('cancel_viewing')
+                            hideMenu()
+                          }}
+                          title="Cancel Viewing"
+                        />
+                      ) : null}
+
+                      {diary.taskType === 'meeting' &&
+                      diary.armsProjectLeadId &&
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('cancel_meeting')
+                            hideMenu()
+                          }}
+                          title="Cancel Meeting"
+                        />
+                      ) : null}
+
+                      <Menu.Item
+                        onPress={() => {
+                          handleMenuActions('task_details')
+                          hideMenu()
+                        }}
+                        title="Additional Information"
+                      />
+
+                      {diary.status !== 'completed' && diary.status !== 'cancelled' && (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('edit_task')
+                            hideMenu()
+                          }}
+                          title="Edit Task"
+                        />
+                      )}
+
+                      {diary.taskCategory === 'leadTask' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('activity_history')
+                            hideMenu()
+                          }}
+                          title="Activity History"
+                        />
+                      ) : null}
+
+                      {diary.taskType !== 'morning_meeting' &&
+                      diary.taskType !== 'daily_update' &&
+                      diary.taskType !== 'meeting_with_pp' &&
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' ? (
+                        <View>
+                          {!diary.wantedId ? (
+                            <Menu.Item
+                              onPress={() => {
+                                handleMenuActions('refer_lead')
+                                hideMenu()
+                              }}
+                              title="Refer Lead"
+                            />
                           ) : null}
-                          <View style={styles.innerTile}>
-                            <Text style={styles.meetingText}>{this.showTaskType(val)}</Text>
-                            {val.armsLeadId !== null || val.armsProjectLeadId !== null ? (
-                              <TouchableOpacity
-                                style={styles.lead}
-                                onPress={() => onLeadLinkPressed(val)}
-                              >
-                                <Text style={styles.leadText}>
-                                  {`${val.armsLeadId ? val.armsLeadId : val.armsProjectLeadId} `}
-                                </Text>
-                              </TouchableOpacity>
-                            ) : null}
-                          </View>
-                        </TouchableOpacity>
-                      )
-                    })}
-                  </View>
-                ) : (
-                  <View>
-                    <ListItem
-                      handleDescriptionChange={(text) => this.handleDescriptionChange(text)}
-                      description={description}
-                      showTask={showTask}
-                      selectedTime={selectedTime}
-                      addTask={(description) => {
-                        addTask(description, selectedTime)
-                        this.showAddTask(false, null, null)
-                      }}
-                      showAddTask={(val1, val2) => this.showAddTask(val1, val2)}
-                      time={item.item.time}
-                    />
-                  </View>
-                )}
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('reassign_lead')
+                              hideMenu()
+                            }}
+                            title="Reassign Lead"
+                          />
+                        </View>
+                      ) : null}
+
+                      {DiaryHelper.getLeadId(diary) &&
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            setClassification(diary)
+                            hideMenu()
+                          }}
+                          title="Set Classification"
+                        />
+                      ) : null}
+
+                      {(diary.taskType === 'morning_meeting' ||
+                        diary.taskType === 'daily_update' ||
+                        diary.taskType === 'meeting_with_pp') &&
+                        diary.status !== 'completed' &&
+                        diary.status !== 'cancelled' && (
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('delete')
+                              hideMenu()
+                            }}
+                            title="Delete"
+                          />
+                        )}
+                    </View>
+                  </Menu>
+                </View>
+              )}
+            </View>
+            {diary && diary.reasonTag ? (
+              <View style={styles.taskResponseView}>
+                <Text
+                  style={[
+                    styles.taskResponse,
+                    { borderColor: diary.reason ? diary.reason.colorCode : 'transparent' },
+                  ]}
+                >
+                  {diary.reasonTag}
+                </Text>
               </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </TouchableWithoutFeedback>
+            ) : null}
+            {DiaryHelper.checkLeadType(diary) ? (
+              <View style={styles.rowWidth100}>
+                <Text numberOfLines={1} style={styles.requirements}>{`${DiaryHelper.checkLeadType(
+                  diary
+                )}${DiaryHelper.showRequirements(diary)}`}</Text>
+              </View>
+            ) : null}
+
+            <View style={styles.rowWidth100}>
+              <View style={styles.bottomView}>
+                <Text onPress={() => goToLeadDetails(diary)} style={styles.leadId}>
+                  {DiaryHelper.getLeadId(diary)}
+                </Text>
+              </View>
+              {DiaryHelper.getLeadId(diary) === null ? null : (
+                <>
+                  {DiaryHelper.checkLeadCategory(diary) === 'Not Defined' ? (
+                    <View style={styles.classification} />
+                  ) : (
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        styles.classification,
+                        { color: DiaryHelper.setLeadCategoryColor(diary) },
+                      ]}
+                    >
+                      {DiaryHelper.checkLeadCategory(diary)}
+                    </Text>
+                  )}
+
+                  {diary.status !== 'completed' &&
+                  diary.status !== 'cancelled' &&
+                  leadType !== 'wanted' &&
+                  diary.taskType !== 'viewing' &&
+                  diary.taskType !== 'meeting' ? (
+                    <TouchableOpacity
+                      style={{ width: '10%' }}
+                      onPress={() => initiateConnectFlow(diary)}
+                    >
+                      <Ionicons
+                        name="ios-call-outline"
+                        size={24}
+                        color={AppStyles.colors.primaryColor}
+                      />
+                    </TouchableOpacity>
+                  ) : null}
+                </>
+              )}
+            </View>
+          </View>
+        </View>
       </View>
     )
   }

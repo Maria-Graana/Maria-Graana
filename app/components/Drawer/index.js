@@ -1,20 +1,21 @@
 /** @format */
 
 import * as React from 'react'
-import { View, ScrollView, Text } from 'react-native'
-import { logoutUser } from '../../actions/user'
-import { connect } from 'react-redux'
-import * as RootNavigation from '../../navigation/RootNavigation'
+import { ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { connect } from 'react-redux'
+import AppJson from '../../../app.json'
+import { logoutUser } from '../../actions/user'
+import AppStyles from '../../AppStyles'
+import config from '../../config'
+import helper from '../../helper'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import * as RootNavigation from '../../navigation/RootNavigation'
+import Avatar from '../Avatar/index'
 import DrawerIconItem from '../DrawerIconItem'
 import DrawerItem from '../DrawerItem'
-import AppStyles from '../../AppStyles'
 import styles from './style'
-import Ability from '../../hoc/Ability'
-import Avatar from '../Avatar/index'
-import config from '../../config'
-import AppJson from '../../../app.json'
-import helper from '../../helper'
 
 class CustomDrawerContent extends React.Component {
   constructor(props) {
@@ -36,7 +37,7 @@ class CustomDrawerContent extends React.Component {
   }
 
   render() {
-    const { user, count } = this.props
+    const { user, count, permissions } = this.props
     const { subRole } = user
     let label = helper.checkChannel(config.channel)
     return (
@@ -54,15 +55,15 @@ class CustomDrawerContent extends React.Component {
             </View>
           </View>
           <View style={styles.underLine} />
-          {Ability.canView(subRole, 'Dashboard') && (
+          {/* {Ability.canView(subRole, 'Dashboard') && (
             <DrawerItem
               screen={'Dashboard'}
               navigateTo={() => {
                 this.navigateTo('Dashboard')
               }}
             />
-          )}
-          {Ability.canView(subRole, 'Diary') && (
+          )} */}
+          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem
               screen={'Diary'}
               badges={count.diary}
@@ -71,42 +72,56 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )}
-          {Ability.canView(subRole, 'TeamDiary') && (
+          {/* {Ability.canView(subRole, 'TeamDiary') && (
             <DrawerItem
               screen={'Team Diary'}
               navigateTo={() => {
                 this.navigateTo('TeamDiary')
               }}
             />
-          )}
-          {Ability.canView(subRole, 'Leads') && (
+          )} */}
+          {getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.WANTED_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
             <DrawerIconItem
-              screen={
-                user && user.organization && user.organization.isPP ? 'Leads' : 'Client Leads'
-              }
+              screen={user && user.organization && user.organization.isPP ? 'Leads' : 'Leads'}
               badges={count.leads}
               navigateTo={() => {
-                this.navigateTo('Leads')
+                this.navigateTo('Leads', { params: { screen: 'Leads' } })
               }}
             />
-          )}
-          {/* {
-                        navigation.navigate('InventoryTabs', {screen: 'ARMS',params: { screen: screenName },})
-                    } */}
-          {Ability.canView(subRole, 'InventoryTabs') && (
+          ) : null}
+          {getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
             <DrawerIconItem
-              screen={
-                user && user.organization && user.organization.isPP
-                  ? 'Properties'
-                  : 'Property Leads'
-              }
-              badges={count.inventory}
+              screen={user && user.organization && user.organization.isPP ? 'Deals' : 'Deals'}
+              badges={count.leads}
               navigateTo={() => {
-                this.navigateToProperties()
+                this.navigateTo('Leads', { params: { screen: 'MyDeals' } })
               }}
             />
-          )}
-          {Ability.canView(subRole, 'Client') && (
+          ) : null}
+          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.READ, permissions) && (
             <DrawerItem
               screen={'Clients'}
               navigateTo={() => {
@@ -114,7 +129,34 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )}
-          {Ability.canView(subRole, 'Targets') && (
+          {getPermissionValue(
+            PermissionFeatures.PROPERTIES,
+            PermissionActions.READ,
+            permissions
+          ) && (
+            <DrawerIconItem
+              screen={
+                user && user.organization && user.organization.isPP ? 'Properties' : 'Properties'
+              }
+              badges={count.inventory}
+              navigateTo={() => {
+                this.navigateToProperties()
+              }}
+            />
+          )}
+          {getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
+            permissions
+          ) && (
+            <DrawerItem
+              screen={'Project Inventory'}
+              navigateTo={() => {
+                this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
+              }}
+            />
+          )}
+          {getPermissionValue(PermissionFeatures.TARGETS, PermissionActions.READ, permissions) && (
             <DrawerItem
               screen={'Targets'}
               navigateTo={() => {
@@ -122,24 +164,14 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )}
-          {Ability.canView(subRole, 'AssignedAreas') && (
+          {/* {Ability.canView(subRole, 'AssignedAreas') && (
             <DrawerItem
               screen={'Assigned Areas'}
               navigateTo={() => {
                 this.navigateTo('AssignedAreas', { screen: 'AssignAreas' })
               }}
             />
-          )}
-
-          {Ability.canView(subRole, 'AvailableInventory') && (
-            <DrawerItem
-              screen={'Available Inventories'}
-              navigateTo={() => {
-                this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
-              }}
-            />
-          )}
-          {/* {Ability.canView(role, 'CreateUser') && <DrawerItem screen={'Create User'} navigateTo={() => { this.navigateTo('CreateUser') }} />} */}
+          )} */}
 
           <View style={styles.underLine} />
           <DrawerItem
@@ -173,6 +205,7 @@ mapStateToProps = (store) => {
     store: store,
     loading: store.user.loading,
     count: store.listings.count,
+    permissions: store.user.permissions,
   }
 }
 

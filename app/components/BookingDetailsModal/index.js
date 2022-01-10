@@ -1,18 +1,18 @@
 /** @format */
 
-import React from 'react'
-import { connect } from 'react-redux'
-import { View, Text, Image, TouchableOpacity, ScrollView, SafeAreaView, Modal } from 'react-native'
-import styles from './style'
-import times from '../../../assets/img/times.png'
-import BackButton from '../../components/BackButton'
-import CMBTN from '../../components/CMBTN'
-import PaymentMethods from '../../PaymentMethods'
-import helper from '../../helper'
-import ViewDocs from '../ViewDocs'
+import * as FileSystem from 'expo-file-system'
 import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
-import * as FileSystem from 'expo-file-system'
+import React from 'react'
+import { Image, Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { connect } from 'react-redux'
+import AppStyles from '../../AppStyles'
+import BackButton from '../../components/BackButton'
+import CMBTN from '../../components/CMBTN'
+import helper from '../../helper'
+import PaymentMethods from '../../PaymentMethods'
+import ViewDocs from '../ViewDocs'
+import styles from './style'
 
 class BookingDetailsModal extends React.Component {
   constructor(props) {
@@ -60,10 +60,31 @@ class BookingDetailsModal extends React.Component {
       })
     }
   }
+  goToClientsDetail = () => {
+    const { navigation, user, data, toggleBookingDetailsModal } = this.props
+    if (!helper.checkAssignedSharedStatusANDReadOnly(user, data)) {
+      return
+    }
+    if (data.purchaser) {
+      navigation.navigate('ClientDetail', {
+        client: data.purchaser ? data.purchaser : null,
+      })
+      toggleBookingDetailsModal()
+    } else {
+      helper.errorToast(`Client information is not available.`)
+    }
+  }
 
   render() {
-    let { active, data, pearlModal, finalPrice, lead, toggleBookingDetailsModal, generateKFI } =
-      this.props
+    let {
+      active,
+      data,
+      pearlModal,
+      finalPrice,
+      lead,
+      toggleBookingDetailsModal,
+      updatePermission,
+    } = this.props
     if (!data.unit) active = false
     const { unit } = data
     const { imageUrl, showWebView } = this.state
@@ -105,6 +126,25 @@ class BookingDetailsModal extends React.Component {
           {pearlModal === false && data && data.unit != null && (
             <View style={[styles.modalMain]}>
               <ScrollView>
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Booking For</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data.purchaser && data.purchaser.customerName)}
+                      </Text>
+                      <View style={styles.detailsBtnView}>
+                        <TouchableOpacity
+                          onPress={() => this.goToClientsDetail()}
+                          style={styles.roundButtonView}
+                          activeOpacity={0.6}
+                        >
+                          <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </View>
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Project</Text>
@@ -349,10 +389,21 @@ class BookingDetailsModal extends React.Component {
                 <View style={styles.MainTileView}>
                   {/* ===================== */}
                   <View>
-                    <Text style={styles.smallText}>Project</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.project && data.project.name)}
-                    </Text>
+                    <Text style={styles.smallText}>Booking For</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data.purchaser && data.purchaser.customerName)}
+                      </Text>
+                      <View style={styles.detailsBtnView}>
+                        <TouchableOpacity
+                          onPress={() => this.goToClientsDetail()}
+                          style={styles.roundButtonView}
+                          activeOpacity={0.6}
+                        >
+                          <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
                   </View>
                 </View>
 
@@ -486,7 +537,7 @@ class BookingDetailsModal extends React.Component {
         <View style={styles.kfiBTN}>
           <CMBTN
             onClick={() => {
-              this.props.generateKFI()
+              if (updatePermission) this.props.generateKFI()
             }}
             btnText={'DOWNLOAD KFI DOCUMENT'}
             checkLeadClosedOrNot={true}
@@ -501,6 +552,7 @@ class BookingDetailsModal extends React.Component {
 mapStateToProps = (store) => {
   return {
     lead: store.lead.lead,
+    user: store.user.user,
   }
 }
 

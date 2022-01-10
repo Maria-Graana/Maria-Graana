@@ -1,27 +1,25 @@
 /** @format */
 
-import * as RootNavigation from '../../navigation/RootNavigation'
-import { Alert, FlatList, Image, Text, View, TouchableOpacity } from 'react-native'
-import { ActionSheet } from 'native-base'
-import AppStyles from '../../AppStyles'
 import { Ionicons } from '@expo/vector-icons'
+import axios from 'axios'
+import { ActionSheet } from 'native-base'
+import React from 'react'
+import { Alert, FlatList, Text, View } from 'react-native'
+import { widthPercentageToDP } from 'react-native-responsive-screen'
+import { connect } from 'react-redux'
+import { isEmpty } from 'underscore'
+import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
 import NoResultsComponent from '../../components/NoResultsComponent'
-import PropertyTile from '../../components/PropertyTile'
-import React from 'react'
-import axios from 'axios'
-import { connect } from 'react-redux'
-import helper from '../../helper'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
+import PickerComponent from '../../components/Picker/index'
+import PropertyTile from '../../components/PropertyTile'
 import RejectPropertyModal from '../../components/RejectPropertyModal'
 import Search from '../../components/Search'
+import helper from '../../helper'
+import * as RootNavigation from '../../navigation/RootNavigation'
 import StaticData from '../../StaticData'
-import styles from './style';
-import PickerComponent from '../../components/Picker/index'
-import { widthPercentageToDP } from 'react-native-responsive-screen'
-import TouchableInput from '../../components/TouchableInput'
-import { isEmpty } from 'underscore'
-
+import styles from './style'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -48,20 +46,19 @@ class FieldsInventories extends React.Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props;
-    let that = this;
+    const { navigation } = this.props
+    let that = this
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = that.props
       if (route.params && route.params.selectedArea) {
-        const { selectedArea } = route.params;
+        const { selectedArea } = route.params
         if (selectedArea) {
           this.setState({ selectedArea }, () => {
             //console.log(this.state.selectedArea);
             this.getFieldsListing()
           })
         }
-      }
-      else {
+      } else {
         this.getFieldsListing()
       }
     })
@@ -79,26 +76,41 @@ class FieldsInventories extends React.Component {
     })
   }
 
+  goToAttachments = (purpose) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('LeadAttachments', {
+      navProperty: true,
+      purpose: purpose,
+      propertyId: this.state.selectedProperty.id,
+    })
+  }
+
   getFieldsListing = () => {
-    const { propertiesList, page, pageSize, showSearchBar, searchText, statusFilter, searchBy, selectedArea } = this.state
+    const {
+      propertiesList,
+      page,
+      pageSize,
+      showSearchBar,
+      searchText,
+      statusFilter,
+      searchBy,
+      selectedArea,
+    } = this.state
     let query = ``
 
     if (showSearchBar && searchBy === 'id' && searchText !== '') {
       if (helper.isANumber(searchText)) {
         // Search By ID
         query = `/api/inventory/all?propType=fields&searchBy=id&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      }
-      else {
+      } else {
         alert('Please Enter valid Property ID!')
-        this.setState({loading: false});
-        return;
+        this.setState({ loading: false })
+        return
       }
-    }
-    else if (showSearchBar && searchBy === 'area' && selectedArea) {
+    } else if (showSearchBar && searchBy === 'area' && selectedArea) {
       // Search By Area
       query = `/api/inventory/all?propType=fields&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
-    }
-    else {
+    } else {
       // Only Status Filter
       query = `/api/inventory/all?propType=fields&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
@@ -112,7 +124,7 @@ class FieldsInventories extends React.Component {
             totalProperties: response.data.count,
             onEndReachedLoader: false,
             loading: false,
-          });
+          })
         }
       })
       .catch((error) => {
@@ -227,7 +239,7 @@ class FieldsInventories extends React.Component {
   }
 
   rejectProperty = (reason) => {
-    const { selectedProperty } = this.state;
+    const { selectedProperty } = this.state
     let url = `/api/inventory/fieldProperty?id=${selectedProperty.id}&approve=${false}`
     let body = { reason }
     this.setState({ loading: true }, () => {
@@ -239,7 +251,8 @@ class FieldsInventories extends React.Component {
         })
         .catch((error) => {
           console.log('ERROR API: /api/inventory/fieldProperty', error)
-        }).finally(() => {
+        })
+        .finally(() => {
           this.showHideRejectPropertyModal(false)
         })
     })
@@ -252,36 +265,68 @@ class FieldsInventories extends React.Component {
   changeStatus = (status) => {
     this.clearStateValues()
     this.setState({ statusFilter: status, propertiesList: [], loading: true }, () => {
-      this.getFieldsListing();
+      this.getFieldsListing()
     })
   }
 
   clearAndCloseSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, selectedArea: null, loading: true, searchBy: 'id', statusFilter: 'onhold' }, () => {
-      this.clearStateValues();
-      this.getFieldsListing();
-    })
+    this.setState(
+      {
+        searchText: '',
+        showSearchBar: false,
+        selectedArea: null,
+        loading: true,
+        searchBy: 'id',
+        statusFilter: 'onhold',
+      },
+      () => {
+        this.clearStateValues()
+        this.getFieldsListing()
+      }
+    )
   }
 
   changeSearchBy = (searchBy) => {
-    this.setState({ searchBy, selectedArea: null });
+    this.setState({ searchBy, selectedArea: null })
   }
-
 
   handleSearchByArea = () => {
-    const { navigation } = this.props;
-    const { selectedArea } = this.state;
-    navigation.navigate('AssignedAreas', { screenName: 'Field App', selectedArea });
+    const { navigation } = this.props
+    const { selectedArea } = this.state
+    navigation.navigate('AssignedAreas', { screenName: 'Field App', selectedArea })
   }
 
-
   render() {
-    const { propertiesList, loading, totalProperties, onEndReachedLoader, selectedProperty, showMenu, rejectPropertyVisible, statusFilter, searchText, showSearchBar, searchBy, selectedArea } = this.state
+    const {
+      propertiesList,
+      loading,
+      totalProperties,
+      onEndReachedLoader,
+      selectedProperty,
+      showMenu,
+      rejectPropertyVisible,
+      statusFilter,
+      searchText,
+      showSearchBar,
+      searchBy,
+      selectedArea,
+    } = this.state
     const { user, route } = this.props
     return !loading ? (
       <View style={[styles.container, { marginBottom: 25 }]}>
         {showSearchBar ? (
-          <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }]}>
+          <View
+            style={[
+              styles.filterRow,
+              {
+                paddingBottom: 0,
+                paddingTop: 0,
+                paddingLeft: 0,
+                flexDirection: 'row',
+                alignItems: 'center',
+              },
+            ]}
+          >
             <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
               <PickerComponent
                 placeholder={'Search By'}
@@ -292,62 +337,80 @@ class FieldsInventories extends React.Component {
                 selectedItem={searchBy}
               />
             </View>
-            {
-              searchBy === 'id' ? <Search
+            {searchBy === 'id' ? (
+              <Search
                 containerWidth={'80%'}
-                placeholder={"Search by ID"}
+                placeholder={'Search by ID'}
                 searchText={searchText}
                 setSearchText={(value) => this.setState({ searchText: value })}
                 showShadow={false}
                 showClearButton={true}
                 returnKeyType={'search'}
-                onSubmitEditing={() => this.setState({ loading: true }, () => { this.getFieldsListing() })}
+                onSubmitEditing={() =>
+                  this.setState({ loading: true }, () => {
+                    this.getFieldsListing()
+                  })
+                }
                 closeSearchBar={() => this.clearAndCloseSearch()}
               />
-                :
-                <View style={styles.searchTextContainerStyle} >
-                  <Text onPress={() => this.handleSearchByArea()} style={[AppStyles.formFontSettings, styles.searchAreaInput, {
-                    color: isEmpty(selectedArea) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor
-                  }]} >
-                    {isEmpty(selectedArea) ? "Search by Area" : selectedArea.name}
-                  </Text>
-                  <Ionicons style={{ width: '10%' }} onPress={() => this.clearAndCloseSearch()} name={'ios-close-circle-outline'} size={24} color={'grey'} />
-                </View>
-
-            }
-
+            ) : (
+              <View style={styles.searchTextContainerStyle}>
+                <Text
+                  onPress={() => this.handleSearchByArea()}
+                  style={[
+                    AppStyles.formFontSettings,
+                    styles.searchAreaInput,
+                    {
+                      color: isEmpty(selectedArea)
+                        ? AppStyles.colors.subTextColor
+                        : AppStyles.colors.textColor,
+                    },
+                  ]}
+                >
+                  {isEmpty(selectedArea) ? 'Search by Area' : selectedArea.name}
+                </Text>
+                <Ionicons
+                  style={{ width: '10%' }}
+                  onPress={() => this.clearAndCloseSearch()}
+                  name={'ios-close-circle-outline'}
+                  size={24}
+                  color={'grey'}
+                />
+              </View>
+            )}
           </View>
         ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Property Status'}
-                  data={StaticData.fieldAppStatusFilters}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
-              <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons
-                  onPress={() => {
-                    this.setState({ showSearchBar: true }, () => {
-                      this.clearStateValues()
-                    })
-                  }}
-                  name={'ios-search'}
-                  size={26}
-                  color={AppStyles.colors.primaryColor}
-                />
-              </View>
-
+          <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+            <View style={styles.pickerMain}>
+              <PickerComponent
+                placeholder={'Property Status'}
+                data={StaticData.fieldAppStatusFilters}
+                customStyle={styles.pickerStyle}
+                customIconStyle={styles.customIconStyle}
+                onValueChange={this.changeStatus}
+                selectedItem={statusFilter}
+              />
             </View>
-          )}
+            <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons
+                onPress={() => {
+                  this.setState({ showSearchBar: true }, () => {
+                    this.clearStateValues()
+                  })
+                }}
+                name={'ios-search'}
+                size={26}
+                color={AppStyles.colors.primaryColor}
+              />
+            </View>
+          </View>
+        )}
 
-        <RejectPropertyModal isVisible={rejectPropertyVisible}
+        <RejectPropertyModal
+          isVisible={rejectPropertyVisible}
           rejectProperty={(reason) => this.rejectProperty(reason)}
-          showHideModal={(val) => this.showHideRejectPropertyModal(val)} />
+          showHideModal={(val) => this.showHideRejectPropertyModal(val)}
+        />
 
         {/* ***** Main Tile Wrap */}
 
@@ -369,6 +432,7 @@ class FieldsInventories extends React.Component {
                 hideMenu={() => this.hideMenu()}
                 approveProperty={(id) => this.approveProperty(id)}
                 showHideRejectPropertyModal={(val) => this.showHideRejectPropertyModal(val)}
+                goToAttachments={this.goToAttachments}
               />
             )}
             onEndReached={() => {
@@ -388,14 +452,14 @@ class FieldsInventories extends React.Component {
             keyExtractor={(item, index) => `${item.id}`}
           />
         ) : (
-            <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
-          )}
+          <NoResultsComponent imageSource={require('../../../assets/img/no-result-found.png')} />
+        )}
 
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}
       </View>
     ) : (
-        <Loader loading={loading} />
-      )
+      <Loader loading={loading} />
+    )
   }
 }
 

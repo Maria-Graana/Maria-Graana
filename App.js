@@ -5,26 +5,25 @@ import NetInfo from '@react-native-community/netinfo'
 import { NavigationContainer } from '@react-navigation/native'
 import axios from 'axios'
 import AppLoading from 'expo-app-loading'
-import { Linking } from 'react-native'
 import Constants from 'expo-constants'
 import * as Font from 'expo-font'
 import * as Notifications from 'expo-notifications'
 import * as SplashScreen from 'expo-splash-screen'
 import { Root } from 'native-base'
 import React from 'react'
-import { AsyncStorage, LogBox } from 'react-native'
+import { AsyncStorage, Linking, LogBox } from 'react-native'
 import {
   setCustomText,
   setCustomTextInput,
   setCustomTouchableOpacity,
 } from 'react-native-global-props'
 import { Provider as PaperProvider } from 'react-native-paper'
+import AppJson from './app.json'
 import { MenuProvider } from 'react-native-popup-menu'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import * as Sentry from 'sentry-expo'
-import AppJson from './app.json'
 import { setPPBuyNotification } from './app/actions/notification'
 import { setInternetConnection } from './app/actions/user'
 import config from './app/config'
@@ -70,7 +69,7 @@ export default class App extends React.Component {
       }
     })
     axios.defaults.headers['version'] = AppJson.expo.version
-    // axios.defaults.headers['version'] = '2.1.1'
+    // axios.defaults.headers['version'] = '2.2.0'
     axios.interceptors.request.use(
       (config) =>
         new Promise((resolve) => {

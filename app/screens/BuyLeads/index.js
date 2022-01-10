@@ -2,7 +2,6 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
@@ -28,6 +27,8 @@ import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import config from '../../config'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
@@ -45,6 +46,7 @@ var CANCEL_INDEX = 3
 class BuyLeads extends React.Component {
   constructor(props) {
     super(props)
+    const { permissions } = this.props
     this.state = {
       language: '',
       leadsData: [],
@@ -73,6 +75,17 @@ class BuyLeads extends React.Component {
       selectedClientContacts: [],
       statusFilterType: 'id',
       newActionModal: false,
+      fabActions: [],
+      createBuyRentLead: getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
+      createProjectLead: getPermissionValue(
+        PermissionFeatures.PROJECT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
     }
   }
 
@@ -86,6 +99,7 @@ class BuyLeads extends React.Component {
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()
+      this.setFabActions()
     })
   }
 
@@ -153,17 +167,22 @@ class BuyLeads extends React.Component {
       statusFilterType,
     } = this.state
     this.setState({ loading: true })
+    const { hasBooking } = this.props.route.params
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose[]=sale&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose[]=sale&id=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        query = `/api/leads?purpose[]=sale&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     } else {
-      query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      if (statusFilter === 'shortlisting') {
+        query = `/api/leads?purpose[]=sale&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      } else {
+        query = `/api/leads?purpose[]=sale&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      }
     }
     axios
       .get(`${query}`)
@@ -209,10 +228,21 @@ class BuyLeads extends React.Component {
   }
 
   navigateTo = (data) => {
+    const { screen } = this.props.route.params
     this.props.dispatch(setlead(data))
     let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+    if (this.props.route.params?.screen === 'MyDeals') {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
+      })
+    } else if (data.readAt === null) {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
+      })
     } else {
       if (data.status == 'open') {
         page = 'Match'
@@ -306,7 +336,7 @@ class BuyLeads extends React.Component {
               )
             )
             helper.callNumber(selectedClientContacts, contacts)
-            this.showStatusFeedbackModal(true, 'call')
+            // this.showStatusFeedbackModal(true, 'call')
           }
         })
       }
@@ -343,6 +373,13 @@ class BuyLeads extends React.Component {
         }
       )
     }
+  }
+
+  sendStatus = (status) => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+      storeItem('sortBuy', status)
+      this.fetchLeads()
+    })
   }
 
   openStatus = () => {
@@ -566,6 +603,30 @@ class BuyLeads extends React.Component {
     this.setState({ statusFilterType: status })
   }
 
+  setFabActions = () => {
+    const { createBuyRentLead, createProjectLead } = this.state
+    let fabActions = []
+    if (createBuyRentLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Buy/Rent Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+      })
+    }
+    if (createProjectLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Investment Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+      })
+    }
+    this.setState({
+      fabActions: fabActions,
+    })
+  }
+
   render() {
     const {
       leadsData,
@@ -591,8 +652,12 @@ class BuyLeads extends React.Component {
       statusFilterType,
       newActionModal,
       selectedLead,
+      fabActions,
+      createBuyRentLead,
+      createProjectLead,
     } = this.state
-    const { user } = this.props
+    const { user, permissions } = this.props
+    const { screen } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -686,19 +751,20 @@ class BuyLeads extends React.Component {
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
-                    purposeTab={'rent'}
+                    purposeTab={'sale'}
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
+                    screenName={screen}
                   />
                 ) : (
                   <PPLeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
-                    purposeTab={'rent'}
+                    purposeTab={'sale'}
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
@@ -732,41 +798,17 @@ class BuyLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {user.organization && user.organization.isPP ? (
-          <Fab
-            active="true"
-            containerStyle={{ zIndex: 20 }}
-            style={{ backgroundColor: AppStyles.colors.primaryColor }}
-            position="bottomRight"
-            onPress={() => this.goToFormPage('AddRCMLead', 'RCM', null, null)}
-          >
-            <Ionicons name="md-add" color="#ffffff" />
-          </Fab>
-        ) : (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
           <FAB.Group
             open={open}
             icon="plus"
             style={{ marginBottom: 16 }}
             fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
             color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              {
-                icon: 'plus',
-                label: 'Buy/Rent Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-              },
-              {
-                icon: 'plus',
-                label: 'Investment Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-              },
-            ]}
+            actions={fabActions}
             onStateChange={({ open }) => this.setState({ open })}
           />
-        )}
-
+        ) : null}
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={selectedClientContacts.payload}
@@ -822,6 +864,7 @@ mapStateToProps = (store) => {
     count: store.listings.count,
     contacts: store.contacts.contacts,
     PPBuyNotification: store.Notification.PPBuyNotification,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

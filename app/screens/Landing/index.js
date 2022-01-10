@@ -4,7 +4,6 @@ import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
 import addIcon from '../../../assets/img/add-icon-l.png'
 import { setContacts } from '../../actions/contacts'
@@ -13,19 +12,46 @@ import { getCurrentUser } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import LandingTile from '../../components/LandingTile'
-import Loader from '../../components/loader'
-import StatisticsTile from '../../components/StatisticsTile'
 import helper from '../../helper'
-import Ability from '../../hoc/Ability'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
-
 class Landing extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       tiles: [],
-      tileNames: ['InventoryTabs', 'Leads', 'Diary', 'Dashboard', 'Team Diary', 'Targets'],
+      tileNames: [
+        {
+          tile: 'Diary',
+          actions: 'DIARY',
+        },
+        {
+          tile: 'Leads',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'My Deals',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'Clients',
+          actions: 'CLIENTS',
+        },
+        {
+          tile: 'Properties',
+          actions: 'PROPERTIES',
+        },
+        {
+          tile: 'Project Inventory',
+          actions: 'APP_PAGES',
+        },
+        {
+          tile: 'Targets',
+          actions: 'TARGETS',
+        },
+      ],
       loading: true,
       userStatistics: null,
       toggleStatsTile: true,
@@ -34,7 +60,7 @@ class Landing extends React.Component {
   }
 
   async componentDidMount() {
-    const { navigation, dispatch, contacts, user } = this.props
+    const { navigation, dispatch, permissions } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
@@ -144,33 +170,79 @@ class Landing extends React.Component {
   }
 
   fetchTiles = () => {
-    const { user, count } = this.props
+    const { user, count, permissions } = this.props
     const { tileNames } = this.state
     let counter = 0
     let tileData = []
 
-    for (let tile of tileNames) {
+    for (let oneTile of tileNames) {
+      const { tile, actions } = oneTile
       let label = tile
       tile = tile.replace(/ /g, '')
-      if (Ability.canView(user.subRole, tile)) {
-        if (label === 'InventoryTabs') label = 'Property Leads'
-        let oneTilee = {
-          screenName: tile,
+      if (oneTile.tile === 'Leads' || oneTile.tile === 'My Deals') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ||
+          getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions)
+        ) {
+          let oneTilee = {
+            screenName: tile,
+          }
+          if (label === 'Team Diary') label = "Team's Diary"
+          if (tile === 'Leads') label = 'Leads'
+          if (tile === 'MyDeals') label = 'Deals'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
         }
-        if (label === 'Team Diary') label = "Team's Diary"
-        if (tile === 'Leads') label = 'Client Leads'
-        let oneTile = {
-          id: counter,
-          label: label,
-          pagePath: tile,
-          buttonImg: helper.tileImage(tile),
-          screenName: tile,
+      } else {
+        if (
+          (oneTile.tile !== 'Project Inventory' &&
+            getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) ||
+          (oneTile.tile === 'Project Inventory' &&
+            getPermissionValue(
+              PermissionFeatures[actions],
+              PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
+              permissions
+            ))
+        ) {
+          if (label === 'InventoryTabs') label = 'Properties'
+          let oneTilee = {
+            screenName: tile,
+          }
+          if (label === 'Team Diary') label = "Team's Diary"
+          if (tile === 'Leads') label = 'Leads'
+          if (tile === 'MyDeals') label = 'Deals'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
         }
-        if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
-        else oneTile.badges = 0
-        if (oneTile.badges > 99) oneTile.badges = '99+'
-        tileData.push(oneTile)
-        counter++
       }
     }
     this.setState({ tiles: tileData })
@@ -178,14 +250,29 @@ class Landing extends React.Component {
 
   // ****** Navigate Function
   navigateFunction = (name, screenName) => {
+    console.log('screenName: ', screenName)
     const { navigation } = this.props
-    if (screenName === 'InventoryTabs') {
+    if (screenName === 'Properties') {
       navigation.navigate('InventoryTabs', {
         screen: 'ARMS',
-        params: { screen: screenName },
+        params: { screen: 'InventoryTabs' },
+      })
+    } else if (screenName === 'Leads') {
+      navigation.navigate('Leads', {
+        screen: screenName,
+        hasBooking: false,
+      })
+    } else if (screenName === 'MyDeals') {
+      navigation.navigate('Leads', {
+        screen: screenName,
+        hasBooking: true,
+      })
+    } else if (screenName === 'ProjectInventory') {
+      navigation.navigate('AvailableInventory', {
+        screen: 'AvailableInventory',
       })
     } else {
-      navigation.navigate(name, { screen: screenName })
+      navigation.navigate(name === 'Clients' ? 'Client' : name, { screen: screenName })
     }
   }
 
@@ -227,7 +314,7 @@ class Landing extends React.Component {
 
   render() {
     const { tiles, loading, toggleStatsTile, kpisData } = this.state
-    const { user, navigation } = this.props
+    const { user, navigation, permissions } = this.props
     let isShowKPIs = this.isShowKPIsView()
     return (
       <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
@@ -250,7 +337,7 @@ class Landing extends React.Component {
             keyExtractor={(item, index) => item.id.toString()}
           />
         ) : null}
-        {isShowKPIs ? (
+        {/* {isShowKPIs ? (
           <TouchableOpacity
             onPress={() => {
               this.toggleStats()
@@ -286,10 +373,14 @@ class Landing extends React.Component {
               </View>
             ) : null}
           </TouchableOpacity>
-        ) : null}
+        ) : null} */}
 
         <View style={styles.btnView}>
-          {Ability.canAdd(user.subRole, 'InventoryTabs') ? (
+          {getPermissionValue(
+            PermissionFeatures.PROPERTIES,
+            PermissionActions.CREATE,
+            permissions
+          ) ? (
             <TouchableOpacity
               onPress={() => {
                 this.props.navigation.navigate('AddInventory', { update: false })
@@ -297,10 +388,10 @@ class Landing extends React.Component {
               style={styles.btnStyle}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>PIF</Text>
+              <Text style={styles.font}>PR</Text>
             </TouchableOpacity>
           ) : null}
-          {Ability.canAdd(user.subRole, 'Client') ? (
+          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
             <TouchableOpacity
               onPress={() => {
                 this.props.navigation.navigate('AddClient', { update: false })
@@ -308,7 +399,7 @@ class Landing extends React.Component {
               style={[styles.btnStyle, { marginLeft: 5 }]}
             >
               <Image source={addIcon} style={styles.containerImg} />
-              <Text style={styles.font}>CIF</Text>
+              <Text style={styles.font}>CR</Text>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -323,6 +414,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     count: store.listings.count,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

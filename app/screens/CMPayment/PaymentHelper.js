@@ -35,15 +35,21 @@ const PaymentHelper = {
     let copyFirstForm = PaymentHelper.clearFirstFormData(lead)
     if (value === 'project') {
       copyFirstForm['project'] = firstForm.project
+      copyFirstForm['clientName'] = firstForm.clientName
+
     }
     if (value === 'floor') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['floor'] = firstForm.floor
+      copyFirstForm['clientName'] = firstForm.clientName
+
     }
     if (value === 'unitType') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['floor'] = firstForm.floor
       copyFirstForm['unitType'] = firstForm.unitType
+      copyFirstForm['clientName'] = firstForm.clientName
+
     }
     return copyFirstForm
   },
@@ -162,7 +168,7 @@ const PaymentHelper = {
       name: 'name',
     }
   },
-  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument, isPrimary) {
+  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument, isPrimary, selectedClient) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -190,14 +196,12 @@ const PaymentHelper = {
       type: CMPayment.type,
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
-      cnic:
-        lead.customer && lead.customer.cnic != null
-          ? lead.customer.cnic
-          : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
+      cnic: firstFormData.cnic,
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
       isPrimary,
+      purchaserId : selectedClient ? selectedClient.id : lead.customer.id
     }
   },
   generateProductApiPayload(
@@ -207,7 +211,8 @@ const PaymentHelper = {
     CMPayment,
     oneProduct,
     instrument,
-    isPrimary
+    isPrimary,
+    selectedClient
   ) {
     const { projectProduct } = oneProduct
     return {
@@ -236,10 +241,7 @@ const PaymentHelper = {
       type: CMPayment.type,
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
-      cnic:
-        lead.customer && lead.customer.cnic != null
-          ? lead.customer.cnic
-          : firstFormData.cnic.replace(/[^\w\s]/gi, ''),
+      cnic: firstFormData.cnic,
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       productId: firstFormData.productId,
@@ -276,6 +278,7 @@ const PaymentHelper = {
           : null,
       possessionChargesPercentage: projectProduct.possessionCharges,
       downPaymentPercentage: projectProduct.downPayment,
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
     }
   },
   normalizeProjectProducts(products) {
@@ -493,7 +496,8 @@ const PaymentHelper = {
     pearlUnitPrice,
     unitPearlDetailsData,
     oneProductData,
-    CMPayment
+    CMPayment,
+    selectedClient
   ) {
     const { projectProduct } = oneProductData
     let body = PaymentHelper.createPearl({
@@ -529,6 +533,7 @@ const PaymentHelper = {
         : null,
       unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
       installmentAmount: CMPayment.installmentAmount,
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
     }
     return body
   },

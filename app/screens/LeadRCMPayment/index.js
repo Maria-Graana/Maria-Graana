@@ -23,18 +23,27 @@ import {
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
+import {
+  clearInstrumentInformation,
+  clearInstrumentsList,
+  getInstrumentDetails,
+  setInstrumentInformation,
+} from '../../actions/addInstrument'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import AppStyles from '../../AppStyles'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import ViewDocs from '../../components/ViewDocs'
 import config from '../../config'
 import helper from '../../helper'
@@ -42,17 +51,8 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import styles from './styles'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import moment from 'moment'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import {
-  clearInstrumentInformation,
-  clearInstrumentsList,
-  getInstrumentDetails,
-  setInstrumentInformation,
-} from '../../actions/addInstrument'
-import { useValue } from 'react-native-reanimated'
-import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -670,6 +670,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   showConfirmationDialog = (item) => {
+    console.log('showConfirmationDialog')
     const { lead } = this.state
     const { user } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
@@ -698,14 +699,22 @@ class LeadRCMPayment extends React.Component {
 
   renderSelectPaymentView = (item) => {
     const { lead } = this.state
+    const { permissions } = this.props
     return (
       <TouchableOpacity
         key={item.id.toString()}
-        onPress={
-          lead.shortlist_id === null
-            ? () => this.selectForPayment(item)
-            : () => this.showConfirmationDialog()
-        }
+        onPress={() => {
+          if (
+            getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.UPDATE,
+              permissions
+            )
+          ) {
+            if (lead.shortlist_id === null) this.selectForPayment(item)
+            else this.showConfirmationDialog()
+          }
+        }}
         style={styles.viewButtonStyle}
         activeOpacity={0.7}
       >
@@ -903,10 +912,14 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { navigation } = this.props
     const { lead } = this.state
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -1047,8 +1060,8 @@ class LeadRCMPayment extends React.Component {
       leadObject = lead
     }
     if (leadObject) {
-      axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
-        this.setState({ meetings: res.data.rows })
+      axios.get(`/api/leads/tasks?rcmLeadId=${leadObject.id}`).then((res) => {
+        this.setState({ meetings: res.data })
       })
     }
   }
@@ -1778,10 +1791,11 @@ class LeadRCMPayment extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
   }
 
@@ -1856,6 +1870,24 @@ class LeadRCMPayment extends React.Component {
     this.setState({ newActionModal: value })
   }
 
+  readPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.READ,
+      permissions
+    )
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+  }
+
   render() {
     const {
       menuShow,
@@ -1906,6 +1938,8 @@ class LeadRCMPayment extends React.Component {
     } = this.state
     const { navigation, user, contacts } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    let readPermission = this.readPermission()
+    let updatePermission = this.updatePermission()
 
     return !loading ? (
       <KeyboardAvoidingView
@@ -2060,6 +2094,9 @@ class LeadRCMPayment extends React.Component {
                         handleForm={this.handleBuyerForm}
                         advanceNotZero={advanceNotZero}
                         call={this.fetchPhoneNumbers}
+                        readPermission={readPermission}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     ) : (
                       <RentPaymentView
@@ -2085,6 +2122,9 @@ class LeadRCMPayment extends React.Component {
                         closeLegalDocument={this.closeLegalDocument}
                         buyerSellerCounts={buyerSellerCounts}
                         call={this.fetchPhoneNumbers}
+                        readPermission={readPermission}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     )
                   ) : null}
@@ -2174,6 +2214,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

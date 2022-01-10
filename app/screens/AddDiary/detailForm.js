@@ -1,8 +1,8 @@
 /** @format */
 
 import React, { Component } from 'react'
-import { View, Text, TextInput, Platform } from 'react-native'
-import { Button, Toast, Textarea } from 'native-base'
+import { View, Text, TextInput, Platform, TouchableOpacity } from 'react-native'
+import { Button, Toast, Textarea, CheckBox } from 'native-base'
 import PickerComponent from '../../components/Picker/index'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
@@ -12,22 +12,28 @@ import ErrorMessage from '../../components/ErrorMessage'
 import DateTimePicker from '../../components/DatePicker'
 import TouchableButton from '../../components/TouchableButton'
 import Ability from '../../hoc/Ability'
+import TouchableInput from '../../components/TouchableInput'
+import styles from './style.js'
+import DiaryHelper from '../Diary/diaryHelper.js'
 
 class DetailForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
       formData: {
-        subject: '',
+        subject: 'Scheduled task',
         taskType: '',
         startTime: '',
         endTime: '',
         date: '',
         notes: '',
         status: 'pending',
+        isRecurring: false,
         taskCategory: null,
+        slots: [],
+        addedBy: 'self',
       },
-      buttonText: 'ADD',
+      buttonText: 'ADD TASK',
     }
   }
 
@@ -50,7 +56,8 @@ class DetailForm extends Component {
     newObject.taskType = data.taskType
     newObject.status = data.status
     newObject.taskCategory = data.taskCategory
-    this.setState({ formData: newObject, buttonText: 'UPDATE' })
+    newObject.isRecurring = data.isRecurring
+    this.setState({ formData: newObject, buttonText: 'UPDATE TASK' })
   }
 
   handleForm = (value, name) => {
@@ -60,95 +67,110 @@ class DetailForm extends Component {
   }
 
   render() {
-    const { taskType, date, startTime, endTime, subject, notes } = this.state.formData
+    const { taskType, date, startTime, endTime, subject, notes, isRecurring, taskCategory } =
+      this.state.formData
     const { formData, buttonText } = this.state
     const {
       formSubmit,
       checkValidation,
       taskValues,
       loading,
-      performTaskActions,
       user,
-      screenName,
+      goToSlotManagement,
+      slotsData,
       editableData,
+      feedbackReasonFilter,
+      goToDiaryReasons,
+      goBackToDiary,
     } = this.props
     return (
       <View>
-        <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              placeholderTextColor={'#a8a8aa'}
-              style={[
-                AppStyles.formControl,
-                { backgroundColor: formData.status === 'pending' ? '#fff' : '#ddd' },
-                Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                AppStyles.formFontSettings,
-              ]}
-              placeholder={'Subject/Title'}
-              value={subject}
-              editable={formData.status === 'pending'}
-              onChangeText={(text) => this.handleForm(text, 'subject')}
-            />
+        {editableData ? (
+          <View style={styles.editViewContainer}>
+            <Text style={styles.headingText}> Task Type: </Text>
+            <Text style={styles.labelText}> {`${DiaryHelper.showTaskType(taskType)}`} </Text>
           </View>
-          {checkValidation === true && formData.subject === '' && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
-        </View>
+        ) : (
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <PickerComponent
+                enabled={editableData === null}
+                onValueChange={this.handleForm}
+                selectedItem={taskType}
+                data={taskValues}
+                name={'taskType'}
+                placeholder="Task Type"
+              />
+            </View>
+            {checkValidation === true && taskType === '' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
+        )}
 
-        <View style={[AppStyles.mainInputWrap]}>
+        {editableData && editableData.taskType === 'follow_up' ? (
+          <View style={styles.editViewContainer}>
+            <Text style={styles.headingText}> Reason: </Text>
+            <View style={{ alignSelf: 'flex-start', marginVertical: 10 }}>
+              <Text
+                style={[
+                  styles.taskResponse,
+                  {
+                    borderColor: editableData.reason
+                      ? editableData.reason.colorCode
+                      : 'transparent',
+                  },
+                ]}
+              >
+                {editableData.reasonTag}
+              </Text>
+            </View>
+          </View>
+        ) : taskType === 'follow_up' ? (
           <View style={[AppStyles.inputWrap]}>
-            <PickerComponent
-              enabled={
-                formData.status === 'pending' &&
-                (formData.taskCategory === 'simpleTask' || formData.taskCategory === null)
-                  ? true
-                  : false
-              }
-              onValueChange={this.handleForm}
-              selectedItem={taskType}
-              data={taskValues}
-              name={'taskType'}
-              placeholder="Task Type"
+            <TouchableInput
+              onPress={() => goToDiaryReasons()}
+              showIconOrImage={false}
+              value={feedbackReasonFilter ? feedbackReasonFilter.name : ''}
+              placeholder={'Select Reason'}
             />
           </View>
-          {checkValidation === true && taskType === '' && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
-        </View>
-        <DateTimePicker
-          placeholderLabel={'Select Date'}
-          disabled={formData.status !== 'pending'}
-          name={'date'}
-          mode={'date'}
-          showError={checkValidation === true && date === ''}
-          errorMessage={'Required'}
+        ) : null}
+
+        <TouchableInput
+          placeholder="Book Slot"
           iconSource={require('../../../assets/img/calendar.png')}
-          date={date ? new Date(date) : new Date()}
-          selectedValue={date ? moment(date).format(moment.HTML5_FMT.DATE) : ''}
-          handleForm={(value, name) => this.handleForm(value, name)}
+          showIconOrImage={true}
+          showDropDownIcon={false}
+          iconMarginHorizontal={15}
+          disabled={formData.status === 'completed' || taskType === ''}
+          onPress={() => goToSlotManagement(formData)}
+          value={
+            slotsData
+              ? `${slotsData.date} (${helper.formatTime(slotsData.startTime)} - ${helper.formatTime(
+                  slotsData.endTime
+                )})`
+              : ``
+          }
         />
-        <DateTimePicker
-          placeholderLabel={'Select Start Time'}
-          disabled={formData.status !== 'pending'}
-          name={'startTime'}
-          mode={'time'}
-          showError={checkValidation === true && startTime === ''}
-          errorMessage={'Required'}
-          iconSource={require('../../../assets/img/clock.png')}
-          date={startTime ? new Date(startTime) : new Date()}
-          selectedValue={startTime ? moment(startTime).format('hh:mm a') : ''}
-          handleForm={(value, name) => this.handleForm(value, name)}
-        />
-        <DateTimePicker
-          placeholderLabel={'Select End Time'}
-          name={'endTime'}
-          disabled={formData.status !== 'pending' || startTime === '' ? true : false}
-          mode={'time'}
-          iconSource={require('../../../assets/img/clock.png')}
-          date={endTime ? new Date(endTime) : new Date()}
-          selectedValue={endTime ? moment(endTime).format('hh:mm a') : ''}
-          handleForm={(value, name) => this.handleForm(value, name)}
-        />
+
+        {editableData === null &&
+        (taskType === 'morning_meeting' ||
+          taskType === 'daily_update' ||
+          taskType === 'meeting_with_pp') ? (
+          <TouchableOpacity
+            onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
+            style={styles.checkBoxRow}
+          >
+            <CheckBox
+              color={AppStyles.colors.primaryColor}
+              checked={isRecurring}
+              style={styles.checkBox}
+              onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
+            />
+            <Text style={styles.checkBoxText}>Recurring Task</Text>
+          </TouchableOpacity>
+        ) : null}
 
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea
@@ -165,6 +187,7 @@ class DetailForm extends Component {
             ]}
             rowSpan={5}
             placeholder="Description"
+            maxLength={1000}
             onChangeText={(text) => this.handleForm(text, 'notes')}
             disabled={formData.status === 'pending' ? false : true}
             value={notes}
@@ -182,24 +205,15 @@ class DetailForm extends Component {
           </View>
         )}
 
-        {Ability.canEdit(user.subRole, screenName) &&
-        editableData &&
-        formData.status !== 'completed' &&
-        formData.taskCategory === 'simpleTask' ? (
+        {formData.status === 'pending' && (
           <View style={{ marginVertical: 10 }}>
             <TouchableButton
-              containerStyle={AppStyles.formBtn}
-              label={'Mark Task as Done'}
-              containerBackgroundColor={
-                formData.status == 'completed' ? '#8baaef' : AppStyles.colors.primaryColor
-              }
-              onPress={() => {
-                performTaskActions('completed')
-              }}
-              disabled={formData.status == 'completed'}
+              containerStyle={[AppStyles.formBtn]}
+              label={'CANCEL'}
+              onPress={() => goBackToDiary()}
             />
           </View>
-        ) : null}
+        )}
       </View>
     )
   }
@@ -207,6 +221,7 @@ class DetailForm extends Component {
 
 mapStateToProps = (store) => {
   return {
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
     user: store.user.user,
   }
 }

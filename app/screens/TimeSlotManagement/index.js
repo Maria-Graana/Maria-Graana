@@ -316,8 +316,24 @@ function TimeSlotManagement(props) {
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
-    const { data = null, isFromConnectFlow = false } = route.params
+    const { data = null, isFromConnectFlow = false, isBookViewing = false } = route.params
     if (data && isFromConnectFlow) {
+      let copyData = Object.assign({}, data)
+      copyData.date = tempStartTime
+      copyData.time = tempStartTime
+      copyData.diaryTime = tempStartTime
+      copyData.start = tempStartTime
+      copyData.end = tempEndTime
+      copyData.slots = tempSlot
+      saveOrUpdateDiaryTask(copyData).then((response) => {
+        if (response) {
+          helper.successToast('TASK ADDED SUCCESSFULLY!')
+          navigation.goBack()
+        } else {
+          helper.errorToast('SOMETHING WENT WRONG!')
+        }
+      })
+    } else if (data && isBookViewing) {
       let copyData = Object.assign({}, data)
       copyData.date = tempStartTime
       copyData.time = tempStartTime

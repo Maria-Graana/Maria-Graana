@@ -245,6 +245,22 @@ class LeadViewing extends React.Component {
     })
   }
 
+  goToTimeSlots = (property) => {
+    const { lead, navigation, user } = this.props
+    let copyObj = {}
+    copyObj.status = 'pending'
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = user.id
+    copyObj.taskType = 'viewing'
+    copyObj.armsLeadId = lead && lead.id ? lead.id : null
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
   goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
     navigation.navigate('LeadAttachments', {
@@ -460,7 +476,8 @@ class LeadViewing extends React.Component {
           style={styles.viewingBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
-              this.openModal()
+              // this.openModal()
+              this.goToTimeSlots(property)
               this.setProperty(property)
             }
           }}

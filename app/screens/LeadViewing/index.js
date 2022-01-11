@@ -247,12 +247,21 @@ class LeadViewing extends React.Component {
 
   goToTimeSlots = (property) => {
     const { lead, navigation, user } = this.props
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
     let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
     copyObj.status = 'pending'
     copyObj.taskCategory = 'leadTask'
     copyObj.userId = user.id
     copyObj.taskType = 'viewing'
-    copyObj.armsLeadId = lead && lead.id ? lead.id : null
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
     copyObj.propertyId = property && property.id ? property.id : null
     navigation.navigate('TimeSlotManagement', {
       data: copyObj,
@@ -477,8 +486,8 @@ class LeadViewing extends React.Component {
           onPress={() => {
             if (leadAssignedSharedStatus) {
               // this.openModal()
-              this.goToTimeSlots(property)
               this.setProperty(property)
+              this.goToTimeSlots(property)
             }
           }}
         >

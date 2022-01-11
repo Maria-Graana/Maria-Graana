@@ -212,7 +212,7 @@ export class ScheduledTasks extends Component {
           )
         )
       }
-      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate })
+      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate, agentId })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
@@ -285,8 +285,14 @@ export class ScheduledTasks extends Component {
   }
 
   render() {
-    const { showMenu, leadType, leadId, isActivityHistoryModalVisible, activityHistoryData } =
-      this.state
+    const {
+      showMenu,
+      leadType,
+      leadId,
+      isActivityHistoryModalVisible,
+      activityHistoryData,
+      agentId,
+    } = this.state
     const {
       dispatch,
       diary,
@@ -296,6 +302,7 @@ export class ScheduledTasks extends Component {
       isMultiPhoneModalVisible,
       selectedDiary,
       selectedLead,
+      user,
     } = this.props
     const { purposeTab } = route.params
     const { diaries, loading, showClassificationModal, page } = diary
@@ -397,6 +404,7 @@ export class ScheduledTasks extends Component {
                   })
                 }}
                 leadType={leadType}
+                isOwnDiaryView={agentId === user.id}
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

@@ -59,7 +59,6 @@ class OverdueTasks extends React.Component {
     super(props)
     this.state = {
       isLeadCategoryModalVisible: false,
-      agentId: '',
       showMenu: false,
       selectedDiary: null,
       isSortModalVisible: false,
@@ -69,11 +68,13 @@ class OverdueTasks extends React.Component {
   }
   componentDidMount() {
     const { navigation, dispatch, route } = this.props
-    const { count, agentId, agentName } = route.params
+    const { count, agentName } = route.params
     navigation.setOptions({
       title: agentName ? `${agentName} Tasks (${count})` : `Overdue Tasks(${count})`,
     })
-    this.getDiaries()
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.getDiaries()
+    })
   }
 
   componentWillUnmount() {
@@ -95,8 +96,10 @@ class OverdueTasks extends React.Component {
       referenceGuide,
       selectedDiary,
       selectedLead,
+      route,
     } = this.props
-    const { selectedDate, agentId } = this.state
+    const { agentId } = route?.params
+    const { selectedDate } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
         dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
@@ -180,7 +183,7 @@ class OverdueTasks extends React.Component {
           )
         )
       }
-      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate })
+      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate, agentId })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
@@ -247,8 +250,9 @@ class OverdueTasks extends React.Component {
   }
 
   navigateToFiltersScreen = () => {
-    const { navigation } = this.props
-    const { agentId, selectedDate } = this.state
+    const { navigation, route } = this.props
+    const { agentId } = route?.params
+    const { selectedDate } = this.state
     navigation.navigate('DiaryFilter', {
       agentId,
       isOverdue: true,
@@ -295,7 +299,6 @@ class OverdueTasks extends React.Component {
     const {
       selectedDate,
       showMenu,
-      agentId,
       isSortModalVisible,
       isActivityHistoryModalVisible,
       activityHistoryData,
@@ -312,7 +315,9 @@ class OverdueTasks extends React.Component {
       referenceGuide,
       selectedDiary,
       selectedLead,
+      user,
     } = this.props
+    const { agentId } = route.params
     const { diaries, loading, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
@@ -427,6 +432,7 @@ class OverdueTasks extends React.Component {
                     this.showMultiPhoneModal(true)
                   })
                 }}
+                isOwnDiaryView={agentId === user.id}
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

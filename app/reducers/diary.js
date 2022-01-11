@@ -19,7 +19,7 @@ let diaryData = {
 
 let filtersData = {
   date: _today,
-  feedbackId: null,
+  reasonTag: null,
   leadType: null,
   wantedId: null,
   projectId: null,

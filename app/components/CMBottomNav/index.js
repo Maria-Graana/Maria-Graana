@@ -551,7 +551,7 @@ class CMBottomNav extends React.Component {
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Refer Lead"
               />
-              {closedWon && (
+              {closedWon && lead.status != "closed_won" && (
                 <Menu.Item
                   onPress={() => onHandleCloseLead(lead)}
                   // onPress={() => {

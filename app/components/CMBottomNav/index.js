@@ -364,6 +364,8 @@ class CMBottomNav extends React.Component {
       permissions,
       screenName,
       user,
+      onHandleCloseLead,
+      closedWon,
     } = this.props
     const {
       visible,
@@ -549,6 +551,17 @@ class CMBottomNav extends React.Component {
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Refer Lead"
               />
+              {closedWon && (
+                <Menu.Item
+                  onPress={() => onHandleCloseLead(lead)}
+                  // onPress={() => {
+                  //   this.onHandleCloseLead(lead)
+                  // }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Closed Won"
+                />
+              )}
+
               {
                 screenName === 'MyDeals' ? (
                   <Menu.Item

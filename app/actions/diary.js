@@ -334,8 +334,6 @@ export const mapFiltersToQuery = (filters) => {
       .map((key) => {
         if (key === 'date') {
           return `date[]=${filters[key]}`
-        } else if (key === 'feedbackId') {
-          return filters[key].map((item) => `&feedbacksId[]=${item}`)
         } else {
           return `${key}=${filters[key]}`
         }

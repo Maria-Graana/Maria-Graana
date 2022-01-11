@@ -52,7 +52,7 @@ class DiaryFilter extends React.Component {
     const { filters, feedbackReasonFilter } = this.props
     const newFormData = {
       ...filters,
-      feedbackId: feedbackReasonFilter ? feedbackReasonFilter.value : null,
+      reasonTag: feedbackReasonFilter ? feedbackReasonFilter.name : null,
     }
     //console.log(newFormData)
     dispatch(setDiaryFilter(newFormData))

@@ -169,17 +169,18 @@ class RentLeads extends React.Component {
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
       }
     } else {
       if (statusFilter === 'shortlisting') {
-        query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else {
-        query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        query = ``
+        query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       }
     }
     axios
@@ -853,7 +854,7 @@ class RentLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {createProjectLead || createBuyRentLead ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
           <FAB.Group
             open={open}
             icon="plus"

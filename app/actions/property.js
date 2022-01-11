@@ -79,7 +79,7 @@ export function uploadImage(image, isGraana = false) {
 }
 
 export function setAddPropertyParams(filter) {
-  console.log('setAddPropertyParams===>', filter)
+  // console.log('setAddPropertyParams===>', filter)
   return {
     type: types.SET_ADD_PROPERTY_PARAMS,
     payload: filter,

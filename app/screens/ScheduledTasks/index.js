@@ -374,6 +374,7 @@ export class ScheduledTasks extends Component {
         ) : diaries && diaries.rows && diaries.rows.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: diaries && diaries.rows.length - 1 ? 15 : 0 }}
             data={diaries.rows}
             renderItem={({ item, index }) => (
               <DiaryTile

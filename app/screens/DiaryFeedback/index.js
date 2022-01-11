@@ -125,8 +125,16 @@ class DiaryFeedback extends Component {
   }
 
   handleNextAction = (data) => {
-    const { dispatch, connectFeedback, route, navigation, diary, user } = this.props
-    const { selectedDiary, selectedLead } = diary
+    const {
+      dispatch,
+      connectFeedback,
+      route,
+      navigation,
+      diary,
+      user,
+      selectedDiary,
+      selectedLead,
+    } = this.props
     const { type, reason = '', isBlacklist = false, section } = data
     if (type === 'connect_again') {
       dispatch(
@@ -201,20 +209,24 @@ class DiaryFeedback extends Component {
       ).then((res) => {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
           if (res) {
+            let copyObj = { ...this.props.connectFeedback }
+            copyObj.status = 'pending'
+            copyObj.reasonId = copyObj.feedbackId
+            copyObj.reasonTag = copyObj.tag
+            copyObj.taskCategory = 'leadTask'
+            copyObj.userId = user.id
+            copyObj.taskType = type === 'set_follow_up' ? 'follow_up' : 'meeting'
+            copyObj.armsLeadId =
+              selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null
+            ;(copyObj.leadId =
+              selectedDiary && selectedDiary.armsProjectLeadId
+                ? selectedDiary.armsProjectLeadId
+                : null),
+              delete copyObj.id
+            delete copyObj.feedbackId
+            delete copyObj.feedbackTag
             navigation.replace('TimeSlotManagement', {
-              data: {
-                userId: user.id,
-                taskCategory: 'leadTask',
-                reasonTag: connectFeedback.tag,
-                reasonId: connectFeedback.feedbackId,
-                taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
-                armsLeadId:
-                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
-                leadId:
-                  selectedDiary && selectedDiary.armsProjectLeadId
-                    ? selectedDiary.armsProjectLeadId
-                    : null,
-              },
+              data: copyObj,
               taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
               isFromConnectFlow: true,
             })
@@ -224,8 +236,6 @@ class DiaryFeedback extends Component {
         })
       })
     } else if (type === 'book_a_unit') {
-      dispatch(setConnectFeedback({}))
-      dispatch(clearDiaryFeedbacks())
       dispatch(
         setConnectFeedback({
           ...connectFeedback,

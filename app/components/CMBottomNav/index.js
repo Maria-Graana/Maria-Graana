@@ -372,29 +372,30 @@ class CMBottomNav extends React.Component {
       calledOn,
       isLeadCategoryModalVisible,
     } = this.state
+
     let readPermission = getPermissionValue(
-      lead.purpose === 'invest'
+      lead.projectId && lead.project
         ? PermissionFeatures.PROJECT_LEADS
         : PermissionFeatures.BUY_RENT_LEADS,
       PermissionActions.READ,
       permissions
     )
     let referPermission = getPermissionValue(
-      lead.purpose === 'invest'
+      lead.projectId && lead.project
         ? PermissionFeatures.PROJECT_LEADS
         : PermissionFeatures.BUY_RENT_LEADS,
       PermissionActions.REFER,
       permissions
     )
     let assignPermission = getPermissionValue(
-      lead.purpose === 'invest'
+      lead.projectId && lead.project
         ? PermissionFeatures.PROJECT_LEADS
         : PermissionFeatures.BUY_RENT_LEADS,
       PermissionActions.ASSIGN_REASSIGN,
       permissions
     )
     let updatePermission = getPermissionValue(
-      lead.purpose === 'invest'
+      lead.projectId && lead.project
         ? PermissionFeatures.PROJECT_LEADS
         : PermissionFeatures.BUY_RENT_LEADS,
       PermissionActions.UPDATE,

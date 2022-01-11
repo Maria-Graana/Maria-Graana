@@ -160,7 +160,7 @@ function TimeSlotManagement(props) {
         const start = shiftArr[0].armsShift.startTime
         const xp = start.split(':')
         scrollHorizontal.current.scrollTo({
-          x: parseInt(xp[0]) * 50,
+          x: 9 * 50,
           y: 0,
           animated: false,
         })
@@ -693,22 +693,28 @@ function TimeSlotManagement(props) {
       }
     }
 
+    var shiftArr = array.sort((first, sec) => {
+      var a = first.armsShift.startTime.split(':')[0]
+      var b = sec.armsShift.startTime.split(':')[0]
+      return a - b
+    })
+
     if (array.length > 0) {
       if (array && array[0].armsShift && array.length == 2) {
-        const start = array[0].armsShift.startTime
-        const end = array[1].armsShift.endTime
+        const start = shiftArr[0].armsShift.startTime
+        const end = shiftArr[1].armsShift.endTime
 
         if (isTimeBetween(start, end, e.startTime)) return true
         else return false
       } else if (array && array[0].armsShift && array.length == 3) {
-        const start = array[0].armsShift.startTime
-        const end = array[2].armsShift.endTime
+        const start = shiftArr[0].armsShift.startTime
+        const end = shiftArr[2].armsShift.endTime
 
         if (isTimeBetween(start, end, e.startTime)) return true
         else return false
       } else if (array && array[0].armsShift && array.length == 1) {
-        const start = array[0].armsShift.startTime
-        const end = array[0].armsShift.endTime
+        const start = shiftArr[0].armsShift.startTime
+        const end = shiftArr[0].armsShift.endTime
 
         if (isTimeBetween(start, end, e.startTime)) return true
         else return false
@@ -880,9 +886,9 @@ function TimeSlotManagement(props) {
                                     ? '#fff1c5'
                                     : setColor(e) == 'closed'
                                     ? '#e6e6e6'
-                                    : setShift(e) == false
-                                    ? '#f1f1f1'
-                                    : 'white',
+                                    : setShift(e) == true
+                                    ? 'white'
+                                    : '#f1f1f1',
 
                                   borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
                                   borderWidth: isSelected.includes(e.id) ? 1.6 : 0.6,

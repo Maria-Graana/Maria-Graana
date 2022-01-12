@@ -44,6 +44,15 @@ class DiaryReasons extends React.Component {
               for (let j = 0; j < sectionArr.length; j++) {
                 let id = sectionArr[j].id
                 let tags = sectionArr[j].tags
+                if (tags && sectionArr[j].section === 'Actions') {
+                  try {
+                    tags = JSON.parse(tags[0])
+                    let newTags = Object.keys(tags).map((key) => tags[key])
+                    tags = newTags
+                  } catch (e) {
+                    tags = null
+                  }
+                }
                 if (tags) {
                   for (let k = 0; k < tags.length; k++) {
                     if (result[tags[k]]) result[tags[k]] = [...result[tags[k]], id]
@@ -58,14 +67,15 @@ class DiaryReasons extends React.Component {
                 value: result[item],
               }
             })
-
             this.setState({
               loading: false,
               feedbackReasons: response,
             })
           }
         })
-        .catch((error) => {})
+        .catch((error) => {
+          console.log(error)
+        })
     })
   }
 

@@ -201,17 +201,19 @@ class LegalAttachment extends Component {
 
   fetchDocuments = (lead) => {
     const { route } = this.props
+    const { addedBy } = route.params
     axios
       .get(
-        `/api/legal/documents/${lead.id}?addedBy=${route.params.addedBy}&leadType=${lead.purpose}&legalType=${lead.legalType}`
+        `/api/legal/documents/${lead.id}?addedBy=${addedBy}&leadType=${lead.purpose}&legalType=${lead.legalType}`
       )
       .then((res) => {
         if (res.data && res.data.length) {
           this.setState({
             legalListing: helper.setLegalListing(res.data),
             firstFormData: {
-              legalService: lead.legalType,
-              legalDescription: lead.legalDescription,
+              legalService: addedBy === 'buyer' ? lead.legalTypeBuyer : lead.legalTypeSeller,
+              legalDescription:
+                addedBy === 'buyer' ? lead.legalDescriptionBuyer : lead.legalDescriptionSeller,
             },
           })
         }
@@ -349,8 +351,6 @@ class LegalAttachment extends Component {
     let url = `/api/legal/document?legalId=${currentItem.id}`
     if (legalAttachment.category === 'legal_checklist')
       url = `/api/leads/checklist?id=${checkListDoc.id}&addedBy=${route.params.addedBy}`
-    console.log('fd: ', fd)
-    console.log('url: ', url)
     axios
       .post(url, fd)
       .then((res) => {
@@ -1255,8 +1255,8 @@ class LegalAttachment extends Component {
               <>
                 <View style={{ padding: 10 }}>
                   <PickerComponent
-                    onValueChange={() => {
-                      if (updatePermission && closedLeadEdit) this.handleFirstForm
+                    onValueChange={(value, name) => {
+                      if (updatePermission && closedLeadEdit) this.handleFirstForm(value, name)
                     }}
                     data={StaticData.legalServicesFields}
                     name={'legalService'}
@@ -1268,8 +1268,8 @@ class LegalAttachment extends Component {
                 {firstFormData.legalService !== 'internal' && leadPurpose === 'sale' ? (
                   <View style={{ padding: 10 }}>
                     <PickerComponent
-                      onValueChange={() => {
-                        if (updatePermission && closedLeadEdit) this.handleFirstForm
+                      onValueChange={(value, name) => {
+                        if (updatePermission && closedLeadEdit) this.handleFirstForm(value, name)
                       }}
                       data={StaticData.externalServicesFields}
                       name={'legalDescription'}

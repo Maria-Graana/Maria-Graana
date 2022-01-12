@@ -262,7 +262,7 @@ class Diary extends React.Component {
     dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
     dispatch(setSortValue(''))
-    navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name })
+    navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name, agentId })
   }
 
   handleMenuActions = (action) => {
@@ -359,7 +359,7 @@ class Diary extends React.Component {
           )
         )
       }
-      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate })
+      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate, agentId })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
@@ -700,6 +700,7 @@ class Diary extends React.Component {
                     this.showMultiPhoneModal(true)
                   })
                 }}
+                isOwnDiaryView={agentId === user.id}
               />
             )}
             onEndReached={() => {

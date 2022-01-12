@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { View, Text, FlatList, TouchableOpacity } from 'react-native'
-import ListItem from '../ListItem/index'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import moment from 'moment'
@@ -26,8 +25,6 @@ class DiaryTile extends React.Component {
     }
   }
 
-  componentDidMount() {}
-
   render() {
     const {
       diary,
@@ -42,6 +39,8 @@ class DiaryTile extends React.Component {
       initiateConnectFlow,
       screenName,
       leadType,
+      agentId,
+      isOwnDiaryView,
     } = this.props
     return (
       <View style={styles.mainContainer}>
@@ -85,18 +84,21 @@ class DiaryTile extends React.Component {
                     }
                   >
                     <View>
-                      {diary.status !== 'completed' && diary.status !== 'cancelled' && (
-                        <Menu.Item
-                          onPress={() => {
-                            handleMenuActions('mark_as_done')
-                            hideMenu()
-                          }}
-                          title="Mark as Done"
-                        />
-                      )}
+                      {diary.status !== 'completed' &&
+                        diary.status !== 'cancelled' &&
+                        isOwnDiaryView && (
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('mark_as_done')
+                              hideMenu()
+                            }}
+                            title="Mark as Done"
+                          />
+                        )}
 
                       {diary.status !== 'completed' &&
                       diary.status !== 'cancelled' &&
+                      isOwnDiaryView &&
                       (diary.taskType === 'viewing' || diary.taskType === 'meeting') ? (
                         <Menu.Item
                           onPress={() => {
@@ -109,6 +111,7 @@ class DiaryTile extends React.Component {
 
                       {diary.taskType === 'viewing' &&
                       diary.armsLeadId &&
+                      isOwnDiaryView &&
                       diary.status !== 'completed' &&
                       diary.status !== 'cancelled' ? (
                         <Menu.Item
@@ -122,6 +125,7 @@ class DiaryTile extends React.Component {
 
                       {diary.taskType === 'meeting' &&
                       diary.armsProjectLeadId &&
+                      isOwnDiaryView &&
                       diary.status !== 'completed' &&
                       diary.status !== 'cancelled' ? (
                         <Menu.Item
@@ -138,18 +142,20 @@ class DiaryTile extends React.Component {
                           handleMenuActions('task_details')
                           hideMenu()
                         }}
-                        title="Additional Information"
+                        title="Task Details"
                       />
 
-                      {diary.status !== 'completed' && diary.status !== 'cancelled' && (
-                        <Menu.Item
-                          onPress={() => {
-                            handleMenuActions('edit_task')
-                            hideMenu()
-                          }}
-                          title="Edit Task"
-                        />
-                      )}
+                      {diary.status !== 'completed' &&
+                        diary.status !== 'cancelled' &&
+                        isOwnDiaryView && (
+                          <Menu.Item
+                            onPress={() => {
+                              handleMenuActions('edit_task')
+                              hideMenu()
+                            }}
+                            title="Edit Task"
+                          />
+                        )}
 
                       {diary.taskCategory === 'leadTask' ? (
                         <Menu.Item
@@ -165,7 +171,8 @@ class DiaryTile extends React.Component {
                       diary.taskType !== 'daily_update' &&
                       diary.taskType !== 'meeting_with_pp' &&
                       diary.status !== 'completed' &&
-                      diary.status !== 'cancelled' ? (
+                      diary.status !== 'cancelled' &&
+                      isOwnDiaryView ? (
                         <View>
                           {!diary.wantedId ? (
                             <Menu.Item
@@ -176,19 +183,31 @@ class DiaryTile extends React.Component {
                               title="Refer Lead"
                             />
                           ) : null}
-                          <Menu.Item
-                            onPress={() => {
-                              handleMenuActions('reassign_lead')
-                              hideMenu()
-                            }}
-                            title="Reassign Lead"
-                          />
+                        </View>
+                      ) : null}
+
+                      {diary.taskType !== 'morning_meeting' &&
+                      diary.taskType !== 'daily_update' &&
+                      diary.taskType !== 'meeting_with_pp' &&
+                      diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' ? (
+                        <View>
+                          {!diary.wantedId ? (
+                            <Menu.Item
+                              onPress={() => {
+                                handleMenuActions('reassign_lead')
+                                hideMenu()
+                              }}
+                              title="Reassign Lead"
+                            />
+                          ) : null}
                         </View>
                       ) : null}
 
                       {DiaryHelper.getLeadId(diary) &&
                       diary.status !== 'completed' &&
-                      diary.status !== 'cancelled' ? (
+                      diary.status !== 'cancelled' &&
+                      isOwnDiaryView ? (
                         <Menu.Item
                           onPress={() => {
                             setClassification(diary)
@@ -202,7 +221,8 @@ class DiaryTile extends React.Component {
                         diary.taskType === 'daily_update' ||
                         diary.taskType === 'meeting_with_pp') &&
                         diary.status !== 'completed' &&
-                        diary.status !== 'cancelled' && (
+                        diary.status !== 'cancelled' &&
+                        isOwnDiaryView && (
                           <Menu.Item
                             onPress={() => {
                               handleMenuActions('delete')
@@ -281,6 +301,12 @@ class DiaryTile extends React.Component {
         </View>
       </View>
     )
+  }
+}
+
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
   }
 }
 

@@ -250,7 +250,6 @@ class Landing extends React.Component {
 
   // ****** Navigate Function
   navigateFunction = (name, screenName) => {
-    console.log('screenName: ', screenName)
     const { navigation } = this.props
     if (screenName === 'Properties') {
       navigation.navigate('InventoryTabs', {
@@ -259,13 +258,16 @@ class Landing extends React.Component {
       })
     } else if (screenName === 'Leads') {
       navigation.navigate('Leads', {
-        screen: screenName,
-        hasBooking: false,
+        screen: 'Leads',
+        params: { screen: screenName, hasBooking: false },
       })
     } else if (screenName === 'MyDeals') {
       navigation.navigate('Leads', {
-        screen: screenName,
-        hasBooking: true,
+        screen: 'Leads',
+        params: {
+          screen: screenName,
+          hasBooking: true,
+        },
       })
     } else if (screenName === 'ProjectInventory') {
       navigation.navigate('AvailableInventory', {
@@ -329,7 +331,7 @@ class Landing extends React.Component {
                 navigateFunction={this.navigateFunction}
                 pagePath={item.item.pagePath}
                 screenName={item.item.screenName}
-                badges={item.item.badges}
+                badges={item.item.screenName === 'Diary' ? 0 : item.item.badges} // temporarily hiding count for diary
                 label={item.item.label}
                 imagePath={item.item.buttonImg}
               />

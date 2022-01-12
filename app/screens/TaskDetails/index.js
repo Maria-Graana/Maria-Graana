@@ -1,21 +1,19 @@
 /** @format */
 
-import React, { Component } from 'react'
+import React from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
 import AppStyles from '../../AppStyles'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import helper from '../../helper'
 import DiaryHelper from '../Diary/diaryHelper'
+import { connect } from 'react-redux'
 
-class TaskDetails extends Component {
+class TaskDetails extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: false,
     }
   }
-
-  componentDidMount() {}
 
   goToEditTask = () => {
     const { route, navigation } = this.props
@@ -24,14 +22,14 @@ class TaskDetails extends Component {
   }
 
   render() {
-    const { route } = this.props
-    const { diary } = route.params
+    const { route, user } = this.props
+    const { diary, agentId = null } = route.params
     return (
       <View style={AppStyles.container}>
         <View style={styles.innerContainer}>
           <View style={styles.flexRow}>
             <Text style={[styles.headingText, { width: '90%' }]}> Task Type: </Text>
-            {diary && diary.status === 'pending' ? (
+            {diary && diary.status === 'pending' && agentId === user.id ? (
               <View style={{ width: '10%' }}>
                 {
                   <MaterialCommunityIcons
@@ -141,4 +139,11 @@ const styles = StyleSheet.create({
   },
 })
 
-export default TaskDetails
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    diary: store.diary.diary,
+  }
+}
+
+export default connect(mapStateToProps)(TaskDetails)

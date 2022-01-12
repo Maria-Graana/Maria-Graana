@@ -292,7 +292,7 @@ class PropertyLead extends React.Component {
       statusFilterType,
     } = this.state
     const { user } = this.props
-    let leadStatus = StaticData.buyRentFilter
+    let leadStatus = StaticData.buyRentFilterForLeads
     let buyRentFilterType = StaticData.buyRentFilterType
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>

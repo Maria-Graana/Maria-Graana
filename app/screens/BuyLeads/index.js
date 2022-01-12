@@ -658,7 +658,10 @@ class BuyLeads extends React.Component {
     } = this.state
     const { user, permissions } = this.props
     const { screen } = this.props.route.params
-    let leadStatus = StaticData.buyRentFilter
+    let leadStatus = []
+    screen === 'Leads'
+      ? (leadStatus = StaticData.buyRentFilterForLeads)
+      : (leadStatus = StaticData.buyRentFilterForDeals)
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 

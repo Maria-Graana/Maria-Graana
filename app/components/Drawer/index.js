@@ -66,7 +66,7 @@ class CustomDrawerContent extends React.Component {
           {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem
               screen={'Diary'}
-              badges={count.diary}
+              badges={0}
               navigateTo={() => {
                 this.navigateTo('Diary')
               }}

@@ -329,7 +329,7 @@ class Landing extends React.Component {
                 navigateFunction={this.navigateFunction}
                 pagePath={item.item.pagePath}
                 screenName={item.item.screenName}
-                badges={item.item.badges}
+                badges={item.item.screenName === 'Diary' ? 0 : item.item.badges} // temporarily hiding count for diary
                 label={item.item.label}
                 imagePath={item.item.buttonImg}
               />

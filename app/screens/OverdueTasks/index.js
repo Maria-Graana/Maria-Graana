@@ -37,6 +37,7 @@ import {
   setClassificationModal,
   setConnectFeedback,
   setDairyFilterApplied,
+  setMultipleModalVisible,
   setOnEndReachedLoader,
   setPageCount,
   setReferenceGuideData,

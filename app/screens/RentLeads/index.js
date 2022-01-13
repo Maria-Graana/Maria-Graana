@@ -713,11 +713,7 @@ class RentLeads extends React.Component {
     } = this.state
     const { user, navigation, permissions } = this.props
     const { screen } = this.props.route.params
-    let leadStatus = []
-    screen === 'Leads'
-      ? (leadStatus = StaticData.buyRentFilterForLeads)
-      : (leadStatus = StaticData.buyRentFilterForDeals)
-
+    let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 

@@ -307,15 +307,13 @@ export default StaticData = {
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
-  buyRentFilterForLeads: [
+  buyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
     { value: 'follow_up', name: 'Nurture' },
     { value: 'shortlisting', name: 'Shortlisting' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
-  ],
-  buyRentFilterForDeals: [
     { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],

@@ -65,9 +65,11 @@ class LeadAttachments extends Component {
 
   componentDidMount() {
     const { route } = this.props
-    const { navProperty = false } = route.params
+    const { navProperty = false, workflow } = route.params
     if (navProperty) {
       this.fetchPropertyAttachement()
+    } else if (workflow === 'cm') {
+      // this.fetchAttachmentEXT()
     } else {
       // this.fetchAttachmentEXT()
       this.fetchAttachments()

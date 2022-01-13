@@ -250,6 +250,7 @@ class Landing extends React.Component {
 
   // ****** Navigate Function
   navigateFunction = (name, screenName) => {
+    console.log('screenName: ', screenName)
     const { navigation } = this.props
     if (screenName === 'Properties') {
       navigation.navigate('InventoryTabs', {
@@ -259,12 +260,12 @@ class Landing extends React.Component {
     } else if (screenName === 'Leads') {
       navigation.navigate('Leads', {
         screen: screenName,
-        params: { hasBooking: false },
+        hasBooking: false,
       })
     } else if (screenName === 'MyDeals') {
       navigation.navigate('Leads', {
         screen: screenName,
-        params: { hasBooking: true },
+        hasBooking: true,
       })
     } else if (screenName === 'ProjectInventory') {
       navigation.navigate('AvailableInventory', {

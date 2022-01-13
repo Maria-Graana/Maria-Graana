@@ -249,6 +249,34 @@ class Landing extends React.Component {
   }
 
   // ****** Navigate Function
+  // navigateFunction = (name, screenName) => {
+  //   const { navigation } = this.props
+  //   if (screenName === 'Properties') {
+  //     navigation.navigate('InventoryTabs', {
+  //       screen: 'ARMS',
+  //       params: { screen: 'InventoryTabs' },
+  //     })
+  //   } else if (screenName === 'Leads') {
+  //     navigation.navigate('Leads', {
+  //       screen: 'Leads',
+  //       params: { screen: screenName, hasBooking: false },
+  //     })
+  //   } else if (screenName === 'MyDeals') {
+  //     navigation.navigate('Leads', {
+  //       screen: 'Leads',
+  //       params: {
+  //         screen: screenName,
+  //         hasBooking: true,
+  //       },
+  //     })
+  //   } else if (screenName === 'ProjectInventory') {
+  //     navigation.navigate('AvailableInventory', {
+  //       screen: 'AvailableInventory',
+  //     })
+  //   } else {
+  //     navigation.navigate(name === 'Clients' ? 'Client' : name, { screen: screenName })
+  //   }
+  // }
   navigateFunction = (name, screenName) => {
     console.log('screenName: ', screenName)
     const { navigation } = this.props

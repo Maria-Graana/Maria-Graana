@@ -30,6 +30,14 @@ import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import { getDiaryFeedbacks, setConnectFeedback } from '../../actions/diary'
 import diaryHelper from '../Diary/diaryHelper'
+import {
+  alltimeSlots,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
+
+const _today = moment(new Date()).format('YYYY-MM-DD')
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -246,7 +254,11 @@ class LeadViewing extends React.Component {
   }
 
   goToTimeSlots = (property) => {
-    const { lead, navigation, user } = this.props
+    const { lead, navigation, user, dispatch } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
     let customer =
       (lead.customer &&
         lead.customer.customerName &&

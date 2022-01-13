@@ -282,6 +282,37 @@ class LeadViewing extends React.Component {
     })
   }
 
+  updateTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
+    let diary = property.diaries[0]
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.id = diary.id
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
   goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
     navigation.navigate('LeadAttachments', {
@@ -463,8 +494,9 @@ class LeadViewing extends React.Component {
                 style={styles.viewingAtBtn}
                 onPress={() => {
                   if (leadAssignedSharedStatus) {
-                    this.openModal()
-                    this.updateProperty(property)
+                    // this.openModal()
+                    // this.updateProperty(property)
+                    this.updateTimeSlots(property)
                   }
                 }}
               >

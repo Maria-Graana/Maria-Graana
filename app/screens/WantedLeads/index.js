@@ -638,7 +638,7 @@ class WantedLeads extends React.Component {
     } = this.state
     const { user } = this.props
     // console.log('Hrellooo', leadsData && leadsData.length && leadsData[0].customer)
-    let leadStatus = StaticData.buyRentFilter
+    let leadStatus = StaticData.buyRentFilterForLeads
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 

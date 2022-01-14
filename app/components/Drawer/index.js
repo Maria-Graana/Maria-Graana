@@ -99,7 +99,7 @@ class CustomDrawerContent extends React.Component {
               screen={user && user.organization && user.organization.isPP ? 'Leads' : 'Leads'}
               badges={count.leads}
               navigateTo={() => {
-                this.navigateTo('Leads', { params: { screen: 'Leads' } })
+                this.props.navigation.navigate('Leads',{ screen: 'Leads' , hasBooking : false})
               }}
             />
           ) : null}
@@ -117,7 +117,7 @@ class CustomDrawerContent extends React.Component {
               screen={user && user.organization && user.organization.isPP ? 'Deals' : 'Deals'}
               badges={count.leads}
               navigateTo={() => {
-                this.navigateTo('Leads', { params: { screen: 'MyDeals' } })
+                this.props.navigation.navigate('Leads', { screen: 'MyDeals' , hasBooking : true})
               }}
             />
           ) : null}

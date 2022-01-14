@@ -278,7 +278,7 @@ class AvailableInventory extends Component {
     const { permissions } = this.props
     return getPermissionValue(
       PermissionFeatures.APP_PAGES,
-      PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
+      PermissionActions.PROJECT_INVENTORY_PAGE_VIEW,
       permissions
     )
   }

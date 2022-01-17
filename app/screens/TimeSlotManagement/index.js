@@ -345,11 +345,11 @@ function TimeSlotManagement(props) {
       })
     } else if (data && isBookViewing) {
       let copyData = Object.assign({}, data)
-      copyData.date = tempStartTime
-      copyData.time = tempStartTime
-      copyData.diaryTime = tempStartTime
-      copyData.start = tempStartTime
-      copyData.end = tempEndTime
+      copyData.date = startTime
+      copyData.time = startTime
+      copyData.diaryTime = startTime
+      copyData.start = startTime
+      copyData.end = endTime
       copyData.slots = tempSlot
 
       if (copyData && !copyData.id) createViewing(copyData)

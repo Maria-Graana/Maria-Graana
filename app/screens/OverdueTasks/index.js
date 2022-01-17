@@ -221,7 +221,7 @@ class OverdueTasks extends React.Component {
     const { navigation, selectedLead, selectedDiary } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
-      type = 'investment'
+      type = 'Investment'
     } else if (selectedDiary.armsLeadId) {
       type = selectedLead.purpose
     }

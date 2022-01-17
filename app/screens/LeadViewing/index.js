@@ -91,6 +91,7 @@ class LeadViewing extends React.Component {
   }
 
   componentDidMount = () => {
+    const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (
         this.props.route.params &&

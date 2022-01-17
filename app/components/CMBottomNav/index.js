@@ -366,6 +366,7 @@ class CMBottomNav extends React.Component {
       user,
       onHandleCloseLead,
       closedWon,
+      leadType,
     } = this.props
     const {
       visible,
@@ -450,7 +451,7 @@ class CMBottomNav extends React.Component {
             <Text style={styles.followText}>Activity</Text>
           </View>
         </TouchableOpacity>
-        {screenName === 'MyDeals' ? (
+        {screenName === 'MyDeals' || leadType === 'CM' ? (
           <TouchableOpacity
             disabled={user.role == 'aira_role' ? true : closedLeadEdit ? false : true}
             style={styles.followBtn}

@@ -30,7 +30,7 @@ import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsMo
 class LeadMatch extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       open: false,
       organization: 'graana',
@@ -86,7 +86,7 @@ class LeadMatch extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       legalDocLoader: false,
@@ -439,8 +439,8 @@ class LeadMatch extends React.Component {
 
   displayChecks = () => {
     const { showCheckBoxes } = this.state
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       if (showCheckBoxes) {
         this.unSelectAll()
@@ -457,8 +457,8 @@ class LeadMatch extends React.Component {
 
   addProperty = (property) => {
     const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-    const { user, lead } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { user, lead, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       if (showCheckBoxes) {
         if (showCheckBoxes) this.changeComBool()
@@ -779,7 +779,7 @@ class LeadMatch extends React.Component {
   }
 
   render() {
-    const { lead, user, navigation } = this.props
+    const { lead, user, navigation, permissions } = this.props
     const {
       meetings,
       callModal,
@@ -809,7 +809,7 @@ class LeadMatch extends React.Component {
       closedWon,
       newActionModal,
     } = this.state
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     return !loading ? (
       <View
         style={[
@@ -1081,6 +1081,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

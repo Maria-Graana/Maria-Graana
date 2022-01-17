@@ -247,7 +247,7 @@ export class ScheduledTasks extends Component {
   }
 
   goToAddEditDiaryScreen = (update, data = null) => {
-    const { navigation, dispatch, route, user } = this.props
+    const { navigation, dispatch, route, user, permissions } = this.props
     const { cmLeadId = null, rcmLeadId = null, lead = null } = route.params
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
@@ -259,7 +259,7 @@ export class ScheduledTasks extends Component {
       cmLeadId: cmLeadId,
       rcmLeadId: rcmLeadId,
       screenName: 'ScheduledTasks',
-      lead: lead && user.role == 'aira_role' ? lead : null,
+      lead: lead && helper.getAiraPermission(permissions) ? lead : null,
     })
   }
 
@@ -427,6 +427,7 @@ mapStateToProps = (store) => {
     slotDiary: store.slotManagement.slotDiaryData,
     connectFeedback: store.diary.connectFeedback,
     referenceGuide: store.diary.referenceGuide,
+    permissions: store.user.permissions,
   }
 }
 

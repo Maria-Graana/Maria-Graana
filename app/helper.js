@@ -22,6 +22,8 @@ import StaticData from './StaticData'
 import LeadIcon from '../assets/img/leads.png'
 import DealIcon from '../assets/img/deals.png'
 import ProjectInventoryIcon from '../assets/img/project-inventory.png'
+import { getPermissionValue } from './hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from './hoc/PermissionsTypes'
 
 const helper = {
   successToast(message, duration = 3000) {
@@ -447,9 +449,9 @@ const helper = {
       }
     } else return false
   },
-  checkAssignedSharedStatus(user, lead) {
+  checkAssignedSharedStatus(user, lead, permissions) {
     if (user && lead) {
-      if (user.role == 'aira_role' && user.id !== lead.assigned_to_armsuser_id) {
+      if (helper.getAiraPermission(permissions) && user.id !== lead.assigned_to_armsuser_id) {
         this.leadAiraToast(lead.armsuser)
         return true
       }
@@ -1159,6 +1161,13 @@ const helper = {
       else false
       console.log('buyerSide 4')
     }
+  },
+  getAiraPermission(permissions) {
+    return getPermissionValue(
+      PermissionFeatures.WANTED_LEADS,
+      PermissionActions.Assign_Company_Leads,
+      permissions
+    )
   },
 }
 

@@ -42,7 +42,7 @@ const _today = moment(new Date()).format('YYYY-MM-DD')
 class LeadViewing extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       isVisible: false,
       open: false,
@@ -64,7 +64,7 @@ class LeadViewing extends React.Component {
       organization: 'arms',
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -254,11 +254,18 @@ class LeadViewing extends React.Component {
   }
 
   goToTimeSlots = (property) => {
-    const { lead, navigation, user, dispatch } = this.props
+    const { lead, navigation, user, dispatch, permissions } = this.props
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
-    dispatch(getTimeShifts())
-    dispatch(setSlotDiaryData(_today))
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
     let customer =
       (lead.customer &&
         lead.customer.customerName &&
@@ -269,7 +276,7 @@ class LeadViewing extends React.Component {
     let areaName = (property.area && property.area.name && property.area.name) || ''
     copyObj.status = 'pending'
     copyObj.taskCategory = 'leadTask'
-    copyObj.userId = user.id
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
     copyObj.taskType = 'viewing'
     copyObj.leadId = lead && lead.id ? lead.id : null
     copyObj.customerId = customerId
@@ -283,11 +290,18 @@ class LeadViewing extends React.Component {
   }
 
   updateTimeSlots = (property) => {
-    const { lead, navigation, user, dispatch } = this.props
+    const { lead, navigation, user, dispatch, permissions } = this.props
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
-    dispatch(getTimeShifts())
-    dispatch(setSlotDiaryData(_today))
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
     let diary = property.diaries[0]
     let customer =
       (lead.customer &&
@@ -300,7 +314,7 @@ class LeadViewing extends React.Component {
     copyObj.status = 'pending'
     copyObj.id = diary.id
     copyObj.taskCategory = 'leadTask'
-    copyObj.userId = user.id
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
     copyObj.taskType = 'viewing'
     copyObj.leadId = lead && lead.id ? lead.id : null
     copyObj.customerId = customerId
@@ -475,8 +489,8 @@ class LeadViewing extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (helper.checkMyDiary(property, user)) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
@@ -571,8 +585,8 @@ class LeadViewing extends React.Component {
   }
 
   bookAnotherViewing = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       this.openModal()
       this.setProperty(property)
@@ -947,8 +961,8 @@ class LeadViewing extends React.Component {
       isFollowUpMode,
       newActionModal,
     } = this.state
-    const { lead, user, navigation } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, navigation, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -1156,6 +1170,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

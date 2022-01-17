@@ -59,7 +59,7 @@ var CANCEL_INDEX = 1
 class LeadPropsure extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       open: false,
@@ -78,7 +78,7 @@ class LeadPropsure extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       menuShow: false,
@@ -292,8 +292,8 @@ class LeadPropsure extends React.Component {
   }
 
   showDocumentModal = (propsureReports, property) => {
-    const { lead, user, dispatch } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, dispatch, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       let installment = property.cmInstallment
         ? property.cmInstallment
@@ -676,8 +676,8 @@ class LeadPropsure extends React.Component {
   }
 
   showReportsModal = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       this.setState({
         isVisible: true,
@@ -1339,8 +1339,8 @@ class LeadPropsure extends React.Component {
       closedWon,
       newActionModal,
     } = this.state
-    const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, navigation, user, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     return !loading ? (
       <StyleProvider style={getTheme(formTheme)}>
         <View
@@ -1550,6 +1550,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    permissions: store.user.permissions,
   }
 }
 

@@ -164,23 +164,43 @@ class RentLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
+    const { permissions } = this.props
     this.setState({ loading: true })
     const { hasBooking } = this.props.route.params
     let query = ``
-    if (showSearchBar) {
-      if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`
-      } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+    if (helper.getAiraPermission(permissions)) {
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&aira=${true}&page=${page}&hasBooking=${hasBooking}`
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`
+        }
       } else {
-        query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+        if (statusFilter === 'shortlisting') {
+          query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = ``
+          query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       }
     } else {
-      if (statusFilter === 'shortlisting') {
-        query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+        }
       } else {
-        query = ``
-        query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        if (statusFilter === 'shortlisting') {
+          query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = ``
+          query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       }
     }
     axios

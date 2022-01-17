@@ -30,7 +30,7 @@ import styles from './style'
 class PropertyViewing extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       isVisible: false,
       open: false,
@@ -52,7 +52,7 @@ class PropertyViewing extends React.Component {
       organization: 'arms',
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -380,8 +380,12 @@ class PropertyViewing extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(
+      user,
+      lead,
+      permissions
+    )
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
@@ -485,8 +489,8 @@ class PropertyViewing extends React.Component {
   }
 
   bookAnotherViewing = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       this.openModal()
       this.setProperty(property)
@@ -978,6 +982,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

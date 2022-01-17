@@ -166,22 +166,41 @@ class BuyLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
+    const { permissions } = this.props
     this.setState({ loading: true })
     const { hasBooking } = this.props.route.params
     let query = ``
-    if (showSearchBar) {
-      if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose[]=sale&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-      } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose[]=sale&id=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+    if (helper.getAiraPermission(permissions)) {
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          query = `/api/leads?purpose[]=sale&aira=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          query = `/api/leads?purpose[]=sale&id=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=sale&startDate=${fromDate}&aira=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       } else {
-        query = `/api/leads?purpose[]=sale&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        if (statusFilter === 'shortlisting') {
+          query = `/api/leads?purpose[]=sale&aira=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=sale&aira=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       }
     } else {
-      if (statusFilter === 'shortlisting') {
-        query = `/api/leads?purpose[]=sale&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          query = `/api/leads?purpose[]=sale&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          query = `/api/leads?purpose[]=sale&id=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=sale&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       } else {
-        query = `/api/leads?purpose[]=sale&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        if (statusFilter === 'shortlisting') {
+          query = `/api/leads?purpose[]=sale&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=sale&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       }
     }
     axios

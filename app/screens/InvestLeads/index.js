@@ -127,15 +127,21 @@ class InvestLeads extends React.Component {
   }
 
   onFocus = async () => {
+    const { hasBooking = false } = this.props.route.params // for Deals we need to set filter to closed won
     const sortValue = await this.getSortOrderFromStorage()
-    const statusValue = await getItem('statusFilterInvest')
+    let statusValue = ''
+    if (hasBooking) {
+      statusValue = await getItem('statusFilterInvestDeals')
+    } else {
+      statusValue = await getItem('statusFilterInvestLeads')
+    }
     if (statusValue) {
       this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
         this.fetchLeads()
       })
     } else {
-      storeItem('statusFilterInvest', 'all')
-      this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+      storeItem('statusFilterInvest', 'open')
+      this.setState({ statusFilter: 'open', sort: sortValue }, () => {
         this.fetchLeads()
       })
     }
@@ -237,11 +243,19 @@ class InvestLeads extends React.Component {
   }
 
   changeStatus = (status) => {
+    const { hasBooking = false } = this.props.route?.params
     this.clearStateValues()
-    this.setState({ statusFilter: status, leadsData: [] }, () => {
-      storeItem('statusFilterInvest', status)
-      this.fetchLeads()
-    })
+    if (hasBooking) {
+      this.setState({ statusFilter: status, leadsData: [] }, () => {
+        storeItem('statusFilterInvestDeals', status)
+        this.fetchLeads()
+      })
+    } else {
+      this.setState({ statusFilter: status, leadsData: [] }, () => {
+        storeItem('statusFilterInvestLeads', status)
+        this.fetchLeads()
+      })
+    }
   }
 
   navigateFromMenu = (data, name) => {
@@ -618,7 +632,7 @@ class InvestLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions } = this.props
-    const { screen } = this.props.route.params
+    const { screen, hasBooking = false } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
     return (
@@ -637,6 +651,7 @@ class InvestLeads extends React.Component {
                   selectedItem={statusFilterType}
                 />
               </View>
+
               {statusFilterType === 'name' || statusFilterType === 'id' ? (
                 <Search
                   containerWidth="75%"
@@ -662,13 +677,16 @@ class InvestLeads extends React.Component {
               <View style={styles.pickerMain}>
                 <PickerComponent
                   placeholder={'Lead Status'}
-                  data={StaticData.investmentFilter}
+                  data={
+                    hasBooking ? StaticData.investmentFilterDeals : StaticData.investmentFilterLeads
+                  }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
                   onValueChange={this.changeStatus}
                   selectedItem={statusFilter}
                 />
               </View>
+
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}

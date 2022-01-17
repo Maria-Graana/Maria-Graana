@@ -352,7 +352,7 @@ function TimeSlotManagement(props) {
       copyData.end = tempEndTime
       copyData.slots = tempSlot
 
-      createViewing(copyData)
+      if (copyData && !copyData.id) createViewing(copyData)
       saveOrUpdateDiaryTask(copyData).then((response) => {
         if (response) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')

@@ -28,7 +28,7 @@ import GeoTaggingModal from '../../components/GeotaggingModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
-import { getDiaryFeedbacks, setConnectFeedback } from '../../actions/diary'
+import { getDiaryFeedbacks, setConnectFeedback, setSelectedDiary } from '../../actions/diary'
 import diaryHelper from '../Diary/diaryHelper'
 import {
   alltimeSlots,
@@ -111,6 +111,10 @@ class LeadViewing extends React.Component {
         this.fetchProperties()
       }
     })
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
   }
 
   fetchLegalPaymentInfo = () => {
@@ -580,7 +584,7 @@ class LeadViewing extends React.Component {
   }
 
   doneViewing = (property) => {
-    const { user, dispatch, navigation } = this.props
+    const { user, dispatch, navigation, lead } = this.props
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
@@ -590,10 +594,12 @@ class LeadViewing extends React.Component {
             id: diary.id,
           })
         )
+        let copyLeadAndDiaryData = { ...diary, armsLead: lead }
+        dispatch(setSelectedDiary(copyLeadAndDiaryData))
         dispatch(
           getDiaryFeedbacks({
             taskType: 'viewing',
-            leadType: diaryHelper.getLeadType(diary),
+            leadType: 'BuyRent',
             actionType: 'Done',
           })
         ).then((res) => {
@@ -613,10 +619,12 @@ class LeadViewing extends React.Component {
             id: property.diaries[0].id,
           })
         )
+        let copyLeadAndDiaryData = { ...property.diaries[0], armsLead: lead }
+        dispatch(setSelectedDiary(copyLeadAndDiaryData))
         dispatch(
           getDiaryFeedbacks({
             taskType: 'viewing',
-            leadType: diaryHelper.getLeadType(property.diaries[0]),
+            leadType: 'BuyRent',
             actionType: 'Cancel',
           })
         ).then((res) => {

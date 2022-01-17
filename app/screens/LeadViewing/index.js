@@ -28,8 +28,16 @@ import GeoTaggingModal from '../../components/GeotaggingModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
-import { getDiaryFeedbacks, setConnectFeedback } from '../../actions/diary'
+import { getDiaryFeedbacks, setConnectFeedback, setSelectedDiary } from '../../actions/diary'
 import diaryHelper from '../Diary/diaryHelper'
+import {
+  alltimeSlots,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
+
+const _today = moment(new Date()).format('YYYY-MM-DD')
 
 class LeadViewing extends React.Component {
   constructor(props) {
@@ -83,6 +91,7 @@ class LeadViewing extends React.Component {
   }
 
   componentDidMount = () => {
+    const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (
         this.props.route.params &&
@@ -103,6 +112,10 @@ class LeadViewing extends React.Component {
         this.fetchProperties()
       }
     })
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
   }
 
   fetchLegalPaymentInfo = () => {
@@ -242,6 +255,66 @@ class LeadViewing extends React.Component {
       rcmLeadId: lead.id,
       addedBy: 'self',
       screenName: 'Diary',
+    })
+  }
+
+  goToTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
+  updateTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
+    let diary = property.diaries[0]
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.id = diary.id
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
     })
   }
 
@@ -426,8 +499,9 @@ class LeadViewing extends React.Component {
                 style={styles.viewingAtBtn}
                 onPress={() => {
                   if (leadAssignedSharedStatus) {
-                    this.openModal()
-                    this.updateProperty(property)
+                    // this.openModal()
+                    // this.updateProperty(property)
+                    this.updateTimeSlots(property)
                   }
                 }}
               >
@@ -460,8 +534,9 @@ class LeadViewing extends React.Component {
           style={styles.viewingBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
-              this.openModal()
+              // this.openModal()
               this.setProperty(property)
+              this.goToTimeSlots(property)
             }
           }}
         >
@@ -510,7 +585,7 @@ class LeadViewing extends React.Component {
   }
 
   doneViewing = (property) => {
-    const { user, dispatch, navigation } = this.props
+    const { user, dispatch, navigation, lead } = this.props
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
@@ -520,10 +595,12 @@ class LeadViewing extends React.Component {
             id: diary.id,
           })
         )
+        let copyLeadAndDiaryData = { ...diary, armsLead: lead }
+        dispatch(setSelectedDiary(copyLeadAndDiaryData))
         dispatch(
           getDiaryFeedbacks({
             taskType: 'viewing',
-            leadType: diaryHelper.getLeadType(diary),
+            leadType: 'BuyRent',
             actionType: 'Done',
           })
         ).then((res) => {
@@ -543,10 +620,12 @@ class LeadViewing extends React.Component {
             id: property.diaries[0].id,
           })
         )
+        let copyLeadAndDiaryData = { ...property.diaries[0], armsLead: lead }
+        dispatch(setSelectedDiary(copyLeadAndDiaryData))
         dispatch(
           getDiaryFeedbacks({
             taskType: 'viewing',
-            leadType: diaryHelper.getLeadType(property.diaries[0]),
+            leadType: 'BuyRent',
             actionType: 'Cancel',
           })
         ).then((res) => {

@@ -213,13 +213,21 @@ class Landing extends React.Component {
           counter++
         }
       } else {
+        // console.log(PermissionFeatures[actions])
+        // console.log(
+        //   getPermissionValue(
+        //     PermissionFeatures[actions],
+        //     PermissionActions.PROJECT_INVENTORY_PAGE_VIEW,
+        //     permissions
+        //   )
+        //)
         if (
           (oneTile.tile !== 'Project Inventory' &&
             getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) ||
           (oneTile.tile === 'Project Inventory' &&
             getPermissionValue(
               PermissionFeatures[actions],
-              PermissionActions.AVAILABLE_INVENTORY_PAGE_VIEW,
+              PermissionActions.PROJECT_INVENTORY_PAGE_VIEW,
               permissions
             ))
         ) {

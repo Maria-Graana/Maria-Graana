@@ -1412,14 +1412,14 @@ class CMPayment extends Component {
     this.setState({
       firstScreenConfirmLoading: true,
     })
-    let pearlBody = PaymentHelper.createPearl({
-      firstFormData,
-      pearlUnitPrice,
-      unitPearlDetailsData,
-      lead,
-      user,
-    })
     if (firstFormData.unitType === 'pearl') {
+      let pearlBody = PaymentHelper.createPearl({
+        firstFormData,
+        pearlUnitPrice,
+        unitPearlDetailsData,
+        lead,
+        user,
+      })
       axios
         .post(`/api/project/shop/create`, pearlBody)
         .then((res) => {

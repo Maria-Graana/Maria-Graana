@@ -37,8 +37,6 @@ import {
   setSortValue,
   clearDiaryFilter,
   setDairyFilterApplied,
-  cancelDiaryViewing,
-  cancelDiaryMeeting,
   clearDiaries,
   initiateConnectFlow,
   setConnectFeedback,
@@ -46,7 +44,6 @@ import {
   setMultipleModalVisible,
   getActivityHistory,
   addInvestmentGuide,
-  setReferenceGuideModalVisible,
   setReferenceGuideData,
 } from '../../actions/diary'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
@@ -397,7 +394,7 @@ class Diary extends React.Component {
     const { navigation, selectedDiary, selectedLead } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
-      type = 'investment'
+      type = 'Investment'
     } else if (selectedDiary.armsLeadId) {
       type = selectedLead.purpose
     }

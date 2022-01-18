@@ -433,7 +433,13 @@ class WantedLeads extends React.Component {
     const { navigation } = this.props
     const { showAssignToButton } = this.state
     if (showAssignToButton === true) {
-      navigation.navigate('AssignLead', { leadId: lead.id, type: 'wanted', screen: 'LeadDetail' })
+      // navigation.navigate('AssignLead', { leadId: lead.id, type: 'wanted', screen: 'LeadDetail' })
+      navigation.navigate('AssignLead', {
+        leadId: lead.id,
+        type: 'wanted',
+        screen: 'LeadDetail',
+        purpose: 'reassign',
+      })
     } else {
       helper.errorToast('Lead Already Assign')
     }
@@ -743,6 +749,7 @@ class WantedLeads extends React.Component {
                   isMenuVisible={isMenuVisible}
                   setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
                   navigateFromMenu={this.navigateFromMenu}
+                  navigateToAssignLead={this.checkAssignedLead}
                   // checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
                   wanted={true}
                 />

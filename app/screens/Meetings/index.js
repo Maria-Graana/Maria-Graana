@@ -26,7 +26,7 @@ import styles from './style'
 class Meetings extends Component {
   constructor(props) {
     super(props)
-    const { lead, user } = this.props
+    const { lead, user, permissions } = this.props
     this.state = {
       active: false,
       meetings: [],
@@ -38,8 +38,8 @@ class Meetings extends Component {
       isVisible: false,
       selectedReason: '',
       checkReasonValidation: false,
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
-      checkForUnassignedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      checkForUnassignedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       secondScreenData: {},
       checkForNewLeadData: false,
       statusfeedbackModalVisible: false,
@@ -672,6 +672,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

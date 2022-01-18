@@ -17,7 +17,7 @@ class Comments extends Component {
 
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       commentsList: [],
       comment: '',
@@ -25,7 +25,7 @@ class Comments extends Component {
       type: 'comment',
       property: false,
       addCommentLoading: false,
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
     }
   }
 

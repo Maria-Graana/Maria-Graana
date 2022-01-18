@@ -141,7 +141,7 @@ class MatchTile extends React.Component {
 
   callToggleFunc = (data) => {
     const { permissions, toggleMenu, user, lead } = this.props
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (
       getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions) &&
       closedLeadEdit
@@ -170,7 +170,7 @@ class MatchTile extends React.Component {
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
     let isPP = helper.checkPPFlag(data)
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false

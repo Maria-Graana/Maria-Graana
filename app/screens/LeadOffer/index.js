@@ -25,7 +25,7 @@ import styles from './styles'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       open: false,
       loading: true,
@@ -44,7 +44,7 @@ class LeadOffer extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -350,8 +350,8 @@ class LeadOffer extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
       user,
       lead
@@ -684,8 +684,8 @@ class LeadOffer extends React.Component {
       agreedNotNumeric,
       newActionModal,
     } = this.state
-    const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, navigation, user, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     const showBuyerSide = helper.setBuyerAgent(lead, 'buyerSide', user)
     const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'buyerSide', user)
 
@@ -863,6 +863,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

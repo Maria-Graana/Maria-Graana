@@ -48,7 +48,7 @@ class LegalAttachment extends Component {
   attachments = []
   constructor(props) {
     super(props)
-    const { lead, user } = this.props
+    const { lead, user, permissions } = this.props
     this.state = {
       isVisible: false,
       checkValidation: false,
@@ -84,7 +84,7 @@ class LegalAttachment extends Component {
       selectedDocument: null,
       transferDate: null,
       viewCommentsCheck: false,
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
     }
   }
 

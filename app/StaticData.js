@@ -83,7 +83,6 @@ export default StaticData = {
       { value: 'plot file', name: 'Plot File' },
       { value: 'farmhouse plot', name: 'Farmhouse Plot' },
       { value: 'land', name: 'Commercial Land' },
-
     ],
     commercial: [
       { value: 'office', name: 'Office' },
@@ -304,27 +303,33 @@ export default StaticData = {
     { value: 'open', name: 'Open' },
     { value: 'called', name: 'Called' },
     { value: 'viewing', name: 'Viewing' },
-    { value: 'closed_won', name: 'Closed Won' },
-    { value: 'closed_lost', name: 'Closed Lost' },
+    // { value: 'closed_lost', name: 'Closed Lost' },
   ],
   buyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
-    { value: 'follow_up', name: 'Nurture' },
     { value: 'shortlisting', name: 'Shortlisting' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
-    { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'called', name: 'Called' },
     { value: 'viewing', name: 'Viewing' },
-    { value: 'closed_won', name: 'Closed Won' },
+    // { value: 'closed_won', name: 'Closed Won' },
+    // { value: 'closed_lost', name: 'Closed Lost' },
+  ],
+  investmentFilterLeads: [
+    { value: 'all', name: 'All' },
+    { value: 'open', name: 'Open' },
+    { value: 'in_progress', name: 'In-progress' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
-  investmentFilter: [
+
+  investmentFilterDeals: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
     { value: 'in_progress', name: 'In-progress' },

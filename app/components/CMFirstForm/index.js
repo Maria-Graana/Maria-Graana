@@ -375,7 +375,7 @@ class CMFirstForm extends Component {
               currencyConvert={currencyConvert}
               count={''}
               data={dataForPaymentTile}
-              editTileForscreenOne={editTokenPayment && updatePermission}
+              editTileForscreenOne={updatePermission ? () => editTokenPayment() : null}
               tileForToken={true}
             />
             {/* {firstFormValidate === true && checkFirstFormPayment ? (

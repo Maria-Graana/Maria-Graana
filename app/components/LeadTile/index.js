@@ -86,6 +86,7 @@ class LeadTile extends React.Component {
       permissions,
       screenName,
       navigateToAssignLead,
+      assignLeadTo,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -318,13 +319,40 @@ class LeadTile extends React.Component {
                           }}
                           title="Re-Assign"
                         />
-                        {/* <Menu.Item
+                        <Menu.Item
                           onPress={() => {
                             goToHistory()
                             setIsMenuVisible(false, data)
                           }}
                           title="Activity History"
-                        /> */}
+                        />
+                        {data && data.purpose == 'invest' ? (
+                          <Menu.Item
+                            onPress={() => {
+                              assignLeadTo(data)
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Assign To Investment Advisor"
+                          />
+                        ) : data && data.purpose == 'sell' ? (
+                          <Menu.Item
+                            onPress={() => {
+                              assignLeadTo(data)
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Assign To Cataloger"
+                          />
+                        ) : (
+                          data && (
+                            <Menu.Item
+                              onPress={() => {
+                                assignLeadTo(data)
+                                setIsMenuVisible(false, data)
+                              }}
+                              title="Assign To Area Manager"
+                            />
+                          )
+                        )}
                       </Menu>
                     ) : null}
                   </View>

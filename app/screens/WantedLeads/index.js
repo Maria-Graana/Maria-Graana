@@ -280,6 +280,22 @@ class WantedLeads extends React.Component {
     // )
   }
 
+  assignToLead = (data) => {
+    axios
+      .post(`/api/wanted/convert-to-lead/${data.id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          helper.successToast('LEAD ASSIGNED SUCCESSFULLY')
+        } else {
+          helper.errorToast('SOMETHING WENT WRONG')
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        helper.errorToast(error.message)
+      })
+  }
+
   navigateToShareScreen = (data) => {
     const { user } = this.props
     if (data) {
@@ -751,6 +767,7 @@ class WantedLeads extends React.Component {
                   navigateFromMenu={this.navigateFromMenu}
                   navigateToAssignLead={this.checkAssignedLead}
                   // checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
+                  assignLeadTo={this.assignToLead}
                   wanted={true}
                 />
                 {/* ) : (

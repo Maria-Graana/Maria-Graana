@@ -68,8 +68,8 @@ export default class App extends React.Component {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + JSON.parse(token)
       }
     })
-    axios.defaults.headers['version'] = AppJson.expo.version
-    // axios.defaults.headers['version'] = '3.0.3'
+    // axios.defaults.headers['version'] = AppJson.expo.version
+    axios.defaults.headers['version'] = '3.0.7'
     axios.interceptors.request.use(
       (config) =>
         new Promise((resolve) => {

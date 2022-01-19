@@ -27,6 +27,7 @@ class PaymentTile extends React.Component {
       editTileForscreenOne,
       checkLeadClosedOrNot,
       onPaymentLongPress,
+      call,
     } = this.props
     let price = data.installmentAmount
     let taxIncludedAmount = 0

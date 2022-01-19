@@ -1288,14 +1288,14 @@ class LegalAttachment extends Component {
                     <LegalTile
                       data={item}
                       index={index + 1}
-                      submitMenu={() => {
-                        if (updatePermission && closedLeadEdit) this.submitMenu
+                      submitMenu={(value, data) => {
+                        if (updatePermission && closedLeadEdit) this.submitMenu(value, data)
                       }}
                       getAttachmentFromStorage={(item) => {
-                        if (updatePermission && closedLeadEdit) this.toggleActionSheet()
+                        if (updatePermission && closedLeadEdit) this.toggleActionSheet(item)
                       }}
                       downloadLegalDocs={(item) => {
-                        if (updatePermission && closedLeadEdit) this.downloadLegalDocs()
+                        if (updatePermission && closedLeadEdit) this.downloadLegalDocs(item)
                       }}
                       isLeadClosed={isLeadClosed}
                     />

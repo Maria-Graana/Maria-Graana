@@ -20,6 +20,7 @@ import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import _ from 'underscore'
 import { setlead } from '../../actions/lead'
+import StaticData from '../../StaticData'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -163,6 +164,8 @@ class Client extends React.Component {
       projectType: unit.project.type,
       description: unit.name,
       phones: phones,
+      minPrice: StaticData.PricesProject[0],
+      maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
     }
     await axios
       .post(`/api/leads/project`, payload)

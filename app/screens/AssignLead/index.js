@@ -25,6 +25,7 @@ class AssignLead extends React.Component {
       selectedId: null,
       // searchBy: 'myTeam',
       searchText: '',
+      selectedName: '',
     }
   }
 
@@ -105,7 +106,7 @@ class AssignLead extends React.Component {
   shareLead = () => {
     const { navigation, route } = this.props
     const { user } = this.props
-    const { selectedId } = this.state
+    const { selectedId, selectedName } = this.state
     const { leadId, type, screenName } = route.params
     var leadid = []
     leadid.push(leadId)
@@ -118,7 +119,7 @@ class AssignLead extends React.Component {
       .post(url, body, { params: { id: leadid } })
       .then((res) => {
         if (res.data) {
-          helper.successToast('LEAD SHARED SUCCESSFULLY')
+          helper.successToast(`Lead has successfully been referred to ${selectedName}`)
           navigation.dispatch(StackActions.pop(2))
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
@@ -130,6 +131,8 @@ class AssignLead extends React.Component {
   }
 
   onPressItem = (item) => {
+    const selectedName = item.firstName ? item.firstName + ' ' + item.lastName : ''
+    this.setState({ selectedName: selectedName })
     this.setSelected(item.id)
   }
 

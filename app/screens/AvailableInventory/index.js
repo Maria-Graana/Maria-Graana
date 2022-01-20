@@ -99,6 +99,7 @@ class AvailableInventory extends Component {
 
   getUnits = (projectId, floorId) => {
     const { status } = this.state
+    this.setState({ disabled: true, active: false, selectedRow: null })
     let url = ``
     if (projectId) {
       url = `/api/project/shops?projectId=${projectId}&status=${status}`

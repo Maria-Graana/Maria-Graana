@@ -73,6 +73,8 @@ class WantedLeads extends React.Component {
       statusFilterType: 'id',
       newActionModal: false,
       isMenuVisible: false,
+      meetings: [],
+      callModal: false,
     }
   }
 
@@ -190,6 +192,17 @@ class WantedLeads extends React.Component {
           loading: false,
         })
       })
+  }
+
+  goToHistory = () => {
+    const { callModal } = this.state
+    this.setState({ callModal: !callModal })
+  }
+
+  getCallHistory = (lead) => {
+    axios.get(`/api/leads/tasks?wantedId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
+    })
   }
 
   goToFormPage = (page, status, client, clientId) => {
@@ -657,8 +670,10 @@ class WantedLeads extends React.Component {
       newActionModal,
       selectedLead,
       isMenuVisible,
+      meetings,
+      callModal,
     } = this.state
-    const { user } = this.props
+    const { user, navigation } = this.props
     // console.log('Hrellooo', leadsData && leadsData.length && leadsData[0].customer)
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
@@ -769,6 +784,7 @@ class WantedLeads extends React.Component {
                   // checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
                   assignLeadTo={this.assignToLead}
                   wanted={true}
+                  goToHistory={this.goToHistory}
                 />
                 {/* ) : (
                   <PPLeadTile
@@ -863,6 +879,15 @@ class WantedLeads extends React.Component {
           setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
         />
+
+        <HistoryModal
+          getCallHistory={this.getCallHistory}
+          navigation={navigation}
+          data={meetings}
+          closePopup={this.goToHistory}
+          openPopup={callModal}
+        />
+
         <SubmitFeedbackOptionsModal
           showModal={newActionModal}
           modalMode={modalMode}

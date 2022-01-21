@@ -366,6 +366,7 @@ class CMBottomNav extends React.Component {
       user,
       onHandleCloseLead,
       closedWon,
+      leadType,
     } = this.props
     const {
       visible,
@@ -450,9 +451,9 @@ class CMBottomNav extends React.Component {
             <Text style={styles.followText}>Activity</Text>
           </View>
         </TouchableOpacity>
-        {screenName === 'MyDeals' ? (
+        {screenName === 'MyDeals' || leadType === 'CM' ? (
           <TouchableOpacity
-            disabled={user.role == 'aira_role' ? true : closedLeadEdit ? false : true}
+            disabled={helper.getAiraPermission(permissions) ? true : closedLeadEdit ? false : true}
             style={styles.followBtn}
             onPress={() => {
               if (closedLeadEdit && readPermission) {
@@ -470,7 +471,7 @@ class CMBottomNav extends React.Component {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            disabled={user.role == 'aira_role' ? true : closedLeadEdit ? false : true}
+            disabled={helper.getAiraPermission(permissions) ? true : closedLeadEdit ? false : true}
             style={styles.rejectBtn}
             onPress={() => {
               if (closedLeadEdit && updatePermission) {
@@ -494,7 +495,7 @@ class CMBottomNav extends React.Component {
             onDismiss={() => this.openMenu(false)}
             anchor={
               <TouchableOpacity
-                onPress={() => user.role != 'aira_role' && this.openMenu(true)}
+                onPress={() => !helper.getAiraPermission(permissions) && this.openMenu(true)}
                 style={styles.align}
               >
                 {visible === true ? (
@@ -551,7 +552,7 @@ class CMBottomNav extends React.Component {
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Refer Lead"
               />
-              {closedWon && lead.status != "closed_won" && (
+              {closedWon && lead.status != 'closed_won' && (
                 <Menu.Item
                   onPress={() => onHandleCloseLead(lead)}
                   // onPress={() => {

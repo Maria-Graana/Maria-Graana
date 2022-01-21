@@ -117,7 +117,7 @@ class AgentTile extends React.Component {
 
   callToggleFunc = (data) => {
     const { permissions, toggleMenu, user, lead } = this.props
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (
       getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions) &&
       closedLeadEdit
@@ -143,7 +143,7 @@ class AgentTile extends React.Component {
     let otherAgentdiary = this.getOtherDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
 
     if (isMenuVisible) {
       if (ownDiary) {

@@ -40,7 +40,7 @@ var CANCEL_INDEX = 1
 class PropertyRCMPayment extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       isVisible: false,
@@ -67,7 +67,7 @@ class PropertyRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -1520,7 +1520,7 @@ class PropertyRCMPayment extends React.Component {
               goToHistory={() => null}
               getCallHistory={() => null}
               goToFollowUp={(value) => this.openModalInFollowupMode(value)}
-              />
+            />
           </View>
         </View>
       </KeyboardAvoidingView>

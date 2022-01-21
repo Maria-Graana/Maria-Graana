@@ -29,6 +29,7 @@ import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import { getDiaryFeedbacks, setConnectFeedback, setSelectedDiary } from '../../actions/diary'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 import diaryHelper from '../Diary/diaryHelper'
 import {
   alltimeSlots,
@@ -42,7 +43,7 @@ const _today = moment(new Date()).format('YYYY-MM-DD')
 class LeadViewing extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       isVisible: false,
       open: false,
@@ -64,7 +65,7 @@ class LeadViewing extends React.Component {
       organization: 'arms',
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -87,6 +88,12 @@ class LeadViewing extends React.Component {
       isFollowUpMode: false,
       comment: null,
       newActionModal: false,
+      graanaModalActive: false,
+      singlePropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
@@ -259,11 +266,18 @@ class LeadViewing extends React.Component {
   }
 
   goToTimeSlots = (property) => {
-    const { lead, navigation, user, dispatch } = this.props
+    const { lead, navigation, user, dispatch, permissions } = this.props
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
-    dispatch(getTimeShifts())
-    dispatch(setSlotDiaryData(_today))
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
     let customer =
       (lead.customer &&
         lead.customer.customerName &&
@@ -274,7 +288,7 @@ class LeadViewing extends React.Component {
     let areaName = (property.area && property.area.name && property.area.name) || ''
     copyObj.status = 'pending'
     copyObj.taskCategory = 'leadTask'
-    copyObj.userId = user.id
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
     copyObj.taskType = 'viewing'
     copyObj.leadId = lead && lead.id ? lead.id : null
     copyObj.customerId = customerId
@@ -288,11 +302,18 @@ class LeadViewing extends React.Component {
   }
 
   updateTimeSlots = (property) => {
-    const { lead, navigation, user, dispatch } = this.props
+    const { lead, navigation, user, dispatch, permissions } = this.props
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
-    dispatch(getTimeShifts())
-    dispatch(setSlotDiaryData(_today))
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
     let diary = property.diaries[0]
     let customer =
       (lead.customer &&
@@ -305,7 +326,7 @@ class LeadViewing extends React.Component {
     copyObj.status = 'pending'
     copyObj.id = diary.id
     copyObj.taskCategory = 'leadTask'
-    copyObj.userId = user.id
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
     copyObj.taskType = 'viewing'
     copyObj.leadId = lead && lead.id ? lead.id : null
     copyObj.customerId = customerId
@@ -480,8 +501,8 @@ class LeadViewing extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (helper.checkMyDiary(property, user)) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
@@ -576,8 +597,8 @@ class LeadViewing extends React.Component {
   }
 
   bookAnotherViewing = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       this.openModal()
       this.setProperty(property)
@@ -918,6 +939,73 @@ class LeadViewing extends React.Component {
   setNewActionModal = (value) => {
     this.setState({ newActionModal: value })
   }
+  submitGraanaStatusAmount = (check) => {
+    const { singlePropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: singlePropertyData.property ? 'graana' : 'arms',
+    }
+    console.log(body)
+    if (body.propertyType === 'graana') {
+          // // for graana properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
+    } else {
+          // for arms properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
+    }
+    formData['amount'] = ''
+    axios.patch(endpoint, body).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          graanaModalActive: false,
+          formData,
+        },
+        () => {
+          this.fetchProperties()
+          helper.successToast(res.data)
+        }
+      )
+    })
+  }
+  graanaVerifeyModal = (status, id) => {
+    const { matchData } = this.state
+    if (status === true) {
+      var filterProperty = matchData.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        singlePropertyData: filterProperty,
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  verifyStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitGraanaStatusAmount('other')
+    }
+  }
+  handleFormVerification = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
+  }
 
   render() {
     const {
@@ -955,9 +1043,13 @@ class LeadViewing extends React.Component {
       closedWon,
       isFollowUpMode,
       newActionModal,
+      graanaModalActive,
+      singlePropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
-    const { lead, user, navigation } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, navigation, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -1048,6 +1140,7 @@ class LeadViewing extends React.Component {
                       toggleMenu={this.toggleMenu}
                       screen={'viewing'}
                       propertyGeoTagging={this.propertyGeoTagging}
+                      graanaVerifeyModal={this.graanaVerifeyModal}
                     />
                   ) : (
                     <AgentTile
@@ -1098,6 +1191,16 @@ class LeadViewing extends React.Component {
           rejectLead={(body) => this.rejectLead(body)}
           setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
+        />
+        <GraanaPropertiesModal
+          active={graanaModalActive}
+          data={singlePropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleFormVerification}
+          graanaVerifeyModal={this.graanaVerifeyModal}
+          submitStatus={this.verifyStatusSubmit}
+          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
         />
         <SubmitFeedbackOptionsModal
           showModal={newActionModal}
@@ -1165,6 +1268,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

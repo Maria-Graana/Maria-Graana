@@ -11,6 +11,9 @@ export default styles = StyleSheet.create({
     paddingBottom: 10,
     width: '100%',
   },
+  emptyViewWidth: {
+    width: '75%',
+  },
   pickerMain: {
     width: '80%',
     borderWidth: 1,

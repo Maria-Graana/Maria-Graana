@@ -842,13 +842,7 @@ function TimeSlotManagement(props) {
           style={{ marginTop: '9%' }}
           scrollEnabled={false}
           ref={scrollViewFirst}
-          onScroll={(e) => {
-            scrollViewSecond.current.scrollTo({
-              x: 0,
-              y: e.nativeEvent.contentOffset.y,
-              animated: false,
-            })
-          }}
+          bounces={false}
           scrollEventThrottle={16}
         >
           <View style={{ flexDirection: 'column' }}>
@@ -873,7 +867,6 @@ function TimeSlotManagement(props) {
               })}
             </View>
             <ScrollView
-              ref={scrollViewSecond}
               bounces={false}
               onScroll={(e) => {
                 scrollViewFirst.current.scrollTo({

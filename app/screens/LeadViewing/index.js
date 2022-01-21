@@ -29,6 +29,7 @@ import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import { getDiaryFeedbacks, setConnectFeedback, setSelectedDiary } from '../../actions/diary'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 import diaryHelper from '../Diary/diaryHelper'
 import {
   alltimeSlots,
@@ -87,6 +88,12 @@ class LeadViewing extends React.Component {
       isFollowUpMode: false,
       comment: null,
       newActionModal: false,
+      graanaModalActive: false,
+      singlePropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
@@ -932,6 +939,73 @@ class LeadViewing extends React.Component {
   setNewActionModal = (value) => {
     this.setState({ newActionModal: value })
   }
+  submitGraanaStatusAmount = (check) => {
+    const { singlePropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: singlePropertyData.property ? 'graana' : 'arms',
+    }
+    console.log(body)
+    if (body.propertyType === 'graana') {
+          // // for graana properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
+    } else {
+          // for arms properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
+    }
+    formData['amount'] = ''
+    axios.patch(endpoint, body).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          graanaModalActive: false,
+          formData,
+        },
+        () => {
+          this.fetchProperties()
+          helper.successToast(res.data)
+        }
+      )
+    })
+  }
+  graanaVerifeyModal = (status, id) => {
+    const { matchData } = this.state
+    if (status === true) {
+      var filterProperty = matchData.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        singlePropertyData: filterProperty,
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  verifyStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitGraanaStatusAmount('other')
+    }
+  }
+  handleFormVerification = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
+  }
 
   render() {
     const {
@@ -969,6 +1043,10 @@ class LeadViewing extends React.Component {
       closedWon,
       isFollowUpMode,
       newActionModal,
+      graanaModalActive,
+      singlePropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
     const { lead, user, navigation, permissions } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
@@ -1062,6 +1140,7 @@ class LeadViewing extends React.Component {
                       toggleMenu={this.toggleMenu}
                       screen={'viewing'}
                       propertyGeoTagging={this.propertyGeoTagging}
+                      graanaVerifeyModal={this.graanaVerifeyModal}
                     />
                   ) : (
                     <AgentTile
@@ -1112,6 +1191,16 @@ class LeadViewing extends React.Component {
           rejectLead={(body) => this.rejectLead(body)}
           setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
+        />
+        <GraanaPropertiesModal
+          active={graanaModalActive}
+          data={singlePropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleFormVerification}
+          graanaVerifeyModal={this.graanaVerifeyModal}
+          submitStatus={this.verifyStatusSubmit}
+          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
         />
         <SubmitFeedbackOptionsModal
           showModal={newActionModal}

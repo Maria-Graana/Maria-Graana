@@ -162,6 +162,7 @@ class MatchTile extends React.Component {
       lead,
       permissions,
       user,
+      graanaVerifeyModal,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -334,6 +335,16 @@ class MatchTile extends React.Component {
                       }}
                       title="Comments"
                     />
+                    {(data.armsProperty && data.armsProperty.status !== 'selected_for_payment') ||
+                      (data.property && data.property.verifiedStatus !== 'verified' && (
+                        <Menu.Item
+                          onPress={() => {
+                            graanaVerifeyModal(true, data.id)
+                            this.props.toggleMenu(false, data.id)
+                          }}
+                          title="Verify Property"
+                        />
+                      ))}
                   </View>
                 </Menu>
               </View>
@@ -419,12 +430,25 @@ class MatchTile extends React.Component {
                 >
                   <View>
                     {!helper.checkPropsureDocs(data.propsures, 'buyer') ? (
-                      <Menu.Item
-                        onPress={() => {
-                          this.props.goToPropertyComments(data)
-                        }}
-                        title="Comments"
-                      />
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            this.props.goToPropertyComments(data)
+                          }}
+                          title="Comments"
+                        />
+                        {(data.armsProperty &&
+                          data.armsProperty.status !== 'selected_for_payment') ||
+                          (data.property && data.property.verifiedStatus !== 'verified' && (
+                            <Menu.Item
+                              onPress={() => {
+                                graanaVerifeyModal(true, data.id)
+                                this.props.toggleMenu(false, data.id)
+                              }}
+                              title="Verify Property"
+                            />
+                          ))}
+                      </View>
                     ) : (
                       <View>
                         <Menu.Item
@@ -433,6 +457,17 @@ class MatchTile extends React.Component {
                           }}
                           title="Comments"
                         />
+                        {(data.armsProperty &&
+                          data.armsProperty.status !== 'selected_for_payment') ||
+                          (data.property && data.property.verifiedStatus !== 'verified' && (
+                            <Menu.Item
+                              onPress={() => {
+                                graanaVerifeyModal(true, data.id)
+                                this.props.toggleMenu(false, data.id)
+                              }}
+                              title="Verify Property"
+                            />
+                          ))}
                         <Menu.Item
                           onPress={() => {
                             if (
@@ -497,6 +532,17 @@ class MatchTile extends React.Component {
                               }}
                               title="GeoTag"
                             />
+                            {(data.armsProperty &&
+                              data.armsProperty.status !== 'selected_for_payment') ||
+                              (data.property && data.property.verifiedStatus !== 'verified' && (
+                                <Menu.Item
+                                  onPress={() => {
+                                    graanaVerifeyModal(true, data.id)
+                                    this.props.toggleMenu(false, data.id)
+                                  }}
+                                  title="Verify Property"
+                                />
+                              ))}
                             <Menu.Item
                               onPress={() => {
                                 if (
@@ -548,6 +594,17 @@ class MatchTile extends React.Component {
                               }}
                               title="GeoTag"
                             />
+                            {(data.armsProperty &&
+                              data.armsProperty.status !== 'selected_for_payment') ||
+                              (data.property && data.property.verifiedStatus !== 'verified' && (
+                                <Menu.Item
+                                  onPress={() => {
+                                    graanaVerifeyModal(true, data.id)
+                                    this.props.toggleMenu(false, data.id)
+                                  }}
+                                  title="Verify Property"
+                                />
+                              ))}
                             <Menu.Item
                               onPress={() => {
                                 if (

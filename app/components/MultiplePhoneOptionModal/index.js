@@ -25,7 +25,7 @@ const MultiplePhoneOptionModal = ({
   const { contactsInformation } = connectFeedback
   const dispatch = useDispatch()
 
-  const callOnSelectedNumber = (item, calledOn) => {
+  const callOnSelectedNumber = (item, calledOn, title = 'ARMS') => {
     let url = null
     if (selectedDiary) {
       dispatch(
@@ -44,6 +44,17 @@ const MultiplePhoneOptionModal = ({
               helper.errorToast(`No application available to dial phone number`)
               console.log("Can't handle url: " + url)
             } else {
+              if (contacts) {
+                let result = helper.contacts(contactsInformation.phone, contacts)
+                if (
+                  contactsInformation.name &&
+                  contactsInformation.name !== '' &&
+                  contactsInformation.name !== ' ' &&
+                  contactsInformation.phone &&
+                  contactsInformation.phone !== ''
+                )
+                  if (!result) helper.addContact(contactsInformation, title)
+              }
               Linking.openURL(url)
               showMultiPhoneModal(false)
               dispatch(

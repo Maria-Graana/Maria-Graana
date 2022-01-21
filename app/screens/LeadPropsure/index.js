@@ -45,6 +45,7 @@ import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 import {
   clearInstrumentInformation,
   clearInstrumentsList,
@@ -59,7 +60,7 @@ var CANCEL_INDEX = 1
 class LeadPropsure extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       open: false,
@@ -78,7 +79,7 @@ class LeadPropsure extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       menuShow: false,
@@ -102,6 +103,12 @@ class LeadPropsure extends React.Component {
       isFollowUpMode: false,
       closedWon: false,
       newActionModal: false,
+      graanaModalActive: false,
+      singlePropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
@@ -292,8 +299,8 @@ class LeadPropsure extends React.Component {
   }
 
   showDocumentModal = (propsureReports, property) => {
-    const { lead, user, dispatch } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, dispatch, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       let installment = property.cmInstallment
         ? property.cmInstallment
@@ -676,8 +683,8 @@ class LeadPropsure extends React.Component {
   }
 
   showReportsModal = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       this.setState({
         isVisible: true,
@@ -1302,6 +1309,74 @@ class LeadPropsure extends React.Component {
       totalReportPrice: totalReportPrice,
     })
   }
+  submitGraanaStatusAmount = (check) => {
+    const { singlePropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: singlePropertyData.property ? 'graana' : 'arms',
+    }
+    console.log(body)
+    if (body.propertyType === 'graana') {
+          // // for graana properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
+    } else {
+          // for arms properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
+    }
+    console.log(endpoint)
+    formData['amount'] = ''
+    axios.patch(endpoint, body).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          graanaModalActive: false,
+          formData,
+        },
+        () => {
+          this.fetchProperties(singlePropertyData)
+          helper.successToast(res.data)
+        }
+      )
+    })
+  }
+  graanaVerifeyModal = (status, id) => {
+    const { matchData } = this.state
+    if (status === true) {
+      var filterProperty = matchData.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        singlePropertyData: filterProperty,
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  verifyStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitGraanaStatusAmount('other')
+    }
+  }
+  handleFormVerification = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
+  }
 
   render() {
     const {
@@ -1338,9 +1413,13 @@ class LeadPropsure extends React.Component {
       modalMode,
       closedWon,
       newActionModal,
+      graanaModalActive,
+      singlePropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
-    const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, navigation, user, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     return !loading ? (
       <StyleProvider style={getTheme(formTheme)}>
         <View
@@ -1431,6 +1510,7 @@ class LeadPropsure extends React.Component {
                         menuShow={menuShow}
                         screen={'propsure'}
                         cancelPropsureRequest={this.cancelPropsureRequest}
+                        graanaVerifeyModal={this.graanaVerifeyModal}
                       />
                     ) : (
                       <AgentTile
@@ -1491,6 +1571,16 @@ class LeadPropsure extends React.Component {
             goToViewingScreen={this.goToViewingScreen}
             leadType={'RCM'}
           />
+          <GraanaPropertiesModal
+          active={graanaModalActive}
+          data={singlePropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleFormVerification}
+          graanaVerifeyModal={this.graanaVerifeyModal}
+          submitStatus={this.verifyStatusSubmit}
+          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
+        />
           <MeetingFollowupModal
             closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
@@ -1550,6 +1640,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    permissions: store.user.permissions,
   }
 }
 

@@ -122,17 +122,25 @@ class RentLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const sortValue = await this.getSortOrderFromStorage()
-    const statusValue = await getItem('statusFilterRent')
-    if (statusValue) {
-      this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+    const { hasBooking = false } = this.props.route.params // for Deals we need to set filter to closed won
+    if (hasBooking) {
+      const sortValue = await this.getSortOrderFromStorage()
+      this.setState({ statusFilter: 'closed_won', sort: sortValue }, () => {
         this.fetchLeads()
       })
     } else {
-      storeItem('statusFilterRent', 'all')
-      this.setState({ statusFilter: 'all', sort: sortValue }, () => {
-        this.fetchLeads()
-      })
+      const sortValue = await this.getSortOrderFromStorage()
+      const statusValue = await getItem('statusFilterRent')
+      if (statusValue) {
+        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      } else {
+        storeItem('statusFilterRent', 'open')
+        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      }
     }
   }
 
@@ -164,23 +172,43 @@ class RentLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
+    const { permissions } = this.props
     this.setState({ loading: true })
     const { hasBooking } = this.props.route.params
     let query = ``
-    if (showSearchBar) {
-      if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`
-      } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+    if (helper.getAiraPermission(permissions)) {
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&aira=${true}&page=${page}&hasBooking=${hasBooking}`
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`
+        }
       } else {
-        query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+        if (statusFilter === 'shortlisting') {
+          query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = ``
+          query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       }
     } else {
-      if (statusFilter === 'shortlisting') {
-        query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+        } else {
+          query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`
+        }
       } else {
-        query = ``
-        query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        if (statusFilter === 'shortlisting') {
+          query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        } else {
+          query = ``
+          query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        }
       }
     }
     axios
@@ -712,7 +740,7 @@ class RentLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, navigation, permissions } = this.props
-    const { screen } = this.props.route.params
+    const { screen, hasBooking = false } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -764,16 +792,20 @@ class RentLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Lead Status'}
-                  data={leadStatus}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
+              {hasBooking ? (
+                <View style={styles.emptyViewWidth}></View>
+              ) : (
+                <View style={styles.pickerMain}>
+                  <PickerComponent
+                    placeholder={'Lead Status'}
+                    data={StaticData.buyRentFilter}
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.changeStatus}
+                    selectedItem={statusFilter}
+                  />
+                </View>
+              )}
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}

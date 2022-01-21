@@ -18,6 +18,7 @@ import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import OfferModal from '../../components/OfferModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
@@ -25,7 +26,7 @@ import styles from './styles'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       open: false,
       loading: true,
@@ -44,7 +45,7 @@ class LeadOffer extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -66,6 +67,12 @@ class LeadOffer extends React.Component {
       customerNotNumeric: false,
       agreedNotNumeric: false,
       newActionModal: false,
+      graanaModalActive: false,
+      singlePropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
@@ -350,8 +357,8 @@ class LeadOffer extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
       user,
       lead
@@ -646,6 +653,73 @@ class LeadOffer extends React.Component {
   setNewActionModal = (value) => {
     this.setState({ newActionModal: value })
   }
+  submitGraanaStatusAmount = (check) => {
+    const { singlePropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: singlePropertyData.property ? 'graana' : 'arms',
+    }
+    console.log(body)
+    if (body.propertyType === 'graana') {
+          // // for graana properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
+    } else {
+          // for arms properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
+    }
+    formData['amount'] = ''
+    axios.patch(endpoint, body).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          graanaModalActive: false,
+          formData,
+        },
+        () => {
+          this.fetchProperties()
+          helper.successToast(res.data)
+        }
+      )
+    })
+  }
+  graanaVerifeyModal = (status, id) => {
+    const { matchData } = this.state
+    if (status === true) {
+      var filterProperty = matchData.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        singlePropertyData: filterProperty,
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  verifyStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitGraanaStatusAmount('other')
+    }
+  }
+  handleFormVerification = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
+  }
 
   render() {
     const {
@@ -683,9 +757,13 @@ class LeadOffer extends React.Component {
       customerNotNumeric,
       agreedNotNumeric,
       newActionModal,
+      graanaModalActive,
+      singlePropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
-    const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, navigation, user, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     const showBuyerSide = helper.setBuyerAgent(lead, 'buyerSide', user)
     const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'buyerSide', user)
 
@@ -727,6 +805,7 @@ class LeadOffer extends React.Component {
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
                       screen={'offer'}
+                      graanaVerifeyModal={this.graanaVerifeyModal}
                     />
                   ) : (
                     <AgentTile
@@ -798,6 +877,16 @@ class LeadOffer extends React.Component {
           setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
         />
+         <GraanaPropertiesModal
+          active={graanaModalActive}
+          data={singlePropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleFormVerification}
+          graanaVerifeyModal={this.graanaVerifeyModal}
+          submitStatus={this.verifyStatusSubmit}
+          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
+        />
         <SubmitFeedbackOptionsModal
           showModal={newActionModal}
           modalMode={modalMode}
@@ -863,6 +952,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

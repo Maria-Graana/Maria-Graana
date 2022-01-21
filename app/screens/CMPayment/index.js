@@ -51,7 +51,7 @@ var CANCEL_INDEX = 1
 class CMPayment extends Component {
   constructor(props) {
     super(props)
-    const { lead, user, route } = this.props
+    const { lead, user, route, permissions } = this.props
     this.state = {
       checkLeadClosedOrNot: false,
       editable: false,
@@ -150,7 +150,7 @@ class CMPayment extends Component {
       pearlUnitPrice: 0,
       leftPearlSqft: 0,
       checkFirstFormPayment: false,
-      checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead),
+      checkLeadClosedOrNot: helper.checkAssignedSharedStatus(user, lead, permissions),
       openFirstScreenModal: false,
       firstScreenConfirmLoading: false,
       firstForm: lead.unit === null || lead.unit.id === null ? true : false,

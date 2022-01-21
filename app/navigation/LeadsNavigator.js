@@ -17,8 +17,8 @@ import WantedLeads from '../screens/WantedLeads/index'
 
 const Tab = createMaterialTopTabNavigator()
 
-const TabBarBadge = ({ count, color }) => {
-  return count > 0 ? (
+const TabBarBadge = ({ count, color, screen }) => {
+  return count > 0 && screen === 'Leads' ? (
     <View style={[styles.badgeView, { backgroundColor: color, width: count > 99 ? 25 : 20 }]}>
       <Text style={styles.badgeText}>{count > 99 ? `99+` : `${count}`}</Text>
     </View>
@@ -26,15 +26,10 @@ const TabBarBadge = ({ count, color }) => {
 }
 
 function LeadsNavigator(props) {
-  // useEffect(() => {
-  //   const { navigation, route } = props
-  //   if (route.params.screen == 'MyDeals') {
-  //     navigation.setOptions({ title: 'DEALS' })
-  //   }
-  // }, [])
   const { count, user, permissions, route } = props
   const { navigation } = props
-  if (route.params.screen == 'MyDeals') {
+  const { screen } = route.params
+  if (screen == 'MyDeals') {
     navigation.setOptions({ title: 'DEALS' })
   }
   return user.subRole === 'business_centre_manager' ||
@@ -69,7 +64,11 @@ function LeadsNavigator(props) {
           name="Invest"
           options={{
             tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
+              <TabBarBadge
+                color={props.focused ? 'red' : '#ddd'}
+                count={count.projectLeads}
+                screen={screen}
+              />
             ),
           }}
           initialParams={{
@@ -88,7 +87,11 @@ function LeadsNavigator(props) {
           name="Rent"
           options={{
             tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
+              <TabBarBadge
+                color={props.focused ? 'red' : '#ddd'}
+                count={count.rentLeads}
+                screen={screen}
+              />
             ),
           }}
           initialParams={{
@@ -112,7 +115,11 @@ function LeadsNavigator(props) {
           }}
           options={{
             tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+              <TabBarBadge
+                color={props.focused ? 'red' : '#ddd'}
+                count={count.buyLeads}
+                screen={screen}
+              />
             ),
           }}
         />
@@ -151,7 +158,11 @@ function LeadsNavigator(props) {
           name="Rent"
           options={{
             tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.rentLeads} />
+              <TabBarBadge
+                color={props.focused ? 'red' : '#ddd'}
+                count={count.rentLeads}
+                screen={screen}
+              />
             ),
           }}
           initialParams={{
@@ -174,7 +185,11 @@ function LeadsNavigator(props) {
           }}
           options={{
             tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.buyLeads} />
+              <TabBarBadge
+                color={props.focused ? 'red' : '#ddd'}
+                count={count.buyLeads}
+                screen={screen}
+              />
             ),
           }}
           component={BuyLeads}
@@ -191,7 +206,11 @@ function LeadsNavigator(props) {
           }}
           options={{
             tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.wantedLeads} />
+              <TabBarBadge
+                color={props.focused ? 'red' : '#ddd'}
+                count={count.wantedLeads}
+                screen={screen}
+              />
             ),
           }}
           component={WantedLeads}
@@ -202,7 +221,11 @@ function LeadsNavigator(props) {
           name="Invest"
           options={{
             tabBarIcon: (props) => (
-              <TabBarBadge color={props.focused ? 'red' : '#ddd'} count={count.projectLeads} />
+              <TabBarBadge
+                color={props.focused ? 'red' : '#ddd'}
+                count={count.projectLeads}
+                screen={screen}
+              />
             ),
           }}
           initialParams={{

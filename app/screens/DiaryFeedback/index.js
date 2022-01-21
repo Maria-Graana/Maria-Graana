@@ -48,7 +48,6 @@ class DiaryFeedback extends Component {
       this.props
     const { actionType = null } = route?.params
 
-    console.log(connectFeedback)
     if (
       actionType &&
       actionType === 'Done' &&

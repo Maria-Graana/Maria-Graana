@@ -61,7 +61,7 @@ var CANCEL_INDEX = 1
 class LeadRCMPayment extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       isVisible: false,
@@ -93,7 +93,7 @@ class LeadRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -672,8 +672,8 @@ class LeadRCMPayment extends React.Component {
   showConfirmationDialog = (item) => {
     console.log('showConfirmationDialog')
     const { lead } = this.state
-    const { user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       if (lead && lead.commissions && lead.commissions.length > 0) {
         let count = 0
@@ -1936,8 +1936,8 @@ class LeadRCMPayment extends React.Component {
       isMultiPhoneModalVisible,
       newActionModal,
     } = this.state
-    const { navigation, user, contacts } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { navigation, user, contacts, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
 

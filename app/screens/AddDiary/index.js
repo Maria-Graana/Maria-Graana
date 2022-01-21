@@ -36,13 +36,16 @@ class AddDiary extends Component {
   }
 
   componentDidMount() {
-    const { route, navigation, dispatch, user } = this.props
+    const { route, navigation, dispatch, user, permissions } = this.props
     let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
-    if (user.role == 'aira_role' && lead) {
+    if (helper.getAiraPermission(permissions) && lead) {
       dispatch(getTimeShifts(lead.armsuser.id))
       dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
     }
     if (rcmLeadId) {
       tasksList = StaticData.diaryTasksRCM
@@ -83,7 +86,7 @@ class AddDiary extends Component {
   }
 
   generatePayload = (data) => {
-    const { route, user, feedbackReasonFilter = null } = this.props
+    const { route, user, feedbackReasonFilter = null, permissions } = this.props
     const { rcmLeadId, cmLeadId, lead } = route.params
     let payload = null
     if (route.params.update) {
@@ -91,7 +94,7 @@ class AddDiary extends Component {
       payload = Object.assign({}, data)
       payload.date = data.startTime
       payload.time = data.startTime
-      payload.userId = user.role == 'aira_role' && lead ? lead.armsuser.id : user.id
+      payload.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
       payload.diaryTime = data.startTime
       payload.start = data.startTime
       payload.end = data.endTime
@@ -112,7 +115,7 @@ class AddDiary extends Component {
 
       payload = Object.assign({}, data)
       payload.date = data.startTime
-      payload.userId = user.role == 'aira_role' && lead ? lead.armsuser.id : user.id
+      payload.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
       payload.time = data.startTime
       payload.diaryTime = data.startTime
       payload.start = data.startTime
@@ -300,6 +303,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     slotsData: store.slotManagement.slotsPayload,
     feedbackReasonFilter: store.diary.feedbackReasonFilter,
+    permissions: store.user.permissions,
   }
 }
 

@@ -48,7 +48,7 @@ class LegalAttachment extends Component {
   attachments = []
   constructor(props) {
     super(props)
-    const { lead, user } = this.props
+    const { lead, user, permissions } = this.props
     this.state = {
       isVisible: false,
       checkValidation: false,
@@ -84,7 +84,7 @@ class LegalAttachment extends Component {
       selectedDocument: null,
       transferDate: null,
       viewCommentsCheck: false,
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
     }
   }
 
@@ -1288,14 +1288,14 @@ class LegalAttachment extends Component {
                     <LegalTile
                       data={item}
                       index={index + 1}
-                      submitMenu={() => {
-                        if (updatePermission && closedLeadEdit) this.submitMenu
+                      submitMenu={(value, data) => {
+                        if (updatePermission && closedLeadEdit) this.submitMenu(value, data)
                       }}
                       getAttachmentFromStorage={(item) => {
-                        if (updatePermission && closedLeadEdit) this.toggleActionSheet()
+                        if (updatePermission && closedLeadEdit) this.toggleActionSheet(item)
                       }}
                       downloadLegalDocs={(item) => {
-                        if (updatePermission && closedLeadEdit) this.downloadLegalDocs()
+                        if (updatePermission && closedLeadEdit) this.downloadLegalDocs(item)
                       }}
                       isLeadClosed={isLeadClosed}
                     />

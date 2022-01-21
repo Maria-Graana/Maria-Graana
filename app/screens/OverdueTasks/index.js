@@ -221,7 +221,7 @@ class OverdueTasks extends React.Component {
     const { navigation, selectedLead, selectedDiary } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
-      type = 'investment'
+      type = 'Investment'
     } else if (selectedDiary.armsLeadId) {
       type = selectedLead.purpose
     }
@@ -318,7 +318,7 @@ class OverdueTasks extends React.Component {
       selectedLead,
       user,
     } = this.props
-    const { agentId } = route.params
+    const { agentId, count } = route.params
     const { diaries, loading, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
@@ -438,8 +438,7 @@ class OverdueTasks extends React.Component {
             )}
             keyExtractor={(item, index) => item.id.toString()}
             onEndReached={() => {
-              if (diaries.rows.length < diaries.count) {
-                //console.log(diaries.count, diaries.rows.length)
+              if (diaries.rows.length < count) {
                 dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
                 dispatch(getDiaryTasks({ agentId, overdue: true }))

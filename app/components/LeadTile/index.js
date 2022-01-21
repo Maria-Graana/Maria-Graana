@@ -85,6 +85,7 @@ class LeadTile extends React.Component {
       wanted,
       permissions,
       screenName,
+      navigateToAssignLead,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -310,6 +311,20 @@ class LeadTile extends React.Component {
                           }}
                           title="Details"
                         />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateToAssignLead(data)
+                            setIsMenuVisible(false, data)
+                          }}
+                          title="Re-Assign"
+                        />
+                        {/* <Menu.Item
+                          onPress={() => {
+                            goToHistory()
+                            setIsMenuVisible(false, data)
+                          }}
+                          title="Activity History"
+                        /> */}
                       </Menu>
                     ) : null}
                   </View>

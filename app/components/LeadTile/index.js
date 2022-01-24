@@ -149,7 +149,7 @@ class LeadTile extends React.Component {
                   numberOfLines={1}
                 >
                   {/* Disabled Sentry in development  Sentry in */}
-                  {wanted ? data.armsStatus.toUpperCase() : leadStatus}
+                  {wanted ? data.armsStatus.toUpperCase() : leadStatus.toUpperCase()}
                 </Text>
                 {data.shared_with_armsuser_id && (
                   <View style={styles.sharedLead}>

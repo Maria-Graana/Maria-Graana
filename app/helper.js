@@ -765,6 +765,9 @@ const helper = {
     let cleared = 0
     let legalPaymentCleared = 0
     let legalCount = Number(legalDocCounts.sellerCount) + Number(legalDocCounts.buyerCount)
+    if(lead.commissionNotApplicableSeller === true)
+      legalCount = Number(legalDocCounts.buyerCount)
+      
     let legalDocCount = legalDocCounts.count
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
       commissionsLength = 1

@@ -39,7 +39,6 @@ class DiaryTile extends React.Component {
       initiateConnectFlow,
       screenName,
       leadType,
-      agentId,
       isOwnDiaryView,
     } = this.props
     return (

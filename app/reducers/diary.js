@@ -13,8 +13,6 @@ let diaryData = {
   selectedDiary: null,
   selectedLead: null,
   showClassificationModal: false,
-  page: 1,
-  pageSize: 50,
 }
 
 let filtersData = {
@@ -45,11 +43,6 @@ const diary = (state = diaryData, action) => {
       return {
         ...state,
         showClassificationModal: action.payload,
-      }
-    case types.SET_DIARY_PAGE_COUNT:
-      return {
-        ...state,
-        page: action.payload,
       }
     case types.CLEAR_DIARIES:
       return { ...diaryData, diaries: action.payload }
@@ -132,6 +125,15 @@ const onEndReachedLoader = (state = false, action) => {
   }
 }
 
+const page = (state = 1, action) => {
+  switch (action.type) {
+    case types.SET_DIARY_PAGE_COUNT:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 const filters = (state = filtersData, action) => {
   switch (action.type) {
     case types.SET_DIARY_FILTER:
@@ -194,4 +196,5 @@ export default combineReducers({
   referenceGuide,
   selectedDiary,
   selectedLead,
+  page,
 })

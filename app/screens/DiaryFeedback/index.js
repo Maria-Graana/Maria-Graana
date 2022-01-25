@@ -217,11 +217,11 @@ class DiaryFeedback extends Component {
             copyObj.taskType = type === 'set_follow_up' ? 'follow_up' : 'meeting'
             copyObj.armsLeadId =
               selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null
-            ;(copyObj.leadId =
+            copyObj.leadId =
               selectedDiary && selectedDiary.armsProjectLeadId
                 ? selectedDiary.armsProjectLeadId
-                : null),
-              delete copyObj.id
+                : null
+            delete copyObj.id
             delete copyObj.feedbackId
             delete copyObj.feedbackTag
             navigation.replace('TimeSlotManagement', {

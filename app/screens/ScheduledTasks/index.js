@@ -127,11 +127,12 @@ export class ScheduledTasks extends Component {
       referenceGuide,
       selectedDiary,
       selectedLead,
+      user,
     } = this.props
-    const { selectedDate, agentId } = this.state
+    const { selectedDate } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+        dispatch(markDiaryTaskAsDone({ selectedDate, agentId: user ? user.id : null }))
       } else {
         dispatch(
           setConnectFeedback({
@@ -212,7 +213,11 @@ export class ScheduledTasks extends Component {
           )
         )
       }
-      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate, agentId })
+      navigation.navigate('TaskDetails', {
+        diary: selectedDiary,
+        selectedDate,
+        agentId: user ? user.id : null,
+      })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
@@ -234,7 +239,7 @@ export class ScheduledTasks extends Component {
           {
             text: 'Delete',
             onPress: () => {
-              dispatch(deleteDiaryTask({ selectedDate, agentId }))
+              dispatch(deleteDiaryTask({ selectedDate, agentId: user ? user.id : null }))
               dispatch(clearSlotDiaryData())
               dispatch(setSlotDiaryData(selectedDate))
               this.setState({ isDelete: true })
@@ -285,14 +290,8 @@ export class ScheduledTasks extends Component {
   }
 
   render() {
-    const {
-      showMenu,
-      leadType,
-      leadId,
-      isActivityHistoryModalVisible,
-      activityHistoryData,
-      agentId,
-    } = this.state
+    const { showMenu, leadType, leadId, isActivityHistoryModalVisible, activityHistoryData } =
+      this.state
     const {
       dispatch,
       diary,
@@ -404,7 +403,7 @@ export class ScheduledTasks extends Component {
                   })
                 }}
                 leadType={leadType}
-                isOwnDiaryView={agentId === user.id}
+                isOwnDiaryView={true}
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

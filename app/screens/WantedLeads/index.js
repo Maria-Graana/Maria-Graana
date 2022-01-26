@@ -201,9 +201,15 @@ class WantedLeads extends React.Component {
   }
 
   getCallHistory = (lead) => {
-    axios.get(`/api/leads/tasks?wantedId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data })
-    })
+    axios
+      .get(`/api/leads/tasks?wantedId=${lead.id}`)
+      .then((res) => {
+        this.setState({ meetings: res.data })
+      })
+      .catch(() => {
+        console.log(error)
+        helper.errorToast(error.message)
+      })
   }
 
   goToFormPage = (page, status, client, clientId) => {
@@ -786,6 +792,7 @@ class WantedLeads extends React.Component {
                   assignLeadTo={this.assignToLead}
                   wanted={true}
                   goToHistory={this.goToHistory}
+                  getCallHistory={this.getCallHistory}
                 />
                 {/* ) : (
                   <PPLeadTile
@@ -882,7 +889,6 @@ class WantedLeads extends React.Component {
         />
 
         <HistoryModal
-          getCallHistory={this.getCallHistory}
           navigation={navigation}
           data={meetings}
           closePopup={this.goToHistory}

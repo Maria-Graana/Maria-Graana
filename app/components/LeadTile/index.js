@@ -88,6 +88,7 @@ class LeadTile extends React.Component {
       navigateToAssignLead,
       assignLeadTo,
       goToHistory,
+      getCallHistory,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -323,6 +324,7 @@ class LeadTile extends React.Component {
                         <Menu.Item
                           onPress={() => {
                             goToHistory(data)
+                            getCallHistory(data)
                             setIsMenuVisible(false, data)
                           }}
                           title="Activity History"

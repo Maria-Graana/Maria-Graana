@@ -28,7 +28,7 @@ class MeetingTile extends React.Component {
     return (
       <TouchableOpacity>
         <View>
-          {data.taskType && (
+          {data.taskType && data.taskType != "re-assign" && (
             <View style={[styles.mainTileView]}>
               <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
                 <View style={styles.border}>

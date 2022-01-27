@@ -247,7 +247,7 @@ class LeadTile extends React.Component {
                             <Entypo
                               onPress={() => setIsMenuVisible(true, data)}
                               name="dots-three-vertical"
-                              size={22}
+                              size={26}
                             />
                           </View>
                         }
@@ -294,7 +294,7 @@ class LeadTile extends React.Component {
                             <Entypo
                               onPress={() => setIsMenuVisible(true, data)}
                               name="dots-three-vertical"
-                              size={22}
+                              size={26}
                             />
                           </View>
                         }

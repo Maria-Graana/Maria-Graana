@@ -345,7 +345,7 @@ class LeadTile extends React.Component {
                   </View>
                 ) : (
                   <View style={[styles.contentMultiMain]}>
-                    {data.projectId && data.minPrice && data.maxPrice ? (
+                    {data.projectId ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {purposeTab === 'invest' &&
                           helper.capitalize(

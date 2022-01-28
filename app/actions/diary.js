@@ -21,12 +21,13 @@ export const FEEDBACK_ACTIONS = {
   CLIENT_IS_INTERESTED_IN_INVESTMENT: 'Client is interested in Investment',
 }
 
+const pageSize = 50
 export function getDiaryTasks(data) {
   return (dispatch, getsState) => {
     let endPoint = ``
     let diaryRows = []
-    const { page, pageSize, diaries } = getsState().diary.diary
-    const { sort, isFilterApplied } = getsState().diary
+    const { diaries } = getsState().diary.diary
+    const { sort, isFilterApplied, page } = getsState().diary
     const { setScheduled } = getsState().slotManagement
     const {
       selectedDate = null,
@@ -98,6 +99,7 @@ export function getDiaryTasks(data) {
               count: res.data.count,
             },
           })
+          dispatch(setOnEndReachedLoader(false))
         }
       })
 
@@ -107,8 +109,6 @@ export function getDiaryTasks(data) {
           type: types.SET_DIARY_LOADER,
           payload: false,
         })
-      })
-      .finally(() => {
         dispatch(setOnEndReachedLoader(false))
       })
   }

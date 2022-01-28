@@ -39,7 +39,6 @@ class DiaryTile extends React.Component {
       initiateConnectFlow,
       screenName,
       leadType,
-      agentId,
       isOwnDiaryView,
     } = this.props
     return (
@@ -78,7 +77,7 @@ class DiaryTile extends React.Component {
                       <Ionicons
                         onPress={() => showMenuOptions(diary)}
                         name="ellipsis-vertical"
-                        size={22}
+                        size={26}
                         color="black"
                       />
                     }

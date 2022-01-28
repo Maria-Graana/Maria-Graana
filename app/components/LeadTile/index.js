@@ -247,7 +247,7 @@ class LeadTile extends React.Component {
                             <Entypo
                               onPress={() => setIsMenuVisible(true, data)}
                               name="dots-three-vertical"
-                              size={22}
+                              size={26}
                             />
                           </View>
                         }
@@ -294,7 +294,7 @@ class LeadTile extends React.Component {
                             <Entypo
                               onPress={() => setIsMenuVisible(true, data)}
                               name="dots-three-vertical"
-                              size={22}
+                              size={26}
                             />
                           </View>
                         }
@@ -345,7 +345,7 @@ class LeadTile extends React.Component {
                   </View>
                 ) : (
                   <View style={[styles.contentMultiMain]}>
-                    {data.projectId && data.minPrice && data.maxPrice ? (
+                    {data.projectId ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {purposeTab === 'invest' &&
                           helper.capitalize(

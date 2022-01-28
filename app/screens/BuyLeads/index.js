@@ -211,7 +211,6 @@ class BuyLeads extends React.Component {
         }
       }
     }
-    console.log(query)
     axios
       .get(`${query}`)
       .then((res) => {

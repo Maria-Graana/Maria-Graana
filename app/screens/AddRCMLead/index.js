@@ -287,7 +287,6 @@ class AddRCMLead extends Component {
       description: RCMFormData.description,
       phones: RCMFormData.phones,
     }
-    console.log(payload)
     if (user.subRole === 'group_management') {
       let newOrg = _.find(organizations, function (item) {
         return item.value === formData.org

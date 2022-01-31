@@ -121,14 +121,14 @@ class LeadTile extends React.Component {
         disabled={screen === 'Leads' ? true : false}
         onLongPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             handleLongPress(data)
         }}
         onPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             navigateTo(data)

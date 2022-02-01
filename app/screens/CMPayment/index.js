@@ -488,7 +488,7 @@ class CMPayment extends Component {
         projectKeys &&
           projectKeys.length &&
           projectKeys.map((key) => {
-            oneRow.push(unitOptionalFields[key].data)
+            unitOptionalFields[key] && oneRow.push(unitOptionalFields[key].data)
           })
         oneRow.push(item.area)
         oneRow.push(item.rate_per_sqft)

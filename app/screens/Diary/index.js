@@ -132,6 +132,7 @@ class Diary extends React.Component {
   componentWillUnmount() {
     const { dispatch } = this.props
     dispatch(clearDiaries())
+    dispatch(setPageCount(1))
     dispatch(setConnectFeedback({}))
   }
 
@@ -258,6 +259,7 @@ class Diary extends React.Component {
     const { agentId } = this.state
     dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
+    dispatch(setPageCount(1))
     dispatch(setSortValue(''))
     navigation.navigate('OverdueTasks', { count: overdueCount, agentId, agentName: name, agentId })
   }
@@ -283,11 +285,8 @@ class Diary extends React.Component {
             id: selectedDiary.id,
           })
         ).then((res) => {
-          if (selectedDiary.taskType === 'meeting' && !selectedLead.guideReference) {
+          if (selectedDiary.taskType === 'meeting') {
             // check if reference number exists for meeting task when marking task as done, show modal if not
-            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-          } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
-            // reference number exists for the selected lead, so directly marking it as done
             dispatch(
               getDiaryFeedbacks({
                 taskType: selectedDiary.taskType,
@@ -297,7 +296,20 @@ class Diary extends React.Component {
             ).then((res) => {
               navigation.navigate('DiaryFeedback', { actionType: 'Done' })
             })
-          } else {
+          } 
+          // else if (selectedDiary.taskType === 'meeting') {
+          //   // reference number exists for the selected lead, so directly marking it as done
+          //   dispatch(
+          //     getDiaryFeedbacks({
+          //       taskType: selectedDiary.taskType,
+          //       leadType: diaryHelper.getLeadType(selectedDiary),
+          //       actionType: 'Done',
+          //     })
+          //   ).then((res) => {
+          //     navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+          //   })
+          // } 
+          else {
             // for all other cases
             dispatch(
               getDiaryFeedbacks({
@@ -485,8 +497,9 @@ class Diary extends React.Component {
       referenceGuide,
       selectedDiary,
       selectedLead,
+      page,
     } = this.props
-    const { diaries, loading, showClassificationModal, page } = diary
+    const { diaries, loading, showClassificationModal } = diary
     const { name = null, screen } = route.params
 
     return (
@@ -701,7 +714,7 @@ class Diary extends React.Component {
               />
             )}
             onEndReached={() => {
-              if (diaries.rows.length < diaries.count) {
+              if (diaries.rows.length < diaries.count && onEndReachedLoader === false) {
                 dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
                 dispatch(getDiaryTasks({ selectedDate, agentId }))

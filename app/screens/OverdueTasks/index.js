@@ -83,6 +83,7 @@ class OverdueTasks extends React.Component {
     const { agentId } = route.params
     dispatch(setDairyFilterApplied(false))
     dispatch(clearDiaryFilter())
+    dispatch(setPageCount(1))
     dispatch(setSortValue('')).then((result) => {
       dispatch(getDiaryTasks({ selectedDate: _today, agentId }))
     })
@@ -317,9 +318,10 @@ class OverdueTasks extends React.Component {
       selectedDiary,
       selectedLead,
       user,
+      page,
     } = this.props
     const { agentId, count } = route.params
-    const { diaries, loading, showClassificationModal, page } = diary
+    const { diaries, loading, showClassificationModal } = diary
     return (
       <SafeAreaView style={styles.container}>
         <AddLeadCategoryModal
@@ -438,7 +440,7 @@ class OverdueTasks extends React.Component {
             )}
             keyExtractor={(item, index) => item.id.toString()}
             onEndReached={() => {
-              if (diaries.rows.length < count) {
+              if (diaries.rows.length < count && onEndReachedLoader === false) {
                 dispatch(setOnEndReachedLoader(true))
                 dispatch(setPageCount(page + 1))
                 dispatch(getDiaryTasks({ agentId, overdue: true }))
@@ -487,7 +489,6 @@ mapStateToProps = (store) => {
     selectedLead: store.diary.selectedLead,
     overdueCount: store.diary.overdueCount,
     page: store.diary.page,
-    pageSize: store.diary.pageSize,
     userShifts: store.slotManagement.userTimeShifts,
     diaryStat: store.diary.diaryStats,
     sortValue: store.diary.sort,

@@ -21,12 +21,13 @@ export const FEEDBACK_ACTIONS = {
   CLIENT_IS_INTERESTED_IN_INVESTMENT: 'Client is interested in Investment',
 }
 
+const pageSize = 50
 export function getDiaryTasks(data) {
   return (dispatch, getsState) => {
     let endPoint = ``
     let diaryRows = []
-    const { page, pageSize, diaries } = getsState().diary.diary
-    const { sort, isFilterApplied } = getsState().diary
+    const { diaries } = getsState().diary.diary
+    const { sort, isFilterApplied, page } = getsState().diary
     const { setScheduled } = getsState().slotManagement
     const {
       selectedDate = null,
@@ -98,6 +99,7 @@ export function getDiaryTasks(data) {
               count: res.data.count,
             },
           })
+          dispatch(setOnEndReachedLoader(false))
         }
       })
 
@@ -107,8 +109,6 @@ export function getDiaryTasks(data) {
           type: types.SET_DIARY_LOADER,
           payload: false,
         })
-      })
-      .finally(() => {
         dispatch(setOnEndReachedLoader(false))
       })
   }
@@ -557,26 +557,17 @@ export const markDiaryTaskAsDone = (data) => {
     } = data
     let endPoint = ``
     endPoint = `/api/diary/update?id=${selectedDiary.id}`
-    if (
-      selectedDiary &&
-      selectedDiary.taskType === 'morning_meeting' &&
-      selectedDiary.taskType === 'daily_update' &&
-      selectedDiary.taskType === 'meeting_with_pp'
-    ) {
-      axios
-        .patch(endPoint, {
-          status: 'completed',
-        })
-        .then(function (response) {
-          if (response.status == 200) {
-            dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
-            helper.successToast(`Task completed`)
-            //helper.deleteLocalNotification(data.id)
-          }
-        })
-    } else {
-      // diary feedback flow - > meeting, viewing
-    }
+    axios
+      .patch(endPoint, {
+        status: 'completed',
+      })
+      .then(function (response) {
+        if (response.status == 200) {
+          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
+          helper.successToast(`Task completed`)
+          helper.deleteLocalNotification(response.data.id)
+        }
+      })
   }
 }
 
@@ -598,7 +589,7 @@ export const deleteDiaryTask = (data) => {
         if (response.status === 200) {
           helper.successToast('TASK DELETED SUCCESSFULLY!')
           dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
-          // helper.deleteLocalNotification(data.id)
+          helper.deleteLocalNotification(response.data.id)
         }
       })
       .catch(function (error) {
@@ -625,7 +616,6 @@ export const cancelDiaryViewing = (data) => {
         .then((res) => {
           dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
           //helper.deleteLocalNotification(property.diaries[0].id)
-          //this.fetchProperties()
         })
         .catch((error) => {
           console.log(error)

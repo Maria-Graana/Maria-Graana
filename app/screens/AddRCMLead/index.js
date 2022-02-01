@@ -32,7 +32,7 @@ class AddRCMLead extends Component {
       selectedClient: null,
       selectedCity: null,
       getProject: [],
-      formType: 'sale',
+      formType: 'buy',
       priceList: [],
       sizeUnitList: [],
       selectSubType: [],
@@ -141,7 +141,7 @@ class AddRCMLead extends Component {
 
   setPriceList = () => {
     const { formType, RCMFormData } = this.state
-    if (formType === 'sale') {
+    if (formType === 'buy') {
       RCMFormData.minPrice = StaticData.PricesBuy[0]
       RCMFormData.maxPrice = StaticData.PricesBuy[StaticData.PricesBuy.length - 1]
       this.setState({ RCMFormData, priceList: StaticData.PricesBuy })

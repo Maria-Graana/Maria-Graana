@@ -329,11 +329,11 @@ function TimeSlotManagement(props) {
     const { data = null, isFromConnectFlow = false, isBookViewing = false } = route.params
     if (data && isFromConnectFlow) {
       let copyData = Object.assign({}, data)
-      copyData.date = tempStartTime
-      copyData.time = tempStartTime
-      copyData.diaryTime = tempStartTime
-      copyData.start = tempStartTime
-      copyData.end = tempEndTime
+      copyData.date = startTime
+      copyData.time = startTime
+      copyData.diaryTime = startTime
+      copyData.start = startTime
+      copyData.end = endTime
       copyData.slots = tempSlot
       saveOrUpdateDiaryTask(copyData).then((response) => {
         if (response) {

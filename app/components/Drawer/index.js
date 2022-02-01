@@ -66,7 +66,7 @@ class CustomDrawerContent extends React.Component {
           {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem
               screen={'Diary'}
-              badges={0}
+              badges={count.diary}
               navigateTo={() => {
                 this.navigateTo('Diary')
               }}
@@ -99,7 +99,7 @@ class CustomDrawerContent extends React.Component {
               screen={user && user.organization && user.organization.isPP ? 'Leads' : 'Leads'}
               badges={count.leads}
               navigateTo={() => {
-                this.props.navigation.navigate('Leads',{ screen: 'Leads' , hasBooking : false})
+                this.props.navigation.navigate('Leads', { screen: 'Leads', hasBooking: false })
               }}
             />
           ) : null}
@@ -117,7 +117,7 @@ class CustomDrawerContent extends React.Component {
               screen={user && user.organization && user.organization.isPP ? 'Deals' : 'Deals'}
               badges={count.leads}
               navigateTo={() => {
-                this.props.navigation.navigate('Leads', { screen: 'MyDeals' , hasBooking : true})
+                this.props.navigation.navigate('Leads', { screen: 'MyDeals', hasBooking: true })
               }}
             />
           ) : null}

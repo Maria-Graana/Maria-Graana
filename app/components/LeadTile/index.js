@@ -124,14 +124,14 @@ class LeadTile extends React.Component {
         disabled={screen === 'Leads' ? true : false}
         onLongPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             handleLongPress(data)
         }}
         onPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             navigateTo(data)
@@ -152,7 +152,7 @@ class LeadTile extends React.Component {
                   numberOfLines={1}
                 >
                   {/* Disabled Sentry in development  Sentry in */}
-                  {wanted ? data.armsStatus.toUpperCase() : leadStatus}
+                  {wanted ? data.armsStatus.toUpperCase() : leadStatus && leadStatus.toUpperCase()}
                 </Text>
                 {data.shared_with_armsuser_id && (
                   <View style={styles.sharedLead}>
@@ -250,7 +250,7 @@ class LeadTile extends React.Component {
                             <Entypo
                               onPress={() => setIsMenuVisible(true, data)}
                               name="dots-three-vertical"
-                              size={22}
+                              size={26}
                             />
                           </View>
                         }
@@ -297,7 +297,7 @@ class LeadTile extends React.Component {
                             <Entypo
                               onPress={() => setIsMenuVisible(true, data)}
                               name="dots-three-vertical"
-                              size={22}
+                              size={26}
                             />
                           </View>
                         }

@@ -19,6 +19,7 @@ import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
+import HistoryModal from '../../components/HistoryModal'
 import OnLoadMoreComponent from '../../components/OnLoadMoreComponent'
 import PickerComponent from '../../components/Picker/index'
 import PPLeadTile from '../../components/PPLeadTile'
@@ -73,6 +74,8 @@ class WantedLeads extends React.Component {
       statusFilterType: 'id',
       newActionModal: false,
       isMenuVisible: false,
+      meetings: [],
+      callModal: false,
     }
   }
 
@@ -192,6 +195,23 @@ class WantedLeads extends React.Component {
       })
   }
 
+  goToHistory = () => {
+    const { callModal } = this.state
+    this.setState({ callModal: !callModal })
+  }
+
+  getCallHistory = (lead) => {
+    axios
+      .get(`/api/leads/tasks?wantedId=${lead.id}`)
+      .then((res) => {
+        this.setState({ meetings: res.data }, () => this.goToHistory())
+      })
+      .catch(() => {
+        console.log(error)
+        helper.errorToast(error.message)
+      })
+  }
+
   goToFormPage = (page, status, client, clientId) => {
     const { navigation } = this.props
     const copyClient = client ? { ...client } : null
@@ -278,6 +298,22 @@ class WantedLeads extends React.Component {
     //     }
     //   }
     // )
+  }
+
+  assignToLead = (data) => {
+    axios
+      .post(`/api/wanted/convert-to-lead/${data.id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          helper.successToast('LEAD ASSIGNED SUCCESSFULLY')
+        } else {
+          helper.errorToast('SOMETHING WENT WRONG')
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        helper.errorToast(error.message)
+      })
   }
 
   navigateToShareScreen = (data) => {
@@ -641,8 +677,10 @@ class WantedLeads extends React.Component {
       newActionModal,
       selectedLead,
       isMenuVisible,
+      meetings,
+      callModal,
     } = this.state
-    const { user } = this.props
+    const { user, navigation } = this.props
     // console.log('Hrellooo', leadsData && leadsData.length && leadsData[0].customer)
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
@@ -751,7 +789,10 @@ class WantedLeads extends React.Component {
                   navigateFromMenu={this.navigateFromMenu}
                   navigateToAssignLead={this.checkAssignedLead}
                   // checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
+                  assignLeadTo={this.assignToLead}
                   wanted={true}
+                  goToHistory={this.goToHistory}
+                  getCallHistory={this.getCallHistory}
                 />
                 {/* ) : (
                   <PPLeadTile
@@ -846,6 +887,15 @@ class WantedLeads extends React.Component {
           setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
         />
+
+        <HistoryModal
+          navigation={navigation}
+          data={meetings}
+          closePopup={this.goToHistory}
+          openPopup={callModal}
+          getCallHistory={this.getCallHistory}
+        />
+
         <SubmitFeedbackOptionsModal
           showModal={newActionModal}
           modalMode={modalMode}

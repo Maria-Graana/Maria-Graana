@@ -241,7 +241,7 @@ const helper = {
   },
   leadAiraToast(lead) {
     Toast.show({
-      text: `You will perform any action on ${lead.firstName}${lead.lastName} behalf`,
+      text: `You are viewing ${lead.firstName}${lead.lastName}’s lead. You can perform activities on ${lead.firstName}${lead.lastName}’s behalf.`,
       duration: 3000,
       type: 'danger',
     })
@@ -765,9 +765,8 @@ const helper = {
     let cleared = 0
     let legalPaymentCleared = 0
     let legalCount = Number(legalDocCounts.sellerCount) + Number(legalDocCounts.buyerCount)
-    if(lead.commissionNotApplicableSeller === true)
-      legalCount = Number(legalDocCounts.buyerCount)
-      
+    if (lead.commissionNotApplicableSeller === true) legalCount = Number(legalDocCounts.buyerCount)
+
     let legalDocCount = legalDocCounts.count
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
       commissionsLength = 1

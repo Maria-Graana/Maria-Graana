@@ -86,6 +86,9 @@ class LeadTile extends React.Component {
       permissions,
       screenName,
       navigateToAssignLead,
+      assignLeadTo,
+      goToHistory,
+      getCallHistory,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -121,14 +124,14 @@ class LeadTile extends React.Component {
         disabled={screen === 'Leads' ? true : false}
         onLongPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             handleLongPress(data)
         }}
         onPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             navigateTo(data)
@@ -149,7 +152,7 @@ class LeadTile extends React.Component {
                   numberOfLines={1}
                 >
                   {/* Disabled Sentry in development  Sentry in */}
-                  {wanted ? data.armsStatus.toUpperCase() : leadStatus.toUpperCase()}
+                  {wanted ? data.armsStatus.toUpperCase() : leadStatus && leadStatus.toUpperCase()}
                 </Text>
                 {data.shared_with_armsuser_id && (
                   <View style={styles.sharedLead}>
@@ -318,13 +321,40 @@ class LeadTile extends React.Component {
                           }}
                           title="Re-Assign"
                         />
-                        {/* <Menu.Item
+                        <Menu.Item
                           onPress={() => {
-                            goToHistory()
+                            getCallHistory(data)
                             setIsMenuVisible(false, data)
                           }}
                           title="Activity History"
-                        /> */}
+                        />
+                        {data && data.purpose == 'invest' ? (
+                          <Menu.Item
+                            onPress={() => {
+                              assignLeadTo(data)
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Assign To Investment Advisor"
+                          />
+                        ) : data && data.purpose == 'sell' ? (
+                          <Menu.Item
+                            onPress={() => {
+                              assignLeadTo(data)
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Assign To Cataloger"
+                          />
+                        ) : (
+                          data && (
+                            <Menu.Item
+                              onPress={() => {
+                                assignLeadTo(data)
+                                setIsMenuVisible(false, data)
+                              }}
+                              title="Assign To Area Manager"
+                            />
+                          )
+                        )}
                       </Menu>
                     ) : null}
                   </View>

@@ -32,16 +32,21 @@ import {
 } from '../../actions/diary'
 import Loader from '../../components/loader'
 import {
+  alltimeSlots,
   clearSlotData,
   clearSlotDiaryData,
+  getTimeShifts,
   setSlotData,
   setSlotDiaryData,
+  setTimeSlots,
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import diaryHelper from '../Diary/diaryHelper'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import HistoryModal from '../../components/HistoryModal'
+
+const _today = moment(new Date()).format('YYYY-MM-DD')
 
 export class ScheduledTasks extends Component {
   constructor(props) {
@@ -58,8 +63,12 @@ export class ScheduledTasks extends Component {
 
   componentDidMount() {
     const { navigation, dispatch } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
+      dispatch(setSlotDiaryData(_today))
       // for scheduled tasks on basis of lead id
       const {
         cmLeadId = null,
@@ -140,10 +149,10 @@ export class ScheduledTasks extends Component {
             id: selectedDiary.id,
           })
         ).then((res) => {
-          if (selectedDiary.taskType === 'meeting' && !selectedLead.guideReference) {
+          if (selectedDiary.taskType === 'meeting') {
             // check if reference number exists for meeting task when marking task as done, show modal if not
-            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-          } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+            // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
+            // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
             // reference number exists for the selected lead, so directly marking it as done
             dispatch(
               getDiaryFeedbacks({

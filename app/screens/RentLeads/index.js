@@ -836,7 +836,8 @@ class RentLeads extends React.Component {
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
               <View>
-                {(!user.organization && user.subRole === 'group_management') ||
+                {/* {console.log(user)} */}
+                {(!user.organization && user.armsUserRole.groupManger) ||
                 (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}

@@ -134,7 +134,7 @@ class Client extends React.Component {
       }
     } else if (isUnitBooking) {
       const { projectData, unit } = route.params
-      axios.get(`/api/leads/projects?customerId=${data.id}`).then((response) => {
+      axios.get(`/api/leads/projects?customerId=${data.id}&status=open`).then((response) => {
         const res = response.data
         if (res.count > 0) {
           navigation.replace(screenName, {

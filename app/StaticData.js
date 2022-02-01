@@ -1318,12 +1318,12 @@ export default StaticData = {
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/calls.png'),
+      image: require('../assets/img/Calls.png'),
     },
     {
       id: 5,
       value: '0',
-      image: require('../assets/img/cif.png'),
+      image: require('../assets/img/CIF.png'),
     },
   ],
   callCenterKPIS: [
@@ -1345,7 +1345,7 @@ export default StaticData = {
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/calls.png'),
+      image: require('../assets/img/Calls.png'),
     },
   ],
   leadCategories: [

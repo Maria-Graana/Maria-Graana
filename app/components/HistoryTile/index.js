@@ -28,7 +28,7 @@ class MeetingTile extends React.Component {
     return (
       <TouchableOpacity>
         <View>
-          {data.taskType && data.taskType != "re-assign" && (
+          {data.taskType && data.taskType != 're-assign' && (
             <View style={[styles.mainTileView]}>
               <View style={[styles.contentView, AppStyles.flexDirectionRow]}>
                 <View style={styles.border}>
@@ -64,10 +64,7 @@ class MeetingTile extends React.Component {
                         </Text>
                       </View>
                       <View style={styles.taskType}>
-                        <View
-                         style={styles.DayAndTime}
-                         
-                        >
+                        <View style={styles.DayAndTime}>
                           <Text style={styles.fontBold}>
                             {` ${day} ${moment(data.date).format('MMM DD')},${helper
                               .formatTime(data.start)

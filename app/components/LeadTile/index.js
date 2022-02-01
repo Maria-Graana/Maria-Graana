@@ -323,7 +323,6 @@ class LeadTile extends React.Component {
                         />
                         <Menu.Item
                           onPress={() => {
-                            goToHistory(data)
                             getCallHistory(data)
                             setIsMenuVisible(false, data)
                           }}

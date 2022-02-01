@@ -204,7 +204,7 @@ class WantedLeads extends React.Component {
     axios
       .get(`/api/leads/tasks?wantedId=${lead.id}`)
       .then((res) => {
-        this.setState({ meetings: res.data })
+        this.setState({ meetings: res.data }, () => this.goToHistory())
       })
       .catch(() => {
         console.log(error)
@@ -893,6 +893,7 @@ class WantedLeads extends React.Component {
           data={meetings}
           closePopup={this.goToHistory}
           openPopup={callModal}
+          getCallHistory={this.getCallHistory}
         />
 
         <SubmitFeedbackOptionsModal

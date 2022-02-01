@@ -95,7 +95,7 @@ class AvailableUnitLead extends React.Component {
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
     axios
-      .get(`/api/leads/projects?customerId=${client.id}`)
+      .get(`/api/leads/projects?customerId=${client.id}&status=open`)
       .then((res) => {
         this.setState({
           leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],

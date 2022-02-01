@@ -104,7 +104,7 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
   },
   taskType: {
-    paddingLeft: 10,
+    paddingLeft: 30,
     flexDirection: 'row',
     alignItems: 'center',
   },

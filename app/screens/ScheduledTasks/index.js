@@ -32,10 +32,13 @@ import {
 } from '../../actions/diary'
 import Loader from '../../components/loader'
 import {
+  alltimeSlots,
   clearSlotData,
   clearSlotDiaryData,
+  getTimeShifts,
   setSlotData,
   setSlotDiaryData,
+  setTimeSlots,
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import diaryHelper from '../Diary/diaryHelper'

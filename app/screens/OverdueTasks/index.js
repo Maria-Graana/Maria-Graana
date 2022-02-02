@@ -112,10 +112,10 @@ class OverdueTasks extends React.Component {
             id: selectedDiary.id,
           })
         ).then((res) => {
-          if (selectedDiary.taskType === 'meeting' && !selectedLead.guideReference) {
+          if (selectedDiary.taskType === 'meeting') {
             // check if reference number exists for meeting task when marking task as done, show modal if not
-            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-          } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+            // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
+          // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
             // reference number exists for the selected lead, so directly marking it as done
             dispatch(
               getDiaryFeedbacks({

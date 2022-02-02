@@ -925,7 +925,7 @@ function TimeSlotManagement(props) {
                                 key={i}
                               >
                                 {typeof setColor(e) == 'number' && (
-                                  <View style={styles.taskLengthView}>
+                                  <View style={styles.taskLengthView} key={i}>
                                     <Text style={{ color: 'black' }}>{`+${setColor(e)}`}</Text>
                                   </View>
                                 )}

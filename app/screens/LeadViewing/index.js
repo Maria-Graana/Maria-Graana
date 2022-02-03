@@ -515,7 +515,7 @@ class LeadViewing extends React.Component {
       if (diaries && diaries.length > 0) {
         return (
           <View>
-            {diary && diary.status === 'pending' && (
+            {diary && diary.status === 'pending' ? (
               <TouchableOpacity
                 style={styles.viewingAtBtn}
                 onPress={() => {
@@ -531,8 +531,7 @@ class LeadViewing extends React.Component {
                   <Text style={styles.viewingAtText1}>{moment(diary.start).format('LLL')}</Text>
                 </Text>
               </TouchableOpacity>
-            )}
-            {viewingDoneCount && viewingDoneCount.length > 0 && (
+            ) : viewingDoneCount && viewingDoneCount.length > 0 ? (
               <TouchableOpacity
                 style={styles.viewingDoneBtn}
                 onPress={() => this.simplifyViewingData(viewingDoneCount)}
@@ -543,6 +542,19 @@ class LeadViewing extends React.Component {
                     <Text style={styles.countText}>{`${viewingDoneCount.length}`}</Text>
                   </View>
                 )}
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.viewingBtn}
+                onPress={() => {
+                  if (leadAssignedSharedStatus) {
+                    // this.openModal()
+                    this.setProperty(property)
+                    this.goToTimeSlots(property)
+                  }
+                }}
+              >
+                <Text style={styles.viewingText}>BOOK VIEWING</Text>
               </TouchableOpacity>
             )}
             {/* } */}

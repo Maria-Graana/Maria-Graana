@@ -84,6 +84,7 @@ class Login extends Component {
             }
           })
           .catch((error) => {
+            helper.errorToast("Invalid Email or Password!")
             this.props.dispatch({
               type: types.USER_LOADED,
             })

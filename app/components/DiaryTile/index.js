@@ -40,6 +40,7 @@ class DiaryTile extends React.Component {
       screenName,
       leadType,
       isOwnDiaryView,
+      assignedToMe,
     } = this.props
     return (
       <View style={styles.mainContainer}>
@@ -97,6 +98,7 @@ class DiaryTile extends React.Component {
 
                       {diary.status !== 'completed' &&
                       diary.status !== 'cancelled' &&
+                      assignedToMe &&
                       isOwnDiaryView &&
                       (diary.taskType === 'viewing' || diary.taskType === 'meeting') ? (
                         <Menu.Item
@@ -111,6 +113,7 @@ class DiaryTile extends React.Component {
                       {diary.taskType === 'viewing' &&
                       diary.armsLeadId &&
                       isOwnDiaryView &&
+                      assignedToMe &&
                       diary.status !== 'completed' &&
                       diary.status !== 'cancelled' ? (
                         <Menu.Item
@@ -146,7 +149,8 @@ class DiaryTile extends React.Component {
 
                       {diary.status !== 'completed' &&
                         diary.status !== 'cancelled' &&
-                        isOwnDiaryView && (
+                        isOwnDiaryView &&
+                        assignedToMe && (
                           <Menu.Item
                             onPress={() => {
                               handleMenuActions('edit_task')
@@ -171,6 +175,7 @@ class DiaryTile extends React.Component {
                       diary.taskType !== 'meeting_with_pp' &&
                       diary.status !== 'completed' &&
                       diary.status !== 'cancelled' &&
+                      assignedToMe &&
                       isOwnDiaryView ? (
                         <View>
                           {!diary.wantedId ? (
@@ -189,7 +194,8 @@ class DiaryTile extends React.Component {
                       diary.taskType !== 'daily_update' &&
                       diary.taskType !== 'meeting_with_pp' &&
                       diary.status !== 'completed' &&
-                      diary.status !== 'cancelled' ? (
+                      diary.status !== 'cancelled' &&
+                      assignedToMe ? (
                         <View>
                           {!diary.wantedId ? (
                             <Menu.Item

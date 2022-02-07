@@ -442,6 +442,14 @@ class OverdueTasks extends React.Component {
                   })
                 }}
                 isOwnDiaryView={agentId === user.id}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

@@ -296,7 +296,7 @@ class Diary extends React.Component {
             ).then((res) => {
               navigation.navigate('DiaryFeedback', { actionType: 'Done' })
             })
-          } 
+          }
           // else if (selectedDiary.taskType === 'meeting') {
           //   // reference number exists for the selected lead, so directly marking it as done
           //   dispatch(
@@ -308,7 +308,7 @@ class Diary extends React.Component {
           //   ).then((res) => {
           //     navigation.navigate('DiaryFeedback', { actionType: 'Done' })
           //   })
-          // } 
+          // }
           else {
             // for all other cases
             dispatch(
@@ -711,6 +711,14 @@ class Diary extends React.Component {
                   })
                 }}
                 isOwnDiaryView={agentId === user.id}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             onEndReached={() => {

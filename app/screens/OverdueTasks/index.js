@@ -115,7 +115,7 @@ class OverdueTasks extends React.Component {
           if (selectedDiary.taskType === 'meeting') {
             // check if reference number exists for meeting task when marking task as done, show modal if not
             // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-          // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+            // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
             // reference number exists for the selected lead, so directly marking it as done
             dispatch(
               getDiaryFeedbacks({
@@ -436,6 +436,14 @@ class OverdueTasks extends React.Component {
                   })
                 }}
                 isOwnDiaryView={agentId === user.id}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

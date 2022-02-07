@@ -1143,10 +1143,10 @@ const helper = {
     // console.log('type: ', type)
     // console.log('user: ', user)
     if (type === 'buyerSide') {
-      console.log('buyerSide')
+      // console.log('buyerSide')
       if (lead.assigned_to_armsuser_id === user.id && property && !property.sellerFlowAgent)
         return true
-      console.log('buyerSide 1')
+      // console.log('buyerSide 1')
       if (
         lead.assigned_to_armsuser_id === user.id &&
         property &&
@@ -1155,13 +1155,13 @@ const helper = {
       )
         return true
       else false
-      console.log('buyerSide 2')
+      // console.log('buyerSide 2')
     } else {
-      console.log('buyerSide 3')
+      // console.log('buyerSide 3')
       if (property && property.sellerFlowAgent && property.sellerFlowAgent.id === user.id)
         return true
       else false
-      console.log('buyerSide 4')
+      // console.log('buyerSide 4')
     }
   },
   getAiraPermission(permissions) {

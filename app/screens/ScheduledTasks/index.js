@@ -413,6 +413,14 @@ export class ScheduledTasks extends Component {
                 }}
                 leadType={leadType}
                 isOwnDiaryView={true}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

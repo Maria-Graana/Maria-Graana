@@ -431,20 +431,23 @@ class LeadDetail extends React.Component {
           <View style={styles.cardContainer}>
             <View style={styles.cardItemGrey}>
               <View style={styles.rowContainer}>
-                <View>
-                  <Text style={styles.headingText}>Client Name </Text>
-                  {screenName === 'diary' ? (
-                    <Text style={styles.labelText}>
-                      {setCustomerName === 'undefined'
-                        ? setCustomerName
-                        : lead.customer && lead.customer.customerName}
-                    </Text>
-                  ) : (
-                    <Text style={styles.labelText}>
-                      {lead.customer && lead.customer.customerName}
-                    </Text>
-                  )}
-                </View>
+                {lead.requiredProperties === false ? (
+                  <View>
+                    <Text style={styles.headingText}>Client Name </Text>
+                    {screenName === 'diary' ? (
+                      <Text style={styles.labelText}>
+                        {setCustomerName === 'undefined'
+                          ? setCustomerName
+                          : lead.customer && lead.customer.customerName}
+                      </Text>
+                    ) : (
+                      <Text style={styles.labelText}>
+                        {lead.customer && lead.customer.customerName}
+                      </Text>
+                    )}
+                  </View>
+                ) : null}
+
                 {purposeTab !== 'property' && (
                   <TouchableOpacity
                     onPress={() => this.goToClientsDetail()}

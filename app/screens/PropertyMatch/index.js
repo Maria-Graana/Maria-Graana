@@ -830,14 +830,6 @@ class PropertyMatch extends React.Component {
       shortListedProperties,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
-    // matchData.data = _.clone(
-    //   helper.skipShortlistedProperties(matchData.data, shortListedProperties)
-    // )
-    console.log(
-      'helper.skipShortlistedProperties(matchData.data, shortListedProperties): ',
-      helper.skipShortlistedProperties(matchData.data, shortListedProperties)
-    )
-    console.log('matchData.data: ', matchData.data)
     return !loading ? (
       <View
         style={[

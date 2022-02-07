@@ -10,6 +10,7 @@ import {
   FlatList,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
@@ -104,7 +105,7 @@ class OverdueTasks extends React.Component {
     const { selectedDate } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+        dispatch(markDiaryTaskAsDone({ agentId, overdue: true }))
       } else {
         dispatch(
           setConnectFeedback({
@@ -115,7 +116,7 @@ class OverdueTasks extends React.Component {
           if (selectedDiary.taskType === 'meeting') {
             // check if reference number exists for meeting task when marking task as done, show modal if not
             // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-          // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+            // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
             // reference number exists for the selected lead, so directly marking it as done
             dispatch(
               getDiaryFeedbacks({
@@ -185,7 +186,12 @@ class OverdueTasks extends React.Component {
           )
         )
       }
-      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate, agentId })
+      navigation.navigate('TaskDetails', {
+        diary: selectedDiary,
+        selectedDate,
+        agentId,
+        overdue: true,
+      })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
@@ -207,9 +213,9 @@ class OverdueTasks extends React.Component {
           {
             text: 'Delete',
             onPress: () => {
-              dispatch(deleteDiaryTask({ selectedDate, agentId }))
+              dispatch(deleteDiaryTask({ agentId, overdue: true }))
               dispatch(clearSlotDiaryData())
-              dispatch(setSlotDiaryData(selectedDate))
+              // dispatch(setSlotDiaryData(selectedDate))
               this.setState({ isDelete: true })
             },
           },

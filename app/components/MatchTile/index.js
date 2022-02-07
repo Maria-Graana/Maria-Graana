@@ -163,6 +163,7 @@ class MatchTile extends React.Component {
       permissions,
       user,
       graanaVerifeyModal,
+      cancelViewing,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -566,8 +567,9 @@ class MatchTile extends React.Component {
                                     permissions
                                   ) &&
                                   closedLeadEdit
-                                )
-                                  this.props.cancelViewing(data)
+                                ) {
+                                  cancelViewing(data)
+                                }
                               }}
                               title="Cancel Viewing"
                             />

@@ -102,7 +102,6 @@ export function getDiaryTasks(data) {
           dispatch(setOnEndReachedLoader(false))
         }
       })
-
       .catch((error) => {
         console.log(error)
         dispatch({

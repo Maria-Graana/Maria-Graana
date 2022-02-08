@@ -197,9 +197,12 @@ class InvestLeads extends React.Component {
       statusFilterType,
     } = this.state
     const { hasBooking } = this.props.route.params
+    const { user } = this.props
     this.setState({ loading: true })
     let query = ``
-    if (showSearchBar) {
+    if (user.armsUserRole.groupManger) {
+      query = `/api/leads/projects?id=&hasBooking=${hasBooking}&showAllLeads=true&status=${statusFilter}${sort}`
+    } else if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         query = `/api/leads/projects?searchBy=name&q=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
       } else if (statusFilterType === 'id' && searchText !== '') {

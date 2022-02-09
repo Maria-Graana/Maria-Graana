@@ -257,6 +257,8 @@ export class ScheduledTasks extends Component {
         ],
         { cancelable: false }
       )
+    } else if (action === 'add_investment_guide') {
+      dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
     }
   }
 
@@ -356,15 +358,7 @@ export class ScheduledTasks extends Component {
           }
           addInvestmentGuide={(guideNo, attachments) =>
             dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
-              dispatch(
-                getDiaryFeedbacks({
-                  taskType: selectedDiary.taskType,
-                  leadType: diaryHelper.getLeadType(selectedDiary),
-                  actionType: 'Done',
-                })
-              ).then((res) => {
-                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-              })
+              dispatch(getDiaryTasks({ leadId, leadType }))
             })
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}

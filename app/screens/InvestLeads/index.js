@@ -197,21 +197,32 @@ class InvestLeads extends React.Component {
       statusFilterType,
     } = this.state
     const { hasBooking } = this.props.route.params
+    const { user } = this.props
     this.setState({ loading: true })
     let query = ``
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads/projects?searchBy=name&q=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads/projects?id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`)
       } else {
-        query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       }
     } else {
       if (statusFilter === 'in_progress') {
-        query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else {
-        query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       }
     }
     axios

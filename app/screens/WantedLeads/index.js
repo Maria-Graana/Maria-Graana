@@ -157,13 +157,7 @@ class WantedLeads extends React.Component {
     } = this.state
     this.setState({ loading: true })
     const { hasBooking } = this.props.route.params
-    const {user} = this.props
-    let query = ""
-    if (user.armsUserRole.groupManger){
-      query = `/api/wanted?page=1&pageSize=${pageSize}&showAllLeads=true`
-    } else {
-      query = `/api/wanted?pageSize=${pageSize}&page=${page}`
-    }
+    let query = `/api/wanted?pageSize=${pageSize}&page=${page}`
     // if (showSearchBar) {
     //   if (statusFilterType === 'name' && searchText !== '') {
     //     query = `/api/leads?purpose[]=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
@@ -185,6 +179,7 @@ class WantedLeads extends React.Component {
         let leadNewData = helper.leadMenu(
           page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         )
+        // console.log(query, '  ', res.data.rows)
         this.setState({
           leadsData: leadNewData,
           loading: false,

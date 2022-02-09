@@ -174,14 +174,12 @@ class BuyLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
-    const { permissions, user } = this.props
+    const { permissions } = this.props
     this.setState({ loading: true })
     const { hasBooking } = this.props.route.params
     let query = ``
     if (helper.getAiraPermission(permissions)) {
-      if (user.armsUserRole.groupManger) {
-        query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`
-      } else if (showSearchBar) {
+      if (showSearchBar) {
         if (statusFilterType === 'name' && searchText !== '') {
           query = `/api/leads?purpose[]=buy&aira=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
         } else if (statusFilterType === 'id' && searchText !== '') {
@@ -197,9 +195,7 @@ class BuyLeads extends React.Component {
         }
       }
     } else {
-      if (user.armsUserRole.groupManger) {
-        query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`
-      } else if (showSearchBar) {
+      if (showSearchBar) {
         if (statusFilterType === 'name' && searchText !== '') {
           query = `/api/leads?purpose[]=buy&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
         } else if (statusFilterType === 'id' && searchText !== '') {

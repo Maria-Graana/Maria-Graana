@@ -174,40 +174,60 @@ class BuyLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
-    const { permissions } = this.props
+    const { permissions, user } = this.props
     this.setState({ loading: true })
     const { hasBooking } = this.props.route.params
     let query = ``
     if (helper.getAiraPermission(permissions)) {
       if (showSearchBar) {
         if (statusFilterType === 'name' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&aira=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else if (statusFilterType === 'id' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&id=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&id=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
-          query = `/api/leads?purpose[]=buy&startDate=${fromDate}&aira=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&aira=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         }
       } else {
         if (statusFilter === 'shortlisting') {
-          query = `/api/leads?purpose[]=buy&aira=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&aira=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
-          query = `/api/leads?purpose[]=buy&aira=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
+            : (query = `/api/leads?purpose[]=buy&aira=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         }
       }
     } else {
       if (showSearchBar) {
         if (statusFilterType === 'name' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else if (statusFilterType === 'id' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&web=${true}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&web=${true}`)
         } else {
-          query = `/api/leads?purpose[]=buy&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         }
       } else {
         if (statusFilter === 'shortlisting') {
-          query = `/api/leads?purpose[]=buy&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
-          query = `/api/leads?purpose[]=buy&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
+            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         }
       }
     }

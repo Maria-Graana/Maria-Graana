@@ -293,9 +293,17 @@ function TimeSlotManagement(props) {
   }
 
   const createViewing = (body) => {
+    const { navigation } = props
     axios
       .post(`/api/leads/viewing`, body)
-      .then((res) => {})
+      .then((res) => {
+        if (res) {
+          helper.successToast('TASK ADDED SUCCESSFULLY!')
+          navigation.goBack()
+        } else {
+          helper.errorToast('SOMETHING WENT WRONG!')
+        }
+      })
       .catch((error) => {
         console.log(error)
       })
@@ -352,19 +360,19 @@ function TimeSlotManagement(props) {
       copyData.end = endTime
       copyData.slots = tempSlot
 
-      let copy2Data = Object.assign({}, copyData)
-      copy2Data.armsLeadId = copy2Data.leadId
-      delete copy2Data.leadId
+      // let copy2Data = Object.assign({}, copyData)
+      // delete copy2Data.leadId
+      // copy2Data.armsLeadId = copyData.leadId
 
       if (copyData && !copyData.id) createViewing(copyData)
-      saveOrUpdateDiaryTask(copy2Data).then((response) => {
-        if (response) {
-          helper.successToast('TASK ADDED SUCCESSFULLY!')
-          navigation.goBack()
-        } else {
-          helper.errorToast('SOMETHING WENT WRONG!')
-        }
-      })
+      // saveOrUpdateDiaryTask(copy2Data).then((response) => {
+      //   if (response) {
+      //     helper.successToast('TASK ADDED SUCCESSFULLY!')
+      //     navigation.goBack()
+      //   } else {
+      //     helper.errorToast('SOMETHING WENT WRONG!')
+      //   }
+      // })
     } else {
       if (sortedAray) {
         dispatch(setSlotData(date, startTime, endTime, slots))

@@ -238,8 +238,7 @@ class DiaryTile extends React.Component {
                       diary.status !== 'cancelled' &&
                       isOwnDiaryView &&
                       diary.armsProjectLead &&
-                      !diary.armsProjectLead.guideReference &&
-                      diary.taskType === 'meeting' ? (
+                      !diary.armsProjectLead.guideReference ? (
                         <Menu.Item
                           onPress={() => {
                             handleMenuActions('add_investment_guide')

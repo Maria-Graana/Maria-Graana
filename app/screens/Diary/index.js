@@ -532,7 +532,7 @@ class Diary extends React.Component {
           }
           addInvestmentGuide={(guideNo, attachments) =>
             dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
-              this.getDiaries()
+              this.getMyDiary(_today)
             })
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}

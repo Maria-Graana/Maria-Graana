@@ -403,6 +403,13 @@ export const addInvestmentGuide = (data) => {
           })
           .catch((error) => {
             console.log('error', error)
+            dispatch(
+              setReferenceGuideData({
+                ...referenceGuide,
+                referenceGuideLoading: false,
+                referenceErrorMessage: null,
+              })
+            )
           })
       }
     )

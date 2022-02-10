@@ -222,6 +222,8 @@ class OverdueTasks extends React.Component {
         ],
         { cancelable: false }
       )
+    } else if (action === 'add_investment_guide') {
+      dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
     }
   }
   navigateToReferAssignLead = (mode) => {
@@ -371,15 +373,7 @@ class OverdueTasks extends React.Component {
           }
           addInvestmentGuide={(guideNo, attachments) =>
             dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
-              dispatch(
-                getDiaryFeedbacks({
-                  taskType: selectedDiary.taskType,
-                  leadType: diaryHelper.getLeadType(selectedDiary),
-                  actionType: 'Done',
-                })
-              ).then((res) => {
-                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-              })
+              this.getDiaries()
             })
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}

@@ -353,13 +353,16 @@ export const setReferenceGuideData = (data) => {
   }
 }
 
-export const addInvestmentGuide = (data) => {
+export const addInvestmentGuide = (data, lead = null) => {
   return (dispatch, getsState) => {
     const { guideNo, attachments } = data
     let promise = null
     const { referenceGuide } = getsState().diary
     const { selectedLead } = getsState().diary
-    const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${selectedLead.id}&guideReference=${guideNo}`
+
+    const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${
+      lead ? lead.id : selectedLead.id
+    }&guideReference=${guideNo}`
     dispatch(setReferenceGuideData({ ...referenceGuide, referenceGuideLoading: true })).then(
       (res) => {
         promise = axios
@@ -403,6 +406,13 @@ export const addInvestmentGuide = (data) => {
           })
           .catch((error) => {
             console.log('error', error)
+            dispatch(
+              setReferenceGuideData({
+                ...referenceGuide,
+                referenceGuideLoading: false,
+                referenceErrorMessage: null,
+              })
+            )
           })
       }
     )

@@ -30,6 +30,8 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import { addInvestmentGuide, setReferenceGuideData } from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -631,7 +633,7 @@ class InvestLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
     } = this.state
-    const { user, permissions } = this.props
+    const { user, permissions, lead, dispatch, referenceGuide } = this.props
     const { screen, hasBooking = false } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
@@ -711,6 +713,19 @@ class InvestLeads extends React.Component {
             </View>
           )}
         </View>
+        <ReferenceGuideModal
+          isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
+          hideReferenceGuideModal={() =>
+            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
+          }
+          addInvestmentGuide={(guideNo, attachments) =>
+            dispatch(addInvestmentGuide({ guideNo, attachments }, lead)).then((res) => {
+              this.fetchLeads()
+            })
+          }
+          referenceGuideLoading={referenceGuide.referenceGuideLoading}
+          referenceErrorMessage={referenceGuide.referenceErrorMessage}
+        />
         {leadsData && leadsData.length > 0 ? (
           <FlatList
             data={leadsData}
@@ -731,6 +746,11 @@ class InvestLeads extends React.Component {
                 setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
                 checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
                 navigateToShareScreen={(data) => this.navigateToShareScreen(data)}
+                addGuideReference={() =>
+                  dispatch(
+                    setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true })
+                  )
+                }
               />
             )}
             onEndReached={() => {
@@ -825,6 +845,7 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    referenceGuide: store.diary.referenceGuide,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

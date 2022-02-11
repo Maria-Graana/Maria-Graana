@@ -849,7 +849,7 @@ function TimeSlotManagement(props) {
           onPress={(value) => setCalendarVisible(value)}
         />
       </View>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={styles.slotView}>
         <ScrollView
           style={{ marginTop: '9%' }}
           scrollEnabled={false}

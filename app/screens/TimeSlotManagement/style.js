@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
     marginRight: 15,
   },
   buttonInputWrap: {
-    marginTop: 15,
+    // marginTop: 15,
     justifyContent: 'flex-end',
   },
   minCol: {
@@ -61,5 +61,9 @@ export default styles = StyleSheet.create({
     paddingLeft: 5,
     paddingTop: 3,
     paddingBottom: 3,
+  },
+  slotView: {
+    flexDirection: 'row',
+    marginBottom: 15,
   },
 })

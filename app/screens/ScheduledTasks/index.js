@@ -257,6 +257,8 @@ export class ScheduledTasks extends Component {
         ],
         { cancelable: false }
       )
+    } else if (action === 'add_investment_guide') {
+      dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
     }
   }
 
@@ -356,15 +358,7 @@ export class ScheduledTasks extends Component {
           }
           addInvestmentGuide={(guideNo, attachments) =>
             dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
-              dispatch(
-                getDiaryFeedbacks({
-                  taskType: selectedDiary.taskType,
-                  leadType: diaryHelper.getLeadType(selectedDiary),
-                  actionType: 'Done',
-                })
-              ).then((res) => {
-                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-              })
+              dispatch(getDiaryTasks({ leadId, leadType }))
             })
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
@@ -413,6 +407,14 @@ export class ScheduledTasks extends Component {
                 }}
                 leadType={leadType}
                 isOwnDiaryView={true}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

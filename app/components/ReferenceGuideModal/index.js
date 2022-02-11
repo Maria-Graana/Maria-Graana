@@ -22,6 +22,16 @@ const ReferenceGuideModal = ({
   const [showAction, setShowAction] = useState(false)
   const [investmentGuideAttachments, setInvestmentGuideAttachments] = useState([])
 
+  const addInvestment = () => {
+    if (investmentGuideNo === null || investmentGuideNo === '') {
+      alert('Please enter investment guide number')
+    } else {
+      addInvestmentGuide(investmentGuideNo, investmentGuideAttachments)
+      setInvestmentGuideNo(null)
+      setInvestmentGuideAttachments([])
+    }
+  }
+
   return (
     <Modal isVisible={isReferenceModalVisible}>
       <View style={styles.modalMain}>
@@ -97,12 +107,7 @@ const ReferenceGuideModal = ({
             containerStyle={AppStyles.formBtn}
             label="Save"
             loading={referenceGuideLoading}
-            onPress={() =>
-              investmentGuideNo === null || investmentGuideNo === ''
-                ? alert('Please enter investment guide number')
-                : addInvestmentGuide(investmentGuideNo, investmentGuideAttachments)
-            }
-            // loading={imageLoading || loading}
+            onPress={() => addInvestment()}
           />
         </View>
       </View>

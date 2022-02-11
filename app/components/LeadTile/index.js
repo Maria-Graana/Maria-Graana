@@ -89,6 +89,7 @@ class LeadTile extends React.Component {
       assignLeadTo,
       goToHistory,
       getCallHistory,
+      addGuideReference = null,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -285,6 +286,16 @@ class LeadTile extends React.Component {
                           }}
                           title="Re-Assign"
                         />
+                        {data && !data.guideReference ? (
+                          <Menu.Item
+                            onPress={() => {
+                              addGuideReference()
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Add Guide Reference #"
+                          />
+                        ) : null}
+
                         <Menu.Item onPress={() => {}} title="Delete" disabled />
                       </Menu>
                     ) : null}
@@ -336,7 +347,7 @@ class LeadTile extends React.Component {
                             }}
                             title="Assign To Investment Advisor"
                           />
-                        ) : data && data.purpose == 'sell' ? (
+                        ) : data && (data.purpose == 'sell' || data.purpose == 'rentout') ? (
                           <Menu.Item
                             onPress={() => {
                               assignLeadTo(data)

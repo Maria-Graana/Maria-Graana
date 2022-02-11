@@ -600,8 +600,9 @@ class LeadViewing extends React.Component {
     const { lead, user, permissions } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
-      this.openModal()
+      // this.openModal()
       this.setProperty(property)
+      this.goToTimeSlots(property)
     }
   }
 
@@ -948,10 +949,10 @@ class LeadViewing extends React.Component {
     }
     console.log(body)
     if (body.propertyType === 'graana') {
-          // // for graana properties
+      // // for graana properties
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
     } else {
-          // for arms properties
+      // for arms properties
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
     }
     formData['amount'] = ''

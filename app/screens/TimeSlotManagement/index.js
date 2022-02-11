@@ -293,9 +293,17 @@ function TimeSlotManagement(props) {
   }
 
   const createViewing = (body) => {
+    const { navigation } = props
     axios
       .post(`/api/leads/viewing`, body)
-      .then((res) => {})
+      .then((res) => {
+        if (res) {
+          helper.successToast('TASK ADDED SUCCESSFULLY!')
+          navigation.goBack()
+        } else {
+          helper.errorToast('SOMETHING WENT WRONG!')
+        }
+      })
       .catch((error) => {
         console.log(error)
       })
@@ -352,15 +360,19 @@ function TimeSlotManagement(props) {
       copyData.end = endTime
       copyData.slots = tempSlot
 
+      // let copy2Data = Object.assign({}, copyData)
+      // delete copy2Data.leadId
+      // copy2Data.armsLeadId = copyData.leadId
+
       if (copyData && !copyData.id) createViewing(copyData)
-      saveOrUpdateDiaryTask(copyData).then((response) => {
-        if (response) {
-          helper.successToast('TASK ADDED SUCCESSFULLY!')
-          navigation.goBack()
-        } else {
-          helper.errorToast('SOMETHING WENT WRONG!')
-        }
-      })
+      // saveOrUpdateDiaryTask(copy2Data).then((response) => {
+      //   if (response) {
+      //     helper.successToast('TASK ADDED SUCCESSFULLY!')
+      //     navigation.goBack()
+      //   } else {
+      //     helper.errorToast('SOMETHING WENT WRONG!')
+      //   }
+      // })
     } else {
       if (sortedAray) {
         dispatch(setSlotData(date, startTime, endTime, slots))
@@ -837,7 +849,7 @@ function TimeSlotManagement(props) {
           onPress={(value) => setCalendarVisible(value)}
         />
       </View>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={styles.slotView}>
         <ScrollView
           style={{ marginTop: '9%' }}
           scrollEnabled={false}
@@ -925,7 +937,7 @@ function TimeSlotManagement(props) {
                                 key={i}
                               >
                                 {typeof setColor(e) == 'number' && (
-                                  <View style={styles.taskLengthView}>
+                                  <View style={styles.taskLengthView} key={i}>
                                     <Text style={{ color: 'black' }}>{`+${setColor(e)}`}</Text>
                                   </View>
                                 )}

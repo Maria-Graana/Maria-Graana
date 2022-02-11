@@ -47,7 +47,7 @@ const DiaryHelper = {
     if (diary && diary.armsProjectLeadId) {
       return 'Invest'
     } else if (diary && diary.armsLeadId && diary.armsLead) {
-      if (diary.armsLead.purpose === 'sale') {
+      if (diary.armsLead.purpose === 'buy' || diary.armsLead.purpose === 'sale') {
         return 'Buy'
       } else {
         return 'Rent'

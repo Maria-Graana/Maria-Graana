@@ -57,7 +57,7 @@ class LeadDetail extends React.Component {
           this.fetchLead('/api/leads/project/byId')
         }
       )
-    } else if (purposeTab === 'sale') {
+    } else if (purposeTab === 'sale' || purposeTab === 'buy') {
       this.setState(
         {
           type: 'Buy',
@@ -409,7 +409,7 @@ class LeadDetail extends React.Component {
     const regex = /(<([^>]+)>)/gi
     let leadSize = this.leadSize(lead.size_unit)
     if (type === 'Property') {
-      let purpose = lead.purpose === 'sale' ? 'Buy' : 'Rent'
+      let purpose = lead.purpose === 'sale' || lead.purpose === 'buy' ? 'Buy' : 'Rent'
       type = purpose
     }
     let additionalInformation = []
@@ -431,20 +431,23 @@ class LeadDetail extends React.Component {
           <View style={styles.cardContainer}>
             <View style={styles.cardItemGrey}>
               <View style={styles.rowContainer}>
-                <View>
-                  <Text style={styles.headingText}>Client Name </Text>
-                  {screenName === 'diary' ? (
-                    <Text style={styles.labelText}>
-                      {setCustomerName === 'undefined'
-                        ? setCustomerName
-                        : lead.customer && lead.customer.customerName}
-                    </Text>
-                  ) : (
-                    <Text style={styles.labelText}>
-                      {lead.customer && lead.customer.customerName}
-                    </Text>
-                  )}
-                </View>
+                {lead && lead.assigned_to_armsuser_id === user.id ? (
+                  <View>
+                    <Text style={styles.headingText}>Client Name </Text>
+                    {screenName === 'diary' ? (
+                      <Text style={styles.labelText}>
+                        {setCustomerName === 'undefined'
+                          ? setCustomerName
+                          : lead.customer && lead.customer.customerName}
+                      </Text>
+                    ) : (
+                      <Text style={styles.labelText}>
+                        {lead.customer && lead.customer.customerName}
+                      </Text>
+                    )}
+                  </View>
+                ) : null}
+
                 {purposeTab !== 'property' && (
                   <TouchableOpacity
                     onPress={() => this.goToClientsDetail()}

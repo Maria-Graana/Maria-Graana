@@ -347,7 +347,7 @@ class LeadTile extends React.Component {
                             }}
                             title="Assign To Investment Advisor"
                           />
-                        ) : data && data.purpose == 'sell' ? (
+                        ) : data && (data.purpose == 'sell' || data.purpose == 'rentout') ? (
                           <Menu.Item
                             onPress={() => {
                               assignLeadTo(data)

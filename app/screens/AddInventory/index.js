@@ -4,9 +4,9 @@ import axios from 'axios'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
-import * as Permissions from 'expo-permissions'
 import { StyleProvider } from 'native-base'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -15,18 +15,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import { StyleProvider } from 'native-base'
-import * as Location from 'expo-location'
-import * as ImagePicker from 'expo-image-picker'
-import getTheme from '../../../native-base-theme/components'
-import formTheme from '../../../native-base-theme/variables/formTheme'
-import axios from 'axios'
-import DetailForm from './detailForm'
-import StaticData from '../../StaticData'
-import AppStyles from '../../AppStyles'
-import helper from '../../helper'
-import ImageBrowser from '../../components/ImageBrowser/ImageBrowser'
-import * as ImageManipulator from 'expo-image-manipulator'
 import * as MediaLibrary from 'expo-media-library'
 import { Camera } from 'expo-camera'
 import getTheme from '../../../native-base-theme/components'

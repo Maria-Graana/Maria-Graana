@@ -2,7 +2,6 @@
 
 import * as FileSystem from 'expo-file-system'
 import * as MediaLibrary from 'expo-media-library'
-import * as Permissions from 'expo-permissions'
 import React from 'react'
 import { Image, Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
@@ -12,8 +11,6 @@ import CMBTN from '../../components/CMBTN'
 import helper from '../../helper'
 import PaymentMethods from '../../PaymentMethods'
 import ViewDocs from '../ViewDocs'
-import * as MediaLibrary from 'expo-media-library'
-import * as FileSystem from 'expo-file-system'
 import styles from './style'
 
 class BookingDetailsModal extends React.Component {

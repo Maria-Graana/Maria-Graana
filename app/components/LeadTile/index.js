@@ -4,12 +4,16 @@ import axios from 'axios'
 import moment from 'moment'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { Menu } from 'react-native-paper'
 import { connect } from 'react-redux'
 import phone from '../../../assets/img/phone2.png'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
+import { Entypo } from '@expo/vector-icons'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 class LeadTile extends React.Component {
   constructor(props) {
@@ -31,6 +35,34 @@ class LeadTile extends React.Component {
     return size
   }
 
+  leadStatus = () => {
+    const { data } = this.props
+    if (data && data.status) {
+      if (
+        data.status === 'viewing' ||
+        data.status === 'propsure' ||
+        data.status === 'offer' ||
+        data.status === 'offer'
+      ) {
+        return 'Shortlisting'
+      }
+      if (data.status === 'meeting' || data.status === 'nurture') {
+        return 'In-Progress'
+      } else {
+        return helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
+      }
+    }
+  }
+
+  setCustomerName = () => {
+    const { user, data } = this.props
+    if (user.id === data.assigned_to_armsuser_id)
+      return (
+        data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
+      )
+    else return ' '
+  }
+
   render() {
     const {
       data,
@@ -43,17 +75,32 @@ class LeadTile extends React.Component {
       displayPhone,
       propertyLead,
       serverTime,
+      screen,
+      isMenuVisible,
+      setIsMenuVisible,
+      lead,
+      navigateFromMenu,
+      checkAssignedLead,
+      navigateToShareScreen,
+      wanted,
+      permissions,
+      screenName,
+      navigateToAssignLead,
+      assignLeadTo,
+      goToHistory,
+      getCallHistory,
+      addGuideReference = null,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
       data.shared_with_armsuser_id == user.id ||
-      propertyLead
+      (data && data.requiredProperties)
         ? styles.blueColor
         : AppStyles.darkColor
     var changeStatusColor =
       data.assigned_to_armsuser_id == user.id ||
       data.shared_with_armsuser_id == user.id ||
-      propertyLead
+      (data && data.requiredProperties)
         ? styles.tokenLabel
         : styles.tokenLabelDark
     var descriptionColor =
@@ -63,8 +110,7 @@ class LeadTile extends React.Component {
         ? styles.desBlue
         : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
-    let customerName =
-      data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
+    let customerName = this.setCustomerName()
     let areasLength =
       !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 1
         ? ` (+${Number(data.armsLeadAreas.length) - 1} ${
@@ -73,18 +119,20 @@ class LeadTile extends React.Component {
         : ''
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+    let leadStatus = this.leadStatus()
     return (
       <TouchableOpacity
+        disabled={screen === 'Leads' ? true : false}
         onLongPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             handleLongPress(data)
         }}
         onPress={() => {
           if (
-            (!user.organization && user.subRole === 'group_management') ||
+            (!user.organization && user.armsUserRole.groupManger) ||
             (user.organization && !user.organization.isPP)
           )
             navigateTo(data)
@@ -98,22 +146,15 @@ class LeadTile extends React.Component {
           ]}
         >
           <View style={[styles.rightContentView]}>
-            <View style={styles.topIcons}>
+            <View style={[styles.topIcons, screen === 'Leads' && { top: 12, right: 40 }]}>
               <View style={styles.extraStatus}>
                 <Text
                   style={[changeStatusColor, AppStyles.mrFive, styles.viewStyle]}
                   numberOfLines={1}
                 >
                   {/* Disabled Sentry in development  Sentry in */}
-                  {data.status === 'token' ? (
-                    <Text>TOKEN</Text>
-                  ) : data.status === 'meeting' ? (
-                    data.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-                  ) : (
-                    helper.showStatus(data.status.replace(/_+/g, ' ')).toUpperCase()
-                  )}
+                  {wanted ? data.armsStatus.toUpperCase() : leadStatus && leadStatus.toUpperCase()}
                 </Text>
-
                 {data.shared_with_armsuser_id && (
                   <View style={styles.sharedLead}>
                     <Text
@@ -127,40 +168,210 @@ class LeadTile extends React.Component {
                         },
                       ]}
                     >
-                      Shared Lead
+                      Referred Lead
                     </Text>
                   </View>
                 )}
-              </View>
-            </View>
-            <View style={[styles.contentMainWrap]}>
-              <View style={styles.leftContent}>
-                {/* ****** Name Wrap */}
-                <View style={[styles.contentMain, AppStyles.mbTen]}>
-                  <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
-                    {/* Disabled Sentry in development  Sentry in */}
-                    {customerName != ''
-                      ? customerName
-                      : data.customer && data.customer.customerName}
-                  </Text>
-                </View>
-
-                {/* ****** Price Wrap */}
-                {data.description != null && data.description != '' && purposeTab === 'invest' && (
-                  <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                {data && data.requiredProperties && (
+                  <View style={styles.sharedLead}>
                     <Text
                       style={[
-                        styles.normalText,
-                        AppStyles.darkColor,
-                        AppStyles.mrTen,
-                        descriptionColor,
+                        AppStyles.mrFive,
+                        styles.viewStyle,
+                        {
+                          color: AppStyles.colors.primaryColor,
+                          fontSize: AppStyles.noramlSize.fontSize,
+                          fontFamily: AppStyles.fonts.lightFont,
+                        },
+                      ]}
+                    >
+                      Provide Listings
+                    </Text>
+                  </View>
+                )}
+                {data && data.leadCategory ? (
+                  <View style={[styles.sharedLead, screen === 'Leads' && { padding: 0 }]}>
+                    <Text
+                      style={[
+                        AppStyles.mrFive,
+                        styles.viewStyle,
+                        {
+                          color: AppStyles.colors.primaryColor,
+                          fontSize: AppStyles.noramlSize.fontSize,
+                          fontFamily: AppStyles.fonts.lightFont,
+                        },
+                        {
+                          color: AppStyles.colors.primaryColor,
+                          fontSize: AppStyles.noramlSize.fontSize,
+                          fontFamily: AppStyles.fonts.lightFont,
+                        },
                       ]}
                       numberOfLines={1}
                     >
-                      {data.description}
+                      {data.leadCategory}
                     </Text>
                   </View>
-                )}
+                ) : null}
+              </View>
+            </View>
+
+            <View style={[styles.contentMainWrap]}>
+              <View style={styles.leftContent}>
+                {/* ****** Name Wrap */}
+                <View style={[styles.contentMain, AppStyles.mbTen, { flexDirection: 'row' }]}>
+                  {purposeTab === 'invest' ? (
+                    <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+                      {data.projectId && data.minPrice && data.maxPrice ? (
+                        <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
+                          {helper.convertPriceToIntegerString(
+                            data.minPrice,
+                            data.maxPrice,
+                            StaticData.Constants.any_value
+                          )}
+                        </Text>
+                      ) : null}
+                    </View>
+                  ) : (
+                    <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
+                      {/* Disabled Sentry in development  Sentry in */}
+                      {leadSize}
+                      {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
+                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
+                    </Text>
+                  )}
+
+                  {/* 3 dots menu */}
+                  <View style={{ position: 'absolute', right: -55 }}>
+                    {screen === 'Leads' && !wanted ? (
+                      <Menu
+                        visible={isMenuVisible && data.id === lead.id}
+                        onDismiss={() => setIsMenuVisible(false, data)}
+                        anchor={
+                          <View>
+                            <Entypo
+                              onPress={() => setIsMenuVisible(true, data)}
+                              name="dots-three-vertical"
+                              size={26}
+                            />
+                          </View>
+                        }
+                      >
+                        <Menu.Item
+                          onPress={() => {
+                            navigateFromMenu(data, 'ScheduledTasks')
+                          }}
+                          title="Scheduled Tasks"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateFromMenu(data, 'LeadDetail')
+                          }}
+                          title="Details"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateTo(data), setIsMenuVisible(false, data)
+                          }}
+                          title="Book a Unit"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateToShareScreen(data), setIsMenuVisible(false, data)
+                          }}
+                          title="Refer"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            checkAssignedLead(lead), setIsMenuVisible(false, data)
+                          }}
+                          title="Re-Assign"
+                        />
+                        {data && !data.guideReference ? (
+                          <Menu.Item
+                            onPress={() => {
+                              addGuideReference()
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Add Guide Reference #"
+                          />
+                        ) : null}
+
+                        <Menu.Item onPress={() => {}} title="Delete" disabled />
+                      </Menu>
+                    ) : null}
+                    {screen === 'Leads' && wanted ? (
+                      <Menu
+                        visible={isMenuVisible && data.id === lead.id}
+                        onDismiss={() => setIsMenuVisible(false, data)}
+                        anchor={
+                          <View>
+                            <Entypo
+                              onPress={() => setIsMenuVisible(true, data)}
+                              name="dots-three-vertical"
+                              size={26}
+                            />
+                          </View>
+                        }
+                      >
+                        <Menu.Item
+                          onPress={() => {
+                            navigateFromMenu(data, 'ScheduledTasks')
+                          }}
+                          title="Scheduled Tasks"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateFromMenu(data, 'LeadDetail')
+                          }}
+                          title="Details"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            navigateToAssignLead(data)
+                            setIsMenuVisible(false, data)
+                          }}
+                          title="Re-Assign"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            getCallHistory(data)
+                            setIsMenuVisible(false, data)
+                          }}
+                          title="Activity History"
+                        />
+                        {data && data.purpose == 'invest' ? (
+                          <Menu.Item
+                            onPress={() => {
+                              assignLeadTo(data)
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Assign To Investment Advisor"
+                          />
+                        ) : data && (data.purpose == 'sell' || data.purpose == 'rentout') ? (
+                          <Menu.Item
+                            onPress={() => {
+                              assignLeadTo(data)
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Assign To Cataloger"
+                          />
+                        ) : (
+                          data && (
+                            <Menu.Item
+                              onPress={() => {
+                                assignLeadTo(data)
+                                setIsMenuVisible(false, data)
+                              }}
+                              title="Assign To Area Manager"
+                            />
+                          )
+                        )}
+                      </Menu>
+                    ) : null}
+                  </View>
+                </View>
+
+                {/* ****** Price Wrap */}
                 {purposeTab != 'invest' ? (
                   <View style={[styles.contentMultiMain]}>
                     {!data.projectId && data.min_price && data.price ? (
@@ -175,13 +386,15 @@ class LeadTile extends React.Component {
                   </View>
                 ) : (
                   <View style={[styles.contentMultiMain]}>
-                    {data.projectId && data.minPrice && data.maxPrice ? (
+                    {data.projectId ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
-                        {helper.convertPriceToIntegerString(
-                          data.minPrice,
-                          data.maxPrice,
-                          StaticData.Constants.any_value
-                        )}
+                        {purposeTab === 'invest' &&
+                          helper.capitalize(
+                            projectName != '' ? projectName : 'Project not specified'
+                          )}
+                        {data.projectType &&
+                          data.projectType != '' &&
+                          ` - ${helper.capitalize(data.projectType)}`}
                       </Text>
                     ) : null}
                   </View>
@@ -193,9 +406,13 @@ class LeadTile extends React.Component {
                       style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                       numberOfLines={1}
                     >
-                      {leadSize}
-                      {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
-                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
+                      {!data.projectId &&
+                      data.armsLeadAreas &&
+                      data.armsLeadAreas.length > 0 &&
+                      data.armsLeadAreas[0].area
+                        ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
+                        : ''}
+                      {!data.projectId && data.city && data.city.name}
                     </Text>
                   )}
                 </View>
@@ -205,18 +422,9 @@ class LeadTile extends React.Component {
                     style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                     numberOfLines={1}
                   >
-                    {!data.projectId &&
-                    data.armsLeadAreas &&
-                    data.armsLeadAreas.length > 0 &&
-                    data.armsLeadAreas[0].area
-                      ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
-                      : ''}
-                    {!data.projectId && data.city && data.city.name}
-                    {purposeTab === 'invest' &&
-                      helper.capitalize(projectName != '' ? projectName : 'Project not specified')}
-                    {data.projectType &&
-                      data.projectType != '' &&
-                      ` - ${helper.capitalize(data.projectType)}`}
+                    {customerName != ''
+                      ? customerName
+                      : data.customer && data.customer.customerName}
                   </Text>
                 </View>
                 {/* ****** Location Wrap */}
@@ -230,18 +438,31 @@ class LeadTile extends React.Component {
                   </Text>
                 </View>
               </View>
-              <View style={styles.phoneMain}>
-                {showPhone ? (
-                  <TouchableOpacity
-                    style={styles.actionBtn}
-                    onPress={() => {
-                      callNumber(data)
-                    }}
-                  >
-                    <Image style={[styles.fireIcon, AppStyles.mlFive]} source={phone} />
-                  </TouchableOpacity>
-                ) : null}
-              </View>
+
+              {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
+                <></>
+              ) : (
+                <View style={styles.phoneMain}>
+                  {showPhone ? (
+                    <TouchableOpacity
+                      style={styles.actionBtn}
+                      onPress={() => {
+                        if (
+                          getPermissionValue(
+                            PermissionFeatures.BUY_RENT_LEADS,
+                            PermissionActions.UPDATE,
+                            permissions
+                          ) &&
+                          data.assigned_to_armsuser_id == user.id
+                        )
+                          callNumber(data)
+                      }}
+                    >
+                      <Image style={[styles.fireIcon, AppStyles.mlFive]} source={phone} />
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -254,6 +475,8 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

@@ -14,6 +14,7 @@ import PickerComponent from '../../components/Picker'
 import StaticData from '../../StaticData'
 import Search from '../../components/Search'
 import fuzzy from 'fuzzy'
+import { StackActions } from '@react-navigation/native'
 class AssignLead extends React.Component {
   constructor(props) {
     super(props)
@@ -22,56 +23,65 @@ class AssignLead extends React.Component {
       loading: true,
       selected: false,
       selectedId: null,
-      searchBy: 'myTeam',
+      // searchBy: 'myTeam',
       searchText: '',
+      selectedName: '',
     }
   }
 
   componentDidMount() {
     const { route, navigation } = this.props
-    const { screen } = route.params
-    if (screen == 'LeadDetail') {
+    const { screen, purpose } = route.params
+    if (purpose === 'reassign') {
       // for Lead Assigning this function is used
       navigation.setOptions({ title: 'SELECT TEAM MEMBER' })
       this.fetchTeam()
-    } else {
+    } else if (purpose === 'refer') {
       // For lead sharing we call this function
       navigation.setOptions({ title: 'SELECT AGENT' })
-      this.fetchShareTeam()
+      this.fetchTeam()
     }
   }
 
   fetchTeam = () => {
-    const { route } = this.props
-    const { searchBy } = this.state
+    const { user, route } = this.props
+    const { purpose } = route.params
     const { type } = route.params
-    const url =
-      type === 'Investment'
-        ? `/api/user/agents?leads=${true}&searchBy=${searchBy}`
-        : `/api/user/agents?leads=${true}&rcm=${true}&searchBy=${searchBy}`
-    axios
-      .get(url)
-      .then((res) => {
-        this.setState(
-          {
-            teamMembers: res.data,
-          },
-          () => {
-            this.setState({ loading: false })
-          }
-        )
-      })
-      .catch((error) => {
-        console.log(error)
-        this.setState({ loading: false })
-        return null
-      })
+    var leadType = ''
+    if (type === 'Investment') {
+      leadType = 'Project'
+    } else {
+      leadType = 'BuyRent'
+    }
+    if (purpose) {
+      const url =
+        purpose === 'reassign'
+          ? `/api/role/sub-users?roleId=${user.armsUserRoleId}&addManager=true`
+          : `/api/user/agents?sharing=${true}&leadType=${leadType}`
+      axios
+        .get(url)
+        .then((res) => {
+          this.setState(
+            {
+              teamMembers: purpose === 'reassign' ? res.data : res.data.rows,
+            },
+            () => {
+              this.setState({ loading: false })
+            }
+          )
+        })
+        .catch((error) => {
+          console.log(error)
+          this.setState({ loading: false })
+          return null
+        })
+    }
   }
 
   assignLeadToSelectedMember = () => {
     const { navigation, route } = this.props
     const { selectedId } = this.state
-    const { leadId, type } = route.params
+    const { leadId, type, screenName } = route.params
     let body = {
       userId: selectedId,
       leadId: [leadId],
@@ -82,7 +92,7 @@ class AssignLead extends React.Component {
       .then((response) => {
         if (response.status === 200) {
           helper.successToast('LEAD ASSIGNED SUCCESSFULLY')
-          navigation.navigate('Leads')
+          navigation.dispatch(StackActions.pop(2))
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }
@@ -93,41 +103,24 @@ class AssignLead extends React.Component {
       })
   }
 
-  fetchShareTeam = () => {
-    const url = `/api/user/agents?sharing=${true}`
-    axios
-      .get(url)
-      .then((res) => {
-        this.setState({ teamMembers: res.data }, () => {
-          this.setState({ loading: false })
-        })
-      })
-      .catch((error) => {
-        console.log(error)
-        this.setState({ loading: false })
-        return null
-      })
-  }
-
   shareLead = () => {
     const { navigation, route } = this.props
     const { user } = this.props
-    const { selectedId } = this.state
-    const { leadId, type } = route.params
+    const { selectedId, selectedName } = this.state
+    const { leadId, type, screenName } = route.params
     var leadid = []
     leadid.push(leadId)
-    const url = type == 'Investment' ? `/api/leads/project` : `/api/leads`
+    const url = type == 'Investment' ? `/api/leads/project/shareLead` : `/api/leads/shareLead`
     const body = {
-      sharedAt: new Date(),
-      shared_with_armsuser_id: selectedId,
-      last_edited_by: user.id,
+      userId: selectedId,
+      leadId,
     }
     axios
-      .patch(url, body, { params: { id: leadid } })
+      .post(url, body, { params: { id: leadid } })
       .then((res) => {
         if (res.data) {
-          helper.successToast('LEAD SHARED SUCCESSFULLY')
-          navigation.navigate('Leads')
+          helper.successToast(`Lead has successfully been referred to ${selectedName}`)
+          navigation.dispatch(StackActions.pop(2))
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }
@@ -138,6 +131,8 @@ class AssignLead extends React.Component {
   }
 
   onPressItem = (item) => {
+    const selectedName = item.firstName ? item.firstName + ' ' + item.lastName : ''
+    this.setState({ selectedName: selectedName })
     this.setSelected(item.id)
   }
 
@@ -156,9 +151,9 @@ class AssignLead extends React.Component {
   }
 
   render() {
-    const { teamMembers, loading, selected, selectedId, searchBy, searchText } = this.state
-    const { user, route } = this.props
-    const { screen } = route.params
+    const { teamMembers, loading, selected, selectedId, searchText } = this.state
+    const { route } = this.props
+    const { screen, purpose } = route.params
     let data = []
     if (searchText !== '' && data && data.length === 0) {
       data = fuzzy.filter(searchText, teamMembers, {
@@ -171,24 +166,11 @@ class AssignLead extends React.Component {
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <Search
-          placeholder={screen === 'LeadDetail' ? 'Search team members here' : 'Search Agents here'}
+          placeholder={'Search Agents here'}
           searchText={searchText}
           setSearchText={(value) => this.setState({ searchText: value })}
         />
-        {screen === 'LeadDetail' && (user.role === 'admin 3' || user.role === 'sub_admin 1') ? (
-          <View style={styles.pickerMain}>
-            <PickerComponent
-              placeholder={'Search By'}
-              data={StaticData.searchTeamBy}
-              customStyle={styles.pickerStyle}
-              customIconStyle={styles.customIconStyle}
-              onValueChange={this.changeSearchValue}
-              selectedItem={searchBy}
-            />
-          </View>
-        ) : null}
-
-        {data.length ? (
+        {teamMembers.length ? (
           <FlatList
             data={data}
             renderItem={(item, index) => (
@@ -212,13 +194,13 @@ class AssignLead extends React.Component {
         <TouchableOpacity
           disabled={!selected}
           onPress={() =>
-            screen == 'LeadDetail' ? this.assignLeadToSelectedMember() : this.shareLead()
+            purpose == 'reassign' ? this.assignLeadToSelectedMember() : this.shareLead()
           }
           style={styles.assignButtonStyle}
         >
           <Text style={AppStyles.btnText}>
             {' '}
-            {screen == 'LeadDetail' ? 'ASSIGN LEAD' : 'SHARE LEAD'}{' '}
+            {purpose == 'refer' ? 'REFER LEAD' : 'ASSIGN LEAD'}{' '}
           </Text>
         </TouchableOpacity>
       </View>

@@ -42,7 +42,7 @@ var CANCEL_INDEX = 1
 class PropertyPropsure extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       open: false,
@@ -61,7 +61,7 @@ class PropertyPropsure extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       menuShow: false,
@@ -252,8 +252,12 @@ class PropertyPropsure extends React.Component {
   }
 
   showReportsModal = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(
+      user,
+      lead,
+      permissions
+    )
     this.setState({
       isVisible: true,
       selectedPropertyId: property.id,
@@ -298,8 +302,12 @@ class PropertyPropsure extends React.Component {
   }
 
   showDocumentModal = (propsureReports, property) => {
-    const { lead, user, dispatch } = this.props
-    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
+    const { lead, user, dispatch, permissions } = this.props
+    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(
+      user,
+      lead,
+      permissions
+    )
     let installment = property.cmInstallment
       ? property.cmInstallment
       : {
@@ -1310,6 +1318,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    permissions: store.user.permissions,
   }
 }
 

@@ -10,11 +10,13 @@ import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import SortImg from '../../../assets/img/sort.png'
+import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
 import { getItem, storeItem } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
+import DateSearchFilter from '../../components/DateSearchFilter'
 import LeadTile from '../../components/LeadTile'
 import LoadingNoResult from '../../components/LoadingNoResult'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
@@ -26,12 +28,14 @@ import Search from '../../components/Search'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import config from '../../config'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
-import DateSearchFilter from '../../components/DateSearchFilter'
 
 var BUTTONS = [
   'Assign to team member',
@@ -44,6 +48,7 @@ var CANCEL_INDEX = 3
 class RentLeads extends React.Component {
   constructor(props) {
     super(props)
+    const { permissions } = this.props
     this.state = {
       leadsData: [],
       statusFilter: '',
@@ -72,6 +77,18 @@ class RentLeads extends React.Component {
       selectedClientContacts: [],
       statusFilterType: 'id',
       comment: null,
+      newActionModal: false,
+      fabActions: [],
+      createBuyRentLead: getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
+      createProjectLead: getPermissionValue(
+        PermissionFeatures.PROJECT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
     }
   }
 
@@ -81,6 +98,7 @@ class RentLeads extends React.Component {
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()
+      this.setFabActions()
     })
   }
 
@@ -104,17 +122,25 @@ class RentLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const sortValue = await this.getSortOrderFromStorage()
-    const statusValue = await getItem('statusFilterRent')
-    if (statusValue) {
-      this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+    const { hasBooking = false } = this.props.route.params // for Deals we need to set filter to closed won
+    if (hasBooking) {
+      const sortValue = await this.getSortOrderFromStorage()
+      this.setState({ statusFilter: 'closed_won', sort: sortValue }, () => {
         this.fetchLeads()
       })
     } else {
-      storeItem('statusFilterRent', 'all')
-      this.setState({ statusFilter: 'all', sort: sortValue }, () => {
-        this.fetchLeads()
-      })
+      const sortValue = await this.getSortOrderFromStorage()
+      const statusValue = await getItem('statusFilterRent')
+      if (statusValue) {
+        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      } else {
+        storeItem('statusFilterRent', 'open')
+        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      }
     }
   }
 
@@ -146,18 +172,62 @@ class RentLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
+    const { permissions, user } = this.props
     this.setState({ loading: true })
+    const { hasBooking } = this.props.route.params
     let query = ``
-    if (showSearchBar) {
-      if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose=rent&id=${searchText}&pageSize=${pageSize}&page=${page}`
+    if (helper.getAiraPermission(permissions)) {
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&aira=${true}&page=${page}&hasBooking=${hasBooking}`)
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`)
+        }
       } else {
-        query = `/api/leads?purpose=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        if (statusFilter === 'shortlisting') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
+            : (query = `/api/leads?purpose[]=rent&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&status=${statusFilter}${sort}`)
+        }
       }
     } else {
-      query = `/api/leads?purpose=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`)
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&assignToMe=${true}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}`)
+        }
+      } else {
+        if (statusFilter === 'shortlisting') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        }
+      }
     }
     axios
       .get(`${query}`)
@@ -204,9 +274,20 @@ class RentLeads extends React.Component {
 
   navigateTo = (data) => {
     this.props.dispatch(setlead(data))
+    const { screen } = this.props.route.params
     let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'rent' })
+    if (this.props.route.params?.screen === 'MyDeals') {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'rent',
+        screenName: screen,
+      })
+    } else if (data.readAt === null) {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'rent',
+        screenName: screen,
+      })
     } else {
       if (data.status === 'open') {
         page = 'Match'
@@ -230,10 +311,17 @@ class RentLeads extends React.Component {
       ) {
         page = 'Payment'
       }
-      this.props.navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: data },
-      })
+      if (data && data.requiredProperties) {
+        this.props.navigation.navigate('PropertyTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      } else {
+        this.props.navigation.navigate('RCMLeadTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      }
     }
   }
 
@@ -315,18 +403,24 @@ class RentLeads extends React.Component {
   }
 
   callNumber = (data) => {
-    const { contacts } = this.props
+    const { contacts, dispatch } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
         let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts }, () => {
+        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
           if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            // multiple numbers to select
+            //  multiple numbers to select
             this.showMultiPhoneModal(true)
           } else {
-            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-            this.sendCallStatus()
+            dispatch(
+              setCallPayload(
+                selectedClientContacts ? selectedClientContacts.phone : null,
+                'phone',
+                data
+              )
+            )
             helper.callNumber(selectedClientContacts, contacts)
+            // this.showStatusFeedbackModal(true, 'call')
           }
         })
       }
@@ -335,6 +429,34 @@ class RentLeads extends React.Component {
 
   showMultiPhoneModal = (value) => {
     this.setState({ isMultiPhoneModalVisible: value })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+
+  handlePhoneSelectDone = (phone) => {
+    const { contacts, dispatch } = this.props
+    const { selectedLead } = this.state
+    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
+    if (phone) {
+      copySelectedClientContacts.phone = phone.number
+      copySelectedClientContacts.url = 'tel:' + phone.number
+      this.setState(
+        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
+        () => {
+          dispatch(
+            setCallPayload(
+              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
+              'phone',
+              selectedLead
+            )
+          )
+          helper.callNumber(copySelectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
+        }
+      )
+    }
   }
 
   handlePhoneSelectDone = (phone) => {
@@ -568,28 +690,41 @@ class RentLeads extends React.Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
-  sendStatusCall = (status, id) => {
-    const { selectedLead, currentCall } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: selectedLead.id,
-      title: 'call',
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
-  }
-
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+
   changeStatusType = (status) => {
     this.setState({ statusFilterType: status })
+  }
+
+  setFabActions = () => {
+    const { createBuyRentLead, createProjectLead } = this.state
+    let fabActions = []
+    if (createBuyRentLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Buy/Rent Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+      })
+    }
+    if (createProjectLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Investment Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+      })
+    }
+    this.setState({
+      fabActions: fabActions,
+    })
   }
 
   render() {
@@ -610,7 +745,6 @@ class RentLeads extends React.Component {
       serverTime,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       selectedLead,
@@ -618,8 +752,13 @@ class RentLeads extends React.Component {
       isMultiPhoneModalVisible,
       statusFilterType,
       comment,
+      newActionModal,
+      fabActions,
+      createBuyRentLead,
+      createProjectLead,
     } = this.state
-    const { user, navigation } = this.props
+    const { user, navigation, permissions } = this.props
+    const { screen, hasBooking = false } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -671,16 +810,20 @@ class RentLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Lead Status'}
-                  data={leadStatus}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
+              {hasBooking ? (
+                <View style={styles.emptyViewWidth}></View>
+              ) : (
+                <View style={styles.pickerMain}>
+                  <PickerComponent
+                    placeholder={'Lead Status'}
+                    data={StaticData.buyRentFilter}
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.changeStatus}
+                    selectedItem={statusFilter}
+                  />
+                </View>
+              )}
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}
@@ -711,7 +854,8 @@ class RentLeads extends React.Component {
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
               <View>
-                {(!user.organization && user.subRole === 'group_management') ||
+                {/* {console.log(user)} */}
+                {(!user.organization && user.armsUserRole.groupManger) ||
                 (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}
@@ -722,6 +866,7 @@ class RentLeads extends React.Component {
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
+                    screenName={screen}
                   />
                 ) : (
                   <PPLeadTile
@@ -760,75 +905,56 @@ class RentLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {user.organization && user.organization.isPP ? (
-          <Fab
-            active="true"
-            containerStyle={{ zIndex: 20 }}
-            style={{ backgroundColor: AppStyles.colors.primaryColor }}
-            position="bottomRight"
-            onPress={() => this.goToFormPage('AddRCMLead', 'RCM', null, null)}
-          >
-            <Ionicons name="md-add" color="#ffffff" />
-          </Fab>
-        ) : (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
           <FAB.Group
             open={open}
             icon="plus"
             style={{ marginBottom: 16 }}
             fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
             color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              {
-                icon: 'plus',
-                label: 'Buy/Rent Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-              },
-              {
-                icon: 'plus',
-                label: 'Investment Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-              },
-            ]}
+            actions={fabActions}
             onStateChange={({ open }) => this.setState({ open })}
           />
-        )}
-
+        ) : null}
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={selectedClientContacts.payload}
           showMultiPhoneModal={this.showMultiPhoneModal}
           handlePhoneSelectDone={this.handlePhoneSelectDone}
         />
+
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          modalMode={modalMode}
+          rejectLead={(body) => this.rejectLead(body)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'RCM'}
+        />
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
+        />
+
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'RCM'}
-          comment={comment}
         />
 
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          addMeeting={() => this.openModalInMeetingMode()}
-          leadType={'RCM'}
-          goToViewingScreen={this.goToViewingScreen}
-          currentCall={currentCall}
-        />
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -846,6 +972,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(RentLeads)

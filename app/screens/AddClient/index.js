@@ -41,6 +41,10 @@ class AddClient extends Component {
         secondaryAddress: '',
         contact1: '',
         contact2: '',
+        accountTitle: '',
+        bank: '',
+        iBan: '',
+        bookUnit: true,
       },
       emailValidate: true,
       phoneValidate: false,
@@ -56,6 +60,7 @@ class AddClient extends Component {
       callingCode2: defaultCountry.code,
       contactNumberCheck: '',
       countries: [],
+      accountsOptionFields: false,
     }
   }
   componentDidMount() {
@@ -201,6 +206,8 @@ class AddClient extends Component {
       client.customerContacts.length > 2
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
+
+    console.log(client)
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,
@@ -211,6 +218,9 @@ class AddClient extends Component {
       familyMember: client.familyMember,
       contact1: number1,
       contact2: number2,
+      iBan: client.iBan,
+      bank: client.bank,
+      accountTitle: client.accountTitle,
     }
     this.setState({ formData })
   }
@@ -292,6 +302,8 @@ class AddClient extends Component {
     let phone1 = this.checkNum(formData.contactNumber, callingCode)
     let phone2 = this.checkNum(formData.contact1, callingCode1)
     let phone3 = this.checkNum(formData.contact2, callingCode2)
+    const {screenName } = this.props.route.params
+    if (screenName === 'Payments') {
     let body = {
       first_name: helper.capitalize(formData.firstName),
       last_name: helper.capitalize(formData.lastName),
@@ -315,10 +327,47 @@ class AddClient extends Component {
         dialCode: callingCode2,
       },
       familyMember: formData.familyMember,
+      bank: formData.bank,
+      accountTitle: formData.accountTitle,
+      iBan: formData.iBan,
+      bookUnit: formData.bookUnit,
     }
     if (!body.contact1.contact1) delete body.contact1
     if (!body.contact2.contact2) delete body.contact2
+    return body}
+    else{
+      let body = {
+        first_name: helper.capitalize(formData.firstName),
+        last_name: helper.capitalize(formData.lastName),
+        email: formData.email,
+        cnic: formData.cnic,
+        phone: {
+          countryCode: callingCode === '+92' ? 'PK' : countryCode,
+          phone: phone1 ? phone1.replace(/\s+/g, '') : null,
+          dialCode: callingCode,
+        },
+        address: formData.address,
+        secondary_address: formData.secondaryAddress,
+        contact1: {
+          countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
+          contact1: phone2 ? phone2.replace(/\s+/g, '') : null,
+          dialCode: callingCode1,
+        },
+        contact2: {
+          countryCode: callingCode2 === '+92' ? 'PK' : countryCode2,
+          contact2: phone3 ? phone3.replace(/\s+/g, '') : null,
+          dialCode: callingCode2,
+        },
+        familyMember: formData.familyMember,
+        bank: formData.bank,
+        accountTitle: formData.accountTitle,
+        iBan: formData.iBan,
+      }
+      if (!body.contact1.contact1) delete body.contact1
+    if (!body.contact2.contact2) delete body.contact2
     return body
+    }
+    
   }
 
   updatePayload = () => {
@@ -376,6 +425,10 @@ class AddClient extends Component {
         dialCode: newCallingCode2,
       },
       familyMember: formData.familyMember,
+      bank: formData.bank,
+      accountTitle: formData.accountTitle,
+      iBan: formData.iBan,
+      bookunit: formData.bookunit,
     }
     body.customersContacts = []
     body.customersContacts.push(body.phone)
@@ -387,15 +440,43 @@ class AddClient extends Component {
     delete body.contact2
     return body
   }
-
+  checkRequiredField = () => {
+    const { formData } = this.state
+    let checkOptionalFields = false
+    if (formData.bank === '') {
+      if (
+        (formData.iBan && formData.iBan !== '') ||
+        (formData.accountTitle && formData.accountTitle !== '')
+      )
+        checkOptionalFields = true
+    }
+    if (formData.iBan === '') {
+      if (
+        (formData.bank && formData.bank !== '') ||
+        (formData.accountTitle && formData.accountTitle !== '')
+      )
+        checkOptionalFields = true
+    }
+    if (formData.accountTitle === '') {
+      if ((formData.iBan && formData.iBan !== '') || (formData.bank && formData.bank !== ''))
+        checkOptionalFields = true
+    }
+    return checkOptionalFields
+  }
   formSubmit = () => {
     const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
     const { route, navigation, contacts } = this.props
     const { update, client, isFromDropDown, screenName, isPOC } = route.params
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
-    if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      (screenName === 'Payments' ? !formData.cnic : !formData.contactNumber) ||
+      this.checkRequiredField()
+    ) {
       this.setState({
         checkValidation: true,
+        accountsOptionFields: this.checkRequiredField(),
       })
     } else {
       if (emailValidate && !phoneValidate && !cnicValidate) {
@@ -448,7 +529,6 @@ class AddClient extends Component {
             })
         } else {
           let body = this.updatePayload()
-          console.log('body: ', body)
           this.setState({ loading: true })
           axios
             .patch(`/api/customer/update?id=${client.id}`, body)
@@ -458,7 +538,7 @@ class AddClient extends Component {
               } else {
                 helper.successToast('CLIENT UPDATED')
                 body.name = body.first_name + ' ' + body.last_name
-                // this.call(body)
+                //this.call(body)
                 navigation.goBack()
               }
             })
@@ -519,12 +599,12 @@ class AddClient extends Component {
       countryCode,
       countryCode1,
       countryCode2,
-      callingCode,
       contactNumberCheck,
       loading,
+      accountsOptionFields,
     } = this.state
     const { route } = this.props
-    const { update } = route.params
+    const { update, client, screenName } = route.params
     return (
       <View style={[AppStyles.container]}>
         <StyleProvider style={getTheme(formTheme)}>
@@ -554,6 +634,9 @@ class AddClient extends Component {
                     validate={this.validate}
                     loading={loading}
                     hello={this.hello}
+                    accountsOptionFields={accountsOptionFields}
+                    client={client}
+                    screenName={screenName}
                   />
                 </View>
               </TouchableWithoutFeedback>

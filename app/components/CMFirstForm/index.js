@@ -14,6 +14,8 @@ import PaymentTile from '../../components/PaymentTile'
 import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import helper from '../../helper'
+import TouchableInput from '../TouchableInput'
+import { Client } from '../../hoc/role'
 
 class CMFirstForm extends Component {
   constructor(props) {
@@ -24,6 +26,8 @@ class CMFirstForm extends Component {
     const { unitPearlDetailsData } = this.props
     if (unitPearlDetailsData && 'pearlArea' in unitPearlDetailsData) {
       return unitPearlDetailsData.pearlArea < 50 ? StaticData.onlyUnitType : StaticData.unitType
+    } else {
+      return StaticData.onlyUnitType
     }
   }
 
@@ -83,6 +87,10 @@ class CMFirstForm extends Component {
       installmentFrequency,
       paymentPlanDuration,
       lead,
+      openUnitsTable,
+      checkValidation,
+      handleClientClick,
+      updatePermission,
     } = this.props
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
@@ -97,7 +105,7 @@ class CMFirstForm extends Component {
             name={'project'}
             placeholder="Project"
             selectedItem={firstFormData.project}
-            // enabled={checkLeadClosedOrNot}
+            enabled={updatePermission}
           />
           {firstFormValidate === true && !firstFormData.project && firstFormData.project === '' && (
             <ErrorMessage errorMessage={'Required'} />
@@ -110,7 +118,7 @@ class CMFirstForm extends Component {
             name={'floor'}
             placeholder="Floor"
             selectedItem={firstFormData.floor}
-            // enabled={checkLeadClosedOrNot}
+            enabled={updatePermission}
           />
           {firstFormValidate === true && !firstFormData.floor && firstFormData.floor === '' && (
             <ErrorMessage errorMessage={'Required'} />
@@ -123,7 +131,7 @@ class CMFirstForm extends Component {
             name={'unitType'}
             placeholder="Unit Type"
             selectedItem={firstFormData.unitType}
-            // enabled={checkLeadClosedOrNot}
+            enabled={updatePermission}
           />
           {firstFormValidate === true && !firstFormData.floor && firstFormData.floor === '' && (
             <ErrorMessage errorMessage={'Required'} />
@@ -178,21 +186,39 @@ class CMFirstForm extends Component {
         ) : null}
         {!pearlUnit ? (
           <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
-            <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
-              <PickerComponent
-                onValueChange={handleFirstForm}
-                data={pickerUnits}
-                name={'unit'}
-                placeholder="Unit"
-                selectedItem={firstFormData.unit}
-                // enabled={checkLeadClosedOrNot}
-                customStyle={styles.equalHeight}
-              />
-              {firstFormValidate === true && !firstFormData.unit && firstFormData.unit === '' && (
-                <ErrorMessage errorMessage={'Required'} />
-              )}
-            </View>
-            <View style={styles.mainDetailViewBtn}>
+            {firstFormData.unit === '' || !firstFormData.unit ? (
+              <View style={[styles.unitSubmitView, { paddingTop: 10 }]}>
+                <TouchableOpacity
+                  disabled={firstFormData.unitType === '' || !firstFormData.unitType ? true : false}
+                  style={[styles.unitDetailBtn]}
+                  onPress={openUnitsTable}
+                >
+                  <Text style={styles.detailBtnText}>Select Unit</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.unitDetailInput}>
+                <SimpleInputText
+                  name={'Selected Unit'}
+                  fromatName={''}
+                  placeholder={'Selected Unit'}
+                  label={'UNIT'}
+                  value={firstFormData.unitName}
+                  formatValue={''}
+                  editable={true}
+                  keyboardType={'numeric'}
+                  onClicked={openUnitsTable}
+                  onPress={true}
+                  onChangeHandle={() => {}}
+                />
+              </View>
+            )}
+            <View
+              style={[
+                [styles.mainDetailViewBtn, { paddingTop: 10 }],
+                firstFormData.unit === '' || !firstFormData.unit ? { width: '50%' } : null,
+              ]}
+            >
               <TouchableOpacity
                 style={[styles.unitDetailBtn]}
                 onPress={() => {
@@ -223,7 +249,7 @@ class CMFirstForm extends Component {
                 name={'productId'}
                 placeholder="Investment Product"
                 selectedItem={firstFormData.productId}
-                // enabled={checkLeadClosedOrNot}
+                enabled={updatePermission}
                 customStyle={styles.equalHeight}
               />
               {firstFormValidate === true && !firstFormData.productId && (
@@ -234,7 +260,8 @@ class CMFirstForm extends Component {
               <TouchableOpacity
                 style={[styles.unitDetailBtn]}
                 onPress={() => {
-                  firstFormData.productId != null &&
+                  updatePermission &&
+                    firstFormData.productId != null &&
                     firstFormData.productId != '' &&
                     openProductDetailsModal()
                 }}
@@ -254,7 +281,7 @@ class CMFirstForm extends Component {
               name={'paymentPlan'}
               placeholder="Payment Plan"
               selectedItem={firstFormData.paymentPlan}
-              // enabled={checkLeadClosedOrNot}
+              enabled={updatePermission}
             />
             {firstFormValidate === true && firstFormData.paymentPlan === 'no' && (
               <ErrorMessage errorMessage={'Required'} />
@@ -270,7 +297,11 @@ class CMFirstForm extends Component {
                 name={'paymentPlanDuration'}
                 placeholder="Payment Plan Duration"
                 selectedItem={firstFormData.paymentPlanDuration}
-                enabled={paymentPlanDuration && paymentPlanDuration.length === 1 ? false : true}
+                enabled={
+                  updatePermission && paymentPlanDuration && paymentPlanDuration.length === 1
+                    ? false
+                    : true
+                }
               />
               {firstFormValidate === true && !firstFormData.paymentPlanDuration && (
                 <ErrorMessage errorMessage={'Required'} />
@@ -283,7 +314,11 @@ class CMFirstForm extends Component {
                 name={'installmentFrequency'}
                 placeholder="Installment Frequency"
                 selectedItem={firstFormData.installmentFrequency}
-                enabled={installmentFrequency && installmentFrequency.length === 1 ? false : true}
+                enabled={
+                  updatePermission && installmentFrequency && installmentFrequency.length === 1
+                    ? false
+                    : true
+                }
               />
               {firstFormValidate === true && !firstFormData.installmentFrequency && (
                 <ErrorMessage errorMessage={'Required'} />
@@ -301,11 +336,15 @@ class CMFirstForm extends Component {
           onChangeHandle={handleFirstForm}
           formatValue={''}
           editable={
-            (firstFormData.unit != null &&
+            (updatePermission &&
+              firstFormData.unit != null &&
               firstFormData.unit != '' &&
               firstFormData.productId != null &&
               firstFormData.productId != '') ||
-            (pearlUnit && firstFormData.productId != null && firstFormData.productId != '')
+            (updatePermission &&
+              pearlUnit &&
+              firstFormData.productId != null &&
+              firstFormData.productId != '')
           }
           fromatName={false}
         />
@@ -319,11 +358,15 @@ class CMFirstForm extends Component {
           formatValue={''}
           keyboardType={'numeric'}
           editable={
-            (firstFormData.unit != null &&
+            (updatePermission &&
+              firstFormData.unit != null &&
               firstFormData.unit != '' &&
               firstFormData.productId != null &&
               firstFormData.productId != '') ||
-            (pearlUnit && firstFormData.productId != null && firstFormData.productId != '')
+            (updatePermission &&
+              pearlUnit &&
+              firstFormData.productId != null &&
+              firstFormData.productId != '')
           }
         />
         {checkFirstFormPayment && (
@@ -332,7 +375,7 @@ class CMFirstForm extends Component {
               currencyConvert={currencyConvert}
               count={''}
               data={dataForPaymentTile}
-              editTileForscreenOne={editTokenPayment}
+              editTileForscreenOne={updatePermission ? () => editTokenPayment() : null}
               tileForToken={true}
             />
             {/* {firstFormValidate === true && checkFirstFormPayment ? (
@@ -341,26 +384,6 @@ class CMFirstForm extends Component {
           </View>
         )}
 
-        {/* **************************************** */}
-        {cnicEditable != false && (
-          <SimpleInputText
-            name={'cnic'}
-            placeholder={'Client CNIC'}
-            label={'CLIENT CNIC'}
-            value={firstFormData.cnic}
-            keyboardType={'numeric'}
-            onChangeHandle={handleFirstForm}
-            formatValue={''}
-            editable={cnicEditable}
-            fromatName={false}
-          />
-        )}
-        {(firstFormValidate === true && firstFormData.cnic === null) ||
-        firstFormData.cnic === '' ? (
-          <ErrorMessage errorMessage={'Required'} />
-        ) : cnicValidate ? (
-          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
-        ) : null}
         {/* **************************************** */}
         <View style={{ paddingVertical: 10 }}>
           <View style={styles.backgroundBlue}>
@@ -372,6 +395,43 @@ class CMFirstForm extends Component {
             <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
+        <View>
+          <TouchableInput
+            placeholder="Client"
+            label={'clientName'}
+            onPress={() => {
+              if (updatePermission) handleClientClick()
+            }}
+            value={firstFormData.clientName}
+            showError={checkValidation === true && firstFormData.customerId === ''}
+            errorMessage="Required"
+          />
+        </View>
+        {/* **************************************** */}
+        {cnicEditable && (
+          <SimpleInputText
+            name={'cnic'}
+            placeholder={'Client CNIC'}
+            label={'CLIENT CNIC'}
+            value={helper.normalizeCnic(firstFormData.cnic)}
+            keyboardType={'numeric'}
+            onChangeHandle={handleFirstForm}
+            formatValue={''}
+            editable={cnicEditable && updatePermission}
+            fromatName={false}
+          />
+        )}
+        {/* {cnicEditable != false && firstFormData.cnic === null && (
+         <ErrorMessage errorMessage={'Required'} />
+        )}
+        {cnicValidate ? (
+          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        ) : null} */}
+        {firstFormData.cnic === null && firstFormValidate ? (
+          <ErrorMessage errorMessage={'Required'} />
+        ) : cnicValidate && firstFormValidate ? (
+          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        ) : null}
         <View
           style={{
             flexDirection: 'row',
@@ -385,7 +445,9 @@ class CMFirstForm extends Component {
               <TouchableOpacity
                 style={[styles.bookNowBtn]}
                 onPress={() => {
-                  checkUnitDetail === true && addPaymentModalToggle(true, 'token')
+                  checkUnitDetail === true &&
+                    updatePermission &&
+                    addPaymentModalToggle(true, 'token')
                 }}
               >
                 <Text
@@ -408,7 +470,7 @@ class CMFirstForm extends Component {
             <TouchableOpacity
               style={styles.bookNowBtn}
               onPress={() => {
-                submitFirstForm('schedulePayment')
+                if (updatePermission) submitFirstForm('schedulePayment')
               }}
             >
               <Text
@@ -425,11 +487,12 @@ class CMFirstForm extends Component {
             </TouchableOpacity>
           </View>
         </View>
+
         <View style={{ paddingVertical: 10, paddingBottom: 20 }}>
           <TouchableOpacity
             style={styles.bookNowBtn}
             onPress={() => {
-              checkLeadClosedOrNot === true && submitFirstForm('confirmation')
+              checkLeadClosedOrNot === true && updatePermission && submitFirstForm('confirmation')
             }}
           >
             <Text style={styles.bookNowBtnText}>BOOK NOW</Text>

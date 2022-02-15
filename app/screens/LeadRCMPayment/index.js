@@ -22,18 +22,27 @@ import {
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
+import {
+  clearInstrumentInformation,
+  clearInstrumentsList,
+  getInstrumentDetails,
+  setInstrumentInformation,
+} from '../../actions/addInstrument'
 import { setlead } from '../../actions/lead'
 import { setRCMPayment } from '../../actions/rcmPayment'
 import AppStyles from '../../AppStyles'
+import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import AddRCMPaymentModal from '../../components/AddRCMPaymentModal'
 import AgentTile from '../../components/AgentTile/index'
 import CMBottomNav from '../../components/CMBottomNav'
 import DeleteModal from '../../components/DeleteModal'
 import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import ViewDocs from '../../components/ViewDocs'
 import config from '../../config'
 import helper from '../../helper'
@@ -41,16 +50,8 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import styles from './styles'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import moment from 'moment'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import {
-  clearInstrumentInformation,
-  clearInstrumentsList,
-  getInstrumentDetails,
-  setInstrumentInformation,
-} from '../../actions/addInstrument'
-import { useValue } from 'react-native-reanimated'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -59,7 +60,7 @@ var CANCEL_INDEX = 1
 class LeadRCMPayment extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       isVisible: false,
@@ -91,7 +92,7 @@ class LeadRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -140,6 +141,7 @@ class LeadRCMPayment extends React.Component {
       accountPhoneNumbers: [],
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
+      newActionModal: false,
     }
   }
 
@@ -283,6 +285,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   fetchOfficeLocations = () => {
+    const { user, dispatch, rcmPayment } = this.props
     axios
       .get(`/api/user/locations`)
       .then((response) => {
@@ -300,6 +303,13 @@ class LeadRCMPayment extends React.Component {
       .catch((error) => {
         console.log(`/api/user/locations`, error)
       })
+  }
+
+  setDefaultOfficeLocation = () => {
+    const { rcmPayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setRCMPayment({ ...rcmPayment, officeLocationId: defaultUserLocationId }))
+    return defaultUserLocationId
   }
 
   // *******  View Legal Documents Modal  *************
@@ -432,7 +442,8 @@ class LeadRCMPayment extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
-      officeLocationId: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
+      instrumentDuplicateError: null,
     }
     this.setState({
       modalValidation: false,
@@ -593,10 +604,14 @@ class LeadRCMPayment extends React.Component {
   showLeadPaymentModal = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
+        })
+      } else {
+        this.setState({
+          closedWon: false,
         })
       }
     }
@@ -606,14 +621,14 @@ class LeadRCMPayment extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       this.setState({
         buyerSellerCounts: res.data,
         legalDocLoader: false,
       })
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 
@@ -654,9 +669,10 @@ class LeadRCMPayment extends React.Component {
   }
 
   showConfirmationDialog = (item) => {
+    console.log('showConfirmationDialog')
     const { lead } = this.state
-    const { user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       if (lead && lead.commissions && lead.commissions.length > 0) {
         let count = 0
@@ -682,14 +698,22 @@ class LeadRCMPayment extends React.Component {
 
   renderSelectPaymentView = (item) => {
     const { lead } = this.state
+    const { permissions } = this.props
     return (
       <TouchableOpacity
         key={item.id.toString()}
-        onPress={
-          lead.shortlist_id === null
-            ? () => this.selectForPayment(item)
-            : () => this.showConfirmationDialog()
-        }
+        onPress={() => {
+          if (
+            getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.UPDATE,
+              permissions
+            )
+          ) {
+            if (lead.shortlist_id === null) this.selectForPayment(item)
+            else this.showConfirmationDialog()
+          }
+        }}
         style={styles.viewButtonStyle}
         activeOpacity={0.7}
       >
@@ -887,10 +911,14 @@ class LeadRCMPayment extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { navigation } = this.props
     const { lead } = this.state
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -1031,8 +1059,8 @@ class LeadRCMPayment extends React.Component {
       leadObject = lead
     }
     if (leadObject) {
-      axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
-        this.setState({ meetings: res.data.rows })
+      axios.get(`/api/leads/tasks?rcmLeadId=${leadObject.id}`).then((res) => {
+        this.setState({ meetings: res.data })
       })
     }
   }
@@ -1295,6 +1323,7 @@ class LeadRCMPayment extends React.Component {
         (toastMsg = 'Token Payment Added')
       errorMsg = 'Error Adding Token Payment'
     }
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(baseUrl, body)
       .then((response) => {
@@ -1395,6 +1424,16 @@ class LeadRCMPayment extends React.Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setRCMPayment({
+                  ...rcmPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...rcmPayment,
               rcmLeadId: lead.id,
@@ -1572,20 +1611,32 @@ class LeadRCMPayment extends React.Component {
 
   disableLegalDocs = (value, addedBy) => {
     const { lead } = this.state
-    axios.get(`api/leads/disablelegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
-      if (res.data.disableLegaldocuments) {
-        this.deleteLegalDocs(value, addedBy)
-      }
-    })
+    axios
+      .post(`/api/legal/document/disable?leadId=${lead.id}&addedBy=${addedBy}`)
+      .then((res) => {
+        console.log('res.data.disableLegaldocuments; ', res.data.disableLegaldocuments)
+        if (res.data.disableLegaldocuments) {
+          this.deleteLegalDocs(value, addedBy)
+        }
+      })
+      .catch((error) => {
+        console.log(`/api/legal/document/disable?leadId=${lead.id}&addedBy=${addedBy}`, error)
+      })
   }
 
   deleteLegalDocs = (value, addedBy) => {
     const { lead } = this.state
-    axios.delete(`api/leads/deleteLegalDocs?leadId=${lead.id}&addedBy=${addedBy}`).then((res) => {
-      this.setState({ loading: false })
-      if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
-      else this.setSellerCommissionApplicable(value)
-    })
+    axios
+      .delete(`/api/legal/documents?leadId=${lead.id}&addedBy=${addedBy}`)
+      .then((res) => {
+        console.log('res.data; ', res.data)
+        this.setState({ loading: false })
+        if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
+        else this.setSellerCommissionApplicable(value)
+      })
+      .catch((error) => {
+        console.log(`/api/legal/documents?leadId=${lead.id}&addedBy=${addedBy}`, error)
+      })
   }
 
   setBuyerCommissionApplicable = (value) => {
@@ -1598,6 +1649,7 @@ class LeadRCMPayment extends React.Component {
       payload.commissionNotApplicableBuyer = value
       var leadId = []
       leadId.push(lead.id)
+      console.log('payload: ', payload)
       axios
         .patch(`/api/leads`, payload, { params: { id: leadId } })
         .then((response) => {
@@ -1706,11 +1758,12 @@ class LeadRCMPayment extends React.Component {
   }
 
   closeLegalDocument = (addedBy) => {
-    const { allProperties } = this.state
+    const { allProperties, lead } = this.state
     const selectedProperty = allProperties[0]
     this.props.navigation.navigate('LegalAttachments', {
       addedBy: addedBy,
       shorlistedProperty: selectedProperty,
+      leadPurpose: lead.purpose,
     })
   }
 
@@ -1737,21 +1790,12 @@ class LeadRCMPayment extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
-    })
-  }
+    const { navigation, lead } = this.props
 
-  sendStatus = (status, id) => {
-    const { formData, meetings } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: formData.leadId,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
+    })
   }
 
   // ************ Function for Reject modal ************
@@ -1780,10 +1824,6 @@ class LeadRCMPayment extends React.Component {
 
   showStatusFeedbackModal = (value) => {
     this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
   }
 
   goToViewingScreen = () => {
@@ -1823,6 +1863,28 @@ class LeadRCMPayment extends React.Component {
     this.setState({
       isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
     })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+
+  readPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.READ,
+      permissions
+    )
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
   }
 
   render() {
@@ -1867,15 +1929,16 @@ class LeadRCMPayment extends React.Component {
       statusfeedbackModalVisible,
       modalMode,
       closedWon,
-      currentCall,
       isFollowUpMode,
-      comment,
       accountPhoneNumbers,
       accountsLoading,
       isMultiPhoneModalVisible,
+      newActionModal,
     } = this.state
-    const { navigation, user, contacts } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { navigation, user, contacts, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    let readPermission = this.readPermission()
+    let updatePermission = this.updatePermission()
 
     return !loading ? (
       <KeyboardAvoidingView
@@ -2030,6 +2093,9 @@ class LeadRCMPayment extends React.Component {
                         handleForm={this.handleBuyerForm}
                         advanceNotZero={advanceNotZero}
                         call={this.fetchPhoneNumbers}
+                        readPermission={readPermission}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     ) : (
                       <RentPaymentView
@@ -2055,6 +2121,9 @@ class LeadRCMPayment extends React.Component {
                         closeLegalDocument={this.closeLegalDocument}
                         buyerSellerCounts={buyerSellerCounts}
                         call={this.fetchPhoneNumbers}
+                        readPermission={readPermission}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     )
                   ) : null}
@@ -2072,6 +2141,29 @@ class LeadRCMPayment extends React.Component {
             </>
           )}
 
+          <StatusFeedbackModal
+            visible={statusfeedbackModalVisible}
+            showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+            commentsList={
+              modalMode === 'call'
+                ? StaticData.commentsFeedbackCall
+                : StaticData.leadClosedCommentsFeedback
+            }
+            modalMode={modalMode}
+            rejectLead={(body) => this.rejectLead(body)}
+            setNewActionModal={(value) => this.setNewActionModal(value)}
+            leadType={'RCM'}
+          />
+          <SubmitFeedbackOptionsModal
+            showModal={newActionModal}
+            modalMode={modalMode}
+            setShowModal={(value) => this.setNewActionModal(value)}
+            performFollowUp={this.openModalInFollowupMode}
+            performReject={this.goToRejectForm}
+            //call={this.callAgain}
+            goToViewingScreen={this.goToViewingScreen}
+            leadType={'RCM'}
+          />
           <MeetingFollowupModal
             closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
@@ -2079,27 +2171,8 @@ class LeadRCMPayment extends React.Component {
             lead={lead}
             leadType={'RCM'}
             getMeetingLead={this.getCallHistory}
-            comment={comment}
           />
 
-          <StatusFeedbackModal
-            visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            modalMode={modalMode}
-            commentsList={
-              modalMode === 'call'
-                ? StaticData.commentsFeedbackCall
-                : StaticData.leadClosedCommentsFeedback
-            }
-            showAction={modalMode === 'call'}
-            showFollowup={modalMode === 'call'}
-            rejectLead={(body) => this.rejectLead(body)}
-            sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addFollowup={(value) => this.openModalInFollowupMode(value)}
-            leadType={'RCM'}
-            currentCall={currentCall}
-            goToViewingScreen={this.goToViewingScreen}
-          />
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -2140,6 +2213,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

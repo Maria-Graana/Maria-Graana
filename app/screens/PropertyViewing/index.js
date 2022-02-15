@@ -15,6 +15,7 @@ import CheckListModal from '../../components/CheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
+import HistoryModal from '../../components/HistoryModal/index'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import PropAgentTile from '../../components/PropAgentTile/index'
 import PropertyBottomNav from '../../components/PropertyBottomNav'
@@ -25,11 +26,17 @@ import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import styles from './style'
+import {
+  alltimeSlots,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
 
 class PropertyViewing extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       isVisible: false,
       open: false,
@@ -51,7 +58,7 @@ class PropertyViewing extends React.Component {
       organization: 'arms',
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -112,6 +119,12 @@ class PropertyViewing extends React.Component {
           loading: false,
         })
       })
+  }
+  getCallHistory = () => {
+    const { lead } = this.props
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
+    })
   }
 
   fetchLead = () => {
@@ -214,9 +227,13 @@ class PropertyViewing extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'propertyLeads' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -368,9 +385,87 @@ class PropertyViewing extends React.Component {
     })
   }
 
+  goToTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch, permissions } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
+  updateTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch, permissions } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
+    let diary = property.diaries[0]
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.id = diary.id
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(
+      user,
+      lead,
+      permissions
+    )
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId)
@@ -395,8 +490,9 @@ class PropertyViewing extends React.Component {
                 }}
                 onPress={() => {
                   if (leadAssignedSharedStatus) {
-                    this.openModal()
-                    this.updateProperty(property)
+                    // this.openModal()
+                    // this.updateProperty(property)
+                    this.updateTimeSlots(property)
                   }
                 }}
               >
@@ -474,11 +570,12 @@ class PropertyViewing extends React.Component {
   }
 
   bookAnotherViewing = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
-      this.openModal()
+      // this.openModal()
       this.setProperty(property)
+      this.goToTimeSlots(property)
     }
   }
 
@@ -740,13 +837,25 @@ class PropertyViewing extends React.Component {
       isFollowUpMode: false,
     })
   }
+  goToHistory = () => {
+    const { callModal } = this.state
+    this.setState({ callModal: !callModal })
+  }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
+  openModalInFollowupMode = (value) => {
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   render() {
@@ -912,6 +1021,13 @@ class PropertyViewing extends React.Component {
           lead={lead}
           leadType={'RCM'}
         />
+        <HistoryModal
+          getCallHistory={this.getCallHistory}
+          navigation={navigation}
+          data={meetings}
+          closePopup={this.goToHistory}
+          openPopup={callModal}
+        />
         <View style={AppStyles.mainCMBottomNav}>
           <PropertyBottomNav
             goToAttachments={this.goToAttachments}
@@ -924,9 +1040,8 @@ class PropertyViewing extends React.Component {
             callButton={true}
             customer={lead.customer}
             lead={lead}
-            goToHistory={() => null}
-            getCallHistory={() => null}
-            goToFollowup={() => this.openModalInFollowupMode()}
+            goToHistory={this.goToHistory}
+            goToFollowUp={(value) => this.openModalInFollowupMode(value)}
           />
         </View>
         <LeadRCMPaymentPopup
@@ -949,6 +1064,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

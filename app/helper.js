@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 import { Toast } from 'native-base'
 import { Linking } from 'react-native'
 import _ from 'underscore'
-import ClientsImg from '../assets/img/client.png'
+import Clients from '../assets/img/client.png'
 import DashboardImg from '../assets/img/Dashboard.png'
 import DiaryImg from '../assets/img/diary.png'
 import LeadsImg from '../assets/img/lead-icon-l.png'
@@ -19,6 +19,11 @@ import Ability from './hoc/Ability'
 import TimerNotification from './LocalNotifications'
 import { formatPrice } from './PriceFormate'
 import StaticData from './StaticData'
+import LeadIcon from '../assets/img/leads.png'
+import DealIcon from '../assets/img/deals.png'
+import ProjectInventoryIcon from '../assets/img/project-inventory.png'
+import { getPermissionValue } from './hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from './hoc/PermissionsTypes'
 
 const helper = {
   successToast(message, duration = 3000) {
@@ -82,6 +87,15 @@ const helper = {
   },
   capitalize(str) {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
+  },
+  capitalizeWordsWithoutUnderscore(str) {
+    return (
+      str &&
+      str.replace(/(^|_)./g, function (txt) {
+        let withOut = txt.replace(/_/, ' ')
+        return withOut.charAt(0).toUpperCase() + withOut.substr(1).toUpperCase()
+      })
+    )
   },
   convertTimeZoneTimeStamp(date) {
     let _format = 'YYYY-MM-DDTHH:mm'
@@ -184,45 +198,7 @@ const helper = {
       }
     }
   },
-  checkStatusColor(val, todayDate) {
-    let taskDate = moment(val.date).format('YYYY-MM-DD')
-    if (val.taskCategory === 'simpleTask' || val.taskCategory === 'leadTask') {
-      if (taskDate > todayDate && val.status !== 'completed') {
-        return 'red'
-      }
-      if (taskDate < todayDate && val.status !== 'completed') {
-        return AppStyles.colors.subTextColor
-      } else if (val.status === 'completed') {
-        return 'green'
-      } else if (val.status === 'pending') {
-        return 'red'
-      } else {
-        return 'black'
-      }
-    } else if (val.taskType === 'viewing') {
-      if (val.status === 'completed') {
-        return 'green'
-      } else {
-        return 'red'
-      }
-    } else {
-      // THIS IS DONE SPECIFICALLY FOR MEETING ADDED FROM INVESTMENT LEAD
-      if (val.response) {
-        switch (val.response) {
-          case 'visited':
-            return 'green'
-          case 'deal_expected':
-            return '#FDD835'
-          case 'deal_signed':
-            return 'green'
-          default:
-            break
-        }
-      } else {
-        return 'red'
-      }
-    }
-  },
+
   tileImage(tile) {
     if (tile) {
       switch (tile) {
@@ -231,15 +207,19 @@ const helper = {
         case 'TeamDiary':
           return TeamDiaryImg
         case 'Leads':
-          return ClientsImg
-        case 'InventoryTabs':
+          return LeadIcon
+        case 'Properties':
           return InventoryImg
-        case 'Client':
-          return ClientsImg
+        case 'Clients':
+          return Clients
         case 'Targets':
           return TargetsImg
         case 'Dashboard':
           return DashboardImg
+        case 'MyDeals':
+          return DealIcon
+        case 'ProjectInventory':
+          return ProjectInventoryIcon
         default:
           break
       }
@@ -255,6 +235,13 @@ const helper = {
   leadNotAssignedToast() {
     Toast.show({
       text: 'Lead is not assigned to you',
+      duration: 3000,
+      type: 'danger',
+    })
+  },
+  leadAiraToast(lead) {
+    Toast.show({
+      text: `You are viewing ${lead.firstName}${lead.lastName}’s lead. You can perform activities on ${lead.firstName}${lead.lastName}’s behalf.`,
       duration: 3000,
       type: 'danger',
     })
@@ -356,12 +343,20 @@ const helper = {
       'YYYY-MM-DDTHH:mm:ssZ'
     )
   },
+  formatDateTime(date, time) {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+  },
   createContactPayload(customer) {
     let payload = []
     let primaryBol = false
     let contact = {
       phone: customer && customer.phone,
-      name: customer && customer.customerName && helper.capitalize(customer.customerName),
+      name:
+        customer && customer.customerName
+          ? helper.capitalize(customer.customerName)
+          : customer && customer.first_name
+          ? helper.capitalize(customer.first_name) + ' ' + helper.capitalize(customer.last_name)
+          : '',
       url: `tel:${customer && customer.phone}`,
     }
     if (customer && customer.customerContacts) {
@@ -441,8 +436,25 @@ const helper = {
         })
     }
   },
-  checkAssignedSharedStatus(user, lead) {
+  checkAssignedSharedWithoutMsg(user, lead) {
     if (user && lead) {
+      if (
+        user.id === lead.assigned_to_armsuser_id ||
+        user.id === lead.shared_with_armsuser_id ||
+        (lead && lead.requiredProperties)
+      )
+        return true
+      else {
+        return false
+      }
+    } else return false
+  },
+  checkAssignedSharedStatus(user, lead, permissions) {
+    if (user && lead) {
+      if (helper.getAiraPermission(permissions) && user.id !== lead.assigned_to_armsuser_id) {
+        this.leadAiraToast(lead.armsuser)
+        return true
+      }
       if (
         lead.status === StaticData.Constants.lead_closed_lost ||
         lead.status === StaticData.Constants.lead_closed_won
@@ -450,7 +462,11 @@ const helper = {
         this.leadClosedToast()
         return false
       }
-      if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
+      if (
+        user.id === lead.assigned_to_armsuser_id ||
+        user.id === lead.shared_with_armsuser_id ||
+        (lead && lead.requiredProperties)
+      )
         return true
       else {
         this.leadNotAssignedToast()
@@ -739,7 +755,7 @@ const helper = {
       return singlePayment
     } else return singlePayment
   },
-  checkClearedStatuses(lead, legalDocCount, legalServicesFee) {
+  checkClearedStatuses(lead, legalDocCounts, legalServicesFee) {
     let check = false
     let paymentCheck = true
     let propsureCheck = true
@@ -748,11 +764,13 @@ const helper = {
     let legalServicesCount = 2
     let cleared = 0
     let legalPaymentCleared = 0
-    let legalCount = 8
+    let legalCount = Number(legalDocCounts.sellerCount) + Number(legalDocCounts.buyerCount)
+    if (lead.commissionNotApplicableSeller === true) legalCount = Number(legalDocCounts.buyerCount)
+
+    let legalDocCount = legalDocCounts.count
     if (lead.commissionNotApplicableBuyer === true || lead.commissionNotApplicableSeller === true) {
       commissionsLength = 1
       legalServicesCount = 1
-      legalCount = 4
     }
     const { commissions, propsureOutstandingPayment, sellerLegalMail, legalMailSent } = lead
     if (!lead.commissionNotApplicableSeller && !sellerLegalMail)
@@ -771,7 +789,6 @@ const helper = {
         if (item.status !== 'cleared' && item.paymentCategory === 'legal_payment')
           legalServicesCheck = false
       })
-
       if (
         paymentCheck &&
         propsureCheck &&
@@ -779,11 +796,18 @@ const helper = {
         propsureOutstandingPayment <= 0 &&
         cleared === commissionsLength &&
         legalPaymentCleared === legalServicesCount &&
-        Number(legalDocCount) >= legalCount
+        Number(legalDocCount) === Number(legalCount)
       )
         check = true
       return check
     } else return check
+  },
+  titleCase(str) {
+    let splitStr = str.toLowerCase().split(' ')
+    for (let i = 0; i < splitStr.length; i++) {
+      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1)
+    }
+    return splitStr.join(' ')
   },
   checkSwitchChange(lead, addedBy, legalCount) {
     let paymentCheck = false
@@ -927,15 +951,12 @@ const helper = {
       }
     }
   },
-  setLegalListing(list, data) {
+  replaceWhiteSpaceWithUnderscore(str) {
+    return str.replace(/_+/g, ' ')
+  },
+  setLegalListing(list) {
     for (let i = 0; i < list.length; i++) {
-      for (let y = 0; y < data.length; y++) {
-        if (list[i].category === data[y].category) {
-          let name = list[i].name
-          list[i] = data[y]
-          list[i].name = name
-        }
-      }
+      list[i].name = helper.titleCase(helper.replaceWhiteSpaceWithUnderscore(list[i].category))
     }
     return list
   },
@@ -1077,6 +1098,78 @@ const helper = {
       StaticData.callCenterKPIS[3].value = calculatedKpis.calls.toString()
       return StaticData.callCenterKPIS
     }
+  },
+  setCommentsPayload(comments) {
+    if (comments && comments.length) {
+      comments.map((item) => {
+        item.value = item.remarks
+        item.createdAt = item.updatedAt
+      })
+      return comments
+    } else return comments
+  },
+  setBookingStatusColor(arrayItem) {
+    if (arrayItem && arrayItem.length > 0) {
+      if (arrayItem.includes('Available')) {
+        return '#ceecfc'
+      } else if (
+        arrayItem.includes('Sold') ||
+        arrayItem.includes('Token') ||
+        arrayItem.includes('Payment')
+      ) {
+        return '#fde0e2'
+      } else if (arrayItem.includes('Hold')) {
+        return '#fef3c6'
+      } else {
+        return 'white'
+      }
+    } else {
+      return 'white'
+    }
+  },
+  skipShortlistedProperties(matchProperties, shortListedProperties) {
+    return _.filter(matchProperties, function (obj) {
+      return !_.findWhere(shortListedProperties, obj)
+    })
+  },
+  setBuyerAgent(lead, type, user) {
+    if (type === 'buyerSide') {
+      return lead.assigned_to_armsuser_id === user.id ? true : false
+    } else return false
+  },
+  setSellerAgent(lead, property, type, user) {
+    // console.log('lead: ', lead)
+    // console.log('property: ', property)
+    // console.log('type: ', type)
+    // console.log('user: ', user)
+    if (type === 'buyerSide') {
+      // console.log('buyerSide')
+      if (lead.assigned_to_armsuser_id === user.id && property && !property.sellerFlowAgent)
+        return true
+      // console.log('buyerSide 1')
+      if (
+        lead.assigned_to_armsuser_id === user.id &&
+        property &&
+        property.sellerFlowAgent &&
+        property.sellerFlowAgent.id === user.id
+      )
+        return true
+      else false
+      // console.log('buyerSide 2')
+    } else {
+      // console.log('buyerSide 3')
+      if (property && property.sellerFlowAgent && property.sellerFlowAgent.id === user.id)
+        return true
+      else false
+      // console.log('buyerSide 4')
+    }
+  },
+  getAiraPermission(permissions) {
+    return getPermissionValue(
+      PermissionFeatures.WANTED_LEADS,
+      PermissionActions.Assign_Company_Leads,
+      permissions
+    )
   },
 }
 

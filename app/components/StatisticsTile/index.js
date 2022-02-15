@@ -22,7 +22,7 @@ const StatisticsTile = ({ value, title, imagePath, unit = '', double = false, se
         {imagePath && <Image source={imagePath} style={styles.containerImg} />}
       </View>
       {!double ? (
-        <View style={[styles.flexView, { flex: 0.5, marginLeft: 10 }]}>
+        <View style={[styles.flexView, { flex: 0.6, marginLeft: 10 }]}>
           <Text numberOfLines={1} style={styles.value}>
             {displayValue(value)}
           </Text>
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   containerImg: {
-    width: 50,
+    // width: 50,
     height: 25,
     resizeMode: 'contain',
   },

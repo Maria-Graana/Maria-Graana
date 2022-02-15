@@ -129,6 +129,7 @@ const AddPropsurePayment = ({
               <AddEditInstrument
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
                 enabled={propsurePayment.status !== 'pendingAccount'}
+                errorMessage={propsurePayment.instrumentDuplicateError}
               />
             ) : null}
 

@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 import * as React from 'react'
-import { FlatList, Image, Linking, Text, TouchableOpacity, View, Alert } from 'react-native'
+import { Alert, FlatList, Image, Linking, Text, TouchableOpacity, View } from 'react-native'
 import { ProgressBar } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -14,18 +14,19 @@ import HistoryModal from '../../components/HistoryModal/index'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
 import Loader from '../../components/loader'
 import MatchTile from '../../components/MatchTile/index'
+import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import OfferModal from '../../components/OfferModal'
+import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './styles'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import { formatPrice } from '../../components/PriceFormate'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       open: false,
       loading: true,
@@ -44,7 +45,7 @@ class LeadOffer extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -65,6 +66,13 @@ class LeadOffer extends React.Component {
       sellerNotNumeric: false,
       customerNotNumeric: false,
       agreedNotNumeric: false,
+      newActionModal: false,
+      graanaModalActive: false,
+      singlePropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
@@ -259,8 +267,8 @@ class LeadOffer extends React.Component {
   closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
         })
@@ -272,10 +280,10 @@ class LeadOffer extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 
@@ -317,9 +325,13 @@ class LeadOffer extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -345,8 +357,8 @@ class LeadOffer extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
       user,
       lead
@@ -419,8 +431,8 @@ class LeadOffer extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 
@@ -591,11 +603,18 @@ class LeadOffer extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   // ************ Function for Reject modal ************
@@ -622,12 +641,8 @@ class LeadOffer extends React.Component {
       })
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
+  showStatusFeedbackModal = (value, modalType) => {
+    this.setState({ statusfeedbackModalVisible: value, modalType })
   }
 
   goToViewingScreen = () => {
@@ -635,14 +650,75 @@ class LeadOffer extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+  submitGraanaStatusAmount = (check) => {
+    const { singlePropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: singlePropertyData.property ? 'graana' : 'arms',
     }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+    console.log(body)
+    if (body.propertyType === 'graana') {
+          // // for graana properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
+    } else {
+          // for arms properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
+    }
+    formData['amount'] = ''
+    axios.patch(endpoint, body).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          graanaModalActive: false,
+          formData,
+        },
+        () => {
+          this.fetchProperties()
+          helper.successToast(res.data)
+        }
+      )
+    })
+  }
+  graanaVerifeyModal = (status, id) => {
+    const { matchData } = this.state
+    if (status === true) {
+      var filterProperty = matchData.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        singlePropertyData: filterProperty,
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  verifyStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitGraanaStatusAmount('other')
+    }
+  }
+  handleFormVerification = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
   }
 
   render() {
@@ -674,17 +750,22 @@ class LeadOffer extends React.Component {
       legalDocLoader,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       closedWon,
-      comment,
       sellerNotNumeric,
       customerNotNumeric,
       agreedNotNumeric,
+      newActionModal,
+      graanaModalActive,
+      singlePropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
-    const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, navigation, user, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const showBuyerSide = helper.setBuyerAgent(lead, 'buyerSide', user)
+    const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'buyerSide', user)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -724,6 +805,7 @@ class LeadOffer extends React.Component {
                       toggleMenu={this.toggleMenu}
                       menuShow={menuShow}
                       screen={'offer'}
+                      graanaVerifeyModal={this.graanaVerifeyModal}
                     />
                   ) : (
                     <AgentTile
@@ -779,6 +861,41 @@ class LeadOffer extends React.Component {
           sellerNotNumeric={sellerNotNumeric}
           customerNotNumeric={customerNotNumeric}
           agreedNotNumeric={agreedNotNumeric}
+          showBuyerSide={showBuyerSide}
+          showSellerSide={showSellerSide}
+        />
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          modalMode={modalMode}
+          rejectLead={(body) => this.rejectLead(body)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'RCM'}
+        />
+         <GraanaPropertiesModal
+          active={graanaModalActive}
+          data={singlePropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleFormVerification}
+          graanaVerifeyModal={this.graanaVerifeyModal}
+          submitStatus={this.verifyStatusSubmit}
+          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
+        />
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
         />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
@@ -787,26 +904,6 @@ class LeadOffer extends React.Component {
           lead={lead}
           leadType={'RCM'}
           getMeetingLead={this.getCallHistory}
-          comment={comment}
-        />
-
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          leadType={'RCM'}
-          currentCall={currentCall}
-          goToViewingScreen={this.goToViewingScreen}
         />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
@@ -824,8 +921,9 @@ class LeadOffer extends React.Component {
             getCallHistory={this.getCallHistory}
             goToFollowUp={(value) => this.openModalInFollowupMode(value)}
             navigation={navigation}
-            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            setCurrentCall={(call) => this.setCurrentCall(call)}
+            showStatusFeedbackModal={(value, modalType) =>
+              this.showStatusFeedbackModal(value, modalType)
+            }
             leadType={'RCM'}
             goToRejectForm={this.goToRejectForm}
             closedWon={closedWon}
@@ -854,6 +952,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

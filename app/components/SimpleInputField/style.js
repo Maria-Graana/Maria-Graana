@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native'
 
 export default styles = StyleSheet.create({
   mainInputParent: {
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     padding: 10,
     borderRadius: 4,
     marginBottom: 10,

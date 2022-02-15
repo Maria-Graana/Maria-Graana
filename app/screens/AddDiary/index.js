@@ -13,6 +13,16 @@ import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
+import {
+  alltimeSlots,
+  clearSlotData,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
+import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
+
+const _today = moment(new Date()).format('YYYY-MM-DD')
 
 class AddDiary extends Component {
   constructor(props) {
@@ -21,55 +31,79 @@ class AddDiary extends Component {
       checkValidation: false,
       taskValues: [],
       loading: false,
-      isAppRatingModalVisible: false,
+      //isAppRatingModalVisible: false,
     }
   }
 
   componentDidMount() {
-    const { route, navigation } = this.props
-    const { tasksList = StaticData.taskValues } = route.params
+    const { route, navigation, dispatch, user, permissions } = this.props
+    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+    if (rcmLeadId) {
+      tasksList = StaticData.diaryTasksRCM
+    } else if (cmLeadId) {
+      tasksList = StaticData.diaryTasksCM
+    }
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT TASK' })
     }
+    navigation.setOptions({ title: 'ADD TASK' })
     this.setState({ taskValues: tasksList })
+    if (route.params.selectedDate) {
+      dispatch(setSlotDiaryData(route.params.selectedDate))
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(clearSlotData())
+    dispatch(setDiaryFilterReason(null))
   }
 
   formSubmit = (data) => {
-    if (!data.taskType || !data.date || !data.startTime || !data.subject) {
+    const { slotsData } = this.props
+    if (slotsData === null || !data.taskType) {
       this.setState({
         checkValidation: true,
       })
     } else {
       this.setState({ loading: true }, () => {
-        this.createDiary(data)
+        const copyInitialPayload = { ...data }
+        copyInitialPayload.slots = slotsData.slots
+        copyInitialPayload.startTime = slotsData.startTime
+        copyInitialPayload.endTime = slotsData.endTime
+        this.createDiary(copyInitialPayload)
       })
     }
   }
 
   generatePayload = (data) => {
-    const { route } = this.props
-    const { rcmLeadId, cmLeadId, managerId, addedBy } = route.params
+    const { route, user, feedbackReasonFilter = null, permissions } = this.props
+    const { rcmLeadId, cmLeadId, lead } = route.params
     let payload = null
-    let start = helper.formatDateAndTime(helper.formatDate(data.date), data.startTime)
-    let end =
-      data.endTime !== ''
-        ? helper.formatDateAndTime(helper.formatDate(data.date), data.endTime)
-        : moment(start).add(1, 'hours').format('YYYY-MM-DDTHH:mm:ssZ') // If end date is not selected by user, add plus 1 hour in start time
     if (route.params.update) {
       // payload for update contains id of diary from existing api call and other user data
       payload = Object.assign({}, data)
-      payload.date = start
-      payload.time = rcmLeadId || cmLeadId ? data.startTime : helper.formatTime(data.startTime)
-      payload.userId = route.params.agentId
-      payload.diaryTime = start
-      payload.start = start
-      payload.end = end
+      payload.date = data.startTime
+      payload.time = data.startTime
+      payload.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
+      payload.diaryTime = data.startTime
+      payload.start = data.startTime
+      payload.end = data.endTime
       payload.taskCategory = rcmLeadId || cmLeadId ? 'leadTask' : 'simpleTask'
 
       if (rcmLeadId) {
-        payload.rcmLeadId = rcmLeadId
+        payload.armsLeadId = rcmLeadId
       } else if (cmLeadId) {
-        payload.cmLeadId = cmLeadId
+        payload.leadId = cmLeadId
       }
 
       delete payload.startTime
@@ -80,20 +114,25 @@ class AddDiary extends Component {
       // add payload contain these keys below
 
       payload = Object.assign({}, data)
-      payload.date = start
-      payload.userId = route.params.agentId
+      payload.date = data.startTime
+      payload.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
       payload.time = data.startTime
-      payload.diaryTime = start
-      payload.start = start
-      payload.end = end
+      payload.diaryTime = data.startTime
+      payload.start = data.startTime
+      payload.end = data.endTime
       payload.taskCategory = rcmLeadId || cmLeadId ? 'leadTask' : 'simpleTask'
-      if (rcmLeadId) {
-        payload.rcmLeadId = rcmLeadId
-      } else if (cmLeadId) {
-        payload.cmLeadId = cmLeadId
+
+      if (data.taskType === 'follow_up') {
+        payload.reasonTag = feedbackReasonFilter ? feedbackReasonFilter.name : null
+        payload.reasonId =
+          feedbackReasonFilter && feedbackReasonFilter.value ? feedbackReasonFilter.value[0] : null
       }
-      payload.addedBy = addedBy
-      payload.managerId = managerId
+
+      if (rcmLeadId) {
+        payload.armsLeadId = rcmLeadId
+      } else if (cmLeadId) {
+        payload.leadId = cmLeadId
+      }
       delete payload.startTime
       delete payload.endTime
       return payload
@@ -103,80 +142,65 @@ class AddDiary extends Component {
   createDiary = (diary) => {
     const { route, dispatch } = this.props
     if (route.params.update) {
-      dispatch(getGoogleAuth()).then((res) => {
-        this.updateDiary(diary)
-      })
+      this.updateDiary(diary)
     } else {
-      dispatch(getGoogleAuth()).then((res) => {
-        this.addDiary(diary)
-      })
+      this.addDiary(diary)
     }
   }
 
   addDiary = (data) => {
-    const { route, navigation } = this.props
-    const { rcmLeadId, cmLeadId } = route.params
+    const { route, navigation, dispatch } = this.props
+    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
     let diary = this.generatePayload(data)
-    if (rcmLeadId || cmLeadId) {
-      // create task for lead
-      axios
-        .post(`/api/leads/task`, diary)
-        .then((res) => {
-          if (res.status === 200) {
-            helper.successToast('TASK ADDED SUCCESSFULLY!')
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
-            }
-            TimerNotification(data, start)
-            navigation.goBack()
-          } else {
-            helper.errorToast('ERROR: SOMETHING WENT WRONG')
+
+    axios
+      .post(`/api/leads/task`, diary)
+      .then((res) => {
+        if (res.status === 200) {
+          helper.successToast('TASK ADDED SUCCESSFULLY!')
+          let start = new Date(res.data.start)
+          let end = new Date(res.data.end)
+          let data = {
+            id: res.data.id,
+            title: res.data.subject,
+            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
           }
-        })
-        .catch((error) => {
-          helper.errorToast('ERROR: ADDING DIARY')
-          console.log('error', error.message)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
-    } else {
-      axios
-        .post(`/api/diary/create`, diary)
-        .then((res) => {
-          if (res.status === 200) {
-            helper.successToast('TASK ADDED SUCCESSFULLY!')
-            let start = new Date(res.data.start)
-            let end = new Date(res.data.end)
-            let data = {
-              id: res.data.id,
-              title: res.data.subject,
-              body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
-            }
-            TimerNotification(data, start)
-            navigation.navigate('Diary', {
-              agentId: this.props.route.params.agentId,
-            })
+          TimerNotification(data, start)
+          if (screenName === 'Diary') {
+            dispatch(
+              getDiaryTasks({
+                selectedDate: moment(diary.date).format('YYYY-MM-DD'),
+                agentId: diary.userId,
+                overdue: false,
+              })
+            )
           } else {
-            helper.errorToast('ERROR: SOMETHING WENT WRONG')
+            dispatch(
+              getDiaryTasks({
+                leadId: cmLeadId ? cmLeadId : rcmLeadId,
+                leadType: cmLeadId ? 'invest' : 'buyRent',
+              })
+            )
           }
-        })
-        .catch((error) => {
-          helper.errorToast('ERROR: ADDING TASK')
-          console.log('error', error.message)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
-    }
+
+          navigation.navigate(screenName, { cmLeadId, rcmLeadId })
+        } else {
+          helper.errorToast('ERROR: SOMETHING WENT WRONG')
+        }
+      })
+      .catch((error) => {
+        helper.errorToast('ERROR: ADDING DIARY')
+        console.log('error', error.message)
+      })
+      .finally(() => {
+        this.setState({ loading: false })
+      })
   }
 
   updateDiary = (data) => {
     let diary = this.generatePayload(data)
+    const { dispatch, navigation, route } = this.props
+    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
     axios
       .patch(`/api/diary/update?id=${diary.id}`, diary)
       .then((res) => {
@@ -189,9 +213,28 @@ class AddDiary extends Component {
           body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
         }
         helper.deleteAndUpdateNotification(data, start, res.data.id)
-        this.props.navigation.navigate('Diary', {
+        if (screenName === 'Diary') {
+          dispatch(
+            getDiaryTasks({
+              selectedDate: moment(diary.date).format('YYYY-MM-DD'),
+              agentId: diary.userId,
+              overdue: false,
+            })
+          )
+        } else {
+          dispatch(
+            getDiaryTasks({
+              leadId: cmLeadId ? cmLeadId : rcmLeadId,
+              leadType: cmLeadId ? 'invest' : 'buyRent',
+            })
+          )
+        }
+
+        navigation.navigate(screenName, {
           update: false,
           agentId: this.props.route.params.agentId,
+          cmLeadId,
+          rcmLeadId,
         })
       })
       .catch((error) => {
@@ -203,51 +246,22 @@ class AddDiary extends Component {
       })
   }
 
-  performTaskActions = (type) => {
-    const { route } = this.props
-    const { data } = route.params
-    if (data && data.taskType === 'meeting_with_pp') {
-      this.setState({ isAppRatingModalVisible: true })
-    } else {
-      this.performTask(type)
-    }
-  }
-
-  performTask = (type, isRated = null, ratingComments = null) => {
-    const { route, navigation } = this.props
-    const { data } = route.params
-    let endPoint = ``
-    endPoint = `/api/diary/update?id=${data.id}`
-    switch (type) {
-      case 'completed':
-        axios
-          .patch(endPoint, {
-            status: type,
-            isRated,
-            ratingComments,
-            taskType: data && data.taskType ? data.taskType : '',
-          })
-          .then(function (response) {
-            if (response.status == 200) {
-              helper.deleteLocalNotification(data.id)
-              navigation.goBack()
-            }
-          })
-        break
-      default:
-        break
-    }
-  }
-
-  submitRating = (isRated, ratingComments) => {
-    this.setState({ isAppRatingModalVisible: false }, () => {
-      this.performTask('completed', isRated, ratingComments)
+  goToSlotManagement = (data) => {
+    const { navigation, slotsData } = this.props
+    navigation.navigate('TimeSlotManagement', {
+      taskType: data.taskType,
+      date: slotsData ? slotsData.date : null,
     })
+  }
+
+  goToDiaryReasons = () => {
+    const { navigation } = this.props
+    navigation.navigate('DiaryReasons', { screenName: 'AddDiary' })
   }
 
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
-    const { route } = this.props
+    const { route, slotsData, navigation } = this.props
 
     return (
       <KeyboardAwareScrollView
@@ -257,10 +271,10 @@ class AddDiary extends Component {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} onLongPress={Keyboard.dismiss}>
           <>
-            <AppRatingModalPP
+            {/* <AppRatingModalPP
               isVisible={isAppRatingModalVisible}
               submitRating={this.submitRating}
-            />
+            /> */}
             <SafeAreaView style={AppStyles.mb1}>
               <DetailForm
                 formSubmit={this.formSubmit}
@@ -270,7 +284,11 @@ class AddDiary extends Component {
                 taskValues={taskValues}
                 checkValidation={checkValidation}
                 loading={loading}
-                performTaskActions={(type) => this.performTaskActions(type)}
+                goToSlotManagement={this.goToSlotManagement}
+                goToDiaryReasons={this.goToDiaryReasons}
+                goBackToDiary={() => navigation.goBack()}
+                slotsData={slotsData}
+                // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>
           </>
@@ -283,6 +301,9 @@ class AddDiary extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    slotsData: store.slotManagement.slotsPayload,
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
+    permissions: store.user.permissions,
   }
 }
 

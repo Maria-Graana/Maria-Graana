@@ -44,12 +44,14 @@ import formTheme from '../../../native-base-theme/variables/formTheme'
 import getTheme from '../../../native-base-theme/components'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
 import {
   clearInstrumentInformation,
   clearInstrumentsList,
   getInstrumentDetails,
   setInstrumentInformation,
 } from '../../actions/addInstrument'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -57,7 +59,7 @@ var CANCEL_INDEX = 1
 class LeadPropsure extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       open: false,
@@ -76,7 +78,7 @@ class LeadPropsure extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       menuShow: false,
@@ -99,6 +101,13 @@ class LeadPropsure extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       closedWon: false,
+      newActionModal: false,
+      graanaModalActive: false,
+      singlePropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
@@ -165,6 +174,13 @@ class LeadPropsure extends React.Component {
       .catch((error) => {
         console.log(`/api/user/locations`, error)
       })
+  }
+
+  setDefaultOfficeLocation = () => {
+    const { propsurePayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: defaultUserLocationId }))
+    return defaultUserLocationId
   }
 
   callback = (downloadProgress) => {
@@ -282,8 +298,8 @@ class LeadPropsure extends React.Component {
   }
 
   showDocumentModal = (propsureReports, property) => {
-    const { lead, user, dispatch } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, dispatch, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       let installment = property.cmInstallment
         ? property.cmInstallment
@@ -470,8 +486,8 @@ class LeadPropsure extends React.Component {
   closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
         })
@@ -483,10 +499,10 @@ class LeadPropsure extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 
@@ -528,9 +544,13 @@ class LeadPropsure extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -562,8 +582,8 @@ class LeadPropsure extends React.Component {
       leadObject = lead
     }
     if (leadObject) {
-      axios.get(`/api/diary/all?armsLeadId=${leadObject.id}`).then((res) => {
-        this.setState({ meetings: res.data.rows })
+      axios.get(`/api/leads/tasks?rcmLeadId=${leadObject.id}`).then((res) => {
+        this.setState({ meetings: res.data })
       })
     }
   }
@@ -662,8 +682,8 @@ class LeadPropsure extends React.Component {
   }
 
   showReportsModal = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       this.setState({
         isVisible: true,
@@ -867,6 +887,8 @@ class LeadPropsure extends React.Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      instrumentDuplicateError: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
     }
     dispatch(setPropsurePayment({ ...newData }))
     this.setState({
@@ -1003,6 +1025,7 @@ class LeadPropsure extends React.Component {
 
   addPropsurePayment = (body) => {
     const { lead, propsurePayment, dispatch } = this.props
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(`/api/leads/propsurePayment`, body)
       .then((response) => {
@@ -1092,6 +1115,16 @@ class LeadPropsure extends React.Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setPropsurePayment({
+                  ...propsurePayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...propsurePayment,
               rcmLeadId: lead.id,
@@ -1213,11 +1246,17 @@ class LeadPropsure extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   // ************ Function for Reject modal ************
@@ -1248,23 +1287,13 @@ class LeadPropsure extends React.Component {
     this.setState({ statusfeedbackModalVisible: value })
   }
 
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   additionalRequest = () => {
@@ -1278,6 +1307,74 @@ class LeadPropsure extends React.Component {
       propsureReportTypes: newReports,
       totalReportPrice: totalReportPrice,
     })
+  }
+  submitGraanaStatusAmount = (check) => {
+    const { singlePropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: singlePropertyData.property ? 'graana' : 'arms',
+    }
+    console.log(body)
+    if (body.propertyType === 'graana') {
+          // // for graana properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
+    } else {
+          // for arms properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
+    }
+    console.log(endpoint)
+    formData['amount'] = ''
+    axios.patch(endpoint, body).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          graanaModalActive: false,
+          formData,
+        },
+        () => {
+          this.fetchProperties(singlePropertyData)
+          helper.successToast(res.data)
+        }
+      )
+    })
+  }
+  graanaVerifeyModal = (status, id) => {
+    const { matchData } = this.state
+    if (status === true) {
+      var filterProperty = matchData.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        singlePropertyData: filterProperty,
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  verifyStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitGraanaStatusAmount('other')
+    }
+  }
+  handleFormVerification = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
   }
 
   render() {
@@ -1311,14 +1408,17 @@ class LeadPropsure extends React.Component {
       officeLocations,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       closedWon,
-      comment,
+      newActionModal,
+      graanaModalActive,
+      singlePropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
-    const { lead, navigation, user } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, navigation, user, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     return !loading ? (
       <StyleProvider style={getTheme(formTheme)}>
         <View
@@ -1409,6 +1509,7 @@ class LeadPropsure extends React.Component {
                         menuShow={menuShow}
                         screen={'propsure'}
                         cancelPropsureRequest={this.cancelPropsureRequest}
+                        graanaVerifeyModal={this.graanaVerifeyModal}
                       />
                     ) : (
                       <AgentTile
@@ -1448,23 +1549,37 @@ class LeadPropsure extends React.Component {
 
           <StatusFeedbackModal
             visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            modalMode={modalMode}
+            showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
             commentsList={
               modalMode === 'call'
                 ? StaticData.commentsFeedbackCall
                 : StaticData.leadClosedCommentsFeedback
             }
-            showAction={modalMode === 'call'}
-            showFollowup={modalMode === 'call'}
+            modalMode={modalMode}
             rejectLead={(body) => this.rejectLead(body)}
-            sendStatus={(comment, id) => this.sendStatus(comment, id)}
-            addFollowup={(value) => this.openModalInFollowupMode(value)}
+            setNewActionModal={(value) => this.setNewActionModal(value)}
             leadType={'RCM'}
-            currentCall={currentCall}
-            goToViewingScreen={this.goToViewingScreen}
           />
-
+          <SubmitFeedbackOptionsModal
+            showModal={newActionModal}
+            modalMode={modalMode}
+            setShowModal={(value) => this.setNewActionModal(value)}
+            performFollowUp={this.openModalInFollowupMode}
+            performReject={this.goToRejectForm}
+            //call={this.callAgain}
+            goToViewingScreen={this.goToViewingScreen}
+            leadType={'RCM'}
+          />
+          <GraanaPropertiesModal
+          active={graanaModalActive}
+          data={singlePropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleFormVerification}
+          graanaVerifeyModal={this.graanaVerifeyModal}
+          submitStatus={this.verifyStatusSubmit}
+          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
+        />
           <MeetingFollowupModal
             closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
@@ -1472,8 +1587,8 @@ class LeadPropsure extends React.Component {
             lead={lead}
             leadType={'RCM'}
             getMeetingLead={this.getCallHistory}
-            comment={comment}
           />
+
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav
               goToAttachments={this.goToAttachments}
@@ -1491,9 +1606,9 @@ class LeadPropsure extends React.Component {
               goToFollowUp={(value) => this.openModalInFollowupMode(value)}
               navigation={navigation}
               goToRejectForm={this.goToRejectForm}
-              showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-              setCurrentCall={(call) => this.setCurrentCall(call)}
-              leadType={'RCM'}
+              showStatusFeedbackModal={(value, modalType) =>
+                this.showStatusFeedbackModal(value, modalType)
+              }
               closedWon={closedWon}
               onHandleCloseLead={this.onHandleCloseLead}
             />
@@ -1524,6 +1639,7 @@ mapStateToProps = (store) => {
     rcmPayment: store.RCMPayment.RCMPayment,
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
+    permissions: store.user.permissions,
   }
 }
 

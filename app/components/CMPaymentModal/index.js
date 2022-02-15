@@ -173,6 +173,7 @@ const CMPaymentModal = ({
               <AddEditInstrument
                 handleInstrumentInfoChange={handleInstrumentInfoChange}
                 enabled={CMPayment.status !== 'pendingAccount'}
+                errorMessage={CMPayment.instrumentDuplicateError}
               />
             ) : null}
 
@@ -268,7 +269,10 @@ const CMPaymentModal = ({
                 officeLocations={officeLocations}
                 officeLocationId={CMPayment.officeLocationId}
                 handleOfficeLocationChange={handleOfficeLocationChange}
-                disabled={CMPayment.status === 'pendingAccount'}
+                disabled={
+                  CMPayment.status === 'pendingAccount' ||
+                  (lead && lead.project && lead.project.externalProject === true)
+                }
               />
             ) : null}
 

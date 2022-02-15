@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import { goBack, setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
 import Loader from '../../components/loader'
+import VoicePlayer from '../../components/VoicePlayer'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
@@ -56,7 +57,7 @@ class LeadDetail extends React.Component {
           this.fetchLead('/api/leads/project/byId')
         }
       )
-    } else if (purposeTab === 'sale') {
+    } else if (purposeTab === 'sale' || purposeTab === 'buy') {
       this.setState(
         {
           type: 'Buy',
@@ -76,6 +77,16 @@ class LeadDetail extends React.Component {
           this.fetchLead('api/leads/byId')
         }
       )
+    } else if (purposeTab === 'wanted') {
+      this.setState(
+        {
+          type: 'Wanted',
+        },
+        () => {
+          this.props.navigation.setParams({ type: 'Wanted' })
+          this.fetchLead('api/wanted')
+        }
+      )
     } else {
       this.setState(
         {
@@ -92,41 +103,58 @@ class LeadDetail extends React.Component {
   fetchLead = (url) => {
     const { route, user } = this.props
     const { type } = this.state
-    const { lead } = route.params
+    const { lead, purposeTab } = route.params
     const that = this
     axios
       .get(`${url}?id=${lead.id}`)
       .then((res) => {
-        let responseData = res.data
+        let responseData =
+          purposeTab == 'wanted' ? (res.data.rows.length > 0 ? res.data.rows[0] : {}) : res.data
         let leadType = type
-        if (!responseData.paidProject) {
+        if (!responseData.paidProject && purposeTab !== 'wanted') {
           responseData.paidProject = responseData.project
         }
         this.props.dispatch(setlead(responseData))
         const regex = /(<([^>]+)>)/gi
         let text =
-          res.data.description && res.data.description !== ''
+          purposeTab == 'wanted' && res.data.rows[0].description
+            ? res.data.rows[0].description
+            : res.data.description && res.data.description !== ''
             ? res.data.description.replace(regex, '')
             : null
-        let leadData = res.data
+        let leadData = purposeTab == 'wanted' ? res.data.rows[0] : res.data
         if (
           leadData.added_by_armsuser_id !== user.id &&
           leadData.assigned_to_armsuser_id !== user.id
         )
           leadType = 'Property'
-        this.setState({ lead: res.data, loading: false, description: text, type: leadType }, () => {
-          that.checkCustomerName(res.data)
-          that.checkAssignedLead(res.data)
-        })
+
+        this.setState(
+          {
+            lead: purposeTab == 'wanted' ? res.data.rows[0] : res.data,
+            loading: false,
+            description: text,
+            type: leadType,
+          },
+          () => {
+            purposeTab == 'wanted'
+              ? that.checkCustomerName(res.data.rows[0])
+              : that.checkCustomerName(res.data)
+            purposeTab == 'wanted'
+              ? that.checkAssignedLead(res.data.rows[0])
+              : that.checkAssignedLead(res.data)
+          }
+        )
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error, `${url}?id=${lead.id}`)
       })
   }
 
   navigateTo = () => {
     const { navigation, user } = this.props
     const { lead, type } = this.state
+    console.log('navigateTo: ')
     var status = lead.status
     let page = ''
     if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead)) {
@@ -193,6 +221,8 @@ class LeadDetail extends React.Component {
   goBack = () => {
     const { lead, type, fromScreen } = this.state
     const { navigation } = this.props
+    console.log('type: ', type)
+    console.log('fromScreen: ', fromScreen)
     goBack({ lead, type, fromScreen, navigation })
   }
 
@@ -276,6 +306,8 @@ class LeadDetail extends React.Component {
     }
     if (purposeTab == 'invest') {
       endPoint = `/api/leads/project`
+    } else if (purposeTab == 'wanted') {
+      endPoint = `/api/wanted`
     } else {
       endPoint = `/api/leads`
     }
@@ -340,17 +372,44 @@ class LeadDetail extends React.Component {
     }
   }
 
+  leadStatus = () => {
+    const { lead } = this.state
+    if (lead && lead.status) {
+      if (
+        lead.status === 'viewing' ||
+        lead.status === 'propsure' ||
+        lead.status === 'offer' ||
+        lead.status === 'offer'
+      ) {
+        return 'Shortlisting'
+      }
+      if (lead.status === 'meeting' || lead.status === 'nurture') {
+        return 'In-Progress'
+      } else {
+        return helper.showStatus(lead.status.replace(/_+/g, ' ')).toUpperCase()
+      }
+    }
+  }
+
+  setCustomerName = () => {
+    const { user } = this.props
+    const { customerName, lead } = this.state
+    if (helper.checkAssignedSharedWithoutMsg(user, lead)) return '---'
+    else return customerName === '' ? lead.customer && lead.customer.customerName : customerName
+  }
+
   render() {
-    let { type, lead, customerName, mainButtonText, fromScreen, loading, editDes, description } =
-      this.state
+    let { type, lead, mainButtonText, fromScreen, loading, editDes, description } = this.state
     const { user, route } = this.props
     const { purposeTab } = route.params
+    const { screen } = route.params
+    const { screenName } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
     const leadSource = this.checkLeadSource()
     const regex = /(<([^>]+)>)/gi
     let leadSize = this.leadSize(lead.size_unit)
     if (type === 'Property') {
-      let purpose = lead.purpose === 'sale' ? 'Buy' : 'Rent'
+      let purpose = lead.purpose === 'sale' || lead.purpose === 'buy' ? 'Buy' : 'Rent'
       type = purpose
     }
     let additionalInformation = []
@@ -361,8 +420,10 @@ class LeadDetail extends React.Component {
         parseAdditonalInfo[item].map((internalItem, index) => internalItem + ', ')
       )
     }
-
+    let leadStatus = this.leadStatus()
     let assignedByName = this.getAssignedByName(lead)
+    let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
+    let setCustomerName = this.setCustomerName()
 
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
@@ -370,14 +431,23 @@ class LeadDetail extends React.Component {
           <View style={styles.cardContainer}>
             <View style={styles.cardItemGrey}>
               <View style={styles.rowContainer}>
-                <View>
-                  <Text style={styles.headingText}>Client Name </Text>
-                  <Text style={styles.labelText}>
-                    {customerName === ''
-                      ? lead.customer && lead.customer.customerName
-                      : customerName}
-                  </Text>
-                </View>
+                {lead && lead.assigned_to_armsuser_id === user.id ? (
+                  <View>
+                    <Text style={styles.headingText}>Client Name </Text>
+                    {screenName === 'diary' ? (
+                      <Text style={styles.labelText}>
+                        {setCustomerName === 'undefined'
+                          ? setCustomerName
+                          : lead.customer && lead.customer.customerName}
+                      </Text>
+                    ) : (
+                      <Text style={styles.labelText}>
+                        {lead.customer && lead.customer.customerName}
+                      </Text>
+                    )}
+                  </View>
+                ) : null}
+
                 {purposeTab !== 'property' && (
                   <TouchableOpacity
                     onPress={() => this.goToClientsDetail()}
@@ -463,6 +533,16 @@ class LeadDetail extends React.Component {
               </View>
             ) : null}
 
+            {lead.wanted && lead.wanted.voiceLead && lead.wanted.voiceLead.voiceNoteLink ? (
+              <View style={styles.cardItemWhite}>
+                <Text style={styles.headingText}>Voice Note</Text>
+                <VoicePlayer
+                  audioFile={lead.wanted.voiceLead.voiceNoteLink}
+                  voiceLead={lead.wanted.voiceLead}
+                />
+              </View>
+            ) : null}
+
             <View style={styles.cardItemGrey}>
               <View style={styles.mainDesView}>
                 <View style={styles.viewOne}>
@@ -535,15 +615,16 @@ class LeadDetail extends React.Component {
               <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
               <View style={styles.statusView}>
                 <Text style={styles.textStyle} numberOfLines={1}>
-                  {lead.status && lead.status === 'token' ? (
-                    <Text>TOKEN</Text>
-                  ) : lead.status === 'meeting' ? (
-                    lead.status.split('_').join(' ').toUpperCase() + ' PLANNED'
-                  ) : (
-                    helper.showStatus(lead.status.replace(/_+/g, ' ')).toUpperCase()
-                  )}
+                  {leadStatus}
                 </Text>
               </View>
+            </View>
+
+            <View style={styles.rowContainerType2}>
+              <Text style={styles.headingTextTypeTwo}>Classification</Text>
+              <Text style={styles.labelTextTypeTwo}>
+                {lead.leadCategory ? lead.leadCategory : '-'}
+              </Text>
             </View>
 
             <View style={styles.rowContainerType2}>
@@ -580,7 +661,7 @@ class LeadDetail extends React.Component {
             user.id !== lead.shared_with_armsuser_id &&
             lead.shareUser ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Shared with</Text>
+                <Text style={styles.headingTextTypeTwo}>Reffered to</Text>
                 <Text style={styles.labelTextTypeTwo}>
                   {lead.shareUser.firstName +
                     ' ' +
@@ -595,7 +676,7 @@ class LeadDetail extends React.Component {
             user.id === lead.shared_with_armsuser_id &&
             lead.armsuser ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Shared by</Text>
+                <Text style={styles.headingTextTypeTwo}>Reffered by</Text>
                 <Text style={styles.labelTextTypeTwo}>
                   {lead.armsuser.firstName +
                     ' ' +
@@ -651,16 +732,18 @@ class LeadDetail extends React.Component {
             </View>
           </View>
         </ScrollView>
-        <View style={styles.bottom}>
-          <Button
-            onPress={() => {
-              fromScreen ? this.goBack() : this.navigateTo()
-            }}
-            style={[AppStyles.formBtn, styles.btn1]}
-          >
-            <Text style={AppStyles.btnText}>{mainButtonText}</Text>
-          </Button>
-        </View>
+        {/* {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
+          <View style={styles.bottom}>
+            <Button
+              onPress={() => {
+                fromScreen ? this.goBack() : this.navigateTo()
+              }}
+              style={[AppStyles.formBtn, styles.btn1]}
+            >
+              <Text style={AppStyles.btnText}>{mainButtonText}</Text>
+            </Button>
+          </View>
+        )} */}
       </View>
     ) : (
       <Loader loading={loading} />

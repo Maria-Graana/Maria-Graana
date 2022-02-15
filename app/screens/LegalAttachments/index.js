@@ -6,9 +6,12 @@ import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
 import { ActionSheet } from 'native-base'
+import moment from 'moment-timezone'
 import React, { Component } from 'react'
-import { Alert, FlatList, Text, View, TouchableOpacity } from 'react-native'
+import { Alert, FlatList, Text, View, TouchableOpacity, ScrollView } from 'react-native'
+import DateTimePicker from '../../components/DatePicker'
 import UploadAttachment from '../../components/UploadAttachment'
+import LegalComments from '../../components/LegalComments'
 import { AntDesign } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import { Buffer } from 'buffer'
@@ -27,12 +30,16 @@ import AddLegalPaymentModal from '../../components/AddLegalPayment'
 import { setlead } from '../../actions/lead'
 import CommissionTile from '../../components/CommissionTile'
 import DeleteModal from '../../components/DeleteModal'
+import PickerComponent from '../../components/Picker/index'
 import styles from './style'
 import {
   clearInstrumentInformation,
   getInstrumentDetails,
   setInstrumentInformation,
 } from '../../actions/addInstrument'
+import style from '../../components/LegalTile/style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
@@ -40,7 +47,7 @@ class LegalAttachment extends Component {
   attachments = []
   constructor(props) {
     super(props)
-    const { route } = this.props
+    const { lead, user, permissions } = this.props
     this.state = {
       isVisible: false,
       checkValidation: false,
@@ -66,12 +73,22 @@ class LegalAttachment extends Component {
       accountPhoneNumbers: [],
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
+      toggleCommentModal: false,
+      commentModalLoading: false,
+      documentComments: [],
+      firstFormData: {
+        legalService: 'internal',
+        legalDescription: 'client',
+      },
+      selectedDocument: null,
+      transferDate: null,
+      viewCommentsCheck: false,
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
     }
   }
 
   componentDidMount() {
     this.fetchLead()
-    this.fetchDocuments()
     this.fetchLegalPaymentInfo()
     this.fetchOfficeLocations()
   }
@@ -118,36 +135,19 @@ class LegalAttachment extends Component {
     const { dispatch, lead, route } = this.props
     this.setState({ loading: true }, () => {
       axios
-        .get(`/api/leads/byId?id=${lead.id}`)
+        .get(`/api/leads/byId?id=${lead.id}&legal=true&transfer=true`)
         .then((response) => {
           if (response.data) {
             dispatch(setlead(response.data))
+            this.fetchDocuments(response.data)
             let mailCheck = this.mailSentCheck()
             if (mailCheck) {
-              const { legalDocuments, commissions } = response.data
-              let newcheckListDoc =
-                legalDocuments &&
-                legalDocuments.length &&
-                _.find(legalDocuments, (item) => {
-                  return (
-                    item.category === 'legal_checklist' && item.addedBy === route.params.addedBy
-                  )
-                })
-              let newlegalPayment =
-                commissions &&
-                commissions.length &&
-                _.find(commissions, (item) => {
-                  return (
-                    item.paymentCategory === 'legal_payment' &&
-                    item.addedBy === route.params.addedBy
-                  )
-                })
-              newcheckListDoc.name = 'CHECKLIST'
               this.setState({
-                checkListDoc: newcheckListDoc,
-                legalPaymentObj: newlegalPayment,
+                checkListDoc: this.checkListDoc(response.data),
+                legalPaymentObj: this.checkLegalPayment(response.data),
                 assignToAccountsLoading: false,
                 showAction: false,
+                transferDate: response.data.transferedDate,
               })
             }
           }
@@ -158,41 +158,139 @@ class LegalAttachment extends Component {
     })
   }
 
-  fetchDocuments = () => {
-    const { route, lead } = this.props
-    let list =
-      route.params.addedBy === 'buyer'
-        ? _.clone(StaticData.BuyerLegalDocumentsList)
-        : _.clone(StaticData.SellerLegalDocumentsList)
-    this.setState({ loading: true }, () => {
-      axios
-        .get(`/api/leads/listLegalDocuments?leadId=${lead.id}&addedBy=${route.params.addedBy}`)
-        .then((res) => {
-          if (res.data && res.data.length) {
-            list = helper.setLegalListing(list, res.data)
-          }
+  checkLegalPayment = (lead) => {
+    const { route } = this.props
+    const { commissions } = lead
+    let newlegalPayment =
+      commissions &&
+      commissions.length &&
+      _.find(commissions, (item) => {
+        return item.paymentCategory === 'legal_payment' && item.addedBy === route.params.addedBy
+      })
+    return newlegalPayment
+  }
+
+  setDefaultOfficeLocation = () => {
+    const { legalPayment, user, dispatch } = this.props
+    let defaultUserLocationId = user.officeLocationId
+    dispatch(setLegalPayment({ ...legalPayment, officeLocationId: defaultUserLocationId }))
+    return defaultUserLocationId
+  }
+
+  checkListDoc = (lead) => {
+    const { route } = this.props
+    const { legalDocuments } = lead
+    let newcheckListDoc =
+      legalDocuments &&
+      legalDocuments.length &&
+      _.find(legalDocuments, (item) => {
+        return item.category === 'legal_checklist' && item.addedBy === route.params.addedBy
+      })
+    if (!newcheckListDoc) {
+      newcheckListDoc = {
+        fileKey: null,
+        id: 1,
+        category: 'legal_checklist',
+        name: 'CHECKLIST',
+        status: 'pending',
+      }
+    } else newcheckListDoc.name = 'CHECKLIST'
+    return newcheckListDoc
+  }
+
+  fetchDocuments = (lead) => {
+    const { route } = this.props
+    const { addedBy } = route.params
+    axios
+      .get(
+        `/api/legal/documents/${lead.id}?addedBy=${addedBy}&leadType=${lead.purpose}&legalType=${lead.legalType}`
+      )
+      .then((res) => {
+        if (res.data && res.data.length) {
           this.setState({
-            legalListing: list,
-            loading: false,
+            legalListing: helper.setLegalListing(res.data),
+            firstFormData: {
+              legalService: addedBy === 'buyer' ? lead.legalTypeBuyer : lead.legalTypeSeller,
+              legalDescription:
+                addedBy === 'buyer' ? lead.legalDescriptionBuyer : lead.legalDescriptionSeller,
+            },
           })
-        })
-        .catch((error) => {
-          console.log('error: ', error)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error)
+      })
+  }
+
+  confirmationLegalService = (legalType, legalDescription) => {
+    let that = this
+    const { firstFormData } = this.state
+    setTimeout(function () {
+      Alert.alert(
+        `Change to ${helper.capitalize(firstFormData.legalService)}`,
+        `Are you sure you want to change to ${helper.capitalize(
+          firstFormData.legalService
+        )} Services? If you continue, you may have to upload some legal documents again.`,
+        [
+          { text: 'No', style: 'cancel' },
+          {
+            text: 'Yes',
+            onPress: async () => {
+              that.updateLegalService(legalType, legalDescription)
+            },
+          },
+        ],
+        { cancelable: false }
+      )
+    }, 600)
+  }
+
+  updateLegalService = (legalType, legalDescription) => {
+    const { route, lead } = this.props
+    axios
+      .post(
+        `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
+          legalType === 'internal' ? 'agent' : legalDescription
+        }&addedBy=${route.params.addedBy}`
+      )
+      .then((res) => {
+        this.fetchLead()
+      })
+      .catch((error) => {
+        console.log(
+          `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
+            legalType === 'internal' ? 'agent' : legalDescription
+          }}&addedBy=${route.params.addedBy}`,
+          error
+        )
+      })
+  }
+
+  setTransferDate = (date) => {
+    const { route, lead } = this.props
+    this.setState({
+      transferDate: date,
     })
+    axios
+      .patch(`/api/legal/transferDate?addedBy=${route.params.addedBy}&leadId=${lead.id}`, {
+        transferDate: date,
+      })
+      .then((res) => {
+        this.fetchLead()
+      })
+      .catch((error) => {
+        console.log(`legal/transferDate?addedBy=${route.params.addedBy}&leadId=${lead.id}`, error)
+      })
   }
 
   handleForm = (formData) => {
     const { currentItem } = this.state
     formData.category = currentItem.category
-    console.log('handleForm: ', formData)
     this.setState(
       {
         formData: formData,
         showAction: false,
+        loading: true,
       },
       () => {
         this.uploadAttachment(this.state.formData)
@@ -240,7 +338,7 @@ class LegalAttachment extends Component {
 
   uploadAttachment = (legalAttachment) => {
     const { route, lead } = this.props
-    const { checkListDoc } = this.state
+    const { checkListDoc, currentItem } = this.state
     let attachment = {
       name: legalAttachment.fileName,
       type: 'file/' + legalAttachment.fileName.split('.').pop(),
@@ -249,7 +347,7 @@ class LegalAttachment extends Component {
     let fd = new FormData()
     fd.append('file', attachment)
     // ====================== API call for Attachments base on Payment ID
-    let url = `/api/leads/legalDocuments?leadId=${lead.id}&category=${legalAttachment.category}&addedBy=${route.params.addedBy}`
+    let url = `/api/legal/document?legalId=${currentItem.id}`
     if (legalAttachment.category === 'legal_checklist')
       url = `/api/leads/checklist?id=${checkListDoc.id}&addedBy=${route.params.addedBy}`
     axios
@@ -257,7 +355,6 @@ class LegalAttachment extends Component {
       .then((res) => {
         if (res.data) {
           this.fetchLead()
-          this.fetchDocuments()
         }
       })
       .catch((error) => {
@@ -268,10 +365,9 @@ class LegalAttachment extends Component {
 
   deleteAttachmentFromServer = (item) => {
     axios
-      .delete(`/api/leads/legalDocument?id=${item.id}`)
+      .delete(`/api/legal/document?id=${item.id}`)
       .then((res) => {
         this.fetchLead()
-        this.fetchDocuments()
       })
       .catch((error) => {
         console.log('error', error.message)
@@ -353,23 +449,61 @@ class LegalAttachment extends Component {
       data.value = data.category
       this.toggleActionSheet(data)
     }
-    if (value === 'remove') {
-      this.showDeleteDialog(data)
+    if (value === 'submit_to_legal') {
+      this.toggleComments(data, false)
     }
-    if (value === 'assign_to_legal') {
-      this.submitToAssignLegal(data)
+    if (value === 'view_legal') {
+      this.toggleComments(data, true)
     }
   }
 
+  toggleComments = (data, viewCommentsCheck) => {
+    const { toggleCommentModal } = this.state
+    if (!toggleCommentModal === true) {
+      this.fetchComments(data)
+      this.setState({
+        showAction: false,
+        toggleCommentModal: !toggleCommentModal,
+        commentModalLoading: !toggleCommentModal === true ? true : false,
+        selectedDocument: data,
+        viewCommentsCheck: viewCommentsCheck,
+      })
+    } else {
+      this.setState({
+        toggleCommentModal: !toggleCommentModal,
+        commentModalLoading: !toggleCommentModal === true ? true : false,
+      })
+    }
+  }
+
+  // *********** fetch Comments ***************
+  fetchComments = (data) => {
+    this.setState({ commentModalLoading: true }, () => {
+      axios
+        .get(`/api/legal/document/comments?documentId=${data.id}`)
+        .then((res) => {
+          this.setState({
+            documentComments: helper.setCommentsPayload(res.data),
+            commentModalLoading: false,
+          })
+        })
+        .finally(() => {
+          this.setState({ commentModalLoading: false })
+        })
+    })
+  }
+
   // *******  Assign To Legal  *************
-  submitToAssignLegal = (data) => {
+  submitToAssignLegal = (data, comment) => {
+    const { lead } = this.props
+    this.toggleComments(data, false)
     axios
-      .patch(`/api/leads/legalDocument?id=${data.id}`, {
+      .patch(`/api/legal/document?documentId=${data.id}&leadId=${lead.id}`, {
         status: 'pending_legal',
+        remarks: comment,
       })
       .then((res) => {
         this.fetchLead()
-        this.fetchDocuments()
       })
       .catch((error) => {
         console.log(`ERROR: /api/leads/legalDocument?id=${data.id}`, error)
@@ -481,7 +615,7 @@ class LegalAttachment extends Component {
     const { shorlistedProperty, addedBy } = route.params
     axios
       .post(
-        `/api/leads/sendLegalEmail?leadId=${lead.id}&shortlistId=${shorlistedProperty.id}&addedBy=${addedBy}`
+        `/api/legal/requestService?leadId=${lead.id}&shortlistId=${shorlistedProperty.id}&addedBy=${addedBy}`
       )
       .then((response) => {
         if (response.data) {
@@ -506,6 +640,8 @@ class LegalAttachment extends Component {
       details: '',
       visible: false,
       paymentAttachments: [],
+      instrumentDuplicateError: null,
+      officeLocationId: this.setDefaultOfficeLocation(),
     }
     this.setState({
       modalValidation: false,
@@ -704,6 +840,8 @@ class LegalAttachment extends Component {
     let toastMsg = 'Legal Payment Added'
     let errorMsg = 'Error Adding Legal Payment'
     let baseUrl = `/api/leads/project/payments`
+
+    body.officeLocationId = this.setDefaultOfficeLocation()
     axios
       .post(baseUrl, body)
       .then((response) => {
@@ -814,6 +952,16 @@ class LegalAttachment extends Component {
         .post(`api/leads/instruments`, addInstrument)
         .then((res) => {
           if (res && res.data) {
+            if (res.data.status === false) {
+              dispatch(
+                setLegalPayment({
+                  ...legalPayment,
+                  instrumentDuplicateError: res.data.message,
+                })
+              )
+              this.setState({ addPaymentLoading: false, assignToAccountsLoading: false })
+              return
+            }
             body = {
               ...legalPayment,
               rcmLeadId: lead.id,
@@ -969,6 +1117,45 @@ class LegalAttachment extends Component {
     })
   }
 
+  // ************ EXTERNAL INTERNAL LEGAL WORKFLOW FIELDS ******************
+  handleFirstForm = (value, name) => {
+    const { firstFormData } = this.state
+    let formData = firstFormData
+    formData[name] = value
+    if (name !== 'legalDescription')
+      this.confirmationLegalService(formData.legalService, formData.legalDescription)
+    else this.updateLegalService(formData.legalService, formData.legalDescription)
+  }
+
+  TransferDate = () => {
+    return (
+      <TouchableOpacity style={[styles.legalBtnView]} disabled={true}>
+        <View style={[styles.statusTile]}>
+          <Text style={styles.transferText}>TRANSFER DATE:</Text>
+          <Text style={styles.dateText}>{moment(new Date()).format('MMM DD, YYYY')}</Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+  readPermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.READ,
+      permissions
+    )
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+  }
+
   render() {
     const {
       legalListing,
@@ -989,13 +1176,24 @@ class LegalAttachment extends Component {
       accountPhoneNumbers,
       accountsLoading,
       isMultiPhoneModalVisible,
+      firstFormData,
+      toggleCommentModal,
+      commentModalLoading,
+      selectedDocument,
+      documentComments,
+      transferDate,
+      viewCommentsCheck,
+      closedLeadEdit,
     } = this.state
     const { lead, route, contacts } = this.props
+    const { leadPurpose, addedBy } = route.params
     let mailCheck = this.mailSentCheck()
     let onReadOnly = this.checkReadOnlyMode()
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
+    let readPermission = this.readPermission()
+    let updatePermission = this.updatePermission()
 
     return (
       <View style={[AppStyles.mb1]}>
@@ -1041,97 +1239,169 @@ class LegalAttachment extends Component {
             url={webView}
           />
         ) : null}
-        {!loading ? (
-          <View style={[styles.mainView, AppStyles.mb1]}>
-            <View style={[styles.pad15, styles.padV15]}>
-              {!mailCheck ? (
-                <RCMBTN
-                  onClick={() => {
-                    this.showLegalRequestConfirmation()
-                  }}
-                  btnText={'REQUEST TRANSFER SERVICES'}
-                  checkLeadClosedOrNot={false}
-                  hiddenBtn={false}
-                  addBorder={true}
-                  isLeadClosed={isLeadClosed}
-                />
-              ) : null}
-              {mailCheck ? (
-                <View style={styles.transferView}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
-                    <Text
-                      style={[styles.mandatoryText, { fontFamily: AppStyles.fonts.semiBoldFont }]}
-                    >
-                      PKR{' '}
-                      <Text style={styles.mandatoryText}>
-                        {legalServicesFee && legalServicesFee.fee}
-                      </Text>
-                    </Text>
+        <LegalComments
+          commentModalLoading={commentModalLoading}
+          selectedDocument={selectedDocument}
+          active={toggleCommentModal}
+          toggleComments={this.toggleComments}
+          submitToAssignLegal={this.submitToAssignLegal}
+          documentComments={documentComments}
+          viewCommentsCheck={viewCommentsCheck}
+        />
+        <ScrollView>
+          {!loading ? (
+            <View style={[styles.mainView, AppStyles.mb1]}>
+              <>
+                <View style={{ padding: 10 }}>
+                  <PickerComponent
+                    onValueChange={(value, name) => {
+                      if (updatePermission && closedLeadEdit) this.handleFirstForm(value, name)
+                    }}
+                    data={StaticData.legalServicesFields}
+                    name={'legalService'}
+                    placeholder="Legal Services Types"
+                    selectedItem={firstFormData.legalService}
+                    enabled={closedLeadEdit}
+                  />
+                </View>
+                {firstFormData.legalService !== 'internal' && leadPurpose === 'sale' ? (
+                  <View style={{ padding: 10 }}>
+                    <PickerComponent
+                      onValueChange={(value, name) => {
+                        if (updatePermission && closedLeadEdit) this.handleFirstForm(value, name)
+                      }}
+                      data={StaticData.externalServicesFields}
+                      name={'legalDescription'}
+                      placeholder="External Service Preferences"
+                      selectedItem={firstFormData.legalDescription}
+                      enabled={closedLeadEdit}
+                    />
                   </View>
-                  <View style={styles.pad15}>
-                    {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
-                      <RCMBTN
-                        onClick={() => {
-                          this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
-                        }}
-                        btnImage={RoundPlus}
-                        btnText={'ADD LEGAL SERVICES PAYMENT'}
-                        checkLeadClosedOrNot={false}
-                        hiddenBtn={false}
-                        addBorder={true}
-                        isLeadClosed={isLeadClosed}
-                      />
-                    ) : null}
-                    {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
-                      <CommissionTile
-                        data={legalPaymentObj}
-                        editTile={this.setCommissionEditData}
-                        onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
-                        commissionEdit={onReadOnly}
-                        title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
-                        call={this.fetchPhoneNumbers}
-                        showAccountPhone={true}
-                      />
-                    ) : null}
-                  </View>
-                  {checkListDoc && checkListDoc.fileKey !== null ? (
-                    <View>{this.legalDownLoadTile(checkListDoc)}</View>
-                  ) : (
+                ) : null}
+              </>
+              <Text style={styles.mandatoryText}>DOCUMENTS</Text>
+              <View style={[]}>
+                <FlatList
+                  data={legalListing}
+                  renderItem={({ item, index }) => (
                     <LegalTile
-                      data={checkListDoc}
-                      index={null}
-                      submitMenu={() => {}}
-                      getAttachmentFromStorage={() => {}}
-                      downloadLegalDocs={() => {}}
+                      data={item}
+                      index={index + 1}
+                      submitMenu={(value, data) => {
+                        if (updatePermission && closedLeadEdit) this.submitMenu(value, data)
+                      }}
+                      getAttachmentFromStorage={(item) => {
+                        if (updatePermission && closedLeadEdit) this.toggleActionSheet(item)
+                      }}
+                      downloadLegalDocs={(item) => {
+                        if (updatePermission && closedLeadEdit) this.downloadLegalDocs(item)
+                      }}
                       isLeadClosed={isLeadClosed}
-                      addBorder={true}
                     />
                   )}
+                  keyExtractor={(item, index) => {
+                    item.id.toString()
+                  }}
+                />
+              </View>
+              {leadPurpose === 'sale' &&
+              addedBy !== 'seller' &&
+              firstFormData.legalService === 'internal' ? (
+                <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
+                  {!mailCheck ? (
+                    <RCMBTN
+                      onClick={() => {
+                        if (updatePermission && closedLeadEdit) this.showLegalRequestConfirmation()
+                      }}
+                      btnText={'REQUEST TRANSFER SERVICES'}
+                      checkLeadClosedOrNot={false}
+                      hiddenBtn={false}
+                      addBorder={true}
+                      isLeadClosed={isLeadClosed}
+                    />
+                  ) : null}
+                  {mailCheck ? (
+                    <View style={styles.transferView}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
+                        <Text
+                          style={[
+                            styles.mandatoryText,
+                            { fontFamily: AppStyles.fonts.semiBoldFont },
+                          ]}
+                        >
+                          PKR{' '}
+                          <Text style={styles.mandatoryText}>
+                            {legalServicesFee && legalServicesFee.fee}
+                          </Text>
+                        </Text>
+                      </View>
+                      <View style={[styles.datePicker]}>
+                        <DateTimePicker
+                          disabled={checkListDoc && checkListDoc.fileKey !== null ? true : false}
+                          placeholderLabel={'Select Transfer date'}
+                          name={'date'}
+                          mode={'date'}
+                          errorMessage={'Required'}
+                          iconSource={require('../../../assets/img/calendar.png')}
+                          date={transferDate ? new Date(transferDate) : new Date()}
+                          selectedValue={transferDate ? helper.formatDate(transferDate) : ''}
+                          handleForm={(value, name) => {
+                            if (updatePermission && closedLeadEdit)
+                              this.setTransferDate(value, 'transferDate')
+                          }}
+                        />
+                      </View>
+                      <View style={styles.pad15}>
+                        {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
+                          <RCMBTN
+                            onClick={() => {
+                              if (updatePermission && closedLeadEdit)
+                                this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
+                            }}
+                            btnImage={RoundPlus}
+                            btnText={'ADD LEGAL SERVICES PAYMENT'}
+                            checkLeadClosedOrNot={false}
+                            hiddenBtn={false}
+                            addBorder={true}
+                            isLeadClosed={isLeadClosed}
+                          />
+                        ) : null}
+                        {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
+                          <CommissionTile
+                            updatePermission={updatePermission}
+                            data={legalPaymentObj}
+                            editTile={this.setCommissionEditData}
+                            onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
+                            commissionEdit={onReadOnly}
+                            title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
+                            call={this.fetchPhoneNumbers}
+                            showAccountPhone={true}
+                          />
+                        ) : null}
+                      </View>
+                      {checkListDoc && checkListDoc.fileKey !== null ? (
+                        <View>{this.legalDownLoadTile(checkListDoc)}</View>
+                      ) : (
+                        <LegalTile
+                          data={checkListDoc}
+                          index={null}
+                          submitMenu={() => {}}
+                          getAttachmentFromStorage={() => {}}
+                          downloadLegalDocs={() => {}}
+                          isLeadClosed={isLeadClosed}
+                          addBorder={true}
+                        />
+                      )}
+                    </View>
+                  ) : null}
                 </View>
               ) : null}
             </View>
-            <Text style={styles.mandatoryText}>DOCUMENTS</Text>
-            <FlatList
-              data={legalListing}
-              renderItem={({ item, index }) => (
-                <LegalTile
-                  data={item}
-                  index={index + 1}
-                  submitMenu={this.submitMenu}
-                  getAttachmentFromStorage={this.toggleActionSheet}
-                  downloadLegalDocs={this.downloadLegalDocs}
-                  isLeadClosed={isLeadClosed}
-                />
-              )}
-              keyExtractor={(item, index) => {
-                index.toString()
-              }}
-            />
-          </View>
-        ) : (
-          <LoadingNoResult loading={loading} />
-        )}
+          ) : (
+            <LoadingNoResult loading={loading} />
+          )}
+        </ScrollView>
       </View>
     )
   }
@@ -1144,6 +1414,7 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(LegalAttachment)

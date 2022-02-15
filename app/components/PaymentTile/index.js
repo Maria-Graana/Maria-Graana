@@ -23,7 +23,7 @@ class PaymentTile extends React.Component {
       data,
       count,
       editTile,
-      tileForToken,
+      tileForToken = false,
       editTileForscreenOne,
       checkLeadClosedOrNot,
       onPaymentLongPress,
@@ -84,7 +84,7 @@ class PaymentTile extends React.Component {
               <Text style={styles.priceDate}>
                 {moment(data.createdAt).format('DD MMM YY - h:mm a')}
               </Text>
-              {data.status !== 'open' ? (
+              {data.status !== 'open' && tileForToken === false ? (
                 <TouchableHighlight
                   onPress={() => {
                     call(data)
@@ -122,7 +122,7 @@ class PaymentTile extends React.Component {
                 <Text style={styles.priceDate}>
                   {moment(data.createdAt).format('DD MMM YY - h:mm a')}
                 </Text>
-                {data.status !== 'open' ? (
+                {data.status !== 'open' && tileForToken === false ? (
                   <TouchableHighlight
                     onPress={() => {
                       call(data)

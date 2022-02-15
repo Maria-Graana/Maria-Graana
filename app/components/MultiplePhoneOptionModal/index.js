@@ -1,42 +1,121 @@
 /** @format */
 
 import React from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Linking } from 'react-native'
 import Modal from 'react-native-modal'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
 import close from '../../../assets/img/times.png'
-import { Divider } from 'react-native-paper'
+import { BottomNavigation, Divider, HelperText } from 'react-native-paper'
 import phone from '../../../assets/img/phone2.png'
 import whatsapp from '../../../assets/img/whatsapp-02.png'
+import { connect, useDispatch } from 'react-redux'
+import { getDiaryFeedbacks, setConnectFeedback } from '../../actions/diary'
+import helper from '../../helper'
+import diaryHelper from '../../screens/Diary/diaryHelper'
 
 const MultiplePhoneOptionModal = ({
   isMultiPhoneModalVisible,
   showMultiPhoneModal,
+  connectFeedback,
   contacts,
-  handlePhoneSelectDone,
-  mode = 'phone',
+  navigation,
+  selectedDiary,
 }) => {
+  const { contactsInformation } = connectFeedback
+  const dispatch = useDispatch()
+
+  const callOnSelectedNumber = (item, calledOn, title = 'ARMS') => {
+    let url = null
+    if (selectedDiary) {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          calledNumber: item.number,
+          calledOn,
+          id: selectedDiary.id,
+        })
+      )
+      url = calledOn === 'phone' ? 'tel:' + item.number : 'whatsapp://send?phone=' + item.number
+      if (url && url != 'tel:null') {
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            if (!supported) {
+              helper.errorToast(`No application available to dial phone number`)
+              console.log("Can't handle url: " + url)
+            } else {
+              if (contacts) {
+                let result = helper.contacts(contactsInformation.phone, contacts)
+                if (
+                  contactsInformation.name &&
+                  contactsInformation.name !== '' &&
+                  contactsInformation.name !== ' ' &&
+                  contactsInformation.phone &&
+                  contactsInformation.phone !== ''
+                )
+                  if (!result) helper.addContact(contactsInformation, title)
+              }
+              Linking.openURL(url)
+              showMultiPhoneModal(false)
+              dispatch(
+                getDiaryFeedbacks({
+                  taskType: selectedDiary.taskType,
+                  leadType: diaryHelper.getLeadType(selectedDiary),
+                  actionType: 'Connect',
+                })
+              ).then((res) => {
+                navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
+              })
+            }
+          })
+          .catch((err) => console.error('An error occurred', err))
+      } else {
+        helper.errorToast(`No Phone Number`)
+      }
+    }
+  }
+
   return (
     <Modal isVisible={isMultiPhoneModalVisible}>
       <View style={[styles.modalMain]}>
         <View style={styles.row}>
           <Text style={styles.title}>Select Phone Number</Text>
-          <TouchableOpacity style={styles.closeBtn} onPress={() => showMultiPhoneModal(false)}>
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => {
+              showMultiPhoneModal(false), dispatch(setConnectFeedback({}))
+            }}
+          >
             <Image source={close} style={styles.closeImg} />
           </TouchableOpacity>
         </View>
+        <Text style={styles.title}>{contactsInformation ? contactsInformation.name : ''}</Text>
         <FlatList
-          data={contacts}
+          data={contactsInformation ? contactsInformation.payload : []}
           keyExtractor={(item, index) => String(index)}
           renderItem={({ item, index }) => (
-            <TouchableOpacity onPress={() => handlePhoneSelectDone(item)} style={styles.itemRow}>
-              <View style={styles.row}>
-                <Image style={[styles.closeImg]} source={mode === 'phone' ? phone : whatsapp} />
+            <View style={styles.row}>
+              <TouchableOpacity
+                onPress={() => callOnSelectedNumber(item, 'whatsapp')}
+                style={styles.itemRow}
+              >
+                <Image style={[styles.whatsapp, { marginRight: 10 }]} source={whatsapp} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => callOnSelectedNumber(item, 'phone')}
+                style={[
+                  styles.itemRow,
+                  { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+                ]}
+              >
+                <Image style={[styles.closeImg]} source={phone} />
                 <Text style={[styles.number]}>{item.number}</Text>
-              </View>
-              {contacts.length - 1 !== index && <Divider />}
-            </TouchableOpacity>
+              </TouchableOpacity>
+              {contactsInformation && contactsInformation.payload.length - 1 !== index && (
+                <Divider />
+              )}
+            </View>
           )}
         />
       </View>
@@ -44,7 +123,16 @@ const MultiplePhoneOptionModal = ({
   )
 }
 
-export default MultiplePhoneOptionModal
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    selectedDiary: store.diary.selectedDiary,
+    connectFeedback: store.diary.connectFeedback,
+    contacts: store.contacts.contacts,
+  }
+}
+
+export default connect(mapStateToProps)(MultiplePhoneOptionModal)
 
 const styles = StyleSheet.create({
   modalMain: {
@@ -72,16 +160,22 @@ const styles = StyleSheet.create({
     height: 22,
     resizeMode: 'contain',
   },
+  whatsapp: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+    width: '100%',
   },
   title: {
     width: '90%',
     color: AppStyles.colors.textColor,
-    fontFamily: AppStyles.fonts.semiBoldFont,
-    fontSize: AppStyles.fontSize.large,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: AppStyles.fontSize.medium,
   },
   itemRow: {
     marginVertical: 5,

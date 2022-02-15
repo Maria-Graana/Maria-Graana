@@ -22,6 +22,16 @@ const ReferenceGuideModal = ({
   const [showAction, setShowAction] = useState(false)
   const [investmentGuideAttachments, setInvestmentGuideAttachments] = useState([])
 
+  const addInvestment = () => {
+    if (investmentGuideNo === null || investmentGuideNo === '') {
+      alert('Please enter investment guide number')
+    } else {
+      addInvestmentGuide(investmentGuideNo, investmentGuideAttachments)
+      setInvestmentGuideNo(null)
+      setInvestmentGuideAttachments([])
+    }
+  }
+
   return (
     <Modal isVisible={isReferenceModalVisible}>
       <View style={styles.modalMain}>
@@ -36,7 +46,7 @@ const ReferenceGuideModal = ({
           }}
         />
         <View style={styles.row}>
-          <Text style={styles.title}>Reference Guide#</Text>
+          <Text style={styles.title}>Investment Guide Detail</Text>
           <TouchableOpacity
             style={styles.closeBtn}
             onPress={() => {
@@ -55,7 +65,7 @@ const ReferenceGuideModal = ({
               placeholderTextColor={'#a8a8aa'}
               value={investmentGuideNo}
               style={[AppStyles.formControl, AppStyles.inputPadLeft, styles.input]}
-              placeholder={'Enter Investment Guide Reference'}
+              placeholder={'Investment Guide Reference #'}
             />
           </View>
           <ErrorMessage errorMessage={referenceErrorMessage} />
@@ -85,7 +95,7 @@ const ReferenceGuideModal = ({
             containerStyle={AppStyles.formBtn}
             label={
               investmentGuideAttachments && investmentGuideAttachments.length > 0
-                ? 'Add More Attachments'
+                ? 'Add another Attachment'
                 : 'Add Attachment'
             }
             // loading={imageLoading || loading}
@@ -97,14 +107,7 @@ const ReferenceGuideModal = ({
             containerStyle={AppStyles.formBtn}
             label="Save"
             loading={referenceGuideLoading}
-            onPress={() =>
-              investmentGuideNo === null || investmentGuideNo === ''
-                ? alert('Please enter investment guide no')
-                : investmentGuideAttachments.length === 0
-                ? alert('Please add attachment(s) to continue')
-                : addInvestmentGuide(investmentGuideNo, investmentGuideAttachments)
-            }
-            // loading={imageLoading || loading}
+            onPress={() => addInvestment()}
           />
         </View>
       </View>

@@ -3,23 +3,29 @@
 import axios from 'axios'
 import React, { Component } from 'react'
 import { Alert, FlatList } from 'react-native'
+import { connect } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AppStyles from '../../AppStyles'
 import CommentTile from '../../components/CommentTile'
 import Loader from '../../components/loader'
 import AddComment from './addComment'
-
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import helper from '../../helper'
 class Comments extends Component {
   comments = []
 
   constructor(props) {
     super(props)
+    const { user, lead, permissions } = this.props
     this.state = {
       commentsList: [],
       comment: '',
       loading: true,
       type: 'comment',
       property: false,
+      addCommentLoading: false,
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
     }
   }
 
@@ -93,51 +99,58 @@ class Comments extends Component {
   }
 
   addComment = () => {
-    const { comment, property } = this.state
+    const { comment, property, closedLeadEdit } = this.state
     const { route } = this.props
     const { rcmLeadId, cmLeadId, screenName, propertyId, leadId } = route.params
     let commentObject = {}
-    if (comment.length > 0 && comment !== '') {
-      if (!property) {
-        if (rcmLeadId) {
-          commentObject = {
-            value: comment,
-            type: 'comment',
-            rcmLeadId: rcmLeadId,
+    this.setState({ addCommentLoading: true }, () => {
+      if (comment.length > 0 && comment !== '') {
+        if (!property) {
+          if (rcmLeadId) {
+            commentObject = {
+              value: comment,
+              type: 'comment',
+              rcmLeadId: rcmLeadId,
+            }
+          } else {
+            commentObject = {
+              value: comment,
+              type: 'comment',
+              cmLeadId: cmLeadId,
+            }
           }
         } else {
-          commentObject = {
-            value: comment,
-            type: 'comment',
-            cmLeadId: cmLeadId,
+          if (leadId) {
+            commentObject = {
+              value: comment,
+              type: 'comment',
+              shortListPropertyId: propertyId,
+              title: screenName,
+              rcmLeadId: leadId,
+            }
           }
         }
+        axios
+          .post(`/api/leads/comments`, commentObject)
+          .then((response) => {
+            this.getCommentsFromServer()
+          })
+          .catch((error) => {
+            console.log('error=>', error.message)
+          })
+          .finally(() => {
+            this.setState({ addCommentLoading: false })
+          })
       } else {
-        if (leadId) {
-          commentObject = {
-            value: comment,
-            type: 'comment',
-            shortListPropertyId: propertyId,
-            title: screenName,
-            rcmLeadId: leadId,
-          }
-        }
+        alert('Please add something in comment!')
       }
-      axios
-        .post(`/api/leads/comments`, commentObject)
-        .then((response) => {
-          this.getCommentsFromServer()
-        })
-        .catch((error) => {
-          console.log('error=>', error.message)
-        })
-    } else {
-      alert('Please add something in comment!')
-    }
+    })
   }
 
   render() {
-    const { commentsList, loading, comment, property } = this.state
+    const { commentsList, loading, comment, property, addCommentLoading, closedLeadEdit } =
+      this.state
+    const { permissions } = this.props
     return !loading ? (
       <KeyboardAwareScrollView
         style={[AppStyles.container, { paddingHorizontal: 0, marginBottom: 25 }]}
@@ -156,7 +169,18 @@ class Comments extends Component {
           )}
           keyExtractor={(item, index) => index.toString()}
         />
-        <AddComment onPress={this.addComment} comment={comment} setComment={this.setComment} />
+        {getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.UPDATE,
+          permissions
+        ) && closedLeadEdit ? (
+          <AddComment
+            onPress={this.addComment}
+            loading={addCommentLoading}
+            comment={comment}
+            setComment={this.setComment}
+          />
+        ) : null}
       </KeyboardAwareScrollView>
     ) : (
       <Loader loading={loading} />
@@ -164,4 +188,12 @@ class Comments extends Component {
   }
 }
 
-export default Comments
+mapStateToProps = (store) => {
+  return {
+    permissions: store.user.permissions,
+    lead: store.lead.lead,
+    user: store.user.user,
+  }
+}
+
+export default connect(mapStateToProps)(Comments)

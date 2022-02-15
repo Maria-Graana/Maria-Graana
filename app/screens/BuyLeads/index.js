@@ -2,13 +2,13 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import SortImg from '../../../assets/img/sort.png'
+import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
 import { setPPBuyNotification } from '../../actions/notification'
@@ -26,6 +26,9 @@ import Search from '../../components/Search'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import config from '../../config'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
@@ -43,6 +46,7 @@ var CANCEL_INDEX = 3
 class BuyLeads extends React.Component {
   constructor(props) {
     super(props)
+    const { permissions } = this.props
     this.state = {
       language: '',
       leadsData: [],
@@ -65,13 +69,23 @@ class BuyLeads extends React.Component {
       serverTime: null,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
-      currentCall: null,
       isFollowUpMode: false,
       active: false,
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       statusFilterType: 'id',
-      comment: null,
+      newActionModal: false,
+      fabActions: [],
+      createBuyRentLead: getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
+      createProjectLead: getPermissionValue(
+        PermissionFeatures.PROJECT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
     }
   }
 
@@ -85,6 +99,7 @@ class BuyLeads extends React.Component {
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()
+      this.setFabActions()
     })
   }
 
@@ -93,17 +108,25 @@ class BuyLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const sortValue = await this.getSortOrderFromStorage()
-    const statusValue = await getItem('statusFilterBuy')
-    if (statusValue) {
-      this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+    const { hasBooking = false } = this.props.route.params // for Deals we need to set filter to closed won
+    if (hasBooking) {
+      const sortValue = await this.getSortOrderFromStorage()
+      this.setState({ statusFilter: 'closed_won', sort: sortValue }, () => {
         this.fetchLeads()
       })
     } else {
-      storeItem('statusFilterBuy', 'all')
-      this.setState({ statusFilter: 'all', sort: sortValue }, () => {
-        this.fetchLeads()
-      })
+      const sortValue = await this.getSortOrderFromStorage()
+      const statusValue = await getItem('statusFilterBuy')
+      if (statusValue) {
+        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      } else {
+        storeItem('statusFilterBuy', 'open')
+        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      }
     }
   }
 
@@ -151,18 +174,62 @@ class BuyLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
+    const { permissions, user } = this.props
     this.setState({ loading: true })
+    const { hasBooking } = this.props.route.params
     let query = ``
-    if (showSearchBar) {
-      if (statusFilterType === 'name' && searchText !== '') {
-        query = `/api/leads?purpose=sale&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}`
-      } else if (statusFilterType === 'id' && searchText !== '') {
-        query = `/api/leads?purpose=sale&id=${searchText}&pageSize=${pageSize}&page=${page}`
+    if (helper.getAiraPermission(permissions)) {
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&id=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&aira=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        }
       } else {
-        query = `/api/leads?purpose=sale&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}`
+        if (statusFilter === 'shortlisting') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&aira=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
+            : (query = `/api/leads?purpose[]=buy&aira=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        }
       }
     } else {
-      query = `/api/leads?purpose=sale&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}`
+      if (showSearchBar) {
+        if (statusFilterType === 'name' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        } else if (statusFilterType === 'id' && searchText !== '') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&web=${true}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        }
+      } else {
+        if (statusFilter === 'shortlisting') {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        } else {
+          user.armsUserRole && user.armsUserRole.groupManger
+            ? (query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
+            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+        }
+      }
     }
     axios
       .get(`${query}`)
@@ -208,10 +275,21 @@ class BuyLeads extends React.Component {
   }
 
   navigateTo = (data) => {
+    const { screen } = this.props.route.params
     this.props.dispatch(setlead(data))
     let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', { lead: data, purposeTab: 'sale' })
+    if (this.props.route.params?.screen === 'MyDeals') {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
+      })
+    } else if (data.readAt === null) {
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
+      })
     } else {
       if (data.status == 'open') {
         page = 'Match'
@@ -288,22 +366,32 @@ class BuyLeads extends React.Component {
   }
 
   callNumber = (data) => {
-    const { contacts } = this.props
+    const { contacts, dispatch } = this.props
     this.setState({ selectedLead: data }, () => {
       if (data && data.customer) {
         let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts }, () => {
+        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
           if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            // multiple numbers to select
+            //  multiple numbers to select
             this.showMultiPhoneModal(true)
           } else {
-            this.showStatusFeedbackModal(true) // user has only one number so direct call can be made
-            this.sendCallStatus()
+            dispatch(
+              setCallPayload(
+                selectedClientContacts ? selectedClientContacts.phone : null,
+                'phone',
+                data
+              )
+            )
             helper.callNumber(selectedClientContacts, contacts)
+            // this.showStatusFeedbackModal(true, 'call')
           }
         })
       }
     })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   showMultiPhoneModal = (value) => {
@@ -311,7 +399,8 @@ class BuyLeads extends React.Component {
   }
 
   handlePhoneSelectDone = (phone) => {
-    const { contacts } = this.props
+    const { contacts, dispatch } = this.props
+    const { selectedLead } = this.state
     const copySelectedClientContacts = { ...this.state.selectedClientContacts }
     if (phone) {
       copySelectedClientContacts.phone = phone.number
@@ -319,32 +408,18 @@ class BuyLeads extends React.Component {
       this.setState(
         { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
         () => {
-          this.showStatusFeedbackModal(true)
-          this.sendCallStatus()
+          dispatch(
+            setCallPayload(
+              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
+              'phone',
+              selectedLead
+            )
+          )
           helper.callNumber(copySelectedClientContacts, contacts)
+          this.showStatusFeedbackModal(true, 'call')
         }
       )
     }
-  }
-
-  sendCallStatus = () => {
-    const start = moment().format()
-    const { selectedLead, selectedClientContacts } = this.state
-    let body = {
-      start: start,
-      end: start,
-      time: start,
-      date: start,
-      taskType: 'called',
-      subject: 'called ' + selectedLead.customer.customerName,
-      customerId: selectedLead.customer.id,
-      calledNumber: selectedClientContacts.phone ? selectedClientContacts.phone : null,
-      armsLeadId: selectedLead.id, // For CM send leadID and armsLeadID for RCM
-      taskCategory: 'leadTask',
-    }
-    axios.post(`api/leads/project/meeting`, body).then((res) => {
-      this.setCurrentCall(res.data)
-    })
   }
 
   sendStatus = (status) => {
@@ -562,23 +637,8 @@ class BuyLeads extends React.Component {
     }
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
-  }
-
-  sendStatusCall = (status, id) => {
-    const { selectedLead, currentCall } = this.state
-    let body = {
-      response: status,
-      comments: status,
-      leadId: selectedLead.id,
-      title: 'call',
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  showStatusFeedbackModal = (value, modalMode) => {
+    this.setState({ statusfeedbackModalVisible: value, modalMode })
   }
 
   goToViewingScreen = () => {
@@ -588,6 +648,30 @@ class BuyLeads extends React.Component {
 
   changeStatusType = (status) => {
     this.setState({ statusFilterType: status })
+  }
+
+  setFabActions = () => {
+    const { createBuyRentLead, createProjectLead } = this.state
+    let fabActions = []
+    if (createBuyRentLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Buy/Rent Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+      })
+    }
+    if (createProjectLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Investment Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+      })
+    }
+    this.setState({
+      fabActions: fabActions,
+    })
   }
 
   render() {
@@ -608,16 +692,19 @@ class BuyLeads extends React.Component {
       serverTime,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
-      selectedLead,
       selectedClientContacts,
       isMultiPhoneModalVisible,
       statusFilterType,
-      comment,
+      newActionModal,
+      selectedLead,
+      fabActions,
+      createBuyRentLead,
+      createProjectLead,
     } = this.state
-    const { user } = this.props
+    const { user, permissions } = this.props
+    const { screen, hasBooking = false } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -666,16 +753,20 @@ class BuyLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Lead Status'}
-                  data={leadStatus}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
+              {hasBooking ? (
+                <View style={styles.emptyViewWidth}></View>
+              ) : (
+                <View style={styles.pickerMain}>
+                  <PickerComponent
+                    placeholder={'Lead Status'}
+                    data={StaticData.buyRentFilter}
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.changeStatus}
+                    selectedItem={statusFilter}
+                  />
+                </View>
+              )}
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}
@@ -706,24 +797,25 @@ class BuyLeads extends React.Component {
             contentContainerStyle={styles.paddingHorizontal}
             renderItem={({ item }) => (
               <View>
-                {(!user.organization && user.subRole === 'group_management') ||
+                {(!user.organization && user.armsUserRole.groupManger) ||
                 (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
-                    purposeTab={'rent'}
+                    purposeTab={'sale'}
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
+                    screenName={screen}
                   />
                 ) : (
                   <PPLeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
-                    purposeTab={'rent'}
+                    purposeTab={'sale'}
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
@@ -757,46 +849,46 @@ class BuyLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {user.organization && user.organization.isPP ? (
-          <Fab
-            active="true"
-            containerStyle={{ zIndex: 20 }}
-            style={{ backgroundColor: AppStyles.colors.primaryColor }}
-            position="bottomRight"
-            onPress={() => this.goToFormPage('AddRCMLead', 'RCM', null, null)}
-          >
-            <Ionicons name="md-add" color="#ffffff" />
-          </Fab>
-        ) : (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
           <FAB.Group
             open={open}
             icon="plus"
             style={{ marginBottom: 16 }}
             fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
             color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              {
-                icon: 'plus',
-                label: 'Buy/Rent Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
-              },
-              {
-                icon: 'plus',
-                label: 'Investment Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
-              },
-            ]}
+            actions={fabActions}
             onStateChange={({ open }) => this.setState({ open })}
           />
-        )}
-
+        ) : null}
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           contacts={selectedClientContacts.payload}
           showMultiPhoneModal={this.showMultiPhoneModal}
           handlePhoneSelectDone={this.handlePhoneSelectDone}
+        />
+
+        <StatusFeedbackModal
+          visible={statusfeedbackModalVisible}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
+          commentsList={
+            modalMode === 'call'
+              ? StaticData.commentsFeedbackCall
+              : StaticData.leadClosedCommentsFeedback
+          }
+          modalMode={modalMode}
+          rejectLead={(body) => this.rejectLead(body)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
+          leadType={'RCM'}
+        />
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
         />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
@@ -804,26 +896,6 @@ class BuyLeads extends React.Component {
           isFollowUpMode={isFollowUpMode}
           lead={selectedLead}
           leadType={'RCM'}
-          comment={comment}
-        />
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatusCall(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          addMeeting={() => this.openModalInMeetingMode()}
-          leadType={'RCM'}
-          goToViewingScreen={this.goToViewingScreen}
-          currentCall={currentCall}
         />
         <SortModal
           sendStatus={this.sendStatus}
@@ -843,6 +915,7 @@ mapStateToProps = (store) => {
     count: store.listings.count,
     contacts: store.contacts.contacts,
     PPBuyNotification: store.Notification.PPBuyNotification,
+    permissions: store.user.permissions,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

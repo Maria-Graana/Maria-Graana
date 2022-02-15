@@ -30,6 +30,8 @@ import StaticData from '../../StaticData'
 import BuyPaymentView from './buyPaymentView'
 import RentPaymentView from './rentPaymentView'
 import AccountsPhoneNumbers from '../../components/AccountsPhoneNumbers'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 var BUTTONS = ['Delete', 'Cancel']
 var TOKENBUTTONS = ['Confirm', 'Cancel']
@@ -38,7 +40,7 @@ var CANCEL_INDEX = 1
 class PropertyRCMPayment extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       loading: true,
       isVisible: false,
@@ -65,7 +67,7 @@ class PropertyRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -1204,11 +1206,18 @@ class PropertyRCMPayment extends React.Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
+  openModalInFollowupMode = (value) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   fetchPhoneNumbers = (data) => {
@@ -1243,6 +1252,15 @@ class PropertyRCMPayment extends React.Component {
     this.setState({
       isMultiPhoneModalVisible: !isMultiPhoneModalVisible,
     })
+  }
+
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(
+      PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
   }
 
   render() {
@@ -1288,6 +1306,8 @@ class PropertyRCMPayment extends React.Component {
       isMultiPhoneModalVisible,
     } = this.state
     const { user, contacts } = this.props
+    let updatePermission = this.updatePermission()
+
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -1418,6 +1438,8 @@ class PropertyRCMPayment extends React.Component {
                         confirmTokenAction={this.confirmTokenAction}
                         closeLegalDocument={this.closeLegalDocument}
                         call={this.fetchPhoneNumbers}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     ) : (
                       <RentPaymentView
@@ -1453,6 +1475,8 @@ class PropertyRCMPayment extends React.Component {
                         toggleMonthlyDetails={this.toggleMonthlyDetails}
                         rentMonthlyToggle={rentMonthlyToggle}
                         call={this.fetchPhoneNumbers}
+                        updatePermission={updatePermission}
+                        closedLeadEdit={closedLeadEdit}
                       />
                     )
                   ) : null}
@@ -1495,7 +1519,7 @@ class PropertyRCMPayment extends React.Component {
               lead={lead}
               goToHistory={() => null}
               getCallHistory={() => null}
-              goToFollowup={() => this.openModalInFollowupMode()}
+              goToFollowUp={(value) => this.openModalInFollowupMode(value)}
             />
           </View>
         </View>
@@ -1514,6 +1538,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
   }
 }
 

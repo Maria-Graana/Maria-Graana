@@ -1,42 +1,34 @@
 /** @format */
 
 export default StaticData = {
-  taskValues: [
+  diaryTasks: [
     {
-      name: 'Task',
-      value: 'task',
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
     },
     {
-      name: 'Meeting',
-      value: 'meeting',
-    },
-  ],
-  taskValuesCMLead: [
-    {
-      name: 'Task',
-      value: 'task',
-    },
-  ],
-  allTaskValues: [
-    {
-      name: 'Task',
-      value: 'task',
-    },
-    {
-      name: 'Follow Up',
-      value: 'follow_up',
-    },
-    {
-      name: 'Meeting',
-      value: 'meeting',
+      name: 'Daily Update',
+      value: 'daily_update',
     },
     {
       name: 'Meeting with PP',
       value: 'meeting_with_pp',
     },
+  ],
+  diaryTasksCM: [
     {
-      name: 'Morning Meeting',
-      value: 'morning_meeting',
+      name: 'Meeting',
+      value: 'meeting',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+  ],
+  diaryTasksRCM: [
+    {
+      name: 'Follow up',
+      value: 'follow_up',
     },
   ],
   oneToTen: [
@@ -90,6 +82,7 @@ export default StaticData = {
       { value: 'industrial land', name: 'Industrial Land' },
       { value: 'plot file', name: 'Plot File' },
       { value: 'farmhouse plot', name: 'Farmhouse Plot' },
+      { value: 'land', name: 'Commercial Land' },
     ],
     commercial: [
       { value: 'office', name: 'Office' },
@@ -101,7 +94,6 @@ export default StaticData = {
       { value: 'Gym', name: 'Gym' },
       { value: 'Food Court', name: 'Food Court' },
       { value: 'hall', name: 'Hall' },
-      { value: 'land', name: 'Land' },
       { value: 'plaza', name: 'Plaza' },
       { value: 'other', name: 'Other' },
     ],
@@ -311,33 +303,36 @@ export default StaticData = {
     { value: 'open', name: 'Open' },
     { value: 'called', name: 'Called' },
     { value: 'viewing', name: 'Viewing' },
-    { value: 'closed_won', name: 'Closed Won' },
-    { value: 'closed_lost', name: 'Closed Lost' },
+    // { value: 'closed_lost', name: 'Closed Lost' },
   ],
   buyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
-    { value: 'follow_up', name: 'Nurture' },
-    { value: 'viewing', name: 'Viewing' },
-    { value: 'offer', name: 'Offer' },
-    { value: 'propsure', name: 'Propsure' },
+    { value: 'shortlisting', name: 'Shortlisting' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
-    { value: 'closed_won', name: 'Closed Won' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'called', name: 'Called' },
     { value: 'viewing', name: 'Viewing' },
-    { value: 'closed_won', name: 'Closed Won' },
-    { value: 'closed_lost', name: 'Closed Lost' },
+    // { value: 'closed_won', name: 'Closed Won' },
+    // { value: 'closed_lost', name: 'Closed Lost' },
   ],
-  investmentFilter: [
+  investmentFilterLeads: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
-    { value: 'follow_up', name: 'Nurture' },
-    { value: 'meeting', name: 'Meeting' },
+    { value: 'in_progress', name: 'In-progress' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
+    { value: 'closed_lost', name: 'Closed Lost' },
+  ],
+
+  investmentFilterDeals: [
+    { value: 'all', name: 'All' },
+    { value: 'open', name: 'Open' },
+    { value: 'in_progress', name: 'In-progress' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
@@ -600,7 +595,7 @@ export default StaticData = {
     { name: 'Recently Modified Last', value: '&order=Asc&field=updatedAt' },
   ],
   barCharData: {
-    labels: ['Created', 'Call', 'Meeting', 'Token', 'Payment', 'Won', 'Lost'],
+    labels: ['Created', 'Nurture', 'Meeting', 'Token', 'Payment', 'Won', 'Lost'],
     datasets: [
       {
         data: [0, 0, 0, 0, 0, 0, 0],
@@ -609,7 +604,7 @@ export default StaticData = {
     ],
   },
   rcmBarCharData: {
-    labels: ['Created', 'Called', 'Viewing', 'Offer', 'Propsure', 'Payment', 'Won', 'Lost'],
+    labels: ['Created', 'Nurture', 'Viewing', 'Offer', 'Propsure', 'Payment', 'Won', 'Lost'],
     datasets: [
       {
         data: [0, 0, 0, 0, 0, 0, 0, 0],
@@ -907,9 +902,9 @@ export default StaticData = {
       status: 'approved',
     },
   ],
-  BuyerLegalDocumentsList: [
+  BuyerLegalInternalDocumentsList: [
     {
-      category: 'service_charge_agreement',
+      category: 'cnic',
       name: 'SERVICE CHARGE AGREEMENT',
       status: 'pending',
       fileKey: null,
@@ -917,21 +912,66 @@ export default StaticData = {
     },
     { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
     {
-      category: 'sales_rent_agreement',
+      category: 'sale_agreement',
       name: 'SALES/RENT AGREEMENT',
       status: 'pending',
       fileKey: null,
       id: 4,
     },
     {
-      category: 'initial_payment_receipt',
+      category: 'service_charge_agreement',
       name: 'INITIAL PAYMENT RECEIPT',
       status: 'pending',
       fileKey: null,
       id: 5,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 6,
     },
   ],
-  SellerLegalDocumentsList: [
+  BuyerLegalExternalDocumentsList: [
+    {
+      category: 'cnic',
+      name: 'SERVICE CHARGE AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 1,
+    },
+    { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
+    {
+      category: 'disclaimer',
+      name: 'SALES/RENT AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 4,
+    },
+    {
+      category: 'sale_agreement',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+    {
+      category: 'service_charge_agreement',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 2,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 6,
+    },
+  ],
+  SellerLegalInternalDocumentsList: [
     {
       category: 'service_charge_agreement',
       name: 'SERVICE CHARGE AGREEMENT',
@@ -941,18 +981,63 @@ export default StaticData = {
     },
     { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
     {
-      category: 'sales_rent_agreement',
+      category: 'cnic',
       name: 'SALES/RENT AGREEMENT',
       status: 'pending',
       fileKey: null,
       id: 4,
     },
     {
-      category: 'initial_payment_receipt',
+      category: 'sales_agreement',
       name: 'INITIAL PAYMENT RECEIPT',
       status: 'pending',
       fileKey: null,
       id: 5,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 2,
+    },
+  ],
+  SellerLegalExternalDocumentsList: [
+    {
+      category: 'cnic',
+      name: 'SERVICE CHARGE AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 1,
+    },
+    { category: 'cnic', name: 'CNIC', status: 'pending', fileKey: null, id: 2 },
+    {
+      category: 'rent_agreement',
+      name: 'SALES/RENT AGREEMENT',
+      status: 'pending',
+      fileKey: null,
+      id: 4,
+    },
+    {
+      category: 'police_verification_report',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 5,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 3,
+    },
+    {
+      category: 'initial_payment_slip',
+      name: 'INITIAL PAYMENT RECEIPT',
+      status: 'pending',
+      fileKey: null,
+      id: 2,
     },
   ],
   checkListData: {
@@ -987,38 +1072,38 @@ export default StaticData = {
     },
   ],
   actionListItems: [
+    // {
+    //   id: 1,
+    //   title: 'Call',
+    //   image: require('../assets/img/call.png'),
+    // },
+    // {
+    //   id: 2,
+    //   title: 'Whatsapp',
+    //   image: require('../assets/img/whatsapp.png'),
+    // },
     {
       id: 1,
-      title: 'Call',
-      image: require('../assets/img/call.png'),
-    },
-    {
-      id: 2,
-      title: 'Whatsapp',
-      image: require('../assets/img/whatsapp.png'),
-    },
-    {
-      id: 3,
       title: 'Add Diary Task',
       image: require('../assets/img/diary-task.png'),
     },
+    // {
+    //   id: 4,
+    //   title: 'Add Comment',
+    //   image: require('../assets/img/comment.png'),
+    // },
+    // {
+    //   id: 5,
+    //   title: 'Add Attachment',
+    //   image: require('../assets/img/Path-20.png'),
+    // },
     {
-      id: 4,
-      title: 'Add Comment',
-      image: require('../assets/img/comment.png'),
-    },
-    {
-      id: 5,
-      title: 'Add Attachment',
-      image: require('../assets/img/Path-20.png'),
-    },
-    {
-      id: 6,
-      title: 'Share',
+      id: 2,
+      title: 'Refer',
       image: require('../assets/img/share-lead-with-agent.png'),
     },
     {
-      id: 7,
+      id: 3,
       title: 'ReAssign',
       image: require('../assets/img/reassign.png'),
     },
@@ -1164,71 +1249,71 @@ export default StaticData = {
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Deals.png'),
+      image: require('../assets/img/deals.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/Group_50.png'),
+      image: require('../assets/img/viewing_meeting.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/home-icon.png'),
+      image: require('../assets/img/listing.png'),
     },
     {
       id: 5,
       value: '0',
-      image: require('../assets/img/Group_46.png'),
+      image: require('../assets/img/pp_meeting.png'),
     },
     {
       id: 6,
       value: '0',
-      image: require('../assets/img/Group_41.png'),
+      image: require('../assets/img/pp_rating.png'),
     },
   ],
   reAdvisorKPIS: [
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Deals.png'),
+      image: require('../assets/img/deals.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/Group_50.png'),
+      image: require('../assets/img/viewing_meeting.png'),
     },
     {
       id: 4,
       value: '0',
-      image: require('../assets/img/home-icon.png'),
+      image: require('../assets/img/listing.png'),
     },
   ],
   businessCenterKPIS: [
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Group_51.png'),
+      image: require('../assets/img/investment_guide.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/daily-responsetime.png'),
+      image: require('../assets/img/responsetime-daily.png'),
     },
     {
       id: 4,
@@ -1245,22 +1330,93 @@ export default StaticData = {
     {
       id: 1,
       value: '0',
-      image: require('../assets/img/money.png'),
+      image: require('../assets/img/revenue_targets.png'),
     },
     {
       id: 2,
       value: '0',
-      image: require('../assets/img/Group_51.png'),
+      image: require('../assets/img/investment_guide.png'),
     },
     {
       id: 3,
       value: '0',
-      image: require('../assets/img/daily-responsetime.png'),
+      image: require('../assets/img/responsetime-daily.png'),
     },
     {
       id: 4,
       value: '0',
       image: require('../assets/img/Calls.png'),
     },
+  ],
+  leadCategories: [
+    {
+      label: 'Hot',
+      color: '#e63434',
+    },
+    {
+      label: 'Warm',
+      color: '#ff6c00',
+    },
+    {
+      label: 'Cold',
+      color: '#1688db',
+    },
+    // {
+    //   label: 'Call back',
+    //   color: '#61a70b',
+    // },
+    // {
+    //   label: 'Interested to meet',
+    //   color: '#61a70b',
+    // },
+    // {
+    //   label: 'Powered off',
+    //   color: '#9a9a9a',
+    // },
+    // {
+    //   label: 'No response',
+    //   color: '#9a9a9a',
+    // },
+  ],
+  unitStatuses: [
+    { name: 'Available', value: 'Available' },
+    { name: 'Hold', value: 'Hold' },
+    { name: 'Sold', value: 'Sold' },
+    { name: 'Token', value: 'Token' },
+    { name: 'Payment', value: 'Payment' },
+  ],
+  filterAvailableUnits: [
+    { name: 'STATUS', value: 'status' },
+    { name: 'PRICE', value: 'price' },
+  ],
+  legalServicesFields: [
+    {
+      name: 'Internal Services',
+      value: 'internal',
+    },
+    {
+      name: 'External Services',
+      value: 'external',
+    },
+  ],
+  externalServicesFields: [
+    {
+      name: 'Agent is getting external Services',
+      value: 'agent',
+    },
+    {
+      name: 'Client is getting external Services',
+      value: 'client',
+    },
+  ],
+  leadTypes: [
+    { name: 'Wanted', value: 'Wanted' },
+    { name: 'Project', value: 'Project' },
+    { name: 'Buy/Rent', value: 'BuyRent' },
+  ],
+  diarySortValues: [
+    { name: 'Time Based', value: '' },
+    { name: 'Task Type', value: 'type' },
+    { name: 'Classification', value: 'class' },
   ],
 }

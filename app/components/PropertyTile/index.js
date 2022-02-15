@@ -1,21 +1,17 @@
 /** @format */
 
-import { Feather, FontAwesome, Foundation, Ionicons, Entypo } from '@expo/vector-icons'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen'
-
-import AppStyles from '../../AppStyles'
-import Carousel from 'react-native-snap-carousel'
+import { Entypo, Feather, FontAwesome, Foundation, Ionicons } from '@expo/vector-icons'
 import React from 'react'
-import _ from 'underscore'
-import { formatPrice } from '../../PriceFormate'
-import styles from './style'
-import helper from '../../helper'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
-
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
+import Carousel from 'react-native-snap-carousel'
+import AppStyles from '../../AppStyles'
+import helper from '../../helper'
+import styles from './style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { connect } from 'react-redux'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 class InventoryTile extends React.Component {
   constructor(props) {
     super(props)
@@ -45,6 +41,11 @@ class InventoryTile extends React.Component {
     }
   }
 
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.UPDATE, permissions)
+  }
+
   render() {
     const {
       data,
@@ -64,6 +65,8 @@ class InventoryTile extends React.Component {
       showGraanaMenuOptions,
       hideGraanaMenu,
       propertyGeoTagging,
+      goToAttachments,
+      // closedLeadEdit,
     } = this.props
     const imagesList = data.armsuser ? data.armsPropertyImages : data.property_images
     const imagesCount =
@@ -74,6 +77,8 @@ class InventoryTile extends React.Component {
         : null
     const ownerName = this.checkCustomerName(data)
     const checkForGraanaProperties = whichProperties === 'graanaProperties'
+    let updatePermission = this.updatePermission()
+
     return (
       <TouchableOpacity
         style={[
@@ -131,6 +136,47 @@ class InventoryTile extends React.Component {
                 source={require('../../../assets/img/pp_logo.png')}
               />
             ) : null}
+
+            {screen === 'arms' ? (
+              <View
+                style={{
+                  alignSelf: 'flex-end',
+                  marginRight: 10,
+                }}
+              >
+                <Menu
+                  visible={showMenu && data.id === selectedProperty.id}
+                  onDismiss={() => {
+                    if (updatePermission) hideMenu()
+                  }}
+                  anchor={
+                    <Entypo
+                      onPress={() => {
+                        if (updatePermission) showMenuOptions(data)
+                      }}
+                      name="dots-three-vertical"
+                      size={24}
+                    />
+                  }
+                >
+                  <Menu.Item
+                    onPress={() => {
+                      if (updatePermission) goToAttachments('addSCA')
+                      hideMenu()
+                    }}
+                    // icon={require('../../../assets/img/properties-icon-l.png')}
+                    title={'SCA Document'}
+                  />
+                  <Menu.Item
+                    onPress={() => {
+                      if (updatePermission) graanaVerifeyModal(true, data.id), hideMenu()
+                    }}
+                    title="Verify Property"
+                  />
+                </Menu>
+              </View>
+            ) : null}
+
             {screen === 'fields' && data.status === 'onhold' ? (
               <View
                 style={{
@@ -142,7 +188,9 @@ class InventoryTile extends React.Component {
                   onDismiss={() => hideMenu()}
                   anchor={
                     <Entypo
-                      onPress={() => showMenuOptions(data)}
+                      onPress={() => {
+                        if (updatePermission) showMenuOptions(data)
+                      }}
                       name="dots-three-vertical"
                       size={24}
                     />
@@ -151,14 +199,14 @@ class InventoryTile extends React.Component {
                   <View>
                     <Menu.Item
                       onPress={() => {
-                        approveProperty(data.id)
+                        if (updatePermission) approveProperty(data.id)
                       }}
                       title="Approve Property"
                     />
 
                     <Menu.Item
                       onPress={() => {
-                        showHideRejectPropertyModal(true)
+                        if (updatePermission) showHideRejectPropertyModal(true)
                       }}
                       title="Reject Property"
                     />
@@ -214,10 +262,14 @@ class InventoryTile extends React.Component {
           <View style={{ marginHorizontal: 5, marginVertical: 5 }}>
             <Menu
               visible={showGraanaMenu && data.id === selectedProperty.id}
-              onDismiss={() => hideGraanaMenu()}
+              onDismiss={() => {
+                if (updatePermission) hideGraanaMenu()
+              }}
               anchor={
                 <Entypo
-                  onPress={() => showGraanaMenuOptions(data)}
+                  onPress={() => {
+                    if (updatePermission) showGraanaMenuOptions(data)
+                  }}
                   name="dots-three-vertical"
                   size={24}
                 />
@@ -227,14 +279,29 @@ class InventoryTile extends React.Component {
                 {data.verifiedStatus && data.verifiedStatus != 'verified' ? (
                   <Menu.Item
                     onPress={() => {
-                      graanaVerifeyModal(true, data.id)
+                      if (updatePermission) graanaVerifeyModal(true, data.id)
+                      hideGraanaMenu()
                     }}
                     title="Verify Property"
                   />
                 ) : null}
 
-                <Menu.Item onPress={() => propertyGeoTagging(data)} title="GeoTag" />
+                <Menu.Item
+                  onPress={() => {
+                    if (updatePermission) propertyGeoTagging(data)
+                    hideGraanaMenu()
+                  }}
+                  title="GeoTag"
+                />
               </View>
+              <Menu.Item
+                onPress={() => {
+                  if (updatePermission) goToAttachments('addSCA')
+                  hideGraanaMenu()
+                }}
+                // icon={require('../../../assets/img/properties-icon-l.png')}
+                title={'SCA Document'}
+              />
             </Menu>
           </View>
         ) : null}
@@ -243,7 +310,9 @@ class InventoryTile extends React.Component {
           <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>
             <Foundation
               name={'telephone'}
-              onPress={() => onCall(data)}
+              onPress={() => {
+                if (updatePermission) onCall(data)
+              }}
               color={AppStyles.colors.primaryColor}
               size={30}
               style={styles.phoneButton}
@@ -255,7 +324,9 @@ class InventoryTile extends React.Component {
           <View style={{ position: 'absolute', bottom: 5, left: wp('88%') }}>
             <Foundation
               name={'telephone'}
-              onPress={() => onCall(data)}
+              onPress={() => {
+                if (updatePermission) onCall(data)
+              }}
               color={AppStyles.colors.primaryColor}
               size={30}
               style={styles.phoneButton}
@@ -267,4 +338,12 @@ class InventoryTile extends React.Component {
   }
 }
 
-export default InventoryTile
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    contacts: store.contacts.contacts,
+    permissions: store.user.permissions,
+  }
+}
+
+export default connect(mapStateToProps)(InventoryTile)

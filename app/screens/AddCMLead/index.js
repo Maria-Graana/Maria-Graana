@@ -122,7 +122,7 @@ class AddCMLead extends Component {
         return item.value === value
       })
       formData['armsProjectTypeId'] = value
-      formData['projectType'] = getProName.name
+      formData['projectType'] = value
     }
     this.setState({ formData })
   }
@@ -144,27 +144,20 @@ class AddCMLead extends Component {
         })
         formData.projectName = project.name
       }
-      this.setState({ loading: true })
       formData.noProduct = false
-      axios
-        .post(`/api/leads/project`, formData)
-        .then((res) => {
-          if (res.data.message) {
-            Alert.alert(
-              'Lead cannot be created as same lead already exists:',
-              `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
-              [{ text: 'OK', style: 'cancel' }],
-              { cancelable: false }
-            )
-          } else helper.successToast('Lead created successfully')
-          RootNavigation.navigate('Leads')
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+      this.setState({ loading: true }, () => {
+        axios
+          .post(`/api/leads/project`, formData)
+          .then((res) => {
+            helper.successToast('Lead created successfully')
+            RootNavigation.navigate('Leads')
+            this.setState({ loading: false })
+          })
+          .catch((error) => {
+            console.log(error)
+            this.setState({ loading: false })
+          })
+      })
     }
   }
 
@@ -206,7 +199,7 @@ class AddCMLead extends Component {
     )
     var getPro = []
     getProType[0].map((item) => {
-      return getPro.push({ value: item.id, name: item.name })
+      return getPro.push({ value: item.id.toString(), name: item.name })
     })
     this.setState({
       getProductType: getPro,

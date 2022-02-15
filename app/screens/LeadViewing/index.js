@@ -27,11 +27,23 @@ import ViewCheckListModal from '../../components/ViewCheckListModal'
 import GeoTaggingModal from '../../components/GeotaggingModal'
 import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import { getDiaryFeedbacks, setConnectFeedback, setSelectedDiary } from '../../actions/diary'
+import GraanaPropertiesModal from '../../components/GraanaPropertiesStatusModal'
+import diaryHelper from '../Diary/diaryHelper'
+import {
+  alltimeSlots,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
+
+const _today = moment(new Date()).format('YYYY-MM-DD')
 
 class LeadViewing extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       isVisible: false,
       open: false,
@@ -53,7 +65,7 @@ class LeadViewing extends React.Component {
       organization: 'arms',
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -75,10 +87,18 @@ class LeadViewing extends React.Component {
       currentCall: null,
       isFollowUpMode: false,
       comment: null,
+      newActionModal: false,
+      graanaModalActive: false,
+      singlePropertyData: {},
+      forStatusPrice: false,
+      formData: {
+        amount: '',
+      },
     }
   }
 
   componentDidMount = () => {
+    const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (
         this.props.route.params &&
@@ -99,6 +119,10 @@ class LeadViewing extends React.Component {
         this.fetchProperties()
       }
     })
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    dispatch(getTimeShifts())
+    dispatch(setSlotDiaryData(_today))
   }
 
   fetchLegalPaymentInfo = () => {
@@ -183,8 +207,8 @@ class LeadViewing extends React.Component {
   closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
         })
@@ -196,10 +220,10 @@ class LeadViewing extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 
@@ -241,9 +265,87 @@ class LeadViewing extends React.Component {
     })
   }
 
-  goToAttachments = () => {
+  goToTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch, permissions } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
+  updateTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch, permissions } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
+    let diary = property.diaries[0]
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.id = diary.id
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
+  goToAttachments = (purpose) => {
     const { lead, navigation } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -387,17 +489,20 @@ class LeadViewing extends React.Component {
   }
 
   toggleCheckListModal = (toggleState, data) => {
-    this.setState({
-      isCheckListModalVisible: toggleState,
-      currentProperty: data ? data : null,
-      selectedCheckList: [],
-      userFeedback: null,
-    })
+    // this.setState(
+    //   {
+    // isCheckListModalVisible: toggleState,
+    //   currentProperty: data ? data : null,
+    //   selectedCheckList: [],
+    //   userFeedback: null,
+    // },
+    this.doneViewing(data ? data : null)
+    // )
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (helper.checkMyDiary(property, user)) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
@@ -415,8 +520,9 @@ class LeadViewing extends React.Component {
                 style={styles.viewingAtBtn}
                 onPress={() => {
                   if (leadAssignedSharedStatus) {
-                    this.openModal()
-                    this.updateProperty(property)
+                    // this.openModal()
+                    // this.updateProperty(property)
+                    this.updateTimeSlots(property)
                   }
                 }}
               >
@@ -449,8 +555,9 @@ class LeadViewing extends React.Component {
           style={styles.viewingBtn}
           onPress={() => {
             if (leadAssignedSharedStatus) {
-              this.openModal()
+              // this.openModal()
               this.setProperty(property)
+              this.goToTimeSlots(property)
             }
           }}
         >
@@ -490,68 +597,63 @@ class LeadViewing extends React.Component {
   }
 
   bookAnotherViewing = (property) => {
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
-      this.openModal()
+      // this.openModal()
       this.setProperty(property)
+      this.goToTimeSlots(property)
     }
   }
 
   doneViewing = (property) => {
-    const { user } = this.props
-    const { selectedCheckList, userFeedback } = this.state
+    const { user, dispatch, navigation, lead } = this.props
     if (property.diaries.length) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
-      if (
-        diary.status === 'pending' &&
-        selectedCheckList.length === StaticData.areaManagerCheckList.length &&
-        userFeedback !== '' &&
-        userFeedback !== null
-      ) {
-        let checkList = {}
-        selectedCheckList.map((item, index) => {
-          checkList[item] = true
+      if (diary.status === 'pending') {
+        dispatch(
+          setConnectFeedback({
+            id: diary.id,
+          })
+        )
+        let copyLeadAndDiaryData = { ...diary, armsLead: lead }
+        dispatch(setSelectedDiary(copyLeadAndDiaryData))
+        dispatch(
+          getDiaryFeedbacks({
+            taskType: 'viewing',
+            leadType: 'BuyRent',
+            actionType: 'Done',
+          })
+        ).then((res) => {
+          this.toggleMenu(false, property.id)
+          navigation.navigate('DiaryFeedback', { actionType: 'Done' })
         })
-        let stringifiedObj = JSON.stringify(checkList)
-        let body = {
-          status: 'completed',
-          checkList: stringifiedObj,
-          customer_feedback: userFeedback,
-        }
-        axios
-          .patch(`/api/diary/update?id=${diary.id}`, body)
-          .then((res) => {
-            this.setState({ loading: true })
-            this.toggleCheckListModal(false, null)
-            this.fetchProperties()
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      } else {
-        alert('Please fill the checklist and user feedback to continue!')
       }
     }
   }
 
   cancelViewing = (property) => {
-    const { lead } = this.props
+    const { lead, navigation, dispatch } = this.props
     if (property.diaries.length) {
       if (property.diaries[0].status === 'pending') {
-        axios
-          .delete(
-            `/api/diary/delete?id=${property.diaries[0].id}&propertyId=${property.id}&leadId=${lead.id}`
-          )
-          .then((res) => {
-            this.setState({ loading: true })
-            helper.deleteLocalNotification(property.diaries[0].id)
-            this.fetchProperties()
+        dispatch(
+          setConnectFeedback({
+            id: property.diaries[0].id,
           })
-          .catch((error) => {
-            console.log(error)
+        )
+        let copyLeadAndDiaryData = { ...property.diaries[0], armsLead: lead }
+        dispatch(setSelectedDiary(copyLeadAndDiaryData))
+        dispatch(
+          getDiaryFeedbacks({
+            taskType: 'viewing',
+            leadType: 'BuyRent',
+            actionType: 'Cancel',
           })
+        ).then((res) => {
+          this.toggleMenu(false, property.id)
+          navigation.navigate('DiaryFeedback', { actionType: 'Cancel' })
+        })
       }
     }
   }
@@ -590,8 +692,8 @@ class LeadViewing extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 
@@ -784,10 +886,11 @@ class LeadViewing extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
   }
 
@@ -825,17 +928,84 @@ class LeadViewing extends React.Component {
       })
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
+  showStatusFeedbackModal = (value, modalType) => {
+    this.setState({ statusfeedbackModalVisible: value, modalType })
   }
 
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
+  }
+
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
+  }
+  submitGraanaStatusAmount = (check) => {
+    const { singlePropertyData, formData } = this.state
+    var endpoint = ''
+    var body = {
+      amount: formData.amount,
+      propertyType: singlePropertyData.property ? 'graana' : 'arms',
+    }
+    console.log(body)
+    if (body.propertyType === 'graana') {
+      // // for graana properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
+    } else {
+      // for arms properties
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
+    }
+    formData['amount'] = ''
+    axios.patch(endpoint, body).then((res) => {
+      this.setState(
+        {
+          forStatusPrice: false,
+          graanaModalActive: false,
+          formData,
+        },
+        () => {
+          this.fetchProperties()
+          helper.successToast(res.data)
+        }
+      )
+    })
+  }
+  graanaVerifeyModal = (status, id) => {
+    const { matchData } = this.state
+    if (status === true) {
+      var filterProperty = matchData.find((item) => {
+        return item.id === id && item
+      })
+      this.setState({
+        singlePropertyData: filterProperty,
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    } else {
+      this.setState({
+        graanaModalActive: status,
+        forStatusPrice: false,
+      })
+    }
+  }
+  verifyStatusSubmit = (data, graanaStatus) => {
+    if (graanaStatus === 'sold') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else if (graanaStatus === 'rented') {
+      this.setState({
+        forStatusPrice: true,
+      })
+    } else {
+      this.submitGraanaStatusAmount('other')
+    }
+  }
+  handleFormVerification = (value, name) => {
+    const { formData } = this.state
+    const newFormData = formData
+    newFormData[name] = value
+    this.setState({ formData: newFormData })
   }
 
   render() {
@@ -872,12 +1042,15 @@ class LeadViewing extends React.Component {
       statusfeedbackModalVisible,
       modalMode,
       closedWon,
-      currentCall,
       isFollowUpMode,
-      comment,
+      newActionModal,
+      graanaModalActive,
+      singlePropertyData,
+      forStatusPrice,
+      formData,
     } = this.state
-    const { lead, user, navigation } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, navigation, permissions } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -968,6 +1141,7 @@ class LeadViewing extends React.Component {
                       toggleMenu={this.toggleMenu}
                       screen={'viewing'}
                       propertyGeoTagging={this.propertyGeoTagging}
+                      graanaVerifeyModal={this.graanaVerifeyModal}
                     />
                   ) : (
                     <AgentTile
@@ -1008,23 +1182,37 @@ class LeadViewing extends React.Component {
         </View>
         <StatusFeedbackModal
           visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
+          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
           commentsList={
             modalMode === 'call'
               ? StaticData.commentsFeedbackCall
               : StaticData.leadClosedCommentsFeedback
           }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
+          modalMode={modalMode}
           rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
+          setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
-          currentCall={currentCall}
-          goToViewingScreen={this.goToViewingScreen}
         />
-
+        <GraanaPropertiesModal
+          active={graanaModalActive}
+          data={singlePropertyData}
+          forStatusPrice={forStatusPrice}
+          formData={formData}
+          handleForm={this.handleFormVerification}
+          graanaVerifeyModal={this.graanaVerifeyModal}
+          submitStatus={this.verifyStatusSubmit}
+          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
+        />
+        <SubmitFeedbackOptionsModal
+          showModal={newActionModal}
+          modalMode={modalMode}
+          setShowModal={(value) => this.setNewActionModal(value)}
+          performFollowUp={this.openModalInFollowupMode}
+          performReject={this.goToRejectForm}
+          //call={this.callAgain}
+          goToViewingScreen={this.goToViewingScreen}
+          leadType={'RCM'}
+        />
         <MeetingFollowupModal
           closeModal={() => this.closeMeetingFollowupModal()}
           active={active}
@@ -1032,26 +1220,6 @@ class LeadViewing extends React.Component {
           lead={lead}
           leadType={'RCM'}
           getMeetingLead={this.getCallHistory}
-          comment={comment}
-        />
-
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-          modalMode={modalMode}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          showAction={modalMode === 'call'}
-          showFollowup={modalMode === 'call'}
-          rejectLead={(body) => this.rejectLead(body)}
-          sendStatus={(comment, id) => this.sendStatus(comment, id)}
-          addFollowup={(value) => this.openModalInFollowupMode(value)}
-          leadType={'RCM'}
-          currentCall={currentCall}
-          goToViewingScreen={this.goToViewingScreen}
         />
         <View style={AppStyles.mainCMBottomNav}>
           <CMBottomNav
@@ -1070,8 +1238,9 @@ class LeadViewing extends React.Component {
             getCallHistory={this.getCallHistory}
             isFromViewingScreen={true}
             goToFollowUp={(value) => this.openModalInFollowupMode(value)}
-            showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-            setCurrentCall={(call) => this.setCurrentCall(call)}
+            showStatusFeedbackModal={(value, modalType) =>
+              this.showStatusFeedbackModal(value, modalType)
+            }
             leadType={'RCM'}
             navigation={navigation}
             goToRejectForm={this.goToRejectForm}
@@ -1100,6 +1269,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

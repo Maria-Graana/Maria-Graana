@@ -36,10 +36,14 @@ class PickerComponent extends React.Component {
       enabled = true,
     } = this.props
     const items = data || []
+
     let pickerItems = []
     let clearOnChangeProp = clearOnChange || false
     const placeholderLabel = placeholder || 'Select'
-    let selectedValue = selectedItem || this.state.selectedTask
+    let selectedValue =
+      selectedItem === undefined || selectedItem === ''
+        ? null
+        : selectedItem || this.state.selectedTask
     if (clearOnChangeProp) selectedValue = selectedItem
 
     if (Platform.OS == 'android') {
@@ -60,7 +64,6 @@ class PickerComponent extends React.Component {
         pickerItems.push(pickerItem)
       })
     }
-
     return (
       <View style={[styles.pickerMain, { backgroundColor: '#fff' }]}>
         <Ionicons

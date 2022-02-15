@@ -10,6 +10,8 @@ import Ability from '../../hoc/Ability'
 import helper from '../../helper'
 import axios from 'axios'
 import Loader from '../../components/loader'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 class ClientDetail extends React.Component {
   constructor(props) {
@@ -95,11 +97,16 @@ class ClientDetail extends React.Component {
     }
   }
 
+  updatePermission = () => {
+    const { permissions } = this.props
+    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.UPDATE, permissions)
+  }
+
   render() {
     const { user } = this.props
     const { client, loading, clientPhones } = this.state
+    let updatePermission = this.updatePermission()
     let belongs = this.checkClient()
-
     return !loading ? (
       <View
         style={[
@@ -126,6 +133,12 @@ class ClientDetail extends React.Component {
             <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)}</Text>
             <Text style={styles.headingText}>Son / Daughter/ Spouse of</Text>
             <Text style={styles.labelText}>{client.familyMember}</Text>
+            <Text style={styles.headingText}>Bank</Text>
+            <Text style={styles.labelText}>{client.bank}</Text>
+            <Text style={styles.headingText}>Account Title</Text>
+            <Text style={styles.labelText}>{client.accountTitle}</Text>
+            <Text style={styles.headingText}>IBAN</Text>
+            <Text style={styles.labelText}>{client.iBan}</Text>
             <Text style={styles.headingText}>Address</Text>
             <Text style={styles.labelText}>{client.address}</Text>
             <Text style={styles.headingText}>Secondary Address</Text>
@@ -134,18 +147,14 @@ class ClientDetail extends React.Component {
             <Text style={styles.labelText}>{belongs}</Text>
           </View>
           <View style={styles.pad}>
-            {Ability.canEdit(user.subRole, 'Client') &&
-              client.assigned_to_armsuser_id &&
-              client.assigned_to_armsuser_id === user.id && (
-                <MaterialCommunityIcons
-                  onPress={() => {
-                    this.navigateTo()
-                  }}
-                  name="square-edit-outline"
-                  size={26}
-                  color={AppStyles.colors.primaryColor}
-                />
-              )}
+            <MaterialCommunityIcons
+              onPress={() => {
+                if (updatePermission) this.navigateTo()
+              }}
+              name="square-edit-outline"
+              size={26}
+              color={AppStyles.colors.primaryColor}
+            />
           </View>
         </View>
       </View>
@@ -158,6 +167,7 @@ class ClientDetail extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 

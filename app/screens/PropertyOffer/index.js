@@ -23,7 +23,7 @@ import StaticData from '../../StaticData'
 class PropertyOffer extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       open: false,
       loading: true,
@@ -42,7 +42,7 @@ class PropertyOffer extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -310,8 +310,8 @@ class PropertyOffer extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user } = this.props
-    let leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    let leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead, permissions)
     const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
       user,
       lead
@@ -578,11 +578,18 @@ class PropertyOffer extends React.Component {
   }
 
   //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
+  openModalInFollowupMode = (value) => {
+    const { navigation, lead } = this.props
+    navigation.navigate('ScheduledTasks', {
+      taskType: 'follow_up',
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   render() {
@@ -615,6 +622,10 @@ class PropertyOffer extends React.Component {
       isFollowUpMode,
     } = this.state
     const { lead, navigation, user } = this.props
+    const showBuyerSide = helper.setBuyerAgent(lead, 'sellerSide', user)
+    const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'sellerSide', user)
+    // console.log('Property showBuyerSide: ', showBuyerSide)
+    // console.log('Property showSellerSide: ', showSellerSide)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -699,6 +710,8 @@ class PropertyOffer extends React.Component {
                   sellerNotZero={sellerNotZero}
                   customerNotZero={customerNotZero}
                   offerReadOnly={offerReadOnly}
+                  showBuyerSide={showBuyerSide}
+                  showSellerSide={showSellerSide}
                 />
               </View>
             ) : (
@@ -733,7 +746,7 @@ class PropertyOffer extends React.Component {
             lead={lead}
             goToHistory={() => null}
             getCallHistory={() => null}
-            goToFollowup={() => this.openModalInFollowupMode()}
+            goToFollowUp={(value) => this.openModalInFollowupMode(value)}
           />
         </View>
 
@@ -757,6 +770,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

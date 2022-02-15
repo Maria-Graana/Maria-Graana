@@ -32,7 +32,7 @@ class AddRCMLead extends Component {
       selectedClient: null,
       selectedCity: null,
       getProject: [],
-      formType: 'sale',
+      formType: 'buy',
       priceList: [],
       sizeUnitList: [],
       selectSubType: [],
@@ -141,7 +141,7 @@ class AddRCMLead extends Component {
 
   setPriceList = () => {
     const { formType, RCMFormData } = this.state
-    if (formType === 'sale') {
+    if (formType === 'buy') {
       RCMFormData.minPrice = StaticData.PricesBuy[0]
       RCMFormData.maxPrice = StaticData.PricesBuy[StaticData.PricesBuy.length - 1]
       this.setState({ RCMFormData, priceList: StaticData.PricesBuy })
@@ -176,8 +176,8 @@ class AddRCMLead extends Component {
     const { RCMFormData } = this.state
     const { city_id, leadAreas } = RCMFormData
     const { navigation } = this.props
-    const isEditMode = `${leadAreas.length > 0 ? true : false}`
-    if (city_id !== '' && city_id !== undefined) {
+    const isEditMode = `${leadAreas && leadAreas.length > 0 ? true : false}`
+    if (city_id !== '' && city_id !== undefined && city_id != null) {
       navigation.navigate('AreaPickerScreen', {
         cityId: city_id,
         isEditMode: isEditMode,
@@ -267,7 +267,6 @@ class AddRCMLead extends Component {
     const { user } = this.props
     if (RCMFormData.size === '') RCMFormData.size = null
     else RCMFormData.size = Number(RCMFormData.size)
-    this.setState({ loading: true })
     let payLoad = {
       purpose: formType,
       type: RCMFormData.type,
@@ -287,28 +286,32 @@ class AddRCMLead extends Component {
       description: RCMFormData.description,
       phones: RCMFormData.phones,
     }
-    if (user.subRole === 'group_management') {
-      let newOrg = _.find(organizations, function (item) {
-        return item.value === formData.org
-      })
-      payLoad.org = newOrg.name.toLowerCase()
-    }
-    axios
-      .post(`/api/leads`, payLoad)
-      .then((res) => {
-        if (res.data.message) {
-          Alert.alert(
-            'Lead cannot be created as same lead already exists:',
-            `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
-            [{ text: 'OK', style: 'cancel' }],
-            { cancelable: false }
-          )
-        } else helper.successToast('Lead created successfully')
-        RootNavigation.navigate('Leads')
-      })
-      .finally(() => {
-        this.setState({ loading: false })
-      })
+    this.setState({ loading: true }, () => {
+      if (user.subRole === 'group_management') {
+        let newOrg = _.find(organizations, function (item) {
+          return item.value === formData.org
+        })
+        payLoad.org = newOrg.name.toLowerCase()
+      }
+      axios
+        .post(`/api/leads`, payLoad)
+        .then((res) => {
+          if (res.data.message) {
+            Alert.alert(
+              'Lead cannot be created as same lead already exists:',
+              `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
+              [{ text: 'OK', style: 'cancel' }],
+              { cancelable: false }
+            )
+          } else helper.successToast('Lead created successfully')
+          RootNavigation.navigate('Leads')
+          this.setState({ loading: false })
+        })
+        .catch((error) => {
+          console.log('error on creating lead')
+          this.setState({ loading: false })
+        })
+    })
   }
 
   changeStatus = (status) => {

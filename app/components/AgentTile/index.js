@@ -10,6 +10,8 @@ import AppStyles from '../../AppStyles'
 import helper from '../../helper'
 import { formatPrice } from '../../PriceFormate'
 import styles from './style'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 class AgentTile extends React.Component {
   _renderItem = (item) => {
@@ -113,6 +115,16 @@ class AgentTile extends React.Component {
     }
   }
 
+  callToggleFunc = (data) => {
+    const { permissions, toggleMenu, user, lead } = this.props
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
+    if (
+      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions) &&
+      closedLeadEdit
+    )
+      toggleMenu(true, data.id)
+  }
+
   render() {
     let {
       data,
@@ -124,12 +136,15 @@ class AgentTile extends React.Component {
       toggleCheckListModal,
       propertyGeoTagging,
       lead,
+      permissions,
+      user,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let otherAgentdiary = this.getOtherDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
-    // let showDone = this.checkDiaryStatus(data)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
+
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
@@ -261,11 +276,11 @@ class AgentTile extends React.Component {
                   anchor={
                     <TouchableHighlight
                       style={styles.menuBtn}
-                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      onPress={() => this.callToggleFunc(data)}
                       underlayColor={AppStyles.colors.backgroundColor}
                     >
                       <Entypo
-                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        onPress={() => this.callToggleFunc(data)}
                         name="dots-three-vertical"
                         size={25}
                       />
@@ -289,11 +304,11 @@ class AgentTile extends React.Component {
                   anchor={
                     <TouchableHighlight
                       style={styles.menuBtn}
-                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      onPress={() => this.callToggleFunc(data)}
                       underlayColor={AppStyles.colors.backgroundColor}
                     >
                       <Entypo
-                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        onPress={() => this.callToggleFunc(data)}
                         name="dots-three-vertical"
                         size={25}
                       />
@@ -317,11 +332,11 @@ class AgentTile extends React.Component {
                   anchor={
                     <TouchableHighlight
                       style={styles.menuBtn}
-                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      onPress={() => this.callToggleFunc(data)}
                       underlayColor={AppStyles.colors.backgroundColor}
                     >
                       <Entypo
-                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        onPress={() => this.callToggleFunc(data)}
                         name="dots-three-vertical"
                         size={25}
                       />
@@ -345,11 +360,11 @@ class AgentTile extends React.Component {
                   anchor={
                     <TouchableHighlight
                       style={styles.menuBtn}
-                      onPress={() => this.props.toggleMenu(true, data.id)}
+                      onPress={() => this.callToggleFunc(data)}
                       underlayColor={AppStyles.colors.backgroundColor}
                     >
                       <Entypo
-                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        onPress={() => this.callToggleFunc(data)}
                         name="dots-three-vertical"
                         size={25}
                       />
@@ -374,7 +389,15 @@ class AgentTile extends React.Component {
                         />
                         <Menu.Item
                           onPress={() => {
-                            this.props.cancelPropsureRequest(data)
+                            if (
+                              getPermissionValue(
+                                PermissionFeatures.BUY_RENT_LEADS,
+                                PermissionActions.UPDATE,
+                                permissions
+                              ) &&
+                              closedLeadEdit
+                            )
+                              this.props.cancelPropsureRequest(data)
                           }}
                           title="Cancel Request"
                         />
@@ -391,11 +414,11 @@ class AgentTile extends React.Component {
                     anchor={
                       <TouchableHighlight
                         style={styles.menuBtn}
-                        onPress={() => this.props.toggleMenu(true, data.id)}
+                        onPress={() => this.callToggleFunc(data)}
                         underlayColor={AppStyles.colors.backgroundColor}
                       >
                         <Entypo
-                          onPress={() => this.props.toggleMenu(true, data.id)}
+                          onPress={() => this.callToggleFunc(data)}
                           name="dots-three-vertical"
                           size={25}
                         />
@@ -415,19 +438,43 @@ class AgentTile extends React.Component {
                               />
                               <Menu.Item
                                 onPress={() => {
-                                  propertyGeoTagging(data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    propertyGeoTagging(data)
                                 }}
                                 title="GeoTag"
                               />
                               <Menu.Item
                                 onPress={() => {
-                                  toggleCheckListModal(true, data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    toggleCheckListModal(true, data)
                                 }}
                                 title="Viewing done"
                               />
                               <Menu.Item
                                 onPress={() => {
-                                  this.props.cancelViewing(data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    this.props.cancelViewing(data)
                                 }}
                                 title="Cancel Viewing"
                               />
@@ -442,13 +489,29 @@ class AgentTile extends React.Component {
                               />
                               <Menu.Item
                                 onPress={() => {
-                                  propertyGeoTagging(data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    propertyGeoTagging(data)
                                 }}
                                 title="GeoTag"
                               />
                               <Menu.Item
                                 onPress={() => {
-                                  this.props.deleteProperty(data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    this.props.deleteProperty(data)
                                 }}
                                 title="Remove from the list"
                               />
@@ -461,7 +524,15 @@ class AgentTile extends React.Component {
                             <>
                               <Menu.Item
                                 onPress={() => {
-                                  propertyGeoTagging(data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    propertyGeoTagging(data)
                                 }}
                                 title="GeoTag"
                               />
@@ -476,13 +547,29 @@ class AgentTile extends React.Component {
                             <>
                               <Menu.Item
                                 onPress={() => {
-                                  bookAnotherViewing(data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    bookAnotherViewing(data)
                                 }}
                                 title="Book Another Viewing"
                               />
                               <Menu.Item
                                 onPress={() => {
-                                  propertyGeoTagging(data)
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
+                                    propertyGeoTagging(data)
                                 }}
                                 title="GeoTag"
                               />
@@ -504,7 +591,15 @@ class AgentTile extends React.Component {
                 <View style={{ marginTop: 5, marginRight: 15 }}>
                   <CheckBox
                     onPress={() => {
-                      this.props.addProperty(data)
+                      if (
+                        getPermissionValue(
+                          PermissionFeatures.BUY_RENT_LEADS,
+                          PermissionActions.UPDATE,
+                          permissions
+                        ) &&
+                        closedLeadEdit
+                      )
+                        this.props.addProperty(data)
                     }}
                     style={[!data.checkBox ? styles.notCheckBox : styles.checkBox]}
                     checked={data.checkBox}
@@ -537,7 +632,16 @@ class AgentTile extends React.Component {
               <View style={{ flexDirection: 'row-reverse' }}>
                 <TouchableHighlight
                   onPress={() => {
-                    if (show) this.call(data)
+                    if (
+                      show &&
+                      getPermissionValue(
+                        PermissionFeatures.BUY_RENT_LEADS,
+                        PermissionActions.UPDATE,
+                        permissions
+                      ) &&
+                      closedLeadEdit
+                    )
+                      this.call(data)
                   }}
                   style={[styles.phoneView]}
                   underlayColor={AppStyles.colors.backgroundColor}
@@ -561,6 +665,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

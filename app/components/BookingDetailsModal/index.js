@@ -1,16 +1,20 @@
 /** @format */
 
+import * as FileSystem from 'expo-file-system'
+import * as MediaLibrary from 'expo-media-library'
+import * as Permissions from 'expo-permissions'
 import React from 'react'
+import { Image, Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
-import { View, Text, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native'
-import styles from './style'
-import Modal from 'react-native-modal'
-import times from '../../../assets/img/times.png'
-import PaymentMethods from '../../PaymentMethods'
+import AppStyles from '../../AppStyles'
+import BackButton from '../../components/BackButton'
+import CMBTN from '../../components/CMBTN'
 import helper from '../../helper'
+import PaymentMethods from '../../PaymentMethods'
 import ViewDocs from '../ViewDocs'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
+import styles from './style'
 
 class BookingDetailsModal extends React.Component {
   constructor(props) {
@@ -58,16 +62,40 @@ class BookingDetailsModal extends React.Component {
       })
     }
   }
+  goToClientsDetail = () => {
+    const { navigation, user, data, toggleBookingDetailsModal } = this.props
+    if (!helper.checkAssignedSharedStatusANDReadOnly(user, data)) {
+      return
+    }
+    if (data.purchaser) {
+      navigation.navigate('ClientDetail', {
+        client: data.purchaser ? data.purchaser : null,
+      })
+      toggleBookingDetailsModal()
+    } else {
+      helper.errorToast(`Client information is not available.`)
+    }
+  }
 
   render() {
-    let { active, data, pearlModal, finalPrice, lead } = this.props
+    let {
+      active,
+      data,
+      pearlModal,
+      finalPrice,
+      lead,
+      toggleBookingDetailsModal,
+      updatePermission,
+    } = this.props
     if (!data.unit) active = false
     const { unit } = data
     const { imageUrl, showWebView } = this.state
     let product = lead && lead.projectProduct && lead.projectProduct
+    let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
+    if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <Modal isVisible={active}>
+      <Modal visible={active} animationType="slide" onRequestClose={toggleBookingDetailsModal}>
+        <SafeAreaView style={styles.flexView}>
           {showWebView ? (
             <ViewDocs
               imageView={true}
@@ -78,17 +106,47 @@ class BookingDetailsModal extends React.Component {
               url={imageUrl}
             />
           ) : null}
+          <View style={styles.topHeader}>
+            <View style={styles.padLeft}>
+              <BackButton onClick={toggleBookingDetailsModal} />
+            </View>
+            <View style={styles.header}>
+              <Text numberOfLines={1} style={styles.headerText}>
+                {headerName}
+              </Text>
+              <Text numberOfLines={1} style={[styles.detailText]}>
+                {lead.project
+                  ? helper.capitalize(lead.project.name)
+                  : helper.capitalize(lead.projectName)}
+                {lead.projectType ? ' - ' + helper.capitalize(lead.projectType) : ''}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.barView}>
+            <Text style={styles.barText}>BOOKING DETAILS</Text>
+          </View>
           {pearlModal === false && data && data.unit != null && (
             <View style={[styles.modalMain]}>
-              <TouchableOpacity
-                style={styles.timesBtn}
-                onPress={() => {
-                  this.props.toggleBookingDetailsModal(false)
-                }}
-              >
-                <Image source={times} style={styles.timesImg} />
-              </TouchableOpacity>
               <ScrollView>
+                <View style={styles.MainTileView}>
+                  <View>
+                    <Text style={styles.smallText}>Booking For</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data.purchaser && data.purchaser.customerName)}
+                      </Text>
+                      <View style={styles.detailsBtnView}>
+                        <TouchableOpacity
+                          onPress={() => this.goToClientsDetail()}
+                          style={styles.roundButtonView}
+                          activeOpacity={0.6}
+                        >
+                          <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </View>
                 <View style={styles.MainTileView}>
                   <View>
                     <Text style={styles.smallText}>Project</Text>
@@ -188,7 +246,7 @@ class BookingDetailsModal extends React.Component {
                   <View>
                     <Text style={styles.smallText}>Unit Price</Text>
                     <Text style={styles.largeText}>
-                      {helper.currencyConvert(PaymentMethods.findUnitPrice(unit))}
+                      {helper.currencyConvert(Math.ceil(PaymentMethods.findUnitPrice(unit)))}
                     </Text>
                   </View>
                 </View>
@@ -208,7 +266,7 @@ class BookingDetailsModal extends React.Component {
                     <Text style={styles.smallText}>Discount Amount</Text>
                     <Text style={styles.largeText}>
                       {helper.currencyConvert(
-                        this.handleEmptyValueReturnZero(data.unit.discounted_price)
+                        PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
                       )}
                     </Text>
                   </View>
@@ -329,22 +387,25 @@ class BookingDetailsModal extends React.Component {
           )}
           {pearlModal === true && data && data != '' && (
             <View style={[styles.modalMain]}>
-              <TouchableOpacity
-                style={styles.timesBtn}
-                onPress={() => {
-                  this.props.toggleBookingDetailsModal(false)
-                }}
-              >
-                <Image source={times} style={styles.timesImg} />
-              </TouchableOpacity>
               <ScrollView>
                 <View style={styles.MainTileView}>
                   {/* ===================== */}
                   <View>
-                    <Text style={styles.smallText}>Project</Text>
-                    <Text style={styles.largeText}>
-                      {this.handleEmptyValue(data.project && data.project.name)}
-                    </Text>
+                    <Text style={styles.smallText}>Booking For</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={styles.largeText}>
+                        {this.handleEmptyValue(data.purchaser && data.purchaser.customerName)}
+                      </Text>
+                      <View style={styles.detailsBtnView}>
+                        <TouchableOpacity
+                          onPress={() => this.goToClientsDetail()}
+                          style={styles.roundButtonView}
+                          activeOpacity={0.6}
+                        >
+                          <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
                   </View>
                 </View>
 
@@ -386,7 +447,7 @@ class BookingDetailsModal extends React.Component {
                       <Text style={styles.smallText}>Discount Amount</Text>
                       <Text style={styles.largeText}>
                         {helper.currencyConvert(
-                          this.handleEmptyValueReturnZero(unit.discounted_price)
+                          PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
                         )}
                       </Text>
                     </View>
@@ -474,8 +535,18 @@ class BookingDetailsModal extends React.Component {
               </ScrollView>
             </View>
           )}
-        </Modal>
-      </SafeAreaView>
+        </SafeAreaView>
+        <View style={styles.kfiBTN}>
+          <CMBTN
+            onClick={() => {
+              if (updatePermission) this.props.generateKFI()
+            }}
+            btnText={'DOWNLOAD KFI DOCUMENT'}
+            checkLeadClosedOrNot={true}
+          />
+        </View>
+        <SafeAreaView style={styles.safeView} />
+      </Modal>
     )
   }
 }
@@ -483,6 +554,7 @@ class BookingDetailsModal extends React.Component {
 mapStateToProps = (store) => {
   return {
     lead: store.lead.lead,
+    user: store.user.user,
   }
 }
 

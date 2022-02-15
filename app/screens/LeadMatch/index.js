@@ -25,11 +25,12 @@ import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './style'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
+import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
 class LeadMatch extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead } = this.props
+    const { user, lead, permissions } = this.props
     this.state = {
       open: false,
       organization: 'graana',
@@ -85,16 +86,16 @@ class LeadMatch extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
       callModal: false,
       meetings: [],
       legalDocLoader: false,
       active: false,
       statusfeedbackModalVisible: false,
       modalMode: 'call',
-      currentCall: null,
       isFollowUpMode: false,
       closedWon: false,
+      newActionModal: false,
     }
   }
 
@@ -438,8 +439,8 @@ class LeadMatch extends React.Component {
 
   displayChecks = () => {
     const { showCheckBoxes } = this.state
-    const { lead, user } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { lead, user, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       if (showCheckBoxes) {
         this.unSelectAll()
@@ -456,8 +457,8 @@ class LeadMatch extends React.Component {
 
   addProperty = (property) => {
     const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-    const { user, lead } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead)
+    const { user, lead, permissions } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
       if (showCheckBoxes) {
         if (showCheckBoxes) this.changeComBool()
@@ -574,8 +575,8 @@ class LeadMatch extends React.Component {
   closeLead = async (lead) => {
     const { legalServicesFee } = this.state
     if (lead.commissions.length) {
-      let { count } = await this.getLegalDocumentsCount()
-      if (helper.checkClearedStatuses(lead, count, legalServicesFee)) {
+      let legalDocResp = await this.getLegalDocumentsCount()
+      if (helper.checkClearedStatuses(lead, legalDocResp, legalServicesFee)) {
         this.setState({
           closedWon: true,
         })
@@ -587,10 +588,10 @@ class LeadMatch extends React.Component {
     const { lead } = this.props
     this.setState({ legalDocLoader: true })
     try {
-      let res = await axios.get(`api/leads/legalDocCount?leadId=${lead.id}`)
+      let res = await axios.get(`api/legal/document/count?leadId=${lead.id}`)
       return res.data
     } catch (error) {
-      console.log(`ERROR: api/leads/legalDocCount?leadId=${lead.id}`, error)
+      console.log(`ERROR: api/legal/document/count?leadId=${lead.id}`, error)
     }
   }
 
@@ -642,14 +643,17 @@ class LeadMatch extends React.Component {
       update: false,
       rcmLeadId: lead.id,
       agentId: user.id,
-      addedBy: 'self',
       screenName: 'Diary',
     })
   }
 
-  goToAttachments = () => {
+  goToAttachments = (purpose) => {
     const { navigation, lead } = this.props
-    navigation.navigate('LeadAttachments', { rcmLeadId: lead.id, workflow: 'rcm' })
+    navigation.navigate('LeadAttachments', {
+      rcmLeadId: lead.id,
+      workflow: 'rcm',
+      purpose: purpose,
+    })
   }
 
   goToComments = () => {
@@ -675,8 +679,8 @@ class LeadMatch extends React.Component {
 
   getCallHistory = () => {
     const { lead } = this.props
-    axios.get(`/api/diary/all?armsLeadId=${lead.id}`).then((res) => {
-      this.setState({ meetings: res.data.rows })
+    axios.get(`/api/leads/tasks?rcmLeadId=${lead.id}`).then((res) => {
+      this.setState({ meetings: res.data })
     })
   }
 
@@ -724,11 +728,17 @@ class LeadMatch extends React.Component {
 
   //  ************ Function for open Follow up modal ************
   openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
     })
+    // this.setState({
+    //   active: !this.state.active,
+    //   isFollowUpMode: true,
+    //   comment: value,
+    // })
   }
 
   // ************ Function for Reject modal ************
@@ -755,12 +765,8 @@ class LeadMatch extends React.Component {
       })
   }
 
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
-  setCurrentCall = (call) => {
-    this.setState({ currentCall: call, modalMode: 'call' })
+  showStatusFeedbackModal = (value, modalMode) => {
+    this.setState({ statusfeedbackModalVisible: value, modalMode })
   }
 
   goToViewingScreen = () => {
@@ -768,18 +774,12 @@ class LeadMatch extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  sendStatus = (status, id) => {
-    const { lead } = this.props
-    let body = {
-      response: status,
-      comments: status,
-      leadId: lead.id,
-    }
-    axios.patch(`/api/diary/update?id=${id}`, body).then((res) => {})
+  setNewActionModal = (value) => {
+    this.setState({ newActionModal: value })
   }
 
   render() {
-    const { lead, user, navigation } = this.props
+    const { lead, user, navigation, permissions } = this.props
     const {
       meetings,
       callModal,
@@ -804,13 +804,12 @@ class LeadMatch extends React.Component {
       legalDocLoader,
       active,
       statusfeedbackModalVisible,
-      currentCall,
       isFollowUpMode,
       modalMode,
       closedWon,
-      comment,
+      newActionModal,
     } = this.state
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead)
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     return !loading ? (
       <View
         style={[
@@ -839,8 +838,7 @@ class LeadMatch extends React.Component {
                       AppStyles.mrFive,
                     ]}
                   >
-                    {' '}
-                    Graana DU{' '}
+                    Graana
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -855,8 +853,7 @@ class LeadMatch extends React.Component {
                       AppStyles.mrFive,
                     ]}
                   >
-                    {' '}
-                    ARMS{' '}
+                    ARMS
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1002,23 +999,31 @@ class LeadMatch extends React.Component {
                 </Text>
               </TouchableOpacity>
             ) : null}
+
             <StatusFeedbackModal
               visible={statusfeedbackModalVisible}
-              showFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-              modalMode={modalMode}
+              showFeedbackModal={(value, modalMode) =>
+                this.showStatusFeedbackModal(value, modalMode)
+              }
               commentsList={
                 modalMode === 'call'
                   ? StaticData.commentsFeedbackCall
                   : StaticData.leadClosedCommentsFeedback
               }
-              showAction={modalMode === 'call'}
-              showFollowup={modalMode === 'call'}
+              modalMode={modalMode}
               rejectLead={(body) => this.rejectLead(body)}
-              sendStatus={(comment, id) => this.sendStatus(comment, id)}
-              addFollowup={(value) => this.openModalInFollowupMode(value)}
+              setNewActionModal={(value) => this.setNewActionModal(value)}
               leadType={'RCM'}
-              currentCall={currentCall}
+            />
+            <SubmitFeedbackOptionsModal
+              showModal={newActionModal}
+              modalMode={modalMode}
+              setShowModal={(value) => this.setNewActionModal(value)}
+              performFollowUp={this.openModalInFollowupMode}
+              performReject={this.goToRejectForm}
+              call={this.callAgain}
               goToViewingScreen={this.goToViewingScreen}
+              leadType={'RCM'}
             />
             <MeetingFollowupModal
               closeModal={() => this.closeMeetingFollowupModal()}
@@ -1027,7 +1032,6 @@ class LeadMatch extends React.Component {
               lead={lead}
               leadType={'RCM'}
               getMeetingLead={this.getCallHistory}
-              comment={comment}
             />
             <View style={AppStyles.mainCMBottomNav}>
               <CMBottomNav
@@ -1046,8 +1050,9 @@ class LeadMatch extends React.Component {
                 goToFollowUp={(value) => this.openModalInFollowupMode(value)}
                 navigation={navigation}
                 goToRejectForm={this.goToRejectForm}
-                showStatusFeedbackModal={(value) => this.showStatusFeedbackModal(value)}
-                setCurrentCall={(call) => this.setCurrentCall(call)}
+                showStatusFeedbackModal={(value, modalMode) =>
+                  this.showStatusFeedbackModal(value, modalMode)
+                }
                 leadType={'RCM'}
                 closedWon={closedWon}
                 onHandleCloseLead={this.onHandleCloseLead}
@@ -1076,6 +1081,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     lead: store.lead.lead,
+    permissions: store.user.permissions,
   }
 }
 

@@ -1,36 +1,40 @@
-import { StyleSheet } from 'react-native';
+/** @format */
+
+import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   mainTileView: {
     backgroundColor: '#fff',
-    padding: 15,
+    paddingVertical: 15,
     position: 'relative',
     marginBottom: 15,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },
     shadowColor: '#33333312',
     shadowOpacity: 1,
+    flexDirection: 'row',
   },
   tileIndex: {
     zIndex: 10,
   },
   contentView: {
     position: 'relative',
-    paddingRight: 15,
   },
   fontBold: {
-    fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 13,
+    color: 'grey',
+    paddingLeft: 10,
   },
   meetingCon: {
-    fontSize: 14,
-    color: '#0D73EE',
-    textTransform: 'capitalize'
+    fontSize: 16,
+    color: 'black',
+    textTransform: 'capitalize',
+    fontWeight: '700',
   },
   border: {
     width: '99%',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   dotsWrap: {
     zIndex: 20,
@@ -39,9 +43,14 @@ export default styles = StyleSheet.create({
     top: -3,
   },
   dotsImg: {
-    width: 14,
-    height: 24,
-    resizeMode: 'contain'
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
+  doneImg: {
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
   },
   doneBtn: {
     position: 'relative',
@@ -53,10 +62,14 @@ export default styles = StyleSheet.create({
     color: AppStyles.colors.subTextColor,
     position: 'relative',
     fontSize: 14,
-    marginTop:5,
+    marginTop: 5,
   },
   uperCase: {
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
+  },
+  taskTypeWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   dropDownMain: {
     zIndex: 10,
@@ -77,6 +90,56 @@ export default styles = StyleSheet.create({
     marginTop: 7,
   },
   blueColor: {
-    color: '#333',
+    color: '#006FF2',
+    fontSize: 15,
   },
-});
+  DayAndTime: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 30,
+  },
+  textWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  taskType: {
+    paddingLeft: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  reasonWrap: {
+    flexDirection: 'row',
+    marginTop: 8,
+    marginLeft: 50,
+  },
+  reasonTag: {
+    borderWidth: 2,
+    padding: 3,
+    paddingHorizontal: 5,
+    borderRadius: 15,
+    marginTop: -3,
+    marginLeft: 5,
+  },
+  responseWrap: {
+    paddingLeft: 15,
+    marginTop: 3,
+    marginLeft: 35,
+  },
+  feedbackTag: {
+    padding: 3,
+    marginLeft: 45,
+    paddingTop: 5,
+  },
+  outcomeWrap: {
+    paddingLeft: 15,
+    marginTop: 3,
+    marginLeft: 33,
+  },
+  taskWrap: {
+    flexDirection: 'row',
+    width: 150,
+    paddingLeft: 10,
+    alignItems: 'center',
+  },
+})

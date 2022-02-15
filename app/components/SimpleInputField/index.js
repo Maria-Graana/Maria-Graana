@@ -55,6 +55,8 @@ class SimpleInputField extends React.Component {
       onChangeHandle,
       noMargin,
       showLable = true,
+      onPress = false,
+      onClicked,
     } = this.props
     const val = value != null || '' ? value.toString() : ''
     return (
@@ -63,6 +65,7 @@ class SimpleInputField extends React.Component {
           styles.mainInputParent,
           noMargin === true && { marginBottom: 0, marginTop: 0 },
           !showLable ? { marginTop: 0 } : null,
+          { backgroundColor: '#fff' },
         ]}
       >
         {showLable ? <Text style={[styles.labelStyle]}>{label}</Text> : null}
@@ -84,6 +87,9 @@ class SimpleInputField extends React.Component {
               placeholderTextColor="#96999E"
               placeholderFontWeight="400"
               editable={editable}
+              onFocus={() => {
+                if (onPress) onClicked()
+              }}
             />
             <Text style={[styles.BottomFormat]}>
               {formatPrice(

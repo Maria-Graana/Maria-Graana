@@ -1,13 +1,19 @@
 /** @format */
 
+import axios from 'axios'
+import * as ImageManipulator from 'expo-image-manipulator'
+import * as ImagePicker from 'expo-image-picker'
+import * as Location from 'expo-location'
+import * as Permissions from 'expo-permissions'
+import { StyleProvider } from 'native-base'
 import React, { Component } from 'react'
 import {
-  View,
+  Keyboard,
   KeyboardAvoidingView,
+  Modal,
   ScrollView,
   TouchableWithoutFeedback,
-  Modal,
-  Keyboard,
+  View,
 } from 'react-native'
 import { StyleProvider } from 'native-base'
 import * as Location from 'expo-location'
@@ -19,20 +25,26 @@ import DetailForm from './detailForm'
 import StaticData from '../../StaticData'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
-import { connect } from 'react-redux'
-import _ from 'underscore'
 import ImageBrowser from '../../components/ImageBrowser/ImageBrowser'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as MediaLibrary from 'expo-media-library'
 import { Camera } from 'expo-camera'
+import getTheme from '../../../native-base-theme/components'
+import formTheme from '../../../native-base-theme/variables/formTheme'
+import _ from 'underscore'
 import {
-  uploadImage,
   addImage,
   flushImages,
   removeImage,
+  setAddPropertyParams,
   setImageLoading,
+  uploadImage,
 } from '../../actions/property'
-import config from '../../config'
+import AppStyles from '../../AppStyles'
+import ImageBrowser from '../../components/ImageBrowser/ImageBrowser'
+import helper from '../../helper'
+import StaticData from '../../StaticData'
+import DetailForm from './detailForm'
 
 class AddInventory extends Component {
   constructor(props) {
@@ -71,6 +83,10 @@ class AddInventory extends Component {
         price: 0,
         grade: '',
         status: 'pending',
+        transfered: false,
+        transferedDate: null,
+        transferedFrom: null,
+        origin: 'arms',
         imageIds: [],
         lat: '',
         lng: '',
@@ -104,9 +120,6 @@ class AddInventory extends Component {
   componentDidMount() {
     const { navigation, route } = this.props
     const { screenName, lead } = route.params
-    navigation.addListener('focus', () => {
-      this.onScreenFocused()
-    })
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT PROPERTY' })
       this.setEditValues()
@@ -133,12 +146,35 @@ class AddInventory extends Component {
         }
       )
     }
+
+    navigation.addListener('focus', () => {
+      this.onScreenFocused()
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
     //Typical usage, don't forget to compare the props
     if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
       this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
+    }
+
+    if (prevState.formData.lat !== prevProps.addPropertyParams.latitude) {
+      this.updatePropertyLocation()
+    }
+  }
+
+  updatePropertyLocation = () => {
+    if (this.props.addPropertyParams) {
+      let copyPropertyObj = { ...this.state.formData }
+      copyPropertyObj.lat = this.props.addPropertyParams.latitude
+      copyPropertyObj.lng = this.props.addPropertyParams.longitude
+      copyPropertyObj.locate_manually = this.props.addPropertyParams.locate_manually
+      copyPropertyObj.propsure_id = this.props.addPropertyParams.propsure_id
+        ? this.props.addPropertyParams.propsure_id
+        : null
+      this.setState({
+        formData: copyPropertyObj,
+      })
     }
   }
 
@@ -148,8 +184,7 @@ class AddInventory extends Component {
   }
 
   onScreenFocused = () => {
-    const { client, name, selectedCity, selectedPOC, selectedArea, mapValues } =
-      this.props.route.params
+    const { client, name, selectedCity, selectedPOC, selectedArea } = this.props.route.params
     const { formData } = this.state
     let copyObject = Object.assign({}, formData)
     if (client && name) {
@@ -178,12 +213,6 @@ class AddInventory extends Component {
     if (selectedArea) {
       copyObject.area_id = selectedArea.value
       this.setState({ formData: copyObject, selectedArea })
-    }
-    if (mapValues) {
-      copyObject.propsure_id = mapValues.propsure_id
-      copyObject.lat = mapValues.lat
-      copyObject.lng = mapValues.lng
-      this.setState({ formData: copyObject })
     }
   }
 
@@ -227,6 +256,7 @@ class AddInventory extends Component {
               ? []
               : property.armsPropertyImages,
           grade: property.grade,
+          origin: property.origin,
           status: property.status,
           lat: property.lat,
           lng: property.lng,
@@ -234,6 +264,9 @@ class AddInventory extends Component {
           propsure_id: property.propsure_id,
           geotagged_date: property.geotagged_date,
           description: property.description,
+          transfered: property.transfered,
+          transferedDate: property.transferedDate,
+          transferedFrom: property.transferedFrom,
           year_built: parsedFeatures.year_built ? parsedFeatures.year_built : null,
           floors:
             parsedFeatures.floors === null || parsedFeatures.floors === undefined
@@ -266,8 +299,17 @@ class AddInventory extends Component {
         buttonText: 'UPDATE PROPERTY',
       },
       () => {
+        // console.log(this.state.formData)
         this.selectSubtype(property.type)
         this.setFeatures(property.type)
+        this.props.dispatch(
+          setAddPropertyParams({
+            latitude: property.lat,
+            longitude: property.lng,
+            locate_manually: property.locate_manually,
+            propsure_id: property.propsure_id,
+          })
+        )
         // this.getAreas(property.city_id);
         this.state.formData.imageIds.length > 0 && this.setImagesForEditMode()
       }
@@ -324,6 +366,17 @@ class AddInventory extends Component {
       formData.size = 0
       this.setState({ formData })
     }
+  }
+
+  clearGeotaggData = () => {
+    this.props.dispatch(
+      setAddPropertyParams({
+        latitude: '',
+        longitude: '',
+        locate_manually: false,
+        propsure_id: null,
+      })
+    )
   }
 
   // ********* On form Submit Function
@@ -385,6 +438,7 @@ class AddInventory extends Component {
     delete formData.floors
     delete formData.year_built
     delete formData.downpayment
+
     if (route.params.update) {
       axios
         .patch(`/api/inventory/${property.id}`, formData)
@@ -440,7 +494,7 @@ class AddInventory extends Component {
         axios
           .post(`/api/inventory/create`, formData)
           .then((res) => {
-            // console.log(res.data)
+            console.log(res.data)
             if (res.status === 200) {
               helper.successToast('PROPERTY ADDED SUCCESSFULLY!')
               dispatch(flushImages())
@@ -754,6 +808,7 @@ class AddInventory extends Component {
               <View style={AppStyles.container}>
                 <DetailForm
                   formSubmit={this.formSubmit}
+                  clearGeotaggData={this.clearGeotaggData}
                   checkValidation={checkValidation}
                   handleForm={this.handleForm}
                   formData={formData}
@@ -810,6 +865,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     images: store.property.images,
+    addPropertyParams: store.property.addPropertyParams,
   }
 }
 

@@ -388,14 +388,14 @@ function TimeSlotManagement(props) {
       slotsData.push(e)
       slots.push(e.id)
       isSelected.push(e.id)
-      fortyPercent(e)
+      // fortyPercent(e)
       verifyDetail(e)
     } else {
       if (e.id == tempAray[0].id - 1 || e.id == tempAray[tempAray.length - 1].id + 1) {
         slotsData.push(e)
         slots.push(e.id)
         isSelected.push(e.id)
-        fortyPercent(e)
+        // fortyPercent(e)
         verifyDetail(e)
       } else if (_.contains(tempAray, e)) {
       } else {
@@ -404,7 +404,7 @@ function TimeSlotManagement(props) {
         setTempSlot([e.id])
         setIsSelected([e.id])
         setSSlots([])
-        fortyPercent(e)
+        // fortyPercent(e)
         verifyDetail(e)
       }
     }
@@ -416,7 +416,7 @@ function TimeSlotManagement(props) {
     isSelected.push(e.id)
     const tempAray = _.sortBy(slotsData, 'id')
 
-    fortyPercent(e)
+    // fortyPercent(e)
 
     if (tempAray[1] == undefined) {
       verifyDetail(e)

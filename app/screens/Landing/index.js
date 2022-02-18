@@ -11,6 +11,9 @@ import { getCurrentUser } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import LandingTile from '../../components/LandingTile'
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency'
+import Loader from '../../components/loader'
+import StatisticsTile from '../../components/StatisticsTile'
 import helper from '../../helper'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
@@ -81,6 +84,10 @@ class Landing extends React.Component {
     await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
+    const { status } = await requestTrackingPermissionsAsync()
+    if (status === 'granted') {
+      console.log('Yay! I have user permission to track data')
+    }
   }
 
   componentDidUpdate(prevProps) {

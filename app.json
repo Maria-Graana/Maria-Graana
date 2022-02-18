@@ -31,7 +31,8 @@
         "NSContactsUsageDescription": "The Contacts permission used to create new contacts for users when creating new clients and calling from leads",
         "NSCameraUsageDescription": "The Camera permission used to capture user's properties pictures when posting property",
         "NSPhotoLibraryUsageDescription": "The gallery permission used to upload user's properties pictures when posting property",
-        "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property"
+        "NSLocationAlwaysAndWhenInUsageDescription": "The location permission used to get current location of users when posting property",
+        "NSUserTrackingUsageDescription": "The location permission used to get current location of users and users device id is also used to track devices and email address is used to get login in device"
       },
       "associatedDomains": ["applinks:arms.graana.com"],
       "userInterfaceStyle": "automatic",
@@ -41,7 +42,9 @@
       "package": "com.agency21.arms",
       "googleServicesFile": "./google-services.json",
       "config": {
-        "googleMaps": { "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE" }
+        "googleMaps": {
+          "apiKey": "AIzaSyAn23x563AgxL5cANBS6wDNVjXeT7QCdJE"
+        }
       },
       "userInterfaceStyle": "automatic",
       "permissions": [
@@ -78,7 +81,6 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-
       "versionCode": 10,
       "useNextNotificationsApi": true
     },
@@ -105,6 +107,7 @@
         "dev": "https://maps.graana.rocks/api/map/",
         "prod": "https://www.graana.com/api/map/"
       }
-    }
+    },
+    "plugins": ["expo-tracking-transparency"]
   }
 }

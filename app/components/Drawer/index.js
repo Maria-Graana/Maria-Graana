@@ -188,9 +188,7 @@ class CustomDrawerContent extends React.Component {
             }}
           />
           <View style={{ alignSelf: 'center', justifyContent: 'flex-end', flex: 1 }}>
-            <Text style={AppStyles.blackInputText}>
-              {label}v{AppJson.expo.version}
-            </Text>
+            <Text style={AppStyles.blackInputText}>SDK 41 v{AppJson.expo.version}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>

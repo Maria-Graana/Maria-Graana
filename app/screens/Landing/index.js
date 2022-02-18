@@ -3,9 +3,8 @@
 import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
-import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
-import addIcon from '../../../assets/img/add-icon-l.png'
 import { setContacts } from '../../actions/contacts'
 import { getListingsCount } from '../../actions/listings'
 import { getCurrentUser } from '../../actions/user'
@@ -15,8 +14,16 @@ import LandingTile from '../../components/LandingTile'
 import helper from '../../helper'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import { FAB } from 'react-native-paper'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
+import { clearDiaries } from '../../actions/diary'
+import { setSlotData } from '../../actions/slotManagement'
+import moment from 'moment'
+
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
+
 class Landing extends React.Component {
   constructor(props) {
     super(props)
@@ -56,16 +63,20 @@ class Landing extends React.Component {
       userStatistics: null,
       toggleStatsTile: true,
       kpisData: [],
+      fabActions: [],
+      open: false,
+      selectedDate: _today,
     }
   }
 
   async componentDidMount() {
-    const { navigation, dispatch, permissions } = this.props
+    const { navigation, dispatch } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.props.dispatch(setContacts())
       this.getUserStatistics()
       this.getUserStatistics2()
+      this.setFabActions()
     })
     await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
@@ -170,7 +181,7 @@ class Landing extends React.Component {
   }
 
   fetchTiles = () => {
-    const { user, count, permissions } = this.props
+    const { count, permissions } = this.props
     const { tileNames } = this.state
     let counter = 0
     let tileData = []
@@ -193,9 +204,6 @@ class Landing extends React.Component {
           ) ||
           getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions)
         ) {
-          let oneTilee = {
-            screenName: tile,
-          }
           if (label === 'Team Diary') label = "Team's Diary"
           if (tile === 'Leads') label = 'Leads'
           if (tile === 'MyDeals') label = 'Deals'
@@ -232,9 +240,6 @@ class Landing extends React.Component {
             ))
         ) {
           if (label === 'InventoryTabs') label = 'Properties'
-          let oneTilee = {
-            screenName: tile,
-          }
           if (label === 'Team Diary') label = "Team's Diary"
           if (tile === 'Leads') label = 'Leads'
           if (tile === 'MyDeals') label = 'Deals'
@@ -319,19 +324,59 @@ class Landing extends React.Component {
     else return false
   }
 
+  goToAddEditDiaryScreen = (update, data = null) => {
+    const { navigation, dispatch } = this.props
+    const { selectedDate } = this.state
+    dispatch(clearDiaries())
+    if (data) {
+      dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
+    }
+    navigation.navigate('AddDiary', { update, data, selectedDate })
+  }
+
+  setFabActions = () => {
+    const { navigation } = this.props
+    let fabActions = []
+
+    fabActions.push({
+      icon: 'plus',
+      label: 'Register Client',
+      color: AppStyles.colors.primaryColor,
+      onPress: () => navigation.navigate('AddClient', { update: false }),
+    })
+
+    fabActions.push({
+      icon: 'plus',
+      label: 'Add Diary Task',
+      color: AppStyles.colors.primaryColor,
+      onPress: () => this.goToAddEditDiaryScreen(),
+    })
+
+    fabActions.push({
+      icon: 'plus',
+      label: 'Add Property',
+      color: AppStyles.colors.primaryColor,
+      onPress: () => navigation.navigate('AddInventory', { update: false }),
+    })
+
+    this.setState({
+      fabActions: fabActions,
+    })
+  }
+
   render() {
-    const { tiles, loading, toggleStatsTile, kpisData } = this.state
-    const { user, navigation, permissions } = this.props
-    let isShowKPIs = this.isShowKPIsView()
+    const { tiles, open, fabActions } = this.state
+    const { navigation, permissions } = this.props
     return (
       <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
         <AndroidNotifications navigation={navigation} />
+
         {tiles.length ? (
           <FlatList
             style={styles.scrollContainer}
             numColumns={2}
             data={tiles}
-            renderItem={(item, index) => (
+            renderItem={(item) => (
               <LandingTile
                 navigateFunction={this.navigateFunction}
                 pagePath={item.item.pagePath}
@@ -341,7 +386,7 @@ class Landing extends React.Component {
                 imagePath={item.item.buttonImg}
               />
             )}
-            keyExtractor={(item, index) => item.id.toString()}
+            keyExtractor={(item) => item.id.toString()}
           />
         ) : null}
         {/* {isShowKPIs ? (
@@ -382,8 +427,20 @@ class Landing extends React.Component {
           </TouchableOpacity>
         ) : null} */}
 
-        <View style={styles.btnView}>
-          {getPermissionValue(
+        {/* <View style={styles.btnView}> */}
+        {getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
+        getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
+          <FAB.Group
+            open={open}
+            icon="plus"
+            style={{ marginBottom: 16 }}
+            fabStyle={{ backgroundColor: AppStyles.bgcWhite.backgroundColor }}
+            color={AppStyles.colors.primaryColor}
+            actions={fabActions}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
+        ) : null}
+        {/* {getPermissionValue(
             PermissionFeatures.PROPERTIES,
             PermissionActions.CREATE,
             permissions
@@ -408,8 +465,8 @@ class Landing extends React.Component {
               <Image source={addIcon} style={styles.containerImg} />
               <Text style={styles.font}>CR</Text>
             </TouchableOpacity>
-          ) : null}
-        </View>
+          ) : null} */}
+        {/* </View> */}
         <UpdateApp />
       </SafeAreaView>
     )

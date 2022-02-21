@@ -436,7 +436,8 @@ class Landing extends React.Component {
 
         {/* <View style={styles.btnView}> */}
         {getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
-        getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
+        getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
+        getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ? (
           <FAB.Group
             open={open}
             icon="plus"

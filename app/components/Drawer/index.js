@@ -1,10 +1,13 @@
 /** @format */
 
+import moment from 'moment'
 import * as React from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { connect } from 'react-redux'
 import AppJson from '../../../app.json'
+import { clearDiaries } from '../../actions/diary'
+import { setSlotData } from '../../actions/slotManagement'
 import { logoutUser } from '../../actions/user'
 import AppStyles from '../../AppStyles'
 import config from '../../config'
@@ -17,9 +20,15 @@ import DrawerIconItem from '../DrawerIconItem'
 import DrawerItem from '../DrawerItem'
 import styles from './style'
 
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
+
 class CustomDrawerContent extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      selectedDate: _today,
+    }
   }
 
   navigateTo = (screen) => {
@@ -34,6 +43,16 @@ class CustomDrawerContent extends React.Component {
 
   signOut = () => {
     this.props.dispatch(logoutUser())
+  }
+
+  goToAddEditDiaryScreen = (update, data = null) => {
+    const { navigation, dispatch } = this.props
+    const { selectedDate } = this.state
+    dispatch(clearDiaries())
+    if (data) {
+      dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
+    }
+    navigation.navigate('AddDiary', { update, data, selectedDate })
   }
 
   render() {
@@ -63,6 +82,44 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )} */}
+          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
+            <DrawerIconItem
+              screen={'Add Diary Task'}
+              // badges={count.diary}
+              navigateTo={() => {
+                this.goToAddEditDiaryScreen()
+              }}
+            />
+          )}
+
+          {getPermissionValue(
+            PermissionFeatures.PROPERTIES,
+            PermissionActions.CREATE,
+            permissions
+          ) && (
+            <DrawerIconItem
+              screen={'Add Property'}
+              // badges={count.diary}
+              navigateTo={() => {
+                this.navigateTo('AddInventory')
+              }}
+            />
+          )}
+
+          {getPermissionValue(
+            PermissionFeatures.CLIENTS,
+            PermissionActions.CREATE,
+            permissions
+          ) && (
+            <DrawerIconItem
+              screen={'Register Client'}
+              // badges={count.diary}
+              navigateTo={() => {
+                this.navigateTo('AddClient')
+              }}
+            />
+          )}
+
           {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem
               screen={'Diary'}

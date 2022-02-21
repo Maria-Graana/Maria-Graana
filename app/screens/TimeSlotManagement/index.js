@@ -751,7 +751,7 @@ function TimeSlotManagement(props) {
         const end = shiftArr[2].armsShift.endTime
 
         if (isTimeBetween(start, end, e.startTime)) return true
-        else return false
+        else return true
       } else if (array && array[0].armsShift && array.length == 1) {
         const start = shiftArr[0].armsShift.startTime
         const end = shiftArr[0].armsShift.endTime
@@ -927,7 +927,7 @@ function TimeSlotManagement(props) {
                                       : setColor(e) == 'closed'
                                       ? '#e6e6e6'
                                       : setShift(e) == true
-                                      ? 'white'
+                                      ? '#ffffff'
                                       : '#f1f1f1',
 
                                     borderColor: isSelected.includes(e.id) ? 'black' : 'grey',

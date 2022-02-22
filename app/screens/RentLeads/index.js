@@ -232,7 +232,6 @@ class RentLeads extends React.Component {
     axios
       .get(`${query}`)
       .then((res) => {
-        console.log(query)
         let leadNewData = helper.leadMenu(
           page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         )

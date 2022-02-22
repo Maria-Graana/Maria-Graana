@@ -207,31 +207,32 @@ class RentLeads extends React.Component {
         if (statusFilterType === 'name' && searchText !== '') {
           user.armsUserRole && user.armsUserRole.groupManger
             ? (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`)
+            : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else if (statusFilterType === 'id' && searchText !== '') {
           user.armsUserRole && user.armsUserRole.groupManger
             ? (query = `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=${true}&hasBooking=${hasBooking}`)
+            : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
           user.armsUserRole && user.armsUserRole.groupManger
             ? (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&assignToMe=${true}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}`)
+            : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}`)
         }
       } else {
         if (statusFilter === 'shortlisting') {
           user.armsUserRole && user.armsUserRole.groupManger
             ? (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+            : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
           user.armsUserRole && user.armsUserRole.groupManger
             ? (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+            : (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         }
       }
     }
     axios
       .get(`${query}`)
       .then((res) => {
+        console.log(query)
         let leadNewData = helper.leadMenu(
           page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         )

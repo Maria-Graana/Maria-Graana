@@ -860,7 +860,7 @@ function TimeSlotManagement(props) {
           <View style={{ flexDirection: 'column' }}>
             {minArray.map((i) => {
               return (
-                <View style={styles.minCol}>
+                <View style={styles.minCol} key={i}>
                   <Text style={styles.timeText}>{i}</Text>
                 </View>
               )

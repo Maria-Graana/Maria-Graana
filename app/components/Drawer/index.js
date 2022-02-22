@@ -28,6 +28,7 @@ class CustomDrawerContent extends React.Component {
     super(props)
     this.state = {
       selectedDate: _today,
+      display: false,
     }
   }
 
@@ -57,6 +58,7 @@ class CustomDrawerContent extends React.Component {
 
   render() {
     const { user, count, permissions } = this.props
+    const { display } = this.state
     const { subRole } = user
     let label = helper.checkChannel(config.channel)
     return (
@@ -82,43 +84,57 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )} */}
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
+          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ||
+          getPermissionValue(
+            PermissionFeatures.PROPERTIES,
+            PermissionActions.CREATE,
+            permissions
+          ) ||
+          getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
             <DrawerIconItem
-              screen={'Add Diary Task'}
-              // badges={count.diary}
+              screen={'Create Assets'}
               navigateTo={() => {
-                this.goToAddEditDiaryScreen()
+                this.setState({ display: !display })
               }}
             />
-          )}
+          ) : null}
+
+          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) &&
+            display && (
+              <DrawerIconItem
+                screen={'Add Diary Task'}
+                isSub={true}
+                navigateTo={() => {
+                  this.goToAddEditDiaryScreen()
+                }}
+              />
+            )}
 
           {getPermissionValue(
             PermissionFeatures.PROPERTIES,
             PermissionActions.CREATE,
             permissions
-          ) && (
-            <DrawerIconItem
-              screen={'Add Property'}
-              // badges={count.diary}
-              navigateTo={() => {
-                this.navigateTo('AddInventory')
-              }}
-            />
-          )}
+          ) &&
+            display && (
+              <DrawerIconItem
+                screen={'Add Property'}
+                isSub={true}
+                navigateTo={() => {
+                  this.navigateTo('AddInventory')
+                }}
+              />
+            )}
 
-          {getPermissionValue(
-            PermissionFeatures.CLIENTS,
-            PermissionActions.CREATE,
-            permissions
-          ) && (
-            <DrawerIconItem
-              screen={'Register Client'}
-              // badges={count.diary}
-              navigateTo={() => {
-                this.navigateTo('AddClient')
-              }}
-            />
-          )}
+          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
+            display && (
+              <DrawerIconItem
+                screen={'Register Client'}
+                isSub={true}
+                navigateTo={() => {
+                  this.navigateTo('AddClient')
+                }}
+              />
+            )}
 
           {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem

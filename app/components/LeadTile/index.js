@@ -236,7 +236,9 @@ class LeadTile extends React.Component {
                       {/* Disabled Sentry in development  Sentry in */}
                       {leadSize}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
-                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
+                      {(data.purpose && data.purpose === 'sale') || data.purpose === 'buy'
+                        ? 'Buy'
+                        : 'Rent'}
                     </Text>
                   )}
 

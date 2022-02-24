@@ -31,7 +31,7 @@ function LeadsNavigator(props) {
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: 'DEALS' })
   }
-  if (navFrom == 'follow_up') {
+  if (navFrom == 'meeting') {
     return (
       <Tab.Navigator
         tabBarOptions={{
@@ -81,7 +81,7 @@ function LeadsNavigator(props) {
         ) : null}
       </Tab.Navigator>
     )
-  } else if (navFrom == 'meeting' || navFrom == 'viewing') {
+  } else if (navFrom == 'follow_up' || navFrom == 'viewing') {
     return (
       <Tab.Navigator
         tabBarOptions={{

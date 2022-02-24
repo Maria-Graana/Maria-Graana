@@ -111,6 +111,7 @@ class CustomDrawerContent extends React.Component {
               navigateTo={() => {
                 this.setState({ display: !display })
               }}
+              isSuper={true}
             />
           ) : null}
 

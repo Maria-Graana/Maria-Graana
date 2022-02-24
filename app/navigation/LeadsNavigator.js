@@ -81,7 +81,105 @@ function LeadsNavigator(props) {
         ) : null}
       </Tab.Navigator>
     )
-  } else if (navFrom == 'follow_up' || navFrom == 'viewing') {
+  } else if (navFrom == 'follow_up') {
+    return (
+      <Tab.Navigator
+        tabBarOptions={{
+          scrollEnabled: false,
+          labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
+          activeTintColor: AppStyles.colors.primaryColor,
+          inactiveTintColor: AppStyles.colors.subTextColor,
+          showIcon: true,
+          iconStyle: { margin: -5 },
+          // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
+          tabStyle: {
+            paddingLeft: 0,
+            paddingRight: 0,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          indicatorStyle: {
+            borderBottomColor: '#ffffff',
+            borderBottomWidth: 2,
+          },
+        }}
+      >
+        {getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.READ,
+          permissions
+        ) ? (
+          <Tab.Screen
+            name="Rent"
+            options={{
+              tabBarIcon: (props) => (
+                <TabBarBadge
+                  color={props.focused ? 'red' : '#ddd'}
+                  count={count.rentLeads}
+                  screen={screen}
+                />
+              ),
+            }}
+            initialParams={{
+              screen: props.route.params?.screen,
+              hasBooking: props.route.params?.hasBooking,
+              navFrom: navFrom,
+            }}
+            component={RentLeads}
+          />
+        ) : null}
+        {getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.READ,
+          permissions
+        ) ? (
+          <Tab.Screen
+            name="Buy"
+            initialParams={{
+              screen: props.route.params?.screen,
+              hasBooking: props.route.params?.hasBooking,
+              navFrom: navFrom,
+            }}
+            options={{
+              tabBarIcon: (props) => (
+                <TabBarBadge
+                  color={props.focused ? 'red' : '#ddd'}
+                  count={count.buyLeads}
+                  screen={screen}
+                />
+              ),
+            }}
+            component={BuyLeads}
+          />
+        ) : null}
+        {getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.READ,
+          permissions
+        ) ? (
+          <Tab.Screen
+            name="Invest"
+            options={{
+              tabBarIcon: (props) => (
+                <TabBarBadge
+                  color={props.focused ? 'red' : '#ddd'}
+                  count={count.projectLeads}
+                  screen={screen}
+                />
+              ),
+            }}
+            initialParams={{
+              screen: props.route.params?.screen,
+              hasBooking: props.route.params?.hasBooking,
+              navFrom: navFrom,
+            }}
+            component={InvestLeads}
+          />
+        ) : null}
+      </Tab.Navigator>
+    )
+  } else if (navFrom == 'viewing') {
     return (
       <Tab.Navigator
         tabBarOptions={{

@@ -61,6 +61,10 @@ class Landing extends React.Component {
           tile: 'Targets',
           actions: 'TARGETS',
         },
+        {
+          tile: 'Contacts',
+          actions: 'TARGETS',
+        },
       ],
       loading: true,
       userStatistics: null,

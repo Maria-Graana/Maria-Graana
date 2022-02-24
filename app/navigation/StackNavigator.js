@@ -57,6 +57,7 @@ import ScheduledTasks from '../screens/ScheduledTasks' //ARMS-2180
 import DiaryReasons from '../screens/DiaryReasons'
 import DiaryFeedback from '../screens/DiaryFeedback'
 import RescheduleViewings from '../screens/RescheduleViewings'
+import Contacts from '../screens/Contacts'
 import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 
 const Stack = createStackNavigator()
@@ -564,6 +565,16 @@ function MainStack() {
         options={({ navigation, route }) => ({
           title: 'ATTACHMENTS',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      <Stack.Screen
+        name="Contacts"
+        component={Contacts}
+        options={({ navigation, route }) => ({
+          title: 'ARMS CONTACTS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
       />

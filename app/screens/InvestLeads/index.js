@@ -335,34 +335,42 @@ class InvestLeads extends React.Component {
     }
   }
   navigateTo = (data) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
     const { navigation, route } = this.props
     const unitData = route.params.unitData
 
-    this.props.dispatch(setlead(data))
-    let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
+    if (navFrom) {
+      this.props.dispatch(setlead(data))
+      navigation.navigate('AddDiary', {
         lead: data,
-        purposeTab: 'invest',
-        screenName: screen,
+        cmLeadId: data.id,
       })
     } else {
-      if (
-        data.status === 'token' ||
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payments'
+      this.props.dispatch(setlead(data))
+      let page = ''
+      if (data.readAt === null) {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'invest',
+          screenName: screen,
+        })
       } else {
-        page = 'Meetings'
-      }
+        if (
+          data.status === 'token' ||
+          data.status === 'payment' ||
+          data.status === 'closed_won' ||
+          data.status === 'closed_lost'
+        ) {
+          page = 'Payments'
+        } else {
+          page = 'Meetings'
+        }
 
-      navigation.navigate('CMLeadTabs', {
-        screen: unitData ? 'Payments' : page,
-        params: { lead: data, unitData: unitData, screenName: screen },
-      })
+        navigation.navigate('CMLeadTabs', {
+          screen: unitData ? 'Payments' : page,
+          params: { lead: data, unitData: unitData, screenName: screen },
+        })
+      }
     }
   }
 
@@ -645,7 +653,7 @@ class InvestLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions, lead, dispatch, referenceGuide } = this.props
-    const { screen, hasBooking = false } = this.props.route.params
+    const { screen, hasBooking = false, navFrom = null } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
     return (
@@ -752,7 +760,8 @@ class InvestLeads extends React.Component {
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
-                screen={screen}
+                screen={navFrom ? 'AddDiary' : screen}
+                navFrom={navFrom}
                 isMenuVisible={isMenuVisible}
                 setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
                 checkAssignedLead={(lead) => this.checkAssignedLead(lead)}

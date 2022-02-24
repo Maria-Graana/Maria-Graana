@@ -14,6 +14,18 @@ export default StaticData = {
       name: 'Meeting with PP',
       value: 'meeting_with_pp',
     },
+    {
+      name: 'Meeting',
+      value: 'meeting',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Viewing',
+      value: 'viewing',
+    },
   ],
   diaryTasksCM: [
     {

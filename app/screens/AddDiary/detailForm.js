@@ -82,6 +82,9 @@ class DetailForm extends Component {
       feedbackReasonFilter,
       goToDiaryReasons,
       goBackToDiary,
+      goToLeads,
+      goToLeadProperties,
+      lead,
     } = this.props
     return (
       <View>
@@ -106,6 +109,26 @@ class DetailForm extends Component {
               <ErrorMessage errorMessage={'Required'} />
             )}
           </View>
+        )}
+
+        {(taskType == 'viewing' || taskType == 'follow_up' || taskType == 'meeting') && (
+          <TouchableInput
+            placeholder="Lead ID"
+            showDropDownIcon={false}
+            disabled={formData.status === 'completed' || taskType === ''}
+            onPress={() => goToLeads(formData)}
+            value={lead ? lead.id.toString() : ''}
+          />
+        )}
+
+        {taskType == 'viewing' && (
+          <TouchableInput
+            placeholder="Property ID"
+            showDropDownIcon={false}
+            disabled={formData.status === 'completed' || taskType === ''}
+            onPress={() => goToLeadProperties(formData)}
+            // value={}
+          />
         )}
 
         {editableData && editableData.taskType === 'follow_up' ? (

@@ -275,48 +275,58 @@ class BuyLeads extends React.Component {
   }
 
   navigateTo = (data) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
+    const { navigation } = this.props
+
     this.props.dispatch(setlead(data))
-    let page = ''
-    if (this.props.route.params?.screen === 'MyDeals') {
-      this.props.navigation.navigate('LeadDetail', {
+
+    if (navFrom) {
+      navigation.navigate('AddDiary', {
         lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
-      })
-    } else if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
-        lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
+        rcmLeadId: data.id,
       })
     } else {
-      if (data.status == 'open') {
-        page = 'Match'
+      let page = ''
+      if (this.props.route.params?.screen === 'MyDeals') {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'sale',
+          screenName: screen,
+        })
+      } else if (data.readAt === null) {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'sale',
+          screenName: screen,
+        })
+      } else {
+        if (data.status == 'open') {
+          page = 'Match'
+        }
+        if (data.status === 'viewing') {
+          page = 'Viewing'
+        }
+        if (data.status === 'offer') {
+          page = 'Offer'
+        }
+        if (data.status === 'propsure') {
+          page = 'Propsure'
+        }
+        if (data.status === 'payment') {
+          page = 'Payment'
+        }
+        if (
+          data.status === 'payment' ||
+          data.status === 'closed_won' ||
+          data.status === 'closed_lost'
+        ) {
+          page = 'Payment'
+        }
+        this.props.navigation.navigate('RCMLeadTabs', {
+          screen: page,
+          params: { lead: data },
+        })
       }
-      if (data.status === 'viewing') {
-        page = 'Viewing'
-      }
-      if (data.status === 'offer') {
-        page = 'Offer'
-      }
-      if (data.status === 'propsure') {
-        page = 'Propsure'
-      }
-      if (data.status === 'payment') {
-        page = 'Payment'
-      }
-      if (
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payment'
-      }
-      this.props.navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: data },
-      })
     }
   }
 
@@ -704,7 +714,7 @@ class BuyLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions } = this.props
-    const { screen, hasBooking = false } = this.props.route.params
+    const { screen, hasBooking = false, navFrom = null } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -807,6 +817,7 @@ class BuyLeads extends React.Component {
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
+                    navFrom={navFrom}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
                     screenName={screen}

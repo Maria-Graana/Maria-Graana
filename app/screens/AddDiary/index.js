@@ -254,6 +254,18 @@ class AddDiary extends Component {
     })
   }
 
+  goToLeads = (data) => {
+    const { navigation } = this.props
+    navigation.navigate('Leads', {
+      screen: 'Leads',
+      screenName: 'AddDiary',
+      navFrom: data.taskType,
+      hasBooking: false,
+    })
+  }
+
+  goToLeadProperties = () => {}
+
   goToDiaryReasons = () => {
     const { navigation } = this.props
     navigation.navigate('DiaryReasons', { screenName: 'AddDiary' })
@@ -262,6 +274,7 @@ class AddDiary extends Component {
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route, slotsData, navigation } = this.props
+    const { lead } = route.params
 
     return (
       <KeyboardAwareScrollView
@@ -288,6 +301,9 @@ class AddDiary extends Component {
                 goToDiaryReasons={this.goToDiaryReasons}
                 goBackToDiary={() => navigation.goBack()}
                 slotsData={slotsData}
+                goToLeads={this.goToLeads}
+                goToLeadProperties={this.goToLeadProperties}
+                lead={lead}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>

@@ -58,6 +58,7 @@ import DiaryReasons from '../screens/DiaryReasons'
 import DiaryFeedback from '../screens/DiaryFeedback'
 import RescheduleViewings from '../screens/RescheduleViewings'
 import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
+import PropertyList from '../screens/PropertyList'
 
 const Stack = createStackNavigator()
 
@@ -131,6 +132,19 @@ function MainStack() {
         })}
       />
       {/* ARMS-2293 end */}
+
+      {/* ARMS-3271 start */}
+      <Stack.Screen
+        name="PropertyList"
+        component={PropertyList}
+        options={({ navigation, route }) => ({
+          title: 'SELECT PROPERTY',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      {/* ARMS-3271 end */}
 
       <Stack.Screen
         name="OverdueTasks"

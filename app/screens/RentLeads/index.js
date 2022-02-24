@@ -273,54 +273,64 @@ class RentLeads extends React.Component {
   }
 
   navigateTo = (data) => {
+    const { screen, navFrom } = this.props.route.params
+    const { navigation } = this.props
+
     this.props.dispatch(setlead(data))
-    const { screen } = this.props.route.params
-    let page = ''
-    if (this.props.route.params?.screen === 'MyDeals') {
-      this.props.navigation.navigate('LeadDetail', {
+
+    if (navFrom) {
+      navigation.navigate('AddDiary', {
         lead: data,
-        purposeTab: 'rent',
-        screenName: screen,
-      })
-    } else if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
-        lead: data,
-        purposeTab: 'rent',
-        screenName: screen,
+        rcmLeadId: data.id,
       })
     } else {
-      if (data.status === 'open') {
-        page = 'Match'
-      }
-      if (data.status === 'viewing') {
-        page = 'Viewing'
-      }
-      if (data.status === 'offer') {
-        page = 'Offer'
-      }
-      if (data.status === 'propsure') {
-        page = 'Propsure'
-      }
-      if (data.status === 'payment') {
-        page = 'Payment'
-      }
-      if (
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payment'
-      }
-      if (data && data.requiredProperties) {
-        this.props.navigation.navigate('PropertyTabs', {
-          screen: page,
-          params: { lead: data },
+      let page = ''
+      if (this.props.route.params?.screen === 'MyDeals') {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'rent',
+          screenName: screen,
+        })
+      } else if (data.readAt === null) {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'rent',
+          screenName: screen,
         })
       } else {
-        this.props.navigation.navigate('RCMLeadTabs', {
-          screen: page,
-          params: { lead: data },
-        })
+        if (data.status === 'open') {
+          page = 'Match'
+        }
+        if (data.status === 'viewing') {
+          page = 'Viewing'
+        }
+        if (data.status === 'offer') {
+          page = 'Offer'
+        }
+        if (data.status === 'propsure') {
+          page = 'Propsure'
+        }
+        if (data.status === 'payment') {
+          page = 'Payment'
+        }
+        if (
+          data.status === 'payment' ||
+          data.status === 'closed_won' ||
+          data.status === 'closed_lost'
+        ) {
+          page = 'Payment'
+        }
+        if (data && data.requiredProperties) {
+          this.props.navigation.navigate('PropertyTabs', {
+            screen: page,
+            params: { lead: data },
+          })
+        } else {
+          this.props.navigation.navigate('RCMLeadTabs', {
+            screen: page,
+            params: { lead: data },
+          })
+        }
       }
     }
   }
@@ -758,7 +768,7 @@ class RentLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, navigation, permissions } = this.props
-    const { screen, hasBooking = false } = this.props.route.params
+    const { screen, hasBooking = false, navFrom = null } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -865,6 +875,7 @@ class RentLeads extends React.Component {
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
                     handleLongPress={this.handleLongPress}
+                    navFrom={navFrom}
                     serverTime={serverTime}
                     screenName={screen}
                   />

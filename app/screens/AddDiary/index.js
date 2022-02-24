@@ -21,6 +21,8 @@ import {
   setTimeSlots,
 } from '../../actions/slotManagement'
 import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 const _today = moment(new Date()).format('YYYY-MM-DD')
 
@@ -38,6 +40,22 @@ class AddDiary extends Component {
   componentDidMount() {
     const { route, navigation, dispatch, user, permissions } = this.props
     let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
+    if (
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.UPDATE, permissions)
+    ) {
+      StaticData.diaryTasks.push({
+        name: 'Meeting',
+        value: 'meeting',
+      })
+    }
+    if (
+      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.UPDATE, permissions)
+    ) {
+      StaticData.diaryTasks.push({
+        name: 'Viewing',
+        value: 'viewing',
+      })
+    }
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     if (helper.getAiraPermission(permissions) && lead) {

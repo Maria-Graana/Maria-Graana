@@ -111,6 +111,7 @@ class CustomDrawerContent extends React.Component {
               navigateTo={() => {
                 this.setState({ display: !display })
               }}
+              display={display}
               isSuper={true}
             />
           ) : null}
@@ -120,6 +121,7 @@ class CustomDrawerContent extends React.Component {
               <DrawerIconItem
                 screen={'Register Client'}
                 isSub={true}
+                imageIcon={require('../../../assets/icons/Client-Black.png')}
                 navigateTo={() => {
                   this.navigateTo('AddClient')
                 }}
@@ -135,6 +137,7 @@ class CustomDrawerContent extends React.Component {
               <DrawerIconItem
                 screen={'Add Project Lead'}
                 isSub={true}
+                imageIcon={require('../../../assets/icons/AddProject-Black.png')}
                 navigateTo={() => {
                   this.goToFormPage('AddCMLead', 'CM', null)
                 }}
@@ -150,6 +153,7 @@ class CustomDrawerContent extends React.Component {
               <DrawerIconItem
                 screen={'Add Buy/Rent Lead'}
                 isSub={true}
+                imageIcon={require('../../../assets/icons/AddBuyRentLeads-Black.png')}
                 navigateTo={() => {
                   this.goToFormPage('AddRCMLead', 'RCM', null)
                 }}
@@ -161,6 +165,7 @@ class CustomDrawerContent extends React.Component {
               <DrawerIconItem
                 screen={'Add Diary Task'}
                 isSub={true}
+                imageIcon={require('../../../assets/icons/AddDiaryTasks-Black.png')}
                 navigateTo={() => {
                   this.goToAddEditDiaryScreen()
                 }}
@@ -176,6 +181,7 @@ class CustomDrawerContent extends React.Component {
               <DrawerIconItem
                 screen={'Add Property'}
                 isSub={true}
+                imageIcon={require('../../../assets/icons/AddProperty-Black.png')}
                 navigateTo={() => {
                   this.navigateTo('AddInventory')
                 }}

@@ -85,6 +85,7 @@ class DetailForm extends Component {
       goToLeads,
       goToLeadProperties,
       lead,
+      property,
     } = this.props
     return (
       <View>
@@ -127,7 +128,7 @@ class DetailForm extends Component {
             showDropDownIcon={false}
             disabled={formData.status === 'completed' || taskType === ''}
             onPress={() => goToLeadProperties(formData)}
-            // value={}
+            value={property ? property.id.toString() : ''}
           />
         )}
 

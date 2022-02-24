@@ -87,7 +87,7 @@ class AddDiary extends Component {
 
   generatePayload = (data) => {
     const { route, user, feedbackReasonFilter = null, permissions } = this.props
-    const { rcmLeadId, cmLeadId, lead } = route.params
+    const { rcmLeadId, cmLeadId, lead, property } = route.params
     let payload = null
     if (route.params.update) {
       // payload for update contains id of diary from existing api call and other user data
@@ -128,11 +128,22 @@ class AddDiary extends Component {
           feedbackReasonFilter && feedbackReasonFilter.value ? feedbackReasonFilter.value[0] : null
       }
 
-      if (rcmLeadId) {
-        payload.armsLeadId = rcmLeadId
-      } else if (cmLeadId) {
-        payload.leadId = cmLeadId
+      if (property) {
+        payload.propertyId = property.id
+        payload.leadId = rcmLeadId
+        payload.customer_Id = lead.customer && lead.customer.id
+        payload.subject =
+          'Viewing' +
+          (lead.customer && ' with ' + lead.customer.customerName) +
+          (property && property.area && ' at ' + property.area.name)
+      } else {
+        if (rcmLeadId) {
+          payload.armsLeadId = rcmLeadId
+        } else if (cmLeadId) {
+          payload.leadId = cmLeadId
+        }
       }
+
       delete payload.startTime
       delete payload.endTime
       return payload
@@ -150,11 +161,11 @@ class AddDiary extends Component {
 
   addDiary = (data) => {
     const { route, navigation, dispatch } = this.props
-    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
+    const { screenName = 'Diary', cmLeadId, rcmLeadId, property } = route.params
     let diary = this.generatePayload(data)
-
+    let query = property ? `/api/leads/viewing` : `/api/leads/task`
     axios
-      .post(`/api/leads/task`, diary)
+      .post(query, diary)
       .then((res) => {
         if (res.status === 200) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')
@@ -264,7 +275,10 @@ class AddDiary extends Component {
     })
   }
 
-  goToLeadProperties = () => {}
+  goToLeadProperties = () => {
+    const { navigation } = this.props
+    navigation.navigate('PropertyList', { screenName: 'AddDiary' })
+  }
 
   goToDiaryReasons = () => {
     const { navigation } = this.props
@@ -274,7 +288,7 @@ class AddDiary extends Component {
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route, slotsData, navigation } = this.props
-    const { lead } = route.params
+    const { lead, property } = route.params
 
     return (
       <KeyboardAwareScrollView
@@ -304,6 +318,7 @@ class AddDiary extends Component {
                 goToLeads={this.goToLeads}
                 goToLeadProperties={this.goToLeadProperties}
                 lead={lead}
+                property={property}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>

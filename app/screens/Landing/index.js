@@ -469,7 +469,7 @@ class Landing extends React.Component {
         getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ? (
           <FAB.Group
             open={open}
-            icon="plus"
+            icon={open ? 'close' : 'plus'}
             style={{ marginBottom: 16 }}
             fabStyle={{ backgroundColor: AppStyles.bgcWhite.backgroundColor }}
             color={AppStyles.colors.primaryColor}

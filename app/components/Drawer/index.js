@@ -107,7 +107,7 @@ class CustomDrawerContent extends React.Component {
           ) ||
           getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
             <DrawerIconItem
-              screen={'Create Assets'}
+              screen={'+ Create Assets'}
               navigateTo={() => {
                 this.setState({ display: !display })
               }}

@@ -56,6 +56,11 @@ class CustomDrawerContent extends React.Component {
     navigation.navigate('AddDiary', { update, data, selectedDate })
   }
 
+  goToFormPage = (page, status, client) => {
+    const { navigation } = this.props
+    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
+  }
+
   render() {
     const { user, count, permissions } = this.props
     const { display } = this.state
@@ -90,14 +95,66 @@ class CustomDrawerContent extends React.Component {
             PermissionActions.CREATE,
             permissions
           ) ||
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) ||
           getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
             <DrawerIconItem
               screen={'Create Assets'}
               navigateTo={() => {
                 this.setState({ display: !display })
               }}
+              isSuper={true}
             />
           ) : null}
+
+          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
+            display && (
+              <DrawerIconItem
+                screen={'Register Client'}
+                isSub={true}
+                navigateTo={() => {
+                  this.navigateTo('AddClient')
+                }}
+              />
+            )}
+
+          {getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) &&
+            display && (
+              <DrawerIconItem
+                screen={'Add Project Lead'}
+                isSub={true}
+                navigateTo={() => {
+                  this.goToFormPage('AddCMLead', 'CM', null)
+                }}
+              />
+            )}
+
+          {getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) &&
+            display && (
+              <DrawerIconItem
+                screen={'Add Buy/Rent Lead'}
+                isSub={true}
+                navigateTo={() => {
+                  this.goToFormPage('AddRCMLead', 'RCM', null)
+                }}
+              />
+            )}
 
           {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) &&
             display && (
@@ -121,17 +178,6 @@ class CustomDrawerContent extends React.Component {
                 isSub={true}
                 navigateTo={() => {
                   this.navigateTo('AddInventory')
-                }}
-              />
-            )}
-
-          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
-            display && (
-              <DrawerIconItem
-                screen={'Register Client'}
-                isSub={true}
-                navigateTo={() => {
-                  this.navigateTo('AddClient')
                 }}
               />
             )}

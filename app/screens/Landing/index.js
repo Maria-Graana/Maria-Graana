@@ -354,6 +354,20 @@ class Landing extends React.Component {
 
     fabActions.push({
       icon: 'plus',
+      label: 'Add Project Lead',
+      color: AppStyles.colors.primaryColor,
+      onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+    })
+
+    fabActions.push({
+      icon: 'plus',
+      label: 'Add Buy/Rent Lead',
+      color: AppStyles.colors.primaryColor,
+      onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+    })
+
+    fabActions.push({
+      icon: 'plus',
       label: 'Add Diary Task',
       color: AppStyles.colors.primaryColor,
       onPress: () => this.goToAddEditDiaryScreen(),
@@ -369,6 +383,11 @@ class Landing extends React.Component {
     this.setState({
       fabActions: fabActions,
     })
+  }
+
+  goToFormPage = (page, status, client) => {
+    const { navigation } = this.props
+    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
   }
 
   render() {
@@ -437,6 +456,16 @@ class Landing extends React.Component {
         {/* <View style={styles.btnView}> */}
         {getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
         getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
+        getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) &&
+        getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) &&
         getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ? (
           <FAB.Group
             open={open}

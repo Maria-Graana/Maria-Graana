@@ -185,7 +185,7 @@ class LeadTile extends React.Component {
                         },
                       ]}
                     >
-                      Provide Listings
+                     Demand Leads
                     </Text>
                   </View>
                 )}

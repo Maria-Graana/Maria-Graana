@@ -174,58 +174,98 @@ class RentLeads extends React.Component {
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
-    const { hasBooking } = this.props.route.params
+    const { hasBooking, navFrom } = this.props.route.params
     let query = ``
     if (helper.getAiraPermission(permissions)) {
       if (showSearchBar) {
         if (statusFilterType === 'name' && searchText !== '') {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&aira=${true}&page=${page}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&aira=${true}&page=${page}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&aira=${true}&page=${page}&hasBooking=${hasBooking}`)
         } else if (statusFilterType === 'id' && searchText !== '') {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`)
         } else {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&aira=${true}&hasBooking=${hasBooking}`)
         }
       } else {
         if (statusFilter === 'shortlisting') {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
-            : (query = `/api/leads?purpose[]=rent&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&status=${statusFilter}${sort}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&status=${statusFilter}${sort}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&status=${statusFilter}${sort}`)
         }
       }
     } else {
       if (showSearchBar) {
         if (statusFilterType === 'name' && searchText !== '') {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else if (statusFilterType === 'id' && searchText !== '') {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}`)
         }
       } else {
         if (statusFilter === 'shortlisting') {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         } else {
           user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+            ? (query = navFrom
+                ? `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+            : (query = navFrom
+                ? `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=true&status[]=open&status[]=follow_up&status[]=meeting&status[]=offer&status[]=viewing&status[]=propsure&status[]=shortlisting&status[]=token&status[]=payment`
+                : `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
         }
       }
     }

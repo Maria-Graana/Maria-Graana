@@ -21,7 +21,17 @@ const armContactsLoading = (state = false, action) => {
   }
 }
 
+const selectedContact = (state = {}, action) => {
+  switch (action.type) {
+    case types.SET_SELECTED_CONTACT:
+      return action.payload
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   armsContacts,
   armContactsLoading,
+  selectedContact,
 })

@@ -13,6 +13,7 @@ import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import AddLeadCategoryModal from '../AddLeadCategoryModal'
 import MultiplePhoneOptionModal from '../MultiplePhoneOptionModal'
+import ClosedWonModel from '../ClosedWonModel'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import styles from './style'
@@ -71,6 +72,7 @@ class CMBottomNav extends React.Component {
       selectedClientContacts: [],
       calledOn: 'phone',
       isLeadCategoryModalVisible: false,
+      isClosedWonModelVisible: false,
     }
   }
 
@@ -326,6 +328,11 @@ class CMBottomNav extends React.Component {
       )
     })
   }
+  closeWonModel = (value) => {
+    this.setState({
+      isClosedWonModelVisible: value,
+    })
+  }
 
   onCategorySelected = (value) => {
     const { lead, fetchLead } = this.props
@@ -367,6 +374,9 @@ class CMBottomNav extends React.Component {
       onHandleCloseLead,
       closedWon,
       leadType,
+      closedWonOptionVisible,
+      checkCloseWon,
+      leadData,
     } = this.props
     const {
       visible,
@@ -374,8 +384,8 @@ class CMBottomNav extends React.Component {
       selectedClientContacts,
       calledOn,
       isLeadCategoryModalVisible,
+      isClosedWonModelVisible,
     } = this.state
-
     let readPermission = getPermissionValue(
       lead.projectId && lead.project
         ? PermissionFeatures.PROJECT_LEADS
@@ -552,16 +562,17 @@ class CMBottomNav extends React.Component {
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Refer Lead"
               />
-              {closedWon && lead.status != 'closed_won' && (
-                <Menu.Item
-                  onPress={() => onHandleCloseLead(lead)}
-                  // onPress={() => {
-                  //   this.onHandleCloseLead(lead)
-                  // }}
-                  // icon={require('../../../assets/img/callIcon.png')}
-                  title="Closed Won"
-                />
-              )}
+              {closedWonOptionVisible &&
+                leadData.status !== 'closed_won' &&
+                leadData.status !== 'closed_lost' && (
+                  <Menu.Item
+                    onPress={() => {
+                      closedWon ? onHandleCloseLead(lead) : this.closeWonModel(true),
+                        this.openMenu(false)
+                    }}
+                    title="Closed Won"
+                  />
+                )}
 
               {
                 screenName === 'MyDeals' ? (
@@ -606,6 +617,15 @@ class CMBottomNav extends React.Component {
           onCategorySelected={(value) => this.onCategorySelected(value)}
           selectedCategory={lead && lead.leadCategory ? lead.leadCategory : null}
         />
+        {isClosedWonModelVisible && (
+          <ClosedWonModel
+            visible={isClosedWonModelVisible}
+            navigation={this.props.navigation}
+            closeWonModel={() => this.closeWonModel(false)}
+            checkCloseWon={checkCloseWon}
+            leadData={leadData}
+          />
+        )}
       </View>
     )
   }

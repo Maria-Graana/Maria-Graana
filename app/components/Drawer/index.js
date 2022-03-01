@@ -89,7 +89,10 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )} */}
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ||
+          {getPermissionValue(
+            PermissionFeatures.DIARY,
+             PermissionActions.CREATE,
+              permissions) ||
           getPermissionValue(
             PermissionFeatures.PROPERTIES,
             PermissionActions.CREATE,
@@ -105,7 +108,10 @@ class CustomDrawerContent extends React.Component {
             PermissionActions.CREATE,
             permissions
           ) ||
-          getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
+          getPermissionValue(
+            PermissionFeatures.CLIENTS, 
+            PermissionActions.CREATE,
+             permissions) ? (
             <DrawerIconItem
               screen={'+ Create Assets'}
               navigateTo={() => {
@@ -116,7 +122,10 @@ class CustomDrawerContent extends React.Component {
             />
           ) : null}
 
-          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
+          {getPermissionValue(
+            PermissionFeatures.CLIENTS,
+             PermissionActions.CREATE,
+              permissions) &&
             display && (
               <DrawerIconItem
                 screen={'Register Client'}
@@ -160,7 +169,10 @@ class CustomDrawerContent extends React.Component {
               />
             )}
 
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) &&
+          {getPermissionValue(
+            PermissionFeatures.DIARY,
+             PermissionActions.CREATE, 
+             permissions) &&
             display && (
               <DrawerIconItem
                 screen={'Add Diary Task'}
@@ -188,7 +200,10 @@ class CustomDrawerContent extends React.Component {
               />
             )}
 
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
+          {getPermissionValue(
+            PermissionFeatures.DIARY
+            , PermissionActions.READ, 
+            permissions) && (
             <DrawerIconItem
               screen={'Diary'}
               badges={count.diary}

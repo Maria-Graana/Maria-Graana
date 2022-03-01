@@ -14,7 +14,7 @@ export default styles = StyleSheet.create({
     shadowOpacity: 1,
     paddingHorizontal: 10,
     paddingTop: 15,
-    height: '60%',
+    maxHeight: '65%',
   },
   mainTextWrap: {
     backgroundColor: '#fff',
@@ -22,6 +22,10 @@ export default styles = StyleSheet.create({
     padding: 20,
     borderRadius: 4,
     borderColor: '#ddd',
+  },
+  titleView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   closeBtn: {
     position: 'absolute',
@@ -51,6 +55,7 @@ export default styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 5,
     fontWeight: '600',
+    marginLeft: 10,
   },
   noramlText: {
     fontSize: 16,
@@ -61,11 +66,15 @@ export default styles = StyleSheet.create({
     marginLeft: 5,
   },
   confirmBtnView: {
-    marginTop: 30,
-    alignItems: 'center',
     backgroundColor: '#0f73ee',
     borderRadius: 4,
-    height: '30%',
+    height: '12%',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  confirmBtnInnerView: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   confirmBtn: {
     backgroundColor: '#0f73ee',
@@ -75,8 +84,6 @@ export default styles = StyleSheet.create({
     color: '#fff',
   },
   textCenter: {
-    paddingTop: 12,
-    paddingBottom: 12,
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',

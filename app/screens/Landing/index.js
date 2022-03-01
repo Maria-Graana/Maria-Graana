@@ -343,7 +343,6 @@ class Landing extends React.Component {
 
   setFabActions = () => {
     const { navigation, permissions } = this.props
-    console.log("OERMISSIONS" , permissions)
     let fabActions = []
     {
       getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&

@@ -13,13 +13,13 @@ export default styles = StyleSheet.create({
     shadowColor: '#33333312',
     shadowOpacity: 1,
     paddingHorizontal: 10,
-    paddingTop: 15,
-    height: '60%',
+    // paddingTop: 15,
+    // height: '60%',
   },
   mainTextWrap: {
     backgroundColor: '#fff',
     paddingTop: 30,
-    padding: 20,
+    paddingHorizontal: 20,
     borderRadius: 4,
     borderColor: '#ddd',
   },
@@ -65,7 +65,8 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#0f73ee',
     borderRadius: 4,
-    height: '30%',
+    height: 50,
+    marginBottom:30
   },
   confirmBtn: {
     backgroundColor: '#0f73ee',

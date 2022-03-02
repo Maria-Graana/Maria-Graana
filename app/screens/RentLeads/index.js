@@ -174,7 +174,7 @@ class RentLeads extends React.Component {
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
-    const { hasBooking, navFrom } = this.props.route.params
+    const { hasBooking, navFrom  } = this.props.route.params
     let query = ``
     if (helper.getAiraPermission(permissions)) {
       if (showSearchBar) {
@@ -808,7 +808,7 @@ class RentLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, navigation, permissions } = this.props
-    const { screen, hasBooking = false, navFrom = null } = this.props.route.params
+    const { screen, hasBooking = false, navFrom = null , hideCloseLostFilter } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -866,7 +866,7 @@ class RentLeads extends React.Component {
                 <View style={styles.pickerMain}>
                   <PickerComponent
                     placeholder={'Lead Status'}
-                    data={StaticData.buyRentFilter}
+                    data={hideCloseLostFilter ? StaticData.buyRentFilterAddTask : StaticData.buyRentFilter}
                     customStyle={styles.pickerStyle}
                     customIconStyle={styles.customIconStyle}
                     onValueChange={this.changeStatus}
@@ -955,8 +955,9 @@ class RentLeads extends React.Component {
         ) : (
           <LoadingNoResult loading={loading} />
         )}
+        {console.log(!hideCloseLostFilter)}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

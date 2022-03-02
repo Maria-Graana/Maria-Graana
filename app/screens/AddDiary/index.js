@@ -45,7 +45,7 @@ class AddDiary extends Component {
       StaticData.diaryTasks.length < 6
     ) {
       StaticData.diaryTasks.push({
-        name: 'Meeting',
+        name: 'Meeting with Client',
         value: 'meeting',
       })
     }
@@ -296,6 +296,7 @@ class AddDiary extends Component {
       screenName: 'AddDiary',
       navFrom: data.taskType,
       hasBooking: false,
+      hideCloseLostFilter : true
     })
   }
 

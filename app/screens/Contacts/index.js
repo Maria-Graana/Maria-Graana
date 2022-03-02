@@ -9,6 +9,7 @@ import Loader from '../../components/loader'
 import { connect } from 'react-redux'
 import { getARMSContacts, setSelectedContact } from '../../actions/armsContacts'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
+import fuzzy from 'fuzzy'
 
 export class Contacts extends Component {
   constructor(props) {
@@ -25,12 +26,21 @@ export class Contacts extends Component {
 
   goToDialer = () => {
     const { navigation } = this.props
-    navigation.navigate('Dialer')
+    navigation.replace('Dialer')
   }
 
   render() {
     const { searchText } = this.state
     const { armsContacts, armsContactsLoading, dispatch, navigation } = this.props
+    let data = []
+    if (searchText !== '' && data && data.length === 0) {
+      data = fuzzy.filter(searchText, armsContacts.rows, {
+        extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
+      })
+      data = data.map((item) => item.original)
+    } else {
+      data = armsContacts.rows
+    }
     return (
       <View style={AppStyles.containerWithoutPadding}>
         {armsContactsLoading ? (
@@ -47,17 +57,8 @@ export class Contacts extends Component {
               setSearchText={(text) => this.setState({ searchText: text })}
             />
             <FlatList
-              data={armsContacts.rows}
-              renderItem={({ item }) => (
-                <ArmsContactTile
-                  data={item}
-                  onPress={(contact) =>
-                    dispatch(setSelectedContact(contact)).then((res) => {
-                      navigation.navigate('ContactFeedback')
-                    })
-                  }
-                />
-              )}
+              data={data}
+              renderItem={({ item }) => <ArmsContactTile data={item} onPress={(contact) => null} />}
               keyExtractor={(item) => item.id.toString()}
             />
           </>

@@ -41,22 +41,24 @@ export function getARMSContacts() {
   }
 }
 
-export function setSelectedContact(contact) {
+export function setSelectedContact(contact, call = false) {
   return (dispatch, getsState) => {
-    let url = 'tel:' + contact.phone
-    if (url && url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            helper.errorToast(`No application available to dial phone number`)
-            console.log("Can't handle url: " + url)
-          } else {
-            Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
-    } else {
-      helper.errorToast(`No Phone Number`)
+    if (call) {
+      let url = 'tel:' + contact.phone
+      if (url && url != 'tel:null') {
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            if (!supported) {
+              helper.errorToast(`No application available to dial phone number`)
+              console.log("Can't handle url: " + url)
+            } else {
+              Linking.openURL(url)
+            }
+          })
+          .catch((err) => console.error('An error occurred', err))
+      } else {
+        helper.errorToast(`No Phone Number`)
+      }
     }
     dispatch({
       type: types.SET_SELECTED_CONTACT,
@@ -64,4 +66,29 @@ export function setSelectedContact(contact) {
     })
     return Promise.resolve(true)
   }
+}
+
+export function createContact(body, addCallPayload) {
+  let url = `api/contacts/create`
+  let promise = axios
+    .post(url, body)
+    .then((res) => {
+      return res.data
+    })
+    .catch((err) => {
+      console.error('An error occurred while creating contact', err)
+      return null
+    })
+  return promise
+}
+
+export function addCall(body) {
+  let url = `api/contacts/addcall`
+  let promise = axios
+    .post(url, body)
+    .then((res) => {})
+    .catch((err) => {
+      console.error('An error occurred while creating contact', err)
+    })
+  return promise
 }

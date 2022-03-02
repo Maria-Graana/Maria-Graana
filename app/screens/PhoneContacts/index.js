@@ -6,23 +6,43 @@ import Search from '../../components/Search'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
 import PhoneBookContactsTile from '../../components/PhonebookContactsTile'
+import fuzzy from 'fuzzy'
+import { setSelectedContact } from '../../actions/armsContacts'
 
 class PhoneContacts extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      searchText: '',
+    }
+  }
   onContactPress = (data) => {
-    const { navigation } = this.props
-    navigation.navigate('PhoneContactDetail', { selectedContact: data })
+    const { navigation, dispatch } = this.props
+    dispatch(setSelectedContact(data), false).then((res) => {
+      navigation.navigate('PhoneContactDetail')
+    })
   }
   render() {
     const { contacts } = this.props
+    const { searchText } = this.state
+    let data = []
+    if (searchText !== '' && data && data.length === 0) {
+      data = fuzzy.filter(searchText, contacts, {
+        extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
+      })
+      data = data.map((item) => item.original)
+    } else {
+      data = contacts
+    }
     return (
       <View>
         <Search
           placeholder={'Search Contacts'}
-          // searchText={searchText}
-          // setSearchText={(text) => this.setState({ searchText: text })}
+          searchText={searchText}
+          setSearchText={(text) => this.setState({ searchText: text })}
         />
         <FlatList
-          data={contacts}
+          data={data}
           renderItem={({ item }) => (
             <PhoneBookContactsTile data={item} onPress={(data) => this.onContactPress(data)} />
           )}

@@ -66,6 +66,15 @@ class AddClient extends Component {
   componentDidMount() {
     const { route, navigation } = this.props
     navigation.setParams({ title: 'ADD CLIENT INFO' })
+
+    const { isFromScreen, data } = route.params
+    if (isFromScreen === 'ContactRegistration' && data) {
+      let copyForm = { ...this.state.formData }
+      copyForm.firstName = data.firstName
+      copyForm.lastName = data.lastName
+      copyForm.contactNumber = data.phone
+      this.setState({ formData: copyForm })
+    }
     if ('update' in route.params && route.params.update) {
       navigation.setParams({ title: 'UPDATE CLIENT INFO' })
       getAllCountries().then((countries) => {
@@ -302,40 +311,40 @@ class AddClient extends Component {
     let phone1 = this.checkNum(formData.contactNumber, callingCode)
     let phone2 = this.checkNum(formData.contact1, callingCode1)
     let phone3 = this.checkNum(formData.contact2, callingCode2)
-    const {screenName } = this.props.route.params
+    const { screenName } = this.props.route.params
     if (screenName === 'Payments') {
-    let body = {
-      first_name: helper.capitalize(formData.firstName),
-      last_name: helper.capitalize(formData.lastName),
-      email: formData.email,
-      cnic: formData.cnic,
-      phone: {
-        countryCode: callingCode === '+92' ? 'PK' : countryCode,
-        phone: phone1 ? phone1.replace(/\s+/g, '') : null,
-        dialCode: callingCode,
-      },
-      address: formData.address,
-      secondary_address: formData.secondaryAddress,
-      contact1: {
-        countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
-        contact1: phone2 ? phone2.replace(/\s+/g, '') : null,
-        dialCode: callingCode1,
-      },
-      contact2: {
-        countryCode: callingCode2 === '+92' ? 'PK' : countryCode2,
-        contact2: phone3 ? phone3.replace(/\s+/g, '') : null,
-        dialCode: callingCode2,
-      },
-      familyMember: formData.familyMember,
-      bank: formData.bank,
-      accountTitle: formData.accountTitle,
-      iBan: formData.iBan,
-      bookUnit: formData.bookUnit,
-    }
-    if (!body.contact1.contact1) delete body.contact1
-    if (!body.contact2.contact2) delete body.contact2
-    return body}
-    else{
+      let body = {
+        first_name: helper.capitalize(formData.firstName),
+        last_name: helper.capitalize(formData.lastName),
+        email: formData.email,
+        cnic: formData.cnic,
+        phone: {
+          countryCode: callingCode === '+92' ? 'PK' : countryCode,
+          phone: phone1 ? phone1.replace(/\s+/g, '') : null,
+          dialCode: callingCode,
+        },
+        address: formData.address,
+        secondary_address: formData.secondaryAddress,
+        contact1: {
+          countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
+          contact1: phone2 ? phone2.replace(/\s+/g, '') : null,
+          dialCode: callingCode1,
+        },
+        contact2: {
+          countryCode: callingCode2 === '+92' ? 'PK' : countryCode2,
+          contact2: phone3 ? phone3.replace(/\s+/g, '') : null,
+          dialCode: callingCode2,
+        },
+        familyMember: formData.familyMember,
+        bank: formData.bank,
+        accountTitle: formData.accountTitle,
+        iBan: formData.iBan,
+        bookUnit: formData.bookUnit,
+      }
+      if (!body.contact1.contact1) delete body.contact1
+      if (!body.contact2.contact2) delete body.contact2
+      return body
+    } else {
       let body = {
         first_name: helper.capitalize(formData.firstName),
         last_name: helper.capitalize(formData.lastName),
@@ -364,10 +373,9 @@ class AddClient extends Component {
         iBan: formData.iBan,
       }
       if (!body.contact1.contact1) delete body.contact1
-    if (!body.contact2.contact2) delete body.contact2
-    return body
+      if (!body.contact2.contact2) delete body.contact2
+      return body
     }
-    
   }
 
   updatePayload = () => {

@@ -6,19 +6,53 @@ import Avatar from '../../components/Avatar'
 import AppStyles from '../../AppStyles'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 import { Ionicons } from '@expo/vector-icons'
+import { setSelectedContact } from '../../actions/armsContacts'
+import { connect } from 'react-redux'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import { getPermissionValue } from '../../hoc/Permissions'
 
-export class PhoneContactDetail extends Component {
+class PhoneContactDetail extends Component {
   componentDidMount() {
-    const { route, navigation } = this.props
-    const { selectedContact } = route?.params
-    navigation.setOptions({ title: selectedContact?.name })
+    const { route, navigation, selectedContact } = this.props
+    navigation.setOptions({ title: selectedContact?.firstName + ' ' + selectedContact?.lastName })
+  }
+
+  callNumber = (number) => {
+    const { dispatch, navigation, route, selectedContact } = this.props
+    dispatch(
+      setSelectedContact(
+        {
+          phone: number ? number : '',
+          id: selectedContact && selectedContact.id ? selectedContact.id : null,
+          firstName: selectedContact && selectedContact.firstName ? selectedContact.firstName : '',
+          lastName: selectedContact && selectedContact.lastName ? selectedContact.lastName : '',
+        },
+        true
+      )
+    ).then((res) => {
+      navigation.replace('ContactFeedback')
+    })
+  }
+
+  getName = (data) => {
+    const { firstName, lastName } = data
+    if (firstName && lastName && firstName !== '' && lastName !== '') {
+      return firstName + ' ' + lastName
+    } else if (firstName && firstName !== '') {
+      return firstName
+    }
   }
 
   render() {
-    const { route, navigation } = this.props
-    const { selectedContact } = route?.params
+    const { route, navigation, selectedContact, permissions } = this.props
+
+    let createPermission = getPermissionValue(
+      PermissionFeatures.CONTACTS,
+      PermissionActions.CREATE,
+      permissions
+    )
     return (
-      <View
+      <TouchableOpacity
         style={[
           AppStyles.containerWithoutPadding,
           { backgroundColor: AppStyles.colors.backgroundColor },
@@ -31,7 +65,7 @@ export class PhoneContactDetail extends Component {
           <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
             <View>
               <Text style={[styles.textFont, { fontFamily: AppStyles.fonts.defaultFont }]}>
-                {selectedContact?.name}
+                {this.getName(selectedContact)}
               </Text>
             </View>
           </View>
@@ -40,18 +74,27 @@ export class PhoneContactDetail extends Component {
           data={selectedContact?.phoneNumbers}
           style={{ backgroundColor: '#fff' }}
           renderItem={({ item }) => (
-            <View style={styles.phoneContactTile}>
+            <TouchableOpacity
+              style={styles.phoneContactTile}
+              onPress={() => (createPermission ? this.callNumber(item.number) : null)}
+            >
               <View style={{ width: '85%' }}>
                 <Text style={{ fontFamily: AppStyles.fonts.lightFont }}>Phone Number</Text>
                 <Text style={[styles.textFont]}>{item.number}</Text>
               </View>
-              <TouchableOpacity style={{ width: '15%' }} onPress={() => console.log('call')}>
-                <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
-              </TouchableOpacity>
-            </View>
+              {createPermission ? (
+                <TouchableOpacity style={{ width: '15%' }}>
+                  <Ionicons
+                    name="ios-call-outline"
+                    size={24}
+                    color={AppStyles.colors.primaryColor}
+                  />
+                </TouchableOpacity>
+              ) : null}
+            </TouchableOpacity>
           )}
         />
-      </View>
+      </TouchableOpacity>
     )
   }
 }
@@ -80,4 +123,12 @@ const styles = StyleSheet.create({
   },
 })
 
-export default PhoneContactDetail
+mapStateToProps = (store) => {
+  return {
+    contacts: store.contacts.contacts,
+    selectedContact: store.armsContacts.selectedContact,
+    permissions: store.user.permissions,
+  }
+}
+
+export default connect(mapStateToProps)(PhoneContactDetail)

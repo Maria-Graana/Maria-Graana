@@ -6,6 +6,9 @@ import Avatar from '../Avatar'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
 import AppStyles from '../../AppStyles'
 import { Ionicons } from '@expo/vector-icons'
+import _ from 'underscore'
+import DiaryHelper from '../../screens/Diary/diaryHelper'
+import moment from 'moment'
 
 const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
   const getName = () => {
@@ -16,6 +19,9 @@ const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
       return firstName
     }
   }
+
+  let sortedArray = _.sortBy(data ? data.armsContactCalls : [], 'time')
+  let armsCallLatest = sortedArray && sortedArray.length > 0 ? _.last(sortedArray) : null
 
   return (
     <TouchableOpacity
@@ -30,9 +36,25 @@ const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
           <View style={styles.imageViewStyle}>
             <Avatar data={data} />
           </View>
-          <View style={{ flexDirection: 'column', justifyContent: 'center', width: '85%' }}>
-            <View>
-              <Text style={[styles.textFont, { fontSize: 15 }]}>{getName()}</Text>
+          <View style={{ flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+              <Text style={[styles.textFont, { fontSize: 14, width: ' 50%' }]}>{getName()}</Text>
+              {armsCallLatest ? (
+                <Text
+                  style={{
+                    width: '45%',
+                    fontSize: 13,
+                    marginHorizontal: 2,
+                    color:
+                      armsCallLatest.feedback === 'needs_further_contact'
+                        ? AppStyles.colors.primaryColor
+                        : AppStyles.colors.redBg,
+                    textAlign: 'center',
+                  }}
+                >
+                  ({DiaryHelper.removeUnderscore(armsCallLatest.feedback)})
+                </Text>
+              ) : null}
             </View>
             {data.phone !== '' && data.phone !== null ? (
               <View style={{ paddingTop: 5 }}>
@@ -40,14 +62,18 @@ const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
                   numberOfLines={1}
                   style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}
                 >
-                  {data.phone}
+                  {data.phone}{' '}
+                  {armsCallLatest ? moment(armsCallLatest.time).format('DD MMM hh:mm a') : null}{' '}
+                  {armsCallLatest ? 'Outgoing' : null}
                 </Text>
               </View>
             ) : null}
           </View>
-          <TouchableOpacity style={{ width: '15%' }} onPress={() => console.log('call')}>
-            <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
-          </TouchableOpacity>
+          {/* {showCallButton ? (
+            <TouchableOpacity style={{ width: '15%' }} onPress={() => console.log('call')}>
+              <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
+            </TouchableOpacity>
+          ) : null} */}
         </View>
       </View>
       <View style={styles.underLine} />

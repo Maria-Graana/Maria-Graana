@@ -82,6 +82,7 @@
     "react-native-tab-view": "^2.13.0",
     "react-native-table-component": "^1.2.1",
     "react-native-user-avatar": "^1.0.4",
+    "react-native-virtual-keyboard": "^1.2.0",
     "react-native-web": "~0.13.12",
     "react-native-webview": "11.6.2",
     "react-redux": "^7.2.6",

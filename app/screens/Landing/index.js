@@ -63,7 +63,7 @@ class Landing extends React.Component {
         },
         {
           tile: 'Contacts',
-          actions: 'TARGETS',
+          actions: 'CONTACTS',
         },
       ],
       loading: true,
@@ -201,6 +201,9 @@ class Landing extends React.Component {
       const { tile, actions } = oneTile
       let label = tile
       tile = tile.replace(/ /g, '')
+      if (oneTile.tile === 'Contacts') {
+        getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
+      }
       if (oneTile.tile === 'Leads' || oneTile.tile === 'My Deals') {
         if (
           getPermissionValue(

@@ -56,6 +56,11 @@ class CustomDrawerContent extends React.Component {
     navigation.navigate('AddDiary', { update, data, selectedDate })
   }
 
+  goToFormPage = (page, status, client) => {
+    const { navigation } = this.props
+    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
+  }
+
   render() {
     const { user, count, permissions } = this.props
     const { display } = this.state
@@ -84,26 +89,95 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )} */}
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ||
+          {getPermissionValue(
+            PermissionFeatures.DIARY,
+             PermissionActions.CREATE,
+              permissions) ||
           getPermissionValue(
             PermissionFeatures.PROPERTIES,
             PermissionActions.CREATE,
             permissions
           ) ||
-          getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
+          getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.CLIENTS, 
+            PermissionActions.CREATE,
+             permissions) ? (
             <DrawerIconItem
-              screen={'Create Assets'}
+              screen={'+ Create Assets'}
               navigateTo={() => {
                 this.setState({ display: !display })
               }}
+              display={display}
+              isSuper={true}
             />
           ) : null}
 
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) &&
+          {getPermissionValue(
+            PermissionFeatures.CLIENTS,
+             PermissionActions.CREATE,
+              permissions) &&
+            display && (
+              <DrawerIconItem
+                screen={'Register Client'}
+                isSub={true}
+                imageIcon={require('../../../assets/icons/Client-Black.png')}
+                navigateTo={() => {
+                  this.navigateTo('AddClient')
+                }}
+              />
+            )}
+
+          {getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) &&
+            display && (
+              <DrawerIconItem
+                screen={'Add Project Lead'}
+                isSub={true}
+                imageIcon={require('../../../assets/icons/AddProject-Black.png')}
+                navigateTo={() => {
+                  this.goToFormPage('AddCMLead', 'CM', null)
+                }}
+              />
+            )}
+
+          {getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.CREATE,
+            permissions
+          ) &&
+            display && (
+              <DrawerIconItem
+                screen={'Add Buy/Rent Lead'}
+                isSub={true}
+                imageIcon={require('../../../assets/icons/AddBuyRentLeads-Black.png')}
+                navigateTo={() => {
+                  this.goToFormPage('AddRCMLead', 'RCM', null)
+                }}
+              />
+            )}
+
+          {getPermissionValue(
+            PermissionFeatures.DIARY,
+             PermissionActions.CREATE, 
+             permissions) &&
             display && (
               <DrawerIconItem
                 screen={'Add Diary Task'}
                 isSub={true}
+                imageIcon={require('../../../assets/icons/AddDiaryTasks-Black.png')}
                 navigateTo={() => {
                   this.goToAddEditDiaryScreen()
                 }}
@@ -119,24 +193,17 @@ class CustomDrawerContent extends React.Component {
               <DrawerIconItem
                 screen={'Add Property'}
                 isSub={true}
+                imageIcon={require('../../../assets/icons/AddProperty-Black.png')}
                 navigateTo={() => {
                   this.navigateTo('AddInventory')
                 }}
               />
             )}
 
-          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
-            display && (
-              <DrawerIconItem
-                screen={'Register Client'}
-                isSub={true}
-                navigateTo={() => {
-                  this.navigateTo('AddClient')
-                }}
-              />
-            )}
-
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
+          {getPermissionValue(
+            PermissionFeatures.DIARY
+            , PermissionActions.READ, 
+            permissions) && (
             <DrawerIconItem
               screen={'Diary'}
               badges={count.diary}

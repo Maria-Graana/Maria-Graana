@@ -74,6 +74,7 @@ class LeadRCMPayment extends React.Component {
       token: null,
       showAgreedAmountArrow: false,
       showTokenAmountArrow: false,
+      leadInfo: [],
       lead: props.lead,
       pickerData: StaticData.oneToTwelve,
       showMonthlyRentArrow: false,
@@ -142,6 +143,8 @@ class LeadRCMPayment extends React.Component {
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
       newActionModal: false,
+      legalBuyListing: [],
+      legalSellerListing: [],
     }
   }
 
@@ -154,6 +157,9 @@ class LeadRCMPayment extends React.Component {
         this.getCallHistory()
         this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
+        this.fetchSellerDocuments(lead)
+        this.fetchBuyerDocuments(lead)
+        this.fetchLeadInfo()
       } else {
         const { lead } = this.props
         this.getSelectedProperty(lead)
@@ -161,6 +167,9 @@ class LeadRCMPayment extends React.Component {
         this.getCallHistory()
         this.fetchOfficeLocations()
         this.fetchLegalPaymentInfo()
+        this.fetchSellerDocuments(lead)
+        this.fetchBuyerDocuments(lead)
+        this.fetchLeadInfo()
       }
     })
   }
@@ -1685,6 +1694,145 @@ class LeadRCMPayment extends React.Component {
         })
     })
   }
+  fetchBuyerDocuments = (lead) => {
+    axios
+      .get(
+        `/api/legal/documents/${lead.id}?addedBy=buyer&leadType=${lead.purpose}&legalType=${lead.legalTypeBuyer}`
+      )
+      .then((res) => {
+        if (res.data && res.data.length) {
+          this.setState({
+            legalBuyListing: helper.setLegalListing(res.data),
+          })
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error)
+      })
+  }
+  fetchSellerDocuments = (lead) => {
+    let query = `/api/legal/documents/${lead.id}?addedBy=seller&leadType=${lead.purpose}&legalType=${lead.legalTypeSeller}`
+    axios
+      .get(query)
+      .then((res) => {
+        if (res.data && res.data.length) {
+          this.setState({
+            legalSellerListing: helper.setLegalListing(res.data),
+          })
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error)
+      })
+  }
+  fetchLeadInfo = () => {
+    const { lead } = this.props
+    axios
+      .get(`api/leads/byid?id=${lead.id}`)
+      .then((res) => {
+        this.setState({
+          leadInfo: res.data,
+        })
+        this.props.dispatch(setlead(res.data))
+        this.checkCloseWon()
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+  docsValidationHtml = (docs, type) => {
+    let docsValidationHtml = ''
+    let category = ''
+    docs.map((doc) => {
+      if (
+        doc.status !== 'approved' &&
+        (doc.category !== 'police_verification_report_optional' || doc.status === 'uploaded')
+      ) {
+        category =
+          doc.category === 'cnic' ? 'CNIC' : doc.category && doc.category.replace(/_/g, ' ')
+        docsValidationHtml += `${type} ${this.capitalizeWordsWithoutUnderscore(
+          category
+        )} is not approved. \n`
+      }
+    })
+    return docsValidationHtml
+  }
+
+  checkCloseWon() {
+    let isBuyerCommissionNotClear = false
+    let isBuyerLegalPaymentNotClear = false
+    let isBuyerPropsureServiceNotClear = false
+    let isSellerCommissionNotClear = false
+    let isSellerLegalPaymentNotClear = false
+    let isSellerPropsureServiceNotClear = false
+    let buyerCommissionPaymentFound = false
+    let sellerCommissionPaymentFound = false
+
+    const { leadInfo, legalSellerListing, legalBuyListing } = this.state
+    const { commissions, propsureOutstandingPayment } = leadInfo
+    if (commissions && commissions.length) {
+      commissions.map((item) => {
+        if (item.addedBy === 'buyer') {
+          if (item.paymentCategory === 'commission') buyerCommissionPaymentFound = true
+          if (item.status !== 'cleared') {
+            if (item.paymentCategory === 'commission') isBuyerCommissionNotClear = true
+            else if (item.paymentCategory === 'legal_payment') isBuyerLegalPaymentNotClear = true
+            else if (item.paymentCategory === 'propsure_services')
+              isBuyerPropsureServiceNotClear = true
+          }
+        } else if (item.addedBy === 'seller') {
+          if (item.paymentCategory === 'commission') sellerCommissionPaymentFound = true
+          if (item.status !== 'cleared') {
+            if (item.paymentCategory === 'commission') isSellerCommissionNotClear = true
+            else if (item.paymentCategory === 'legal_payment') isSellerLegalPaymentNotClear = true
+            else if (item.paymentCategory === 'propsure_services')
+              isSellerPropsureServiceNotClear = true
+          }
+        }
+      })
+    }
+
+    let paymentsValidationHtml = ''
+    let documentsValidationHtml = ''
+
+    if (leadInfo.commissionNotApplicableBuyer === false) {
+      if (isBuyerCommissionNotClear || !buyerCommissionPaymentFound)
+        paymentsValidationHtml += `Buyer advisor's commission payment is not cleared.\n`
+      if (isBuyerLegalPaymentNotClear)
+        paymentsValidationHtml += `Buyer advisor's legal payment is not cleared.\n`
+      if (isBuyerPropsureServiceNotClear)
+        paymentsValidationHtml += `Buyer advisor's propsure payment is not cleared.\n`
+      if (propsureOutstandingPayment > 0)
+        paymentsValidationHtml += `Buyer advisor's propsure outstanding payment is not cleared.\n`
+
+      if (legalBuyListing && legalBuyListing.length)
+        documentsValidationHtml += this.docsValidationHtml(legalBuyListing, "Buyer client's")
+    }
+
+    if (leadInfo.commissionNotApplicableSeller === false) {
+      if (isSellerCommissionNotClear || !sellerCommissionPaymentFound)
+        paymentsValidationHtml += `Seller advisor's commission payment is not cleared.\n`
+      if (isSellerLegalPaymentNotClear)
+        paymentsValidationHtml += `Seller advisor's legal payment is not cleared.\n`
+      if (isSellerPropsureServiceNotClear)
+        paymentsValidationHtml += `Seller advisor's propsure payment is not cleared.\n`
+
+      if (legalSellerListing && legalSellerListing.length)
+        documentsValidationHtml += this.docsValidationHtml(legalSellerListing, "Seller client's")
+    }
+    return { paymentEr: paymentsValidationHtml, documentEr: documentsValidationHtml }
+  }
+
+  capitalizeWordsWithoutUnderscore = (str, skip = false) => {
+    return (
+      str &&
+      str.replace(/(^|_)./g, function (txt) {
+        let withOut = txt.replace(/_/, ' ')
+        if (skip) return withOut.charAt(0).toUpperCase() + withOut.substr(1)
+        else return withOut.charAt(0).toUpperCase() + withOut.substr(1).toUpperCase()
+      })
+    )
+  }
 
   showHideDeletePayment = (val) => {
     this.setState({ deletePaymentVisible: val })
@@ -1934,6 +2082,8 @@ class LeadRCMPayment extends React.Component {
       accountsLoading,
       isMultiPhoneModalVisible,
       newActionModal,
+      legalSellerListing,
+      legalBuyListing,
     } = this.state
     const { navigation, user, contacts, permissions } = this.props
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
@@ -2195,6 +2345,9 @@ class LeadRCMPayment extends React.Component {
               leadType={'RCM'}
               closedWon={closedWon}
               onHandleCloseLead={this.onHandleCloseLead}
+              closedWonOptionVisible={true}
+              checkCloseWon={this.checkCloseWon()}
+              leadData={this.state.leadInfo}
             />
           </View>
         </View>

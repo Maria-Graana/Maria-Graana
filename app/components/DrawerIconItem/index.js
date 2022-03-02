@@ -20,7 +20,7 @@ export default class DrawerIconItem extends React.Component {
   }
 
   render() {
-    const { screen, badges, isSub } = this.props
+    const { screen, badges, isSub, isSuper, imageIcon, display } = this.props
 
     return (
       <TouchableWithoutFeedback
@@ -30,6 +30,14 @@ export default class DrawerIconItem extends React.Component {
         }}
       >
         <ListItem icon style={{ marginBottom: 10 }}>
+          {isSub && (
+            <Left>
+              <Image
+                style={{ height: Platform.OS ? 20 : 16, width: Platform.OS ? 20 : 16 }}
+                source={imageIcon}
+              />
+            </Left>
+          )}
           <Body style={{ borderBottomColor: 'white' }}>
             <Text style={{ color: 'black', fontSize: 15, marginLeft: isSub && 10 }}>{screen}</Text>
           </Body>
@@ -43,6 +51,18 @@ export default class DrawerIconItem extends React.Component {
                   borderRadius: Platform.OS ? 10 : 15,
                   height: Platform.OS ? 20 : 16,
                 }}
+              />
+            </Right>
+          )}
+          {isSuper && (
+            <Right style={{ borderBottomColor: 'white', marginBottom: 25, marginRight: 10 }}>
+              <Image
+                style={{ height: Platform.OS ? 20 : 16, width: Platform.OS ? 20 : 16 }}
+                source={
+                  display
+                    ? require('../../../assets/icons/down-arrow.png')
+                    : require('../../../assets/img/dropArrow.png')
+                }
               />
             </Right>
           )}

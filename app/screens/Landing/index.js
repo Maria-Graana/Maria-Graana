@@ -349,33 +349,69 @@ class Landing extends React.Component {
   }
 
   setFabActions = () => {
-    const { navigation } = this.props
+    const { navigation, permissions } = this.props
     let fabActions = []
+    {
+      getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Register Client',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => navigation.navigate('AddClient', { update: false }),
+        })
+    }
+    {
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Project Lead',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+        })
+    }
 
-    fabActions.push({
-      icon: 'plus',
-      label: 'Register Client',
-      color: AppStyles.colors.primaryColor,
-      onPress: () => navigation.navigate('AddClient', { update: false }),
-    })
+    {
+      getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Buy/Rent Lead',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+        })
+    }
 
-    fabActions.push({
-      icon: 'plus',
-      label: 'Add Diary Task',
-      color: AppStyles.colors.primaryColor,
-      onPress: () => this.goToAddEditDiaryScreen(),
-    })
+    {
+      getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Diary Task',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => this.goToAddEditDiaryScreen(),
+        })
+    }
 
-    fabActions.push({
-      icon: 'plus',
-      label: 'Add Property',
-      color: AppStyles.colors.primaryColor,
-      onPress: () => navigation.navigate('AddInventory', { update: false }),
-    })
+    {
+      getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Property',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => navigation.navigate('AddInventory', { update: false }),
+        })
+    }
 
     this.setState({
       fabActions: fabActions,
     })
+  }
+
+  goToFormPage = (page, status, client) => {
+    const { navigation } = this.props
+    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
   }
 
   render() {
@@ -442,12 +478,31 @@ class Landing extends React.Component {
         ) : null} */}
 
         {/* <View style={styles.btnView}> */}
-        {getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
-        getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
-        getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ? (
+        {getPermissionValue(
+          PermissionFeatures.PROPERTIES,
+          PermissionActions.CREATE,
+          permissions) ||
+        getPermissionValue(
+          PermissionFeatures.CLIENTS,
+          PermissionActions.CREATE, 
+          permissions) ||
+        getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ||
+        getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ||
+        getPermissionValue(
+          PermissionFeatures.DIARY,
+          PermissionActions.CREATE,
+          permissions) ? (
           <FAB.Group
             open={open}
-            icon="plus"
+            icon={open ? 'close' : 'plus'}
             style={{ marginBottom: 16 }}
             fabStyle={{ backgroundColor: AppStyles.bgcWhite.backgroundColor }}
             color={AppStyles.colors.primaryColor}

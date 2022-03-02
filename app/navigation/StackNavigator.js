@@ -63,6 +63,7 @@ import Dialer from '../screens/Dialer'
 import PhoneContacts from '../screens/PhoneContacts'
 import PhoneContactDetail from '../screens/PhoneContactDetail'
 import ContactRegistrationFeedback from '../screens/ContactRegistrationFeedback'
+import PropertyList from '../screens/PropertyList'
 
 const Stack = createStackNavigator()
 
@@ -136,6 +137,19 @@ function MainStack() {
         })}
       />
       {/* ARMS-2293 end */}
+
+      {/* ARMS-3271 start */}
+      <Stack.Screen
+        name="PropertyList"
+        component={PropertyList}
+        options={({ navigation, route }) => ({
+          title: 'SELECT PROPERTY',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+      {/* ARMS-3271 end */}
 
       <Stack.Screen
         name="OverdueTasks"

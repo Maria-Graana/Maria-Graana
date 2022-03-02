@@ -27,9 +27,11 @@ const TabBarBadge = ({ count, color, screen }) => {
 
 function LeadsNavigator(props) {
   const { count, user, permissions, route, navigation } = props
-  const { screen, screenName, navFrom } = route.params
+  const { screen, screenName, navFrom, hideCloseLostFilter } = route.params
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: 'DEALS' })
+  } else if (hideCloseLostFilter) {
+    navigation.setOptions({ title: 'SELECT LEAD' })
   }
   if (navFrom == 'meeting') {
     return (
@@ -75,6 +77,7 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
               navFrom: navFrom,
+              hideCloseLostFilter: hideCloseLostFilter,
             }}
             component={InvestLeads}
           />
@@ -125,6 +128,7 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
               navFrom: navFrom,
+              hideCloseLostFilter: hideCloseLostFilter,
             }}
             component={RentLeads}
           />
@@ -140,6 +144,7 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
               navFrom: navFrom,
+              hideCloseLostFilter: hideCloseLostFilter,
             }}
             options={{
               tabBarIcon: (props) => (
@@ -173,6 +178,7 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
               navFrom: navFrom,
+              hideCloseLostFilter: hideCloseLostFilter,
             }}
             component={InvestLeads}
           />
@@ -223,6 +229,7 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
               navFrom: navFrom,
+              hideCloseLostFilter: hideCloseLostFilter,
             }}
             component={RentLeads}
           />
@@ -238,6 +245,7 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
               navFrom: navFrom,
+              hideCloseLostFilter: hideCloseLostFilter,
             }}
             options={{
               tabBarIcon: (props) => (

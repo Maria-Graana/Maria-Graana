@@ -754,7 +754,7 @@ class BuyLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions } = this.props
-    const { screen, hasBooking = false, navFrom = null } = this.props.route.params
+    const { screen, hasBooking = false, navFrom = null , hideCloseLostFilter} = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -809,7 +809,7 @@ class BuyLeads extends React.Component {
                 <View style={styles.pickerMain}>
                   <PickerComponent
                     placeholder={'Lead Status'}
-                    data={StaticData.buyRentFilter}
+                    data={hideCloseLostFilter ? StaticData.buyRentFilterAddTask : StaticData.buyRentFilter}
                     customStyle={styles.pickerStyle}
                     customIconStyle={styles.customIconStyle}
                     onValueChange={this.changeStatus}
@@ -900,7 +900,7 @@ class BuyLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

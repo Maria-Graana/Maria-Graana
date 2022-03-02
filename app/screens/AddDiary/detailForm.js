@@ -38,7 +38,7 @@ class DetailForm extends Component {
   }
 
   componentDidMount() {
-    const { editableData, props } = this.props
+    const { editableData } = this.props
     if (editableData != null) {
       this.setFormValues(editableData)
     }
@@ -87,6 +87,14 @@ class DetailForm extends Component {
       lead,
       property,
     } = this.props
+    let selectLeadd = ""
+    let selectProperty = ""
+    if (lead) {
+      selectLeadd = lead.id.toString()
+    }
+    if (property) {
+      selectProperty = property.id.toString()
+    }
     return (
       <View>
         {editableData ? (
@@ -113,23 +121,44 @@ class DetailForm extends Component {
         )}
 
         {(taskType == 'viewing' || taskType == 'follow_up' || taskType == 'meeting') && (
-          <TouchableInput
-            placeholder="Lead ID"
-            showDropDownIcon={false}
-            disabled={formData.status === 'completed' || taskType === ''}
-            onPress={() => goToLeads(formData)}
-            value={lead ? lead.id.toString() : ''}
-          />
+          <View>
+            <TouchableInput
+              placeholder="Select Lead"
+              showDropDownIcon={false}
+              disabled={formData.status === 'completed' || taskType === ''}
+              onPress={() => goToLeads(formData)}
+              value={
+                lead ? lead.id.toString().concat(' - ', lead.customer.customerName.toString()) : ''
+              }
+            />
+            {checkValidation === true && selectLeadd === '' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
         )}
 
         {taskType == 'viewing' && (
-          <TouchableInput
-            placeholder="Property ID"
-            showDropDownIcon={false}
-            disabled={formData.status === 'completed' || taskType === ''}
-            onPress={() => goToLeadProperties(formData)}
-            value={property ? property.id.toString() : ''}
-          />
+          <View>
+            <TouchableInput
+              placeholder="Select Property"
+              showDropDownIcon={false}
+              disabled={formData.status === 'completed' || taskType === ''}
+              onPress={() => goToLeadProperties(formData)}
+              value={
+                property
+                  ? property.size
+                      .toString()
+                      .concat(' ', property.size_unit)
+                      .concat(' ', property.subtype)
+                      .concat(' in ')
+                      .concat(' ', property.area && property.area.name)
+                  : ''
+              }
+            />
+            {checkValidation === true && selectProperty === '' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
         )}
 
         {editableData && editableData.taskType === 'follow_up' ? (

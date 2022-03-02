@@ -55,7 +55,8 @@ import {
   setSlotDiaryData,
   setTimeSlots,
 } from '../../actions/slotManagement'
-
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
 import { DiarySortModal } from '../../components/DiarySortModal'
@@ -486,13 +487,16 @@ class Diary extends React.Component {
       selectedDiary,
       selectedLead,
       page,
+      permissions,
     } = this.props
     const { diaries, loading, showClassificationModal } = diary
     const { name = null, screen } = route.params
 
     return (
       <SafeAreaView style={styles.container}>
-        {screen && screen !== 'TeamDiary' ? (
+        {screen &&
+        getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) &&
+        screen !== 'TeamDiary' ? (
           <Fab
             active="true"
             containerStyle={{ zIndex: 20 }}
@@ -812,6 +816,7 @@ mapStateToProps = (store) => {
     connectFeedback: store.diary.connectFeedback,
     filters: store.diary.filters,
     referenceGuide: store.diary.referenceGuide,
+    permissions: store.user.permissions,
   }
 }
 

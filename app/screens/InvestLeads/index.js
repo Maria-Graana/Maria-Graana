@@ -673,7 +673,7 @@ class InvestLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions, lead, dispatch, referenceGuide } = this.props
-    const { screen, hasBooking = false, navFrom = null } = this.props.route.params
+    const { screen, hasBooking = false, navFrom = null , hideCloseLostFilter} = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
     return (
@@ -719,7 +719,7 @@ class InvestLeads extends React.Component {
                 <PickerComponent
                   placeholder={'Lead Status'}
                   data={
-                    hasBooking ? StaticData.investmentFilterDeals : StaticData.investmentFilterLeads
+                    hasBooking ? StaticData.investmentFilterDeals : hideCloseLostFilter ? StaticData.investmentFilterLeadsAddTask : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -813,7 +813,7 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

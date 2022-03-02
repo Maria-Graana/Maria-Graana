@@ -26,6 +26,7 @@ export const PermissionFeatures = {
   CLIENTS: 'Clients',
   WEB_PAGES: 'Web (Pages)',
   APP_PAGES: 'App (Pages)',
+  CONTACTS: 'Contacts',
 }
 
 export const PermissionActions = {

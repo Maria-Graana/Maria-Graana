@@ -12,9 +12,9 @@ const ClosedWonModel = ({ visible, closeWonModel, checkCloseWon }) => {
     <Modal isVisible={visible}>
       <View style={styles.modalMain}>
         <View style={styles.mainTextWrap}>
-          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-            <AntDesign name="warning" size={30} color="red" style={styles.icon} />
-            <Text style={styles.topTextMain}> UNABLE TO CLOSE THIS LEAD</Text>
+          <View style={styles.titleView}>
+            <AntDesign name="warning" size={30} color="red" />
+            <Text style={styles.topTextMain}> Unable to close this lead</Text>
           </View>
           {checkCloseWon.paymentEr !== '' && <Text style={styles.largeText}>Payments:</Text>}
           <Text style={styles.smallText}>{checkCloseWon.paymentEr} </Text>
@@ -22,15 +22,17 @@ const ClosedWonModel = ({ visible, closeWonModel, checkCloseWon }) => {
             <Text style={styles.largeText}>Legal Documents :</Text>
           )}
           <Text style={styles.smallText}>{checkCloseWon.documentEr} </Text>
-          <TouchableOpacity
-            onPress={() => {
-              closeWonModel()
-            }}
-          >
-            <View style={styles.confirmBtnView}>
-              <Text style={[styles.textCenter]}>OK</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.confirmBtnView}>
+            <TouchableOpacity
+              onPress={() => {
+                closeWonModel()
+              }}
+            >
+              <View style={styles.confirmBtnInnerView}>
+                <Text style={[styles.textCenter]}>OK</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>

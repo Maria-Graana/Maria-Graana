@@ -13,6 +13,10 @@ export default AppStyles = {
     backgroundColor: '#e7ecf0',
     paddingHorizontal: wp('2%'),
   },
+  containerWithoutPadding: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   colors: {
     background: '#f4f9fd',
     font: '#434e5a',

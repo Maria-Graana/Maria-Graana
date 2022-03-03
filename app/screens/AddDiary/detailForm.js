@@ -32,16 +32,29 @@ class DetailForm extends Component {
         taskCategory: null,
         slots: [],
         addedBy: 'self',
+        selectedLead: null,
+        selectedProperty: null,
       },
       buttonText: 'ADD TASK',
     }
   }
 
   componentDidMount() {
-    const { editableData } = this.props
+    const { editableData, navigation } = this.props
     if (editableData != null) {
       this.setFormValues(editableData)
     }
+    navigation.addListener('focus', () => {
+      const { lead, property } = this.props
+      const { formData } = this.state
+      let copyObject = Object.assign({}, formData)
+      if (lead) copyObject.selectedLead = lead
+      this.setState({ formData: copyObject })
+      if (property) {
+        copyObject.selectedProperty = property
+        this.setState({ formData: copyObject })
+      }
+    })
   }
 
   setFormValues = (data) => {
@@ -63,12 +76,33 @@ class DetailForm extends Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
+    if (name === 'taskType') {
+      this.clearLeadAndProperty()
+      return
+    }
     this.setState({ formData })
   }
 
+  clearLeadAndProperty = () => {
+    let copyObject = Object.assign({}, this.state.formData)
+    copyObject.selectedLead = null
+    copyObject.selectedProperty = null
+    this.setState({ formData: copyObject })
+  }
+
   render() {
-    const { taskType, date, startTime, endTime, subject, notes, isRecurring, taskCategory } =
-      this.state.formData
+    const {
+      taskType,
+      date,
+      startTime,
+      endTime,
+      subject,
+      notes,
+      isRecurring,
+      taskCategory,
+      selectedLead,
+      selectedProperty,
+    } = this.state.formData
     const { formData, buttonText } = this.state
     const {
       formSubmit,
@@ -84,17 +118,7 @@ class DetailForm extends Component {
       goBackToDiary,
       goToLeads,
       goToLeadProperties,
-      lead,
-      property,
     } = this.props
-    let selectLeadd = ""
-    let selectProperty = ""
-    if (lead) {
-      selectLeadd = lead.id.toString()
-    }
-    if (property) {
-      selectProperty = property.id.toString()
-    }
     return (
       <View>
         {editableData ? (
@@ -128,10 +152,14 @@ class DetailForm extends Component {
               disabled={formData.status === 'completed' || taskType === ''}
               onPress={() => goToLeads(formData)}
               value={
-                lead ? lead.id.toString().concat(' - ', lead.customer.customerName.toString()) : ''
+                selectedLead
+                  ? selectedLead.id
+                      .toString()
+                      .concat(' - ', selectedLead.customer.customerName.toString())
+                  : ''
               }
             />
-            {checkValidation === true && selectLeadd === '' && (
+            {checkValidation === true && selectedLead && selectedLead.id.toString() === '' && (
               <ErrorMessage errorMessage={'Required'} />
             )}
           </View>
@@ -145,19 +173,19 @@ class DetailForm extends Component {
               disabled={formData.status === 'completed' || taskType === ''}
               onPress={() => goToLeadProperties(formData)}
               value={
-                property
-                  ? property.size
+                selectedProperty
+                  ? selectedProperty.size
                       .toString()
-                      .concat(' ', property.size_unit)
-                      .concat(' ', property.subtype)
+                      .concat(' ', selectedProperty.size_unit)
+                      .concat(' ', selectedProperty.subtype)
                       .concat(' in ')
-                      .concat(' ', property.area && property.area.name)
+                      .concat(' ', selectedProperty.area && selectedProperty.area.name)
                   : ''
               }
             />
-            {checkValidation === true && selectProperty === '' && (
-              <ErrorMessage errorMessage={'Required'} />
-            )}
+            {checkValidation === true &&
+              selectedProperty &&
+              selectedProperty.id.toString() === '' && <ErrorMessage errorMessage={'Required'} />}
           </View>
         )}
 

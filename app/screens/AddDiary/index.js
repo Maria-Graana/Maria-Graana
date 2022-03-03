@@ -111,7 +111,7 @@ class AddDiary extends Component {
 
   generatePayload = (data) => {
     const { route, user, feedbackReasonFilter = null, permissions } = this.props
-    const { rcmLeadId, cmLeadId, lead, property } = route.params
+    const { rcmLeadId, cmLeadId, lead } = route.params
     let payload = null
     if (route.params.update) {
       // payload for update contains id of diary from existing api call and other user data
@@ -152,14 +152,16 @@ class AddDiary extends Component {
           feedbackReasonFilter && feedbackReasonFilter.value ? feedbackReasonFilter.value[0] : null
       }
 
-      if (property) {
-        payload.propertyId = property.id
+      if (data && data.selectedProperty) {
+        payload.propertyId = data.selectedProperty.id
         payload.leadId = rcmLeadId
-        payload.customer_Id = lead.customer && lead.customer.id
+        payload.customer_Id = data.selectedLead.customer && data.selectedLead.customer.id
         payload.subject =
           'Viewing' +
-          (lead.customer && ' with ' + lead.customer.customerName) +
-          (property && property.area && ' at ' + property.area.name)
+          (data.selectedLead.customer && ' with ' + data.selectedLead.customer.customerName) +
+          (data.selectedProperty &&
+            data.selectedProperty.area &&
+            ' at ' + data.selectedProperty.area.name)
       } else {
         if (rcmLeadId) {
           payload.armsLeadId = rcmLeadId
@@ -296,7 +298,7 @@ class AddDiary extends Component {
       screenName: 'AddDiary',
       navFrom: data.taskType,
       hasBooking: false,
-      hideCloseLostFilter : true
+      hideCloseLostFilter: true,
     })
   }
 
@@ -344,6 +346,7 @@ class AddDiary extends Component {
                 goToLeadProperties={this.goToLeadProperties}
                 lead={lead}
                 property={property}
+                navigation={navigation}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>

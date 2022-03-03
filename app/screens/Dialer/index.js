@@ -24,8 +24,6 @@ import { Feather } from '@expo/vector-icons'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 import fuzzy from 'fuzzy'
 import VirtualKeyboard from 'react-native-virtual-keyboard'
-import { getPermissionValue } from '../../hoc/Permissions'
-import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 class Dialer extends Component {
   constructor(props) {
@@ -92,16 +90,9 @@ class Dialer extends Component {
       data = data.map((item) => item.original)
     }
 
-    let createPermission = getPermissionValue(
-      PermissionFeatures.CONTACTS,
-      PermissionActions.CREATE,
-      permissions
-    )
-
     return (
       <SafeAreaView style={AppStyles.containerWithoutPadding}>
         <FlatList
-          style={{ height: heightPercentageToDP('35%') }}
           data={data}
           renderItem={({ item }) => (
             <ArmsContactTile
@@ -112,15 +103,10 @@ class Dialer extends Component {
           )}
           keyExtractor={(item) => item.id.toString()}
         />
-        {createPermission ? (
-          <TouchableOpacity style={styles.callButton} onPress={() => this.callNumber()}>
-            <Image source={require(`../../../assets/img/dialer_call.png`)} />
-          </TouchableOpacity>
-        ) : null}
 
         <View style={styles.underLine} />
 
-        <View style={{ height: heightPercentageToDP('40%') }}>
+        <View style={{ paddingVertical: 20 }}>
           <Text style={styles.inputStyle}>{this.state.numberTxt}</Text>
           <VirtualKeyboard
             color="black"
@@ -128,6 +114,10 @@ class Dialer extends Component {
             onPress={(val) => this.setState({ numberTxt: val })}
           />
         </View>
+
+        <TouchableOpacity style={styles.callButton} onPress={() => this.callNumber()}>
+          <Image source={require(`../../../assets/img/dialer_call.png`)} />
+        </TouchableOpacity>
 
         <View style={styles.bottomTab}>
           <TouchableOpacity
@@ -151,10 +141,7 @@ class Dialer extends Component {
 
 const styles = StyleSheet.create({
   bottomTab: {
-    position: 'absolute', //Here is the trick
-    bottom: 0,
-    height: 50,
-    flex: 1,
+    height: heightPercentageToDP('10%'),
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -175,11 +162,11 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   callButton: {
-    position: 'absolute',
-    bottom: 15,
-    zIndex: 15,
-    right: widthPercentageToDP(60),
-    left: widthPercentageToDP(40),
+    zIndex: 10,
+    elevation: 10,
+    marginBottom: -30,
+    alignSelf: 'center',
+    justifyContent: 'flex-end',
   },
   underLine: {
     height: 0.5,

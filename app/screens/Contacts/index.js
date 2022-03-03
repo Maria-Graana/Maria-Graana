@@ -10,6 +10,8 @@ import { connect } from 'react-redux'
 import { getARMSContacts, setSelectedContact } from '../../actions/armsContacts'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
 import fuzzy from 'fuzzy'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 export class Contacts extends Component {
   constructor(props) {
@@ -31,7 +33,7 @@ export class Contacts extends Component {
 
   render() {
     const { searchText } = this.state
-    const { armsContacts, armsContactsLoading, dispatch, navigation } = this.props
+    const { armsContacts, armsContactsLoading, permissions } = this.props
     let data = []
     if (searchText !== '' && data && data.length === 0) {
       data = fuzzy.filter(searchText, armsContacts.rows, {
@@ -41,16 +43,19 @@ export class Contacts extends Component {
     } else {
       data = armsContacts.rows
     }
+
+    let createPermission = getPermissionValue(
+      PermissionFeatures.CONTACTS,
+      PermissionActions.CREATE,
+      permissions
+    )
+
     return (
       <View style={AppStyles.containerWithoutPadding}>
         {armsContactsLoading ? (
           <Loader loading={armsContactsLoading} />
         ) : (
           <>
-            <TouchableOpacity style={styles.keypadButton} onPress={() => this.goToDialer()}>
-              <Image source={require(`../../../assets/img/keypad.png`)} />
-            </TouchableOpacity>
-
             <Search
               placeholder={'Search Contacts'}
               searchText={searchText}
@@ -61,6 +66,11 @@ export class Contacts extends Component {
               renderItem={({ item }) => <ArmsContactTile data={item} onPress={(contact) => null} />}
               keyExtractor={(item) => item.id.toString()}
             />
+            {createPermission ? (
+              <TouchableOpacity style={styles.keypadButton} onPress={() => this.goToDialer()}>
+                <Image source={require(`../../../assets/img/keypad.png`)} />
+              </TouchableOpacity>
+            ) : null}
           </>
         )}
       </View>
@@ -70,11 +80,10 @@ export class Contacts extends Component {
 
 const styles = StyleSheet.create({
   keypadButton: {
-    position: 'absolute',
-    bottom: 15,
-    zIndex: 15,
-    right: widthPercentageToDP(60),
-    left: widthPercentageToDP(40),
+    flex: 1,
+    alignSelf: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: 10,
   },
 })
 
@@ -82,6 +91,7 @@ mapStateToProps = (store) => {
   return {
     armsContacts: store.armsContacts.armsContacts,
     armsContactsLoading: store.armsContacts.armsContactsLoading,
+    permissions: store.user.permissions,
   }
 }
 

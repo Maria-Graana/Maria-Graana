@@ -22,7 +22,7 @@ const ClosedWonModel = ({ visible, closeWonModel, checkCloseWon }) => {
             <Text style={styles.largeText}>Legal Documents :</Text>
           )}
           <Text style={styles.smallText}>{checkCloseWon.documentEr} </Text>
-          <View style={styles.confirmBtnView}>
+          <View>
             <TouchableOpacity
               onPress={() => {
                 closeWonModel()

@@ -64,12 +64,18 @@ export default styles = StyleSheet.create({
     marginLeft: 5,
   },
   confirmBtnView: {
+    // backgroundColor: '#0f73ee',
+    // borderRadius: 4,
+    // height: 50,
+    // marginBottom:30,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  confirmBtnInnerView: {
     backgroundColor: '#0f73ee',
     borderRadius: 4,
     height: 50,
     marginBottom:30,
-  },
-  confirmBtnInnerView: {
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native'
 import { Button, ListItem, Text, Icon, Left, Body, Right, Switch } from 'native-base'
+import { Divider } from 'react-native-paper'
 
 export default class DrawerIconItem extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ export default class DrawerIconItem extends React.Component {
   }
 
   render() {
-    const { screen, badges, isSub, isSuper, imageIcon, display } = this.props
+    const { screen, badges, isSub, isSuper, imageIcon, display, buttonStyling } = this.props
 
     return (
       <TouchableWithoutFeedback
@@ -30,16 +31,37 @@ export default class DrawerIconItem extends React.Component {
         }}
       >
         <ListItem icon style={{ marginBottom: 10 }}>
-          {isSub && (
+          {/* {isSub && (
             <Left>
               <Image
                 style={{ height: Platform.OS ? 20 : 16, width: Platform.OS ? 20 : 16 }}
                 source={imageIcon}
               />
             </Left>
-          )}
+          )} */}
           <Body style={{ borderBottomColor: 'white' }}>
-            <Text style={{ color: 'black', fontSize: 15, marginLeft: isSub && 10 }}>{screen}</Text>
+            {buttonStyling ? (
+              <View
+                style={{
+                  backgroundColor: '#1173EF',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 7,
+                  flex: 1,
+                }}
+              >
+                <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '500' }}>{screen}</Text>
+              </View>
+            ) : (
+              <Text
+                style={{
+                  color: 'black',
+                  fontSize: 15,
+                }}
+              >
+                {screen}
+              </Text>
+            )}
           </Body>
           {badges > 0 && (
             <Right style={{ borderBottomColor: 'white', marginBottom: 25 }}>

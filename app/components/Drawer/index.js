@@ -2,7 +2,7 @@
 
 import moment from 'moment'
 import * as React from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { connect } from 'react-redux'
 import AppJson from '../../../app.json'
@@ -117,32 +117,25 @@ class CustomDrawerContent extends React.Component {
             />
           ) : null}
           {display && (
-            <View
-              style={{
-                // borderColor: "black",
-                shadowOffset: { width: 5, height: 5 },
-                // shadowColor: 'red',
-                shadowOpacity: 1,
-                elevation: 10,
-                borderRadius: 4,
-                borderWidth: 0.5,
-                borderColor: "transparent"
-              }}
-            >
+            <View style={styles.mainOptionView}>
               {getPermissionValue(
                 PermissionFeatures.CLIENTS,
                 PermissionActions.CREATE,
                 permissions
               ) &&
                 display && (
-                  <DrawerIconItem
-                    screen={'Register Client'}
-                    isSub={true}
-                    imageIcon={require('../../../assets/icons/Client-Black.png')}
-                    navigateTo={() => {
-                      this.navigateTo('AddClient')
-                    }}
-                  />
+                  <View style={styles.optionView}>
+                    <TouchableWithoutFeedback
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        this.navigateTo('AddClient')
+                      }}
+                    >
+                      <View style={styles.optionInnerView}>
+                        <Text style={styles.textColor}>Register Client</Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
                 )}
               <Divider color={'#F1F1F1'} />
               {getPermissionValue(
@@ -151,14 +144,18 @@ class CustomDrawerContent extends React.Component {
                 permissions
               ) &&
                 display && (
-                  <DrawerIconItem
-                    screen={'Add Project Lead'}
-                    isSub={true}
-                    imageIcon={require('../../../assets/icons/AddProject-Black.png')}
-                    navigateTo={() => {
-                      this.goToFormPage('AddCMLead', 'CM', null)
-                    }}
-                  />
+                  <View style={styles.optionView}>
+                    <TouchableWithoutFeedback
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        this.goToFormPage('AddCMLead', 'CM', null)
+                      }}
+                    >
+                      <View style={styles.optionInnerView}>
+                        <Text style={styles.textColor}>Add Project Lead</Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
                 )}
               <Divider color={'#F1F1F1'} />
 
@@ -168,15 +165,20 @@ class CustomDrawerContent extends React.Component {
                 permissions
               ) &&
                 display && (
-                  <DrawerIconItem
-                    screen={'Add Buy/Rent Lead'}
-                    isSub={true}
-                    imageIcon={require('../../../assets/icons/AddBuyRentLeads-Black.png')}
-                    navigateTo={() => {
-                      this.goToFormPage('AddRCMLead', 'RCM', null)
-                    }}
-                  />
+                  <View style={styles.optionView}>
+                    <TouchableWithoutFeedback
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        this.goToFormPage('AddRCMLead', 'RCM', null)
+                      }}
+                    >
+                      <View style={styles.optionInnerView}>
+                        <Text style={styles.textColor}>Add Buy/Rent Lead</Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
                 )}
+              <Divider color={'#F1F1F1'} />
 
               {getPermissionValue(
                 PermissionFeatures.DIARY,
@@ -184,15 +186,20 @@ class CustomDrawerContent extends React.Component {
                 permissions
               ) &&
                 display && (
-                  <DrawerIconItem
-                    screen={'Add Diary Task'}
-                    isSub={true}
-                    imageIcon={require('../../../assets/icons/AddDiaryTasks-Black.png')}
-                    navigateTo={() => {
-                      this.goToAddEditDiaryScreen()
-                    }}
-                  />
+                  <View style={styles.optionView}>
+                    <TouchableWithoutFeedback
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        this.goToAddEditDiaryScreen()
+                      }}
+                    >
+                      <View style={styles.optionInnerView}>
+                        <Text style={styles.textColor}>Add Diary Task</Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
                 )}
+              <Divider color={'#F1F1F1'} />
 
               {getPermissionValue(
                 PermissionFeatures.PROPERTIES,
@@ -200,14 +207,18 @@ class CustomDrawerContent extends React.Component {
                 permissions
               ) &&
                 display && (
-                  <DrawerIconItem
-                    screen={'Add Property'}
-                    isSub={true}
-                    imageIcon={require('../../../assets/icons/AddProperty-Black.png')}
-                    navigateTo={() => {
-                      this.navigateTo('AddInventory')
-                    }}
-                  />
+                  <View style={styles.optionView}>
+                    <TouchableWithoutFeedback
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        this.navigateTo('AddInventory')
+                      }}
+                    >
+                      <View style={styles.optionInnerView}>
+                        <Text style={styles.textColor}>Add Property</Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
                 )}
             </View>
           )}

@@ -44,26 +44,14 @@ export default class DrawerIconItem extends React.Component {
               <View
                 style={{
                   backgroundColor: '#1173EF',
-                  height: 40,
                   justifyContent: 'center',
                   alignItems: 'center',
                   borderRadius: 7,
+                  flex: 1,
                 }}
               >
                 <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '500' }}>{screen}</Text>
               </View>
-            ) : isSub ? (
-                <Text
-                  style={{
-                    color: '#4F4F4F',
-                    fontWeight: '500',
-                    fontSize: 12,
-                    marginLeft: 10,
-                    textAlign: 'center',
-                  }}
-                >
-                  {screen}
-                </Text>
             ) : (
               <Text
                 style={{

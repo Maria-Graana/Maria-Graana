@@ -62,6 +62,7 @@ class LeadTile extends React.Component {
       )
     else return ' '
   }
+  // removed call button temporarily
 
   render() {
     const {

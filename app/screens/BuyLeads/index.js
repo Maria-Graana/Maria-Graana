@@ -214,7 +214,6 @@ class BuyLeads extends React.Component {
             }&assignToMe=${true}`)
       }
     }
-    console.log(query)
     axios
       .get(`${query}`)
       .then((res) => {

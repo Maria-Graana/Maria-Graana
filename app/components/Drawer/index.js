@@ -2,7 +2,7 @@
 
 import moment from 'moment'
 import * as React from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { connect } from 'react-redux'
 import AppJson from '../../../app.json'
@@ -19,6 +19,8 @@ import Avatar from '../Avatar/index'
 import DrawerIconItem from '../DrawerIconItem'
 import DrawerItem from '../DrawerItem'
 import styles from './style'
+import { Divider } from 'react-native-paper'
+import { widthPercentageToDP } from 'react-native-responsive-screen'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -56,6 +58,11 @@ class CustomDrawerContent extends React.Component {
     navigation.navigate('AddDiary', { update, data, selectedDate })
   }
 
+  goToFormPage = (page, status, client) => {
+    const { navigation } = this.props
+    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
+  }
+
   render() {
     const { user, count, permissions } = this.props
     const { display } = this.state
@@ -84,57 +91,145 @@ class CustomDrawerContent extends React.Component {
               }}
             />
           )} */}
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) ||
-          getPermissionValue(
-            PermissionFeatures.PROPERTIES,
-            PermissionActions.CREATE,
-            permissions
-          ) ||
-          getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ? (
-            <DrawerIconItem
-              screen={'Create Assets'}
-              navigateTo={() => {
-                this.setState({ display: !display })
-              }}
-            />
-          ) : null}
-
-          {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) &&
-            display && (
+          <View style={{ width: '100%' }}>
+            {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) ||
+            getPermissionValue(
+              PermissionFeatures.PROPERTIES,
+              PermissionActions.CREATE,
+              permissions
+            ) ||
+            getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) ||
+            getPermissionValue(
+              PermissionFeatures.PROJECT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) ||
+            getPermissionValue(
+              PermissionFeatures.CLIENTS,
+              PermissionActions.CREATE,
+              permissions
+            ) ? (
               <DrawerIconItem
-                screen={'Add Diary Task'}
-                isSub={true}
+                screen={'+ Create '}
                 navigateTo={() => {
-                  this.goToAddEditDiaryScreen()
+                  this.setState({ display: !display })
                 }}
+                display={display}
+                buttonStyling={true}
               />
-            )}
+            ) : null}
+            {display && (
+              <View style={styles.mainOptionView}>
+                {/* <View style={styles.menuShapeView}></View> */}
+                {getPermissionValue(
+                  PermissionFeatures.CLIENTS,
+                  PermissionActions.CREATE,
+                  permissions
+                ) &&
+                  display && (
+                    <View style={styles.optionView}>
+                      <TouchableWithoutFeedback
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          this.navigateTo('AddClient')
+                        }}
+                      >
+                        <View style={styles.optionInnerView}>
+                          <Text style={styles.textColor}>Register Client</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+                <Divider color={'#F1F1F1'} />
+                {getPermissionValue(
+                  PermissionFeatures.PROJECT_LEADS,
+                  PermissionActions.CREATE,
+                  permissions
+                ) &&
+                  display && (
+                    <View style={styles.optionView}>
+                      <TouchableWithoutFeedback
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          this.goToFormPage('AddCMLead', 'CM', null)
+                        }}
+                      >
+                        <View style={styles.optionInnerView}>
+                          <Text style={styles.textColor}>Add Project Lead</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+                <Divider color={'#F1F1F1'} />
 
-          {getPermissionValue(
-            PermissionFeatures.PROPERTIES,
-            PermissionActions.CREATE,
-            permissions
-          ) &&
-            display && (
-              <DrawerIconItem
-                screen={'Add Property'}
-                isSub={true}
-                navigateTo={() => {
-                  this.navigateTo('AddInventory')
-                }}
-              />
-            )}
+                {getPermissionValue(
+                  PermissionFeatures.BUY_RENT_LEADS,
+                  PermissionActions.CREATE,
+                  permissions
+                ) &&
+                  display && (
+                    <View style={styles.optionView}>
+                      <TouchableWithoutFeedback
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          this.goToFormPage('AddRCMLead', 'RCM', null)
+                        }}
+                      >
+                        <View style={styles.optionInnerView}>
+                          <Text style={styles.textColor}>Add Buy/Rent Lead</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+                <Divider color={'#F1F1F1'} />
 
-          {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
-            display && (
-              <DrawerIconItem
-                screen={'Register Client'}
-                isSub={true}
-                navigateTo={() => {
-                  this.navigateTo('AddClient')
-                }}
-              />
+                {getPermissionValue(
+                  PermissionFeatures.DIARY,
+                  PermissionActions.CREATE,
+                  permissions
+                ) &&
+                  display && (
+                    <View style={styles.optionView}>
+                      <TouchableWithoutFeedback
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          this.goToAddEditDiaryScreen()
+                        }}
+                      >
+                        <View style={styles.optionInnerView}>
+                          <Text style={styles.textColor}>Add Diary Task</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+                <Divider color={'#F1F1F1'} />
+
+                {getPermissionValue(
+                  PermissionFeatures.PROPERTIES,
+                  PermissionActions.CREATE,
+                  permissions
+                ) &&
+                  display && (
+                    <View style={styles.optionView}>
+                      <TouchableWithoutFeedback
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          this.navigateTo('AddInventory')
+                        }}
+                      >
+                        <View style={styles.optionInnerView}>
+                          <Text style={styles.textColor}>Add Property</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+              </View>
             )}
+          </View>
 
           {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem

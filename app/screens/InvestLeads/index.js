@@ -198,7 +198,7 @@ class InvestLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
-    const { hasBooking } = this.props.route.params
+    const { hasBooking, navFrom } = this.props.route.params
     const { user } = this.props
     this.setState({ loading: true })
     let query = ``
@@ -230,9 +230,15 @@ class InvestLeads extends React.Component {
     axios
       .get(`${query}`)
       .then((res) => {
+        let leadNewData = page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
+        if (leadNewData && navFrom) {
+          leadNewData = leadNewData.filter(
+            (item) => item.status !== 'closed_won' && item.status !== 'closed_lost'
+          )
+        }
         this.setState(
           {
-            leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+            leadsData: leadNewData,
             loading: false,
             onEndReachedLoader: false,
             totalLeads: res.data.count,
@@ -335,34 +341,42 @@ class InvestLeads extends React.Component {
     }
   }
   navigateTo = (data) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
     const { navigation, route } = this.props
     const unitData = route.params.unitData
 
-    this.props.dispatch(setlead(data))
-    let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
+    if (navFrom) {
+      this.props.dispatch(setlead(data))
+      navigation.navigate('AddDiary', {
         lead: data,
-        purposeTab: 'invest',
-        screenName: screen,
+        cmLeadId: data.id,
       })
     } else {
-      if (
-        data.status === 'token' ||
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payments'
+      this.props.dispatch(setlead(data))
+      let page = ''
+      if (data.readAt === null) {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'invest',
+          screenName: screen,
+        })
       } else {
-        page = 'Meetings'
-      }
+        if (
+          data.status === 'token' ||
+          data.status === 'payment' ||
+          data.status === 'closed_won' ||
+          data.status === 'closed_lost'
+        ) {
+          page = 'Payments'
+        } else {
+          page = 'Meetings'
+        }
 
-      navigation.navigate('CMLeadTabs', {
-        screen: unitData ? 'Payments' : page,
-        params: { lead: data, unitData: unitData, screenName: screen },
-      })
+        navigation.navigate('CMLeadTabs', {
+          screen: unitData ? 'Payments' : page,
+          params: { lead: data, unitData: unitData, screenName: screen },
+        })
+      }
     }
   }
 
@@ -645,7 +659,12 @@ class InvestLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions, lead, dispatch, referenceGuide } = this.props
-    const { screen, hasBooking = false } = this.props.route.params
+    const {
+      screen,
+      hasBooking = false,
+      navFrom = null,
+      hideCloseLostFilter,
+    } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
     return (
@@ -691,7 +710,11 @@ class InvestLeads extends React.Component {
                 <PickerComponent
                   placeholder={'Lead Status'}
                   data={
-                    hasBooking ? StaticData.investmentFilterDeals : StaticData.investmentFilterLeads
+                    hasBooking
+                      ? StaticData.investmentFilterDeals
+                      : hideCloseLostFilter
+                      ? StaticData.investmentFilterLeadsAddTask
+                      : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -752,7 +775,8 @@ class InvestLeads extends React.Component {
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
-                screen={screen}
+                screen={navFrom ? 'AddDiary' : screen}
+                navFrom={navFrom}
                 isMenuVisible={isMenuVisible}
                 setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
                 checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
@@ -784,7 +808,7 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

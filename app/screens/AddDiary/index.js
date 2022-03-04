@@ -21,6 +21,8 @@ import {
   setTimeSlots,
 } from '../../actions/slotManagement'
 import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 
 const _today = moment(new Date()).format('YYYY-MM-DD')
 
@@ -38,6 +40,28 @@ class AddDiary extends Component {
   componentDidMount() {
     const { route, navigation, dispatch, user, permissions } = this.props
     let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
+    if (
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.UPDATE, permissions) &&
+      StaticData.diaryTasks.length < 6
+    ) {
+      StaticData.diaryTasks.push({
+        name: 'Meeting with Client',
+        value: 'meeting',
+      })
+    }
+    if (
+      getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.UPDATE,
+        permissions
+      ) &&
+      StaticData.diaryTasks.length < 6
+    ) {
+      StaticData.diaryTasks.push({
+        name: 'Viewing',
+        value: 'viewing',
+      })
+    }
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     if (helper.getAiraPermission(permissions) && lead) {
@@ -128,11 +152,24 @@ class AddDiary extends Component {
           feedbackReasonFilter && feedbackReasonFilter.value ? feedbackReasonFilter.value[0] : null
       }
 
-      if (rcmLeadId) {
-        payload.armsLeadId = rcmLeadId
-      } else if (cmLeadId) {
-        payload.leadId = cmLeadId
+      if (data && data.selectedProperty) {
+        payload.propertyId = data.selectedProperty.id
+        payload.leadId = rcmLeadId
+        payload.customer_Id = data.selectedLead.customer && data.selectedLead.customer.id
+        payload.subject =
+          'Viewing' +
+          (data.selectedLead.customer && ' with ' + data.selectedLead.customer.customerName) +
+          (data.selectedProperty &&
+            data.selectedProperty.area &&
+            ' at ' + data.selectedProperty.area.name)
+      } else {
+        if (rcmLeadId) {
+          payload.armsLeadId = rcmLeadId
+        } else if (cmLeadId) {
+          payload.leadId = cmLeadId
+        }
       }
+
       delete payload.startTime
       delete payload.endTime
       return payload
@@ -150,11 +187,11 @@ class AddDiary extends Component {
 
   addDiary = (data) => {
     const { route, navigation, dispatch } = this.props
-    const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
+    const { screenName = 'Diary', cmLeadId, rcmLeadId, property } = route.params
     let diary = this.generatePayload(data)
-
+    let query = property ? `/api/leads/viewing` : `/api/leads/task`
     axios
-      .post(`/api/leads/task`, diary)
+      .post(query, diary)
       .then((res) => {
         if (res.status === 200) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')
@@ -254,6 +291,22 @@ class AddDiary extends Component {
     })
   }
 
+  goToLeads = (data) => {
+    const { navigation } = this.props
+    navigation.navigate('Leads', {
+      screen: 'Leads',
+      screenName: 'AddDiary',
+      navFrom: data.taskType,
+      hasBooking: false,
+      hideCloseLostFilter: true,
+    })
+  }
+
+  goToLeadProperties = () => {
+    const { navigation } = this.props
+    navigation.navigate('PropertyList', { screenName: 'AddDiary' })
+  }
+
   goToDiaryReasons = () => {
     const { navigation } = this.props
     navigation.navigate('DiaryReasons', { screenName: 'AddDiary' })
@@ -262,6 +315,7 @@ class AddDiary extends Component {
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route, slotsData, navigation } = this.props
+    const { lead, property } = route.params
 
     return (
       <KeyboardAwareScrollView
@@ -288,6 +342,11 @@ class AddDiary extends Component {
                 goToDiaryReasons={this.goToDiaryReasons}
                 goBackToDiary={() => navigation.goBack()}
                 slotsData={slotsData}
+                goToLeads={this.goToLeads}
+                goToLeadProperties={this.goToLeadProperties}
+                lead={lead}
+                property={property}
+                navigation={navigation}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>

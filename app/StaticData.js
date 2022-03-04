@@ -14,6 +14,10 @@ export default StaticData = {
       name: 'Meeting with PP',
       value: 'meeting_with_pp',
     },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
   ],
   diaryTasksCM: [
     {
@@ -313,6 +317,13 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
+  buyRentFilterAddTask: [
+    { value: 'all', name: 'All' },
+    { value: 'open', name: 'Open' },
+    { value: 'shortlisting', name: 'Shortlisting' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
+  ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'called', name: 'Called' },
@@ -327,6 +338,13 @@ export default StaticData = {
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
+  ],
+  investmentFilterLeadsAddTask: [
+    { value: 'all', name: 'All' },
+    { value: 'open', name: 'Open' },
+    { value: 'in_progress', name: 'In-progress' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
   ],
 
   investmentFilterDeals: [

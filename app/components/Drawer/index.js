@@ -21,6 +21,7 @@ import DrawerItem from '../DrawerItem'
 import styles from './style'
 import { Divider } from 'react-native-paper'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
+import { setDrawerInternalMenu } from '../../actions/drawer'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -30,7 +31,6 @@ class CustomDrawerContent extends React.Component {
     super(props)
     this.state = {
       selectedDate: _today,
-      display: false,
     }
   }
 
@@ -64,8 +64,7 @@ class CustomDrawerContent extends React.Component {
   }
 
   render() {
-    const { user, count, permissions } = this.props
-    const { display } = this.state
+    const { user, count, permissions, drawerMenuOptions, dispatch } = this.props
     const { subRole } = user
     let label = helper.checkChannel(config.channel)
     return (
@@ -116,13 +115,13 @@ class CustomDrawerContent extends React.Component {
               <DrawerIconItem
                 screen={'+ Create '}
                 navigateTo={() => {
-                  this.setState({ display: !display })
+                  dispatch(setDrawerInternalMenu(!drawerMenuOptions))
                 }}
-                display={display}
+                display={drawerMenuOptions}
                 buttonStyling={true}
               />
             ) : null}
-            {display && (
+            {drawerMenuOptions && (
               <View style={styles.mainOptionView}>
                 {/* <View style={styles.menuShapeView}></View> */}
                 {getPermissionValue(
@@ -130,7 +129,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                  display && (
+                drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -150,7 +149,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                  display && (
+                  drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -171,7 +170,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                  display && (
+                  drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -192,7 +191,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                  display && (
+                drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -213,7 +212,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                  display && (
+                  drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -372,6 +371,7 @@ mapStateToProps = (store) => {
     loading: store.user.loading,
     count: store.listings.count,
     permissions: store.user.permissions,
+    drawerMenuOptions: store.drawer.drawerMenuOptions
   }
 }
 

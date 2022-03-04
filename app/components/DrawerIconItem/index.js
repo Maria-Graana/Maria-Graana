@@ -46,8 +46,12 @@ export default class DrawerIconItem extends React.Component {
                   backgroundColor: '#1173EF',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: 7,
+                  // borderRadius: 7,
                   flex: 1,
+                  borderBottomStartRadius: !display ? 7 : 0,
+                  borderBottomEndRadius: !display ? 7 : 0,
+                  borderTopLeftRadius: 7,
+                  borderTopRightRadius: 7,
                 }}
               >
                 <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: '500' }}>{screen}</Text>

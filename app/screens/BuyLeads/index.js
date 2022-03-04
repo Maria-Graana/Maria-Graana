@@ -220,9 +220,9 @@ class BuyLeads extends React.Component {
         let leadNewData = helper.leadMenu(
           page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         )
+
         if (leadNewData && navFrom) {
-          leadNewData = _.filter(
-            leadNewData,
+          leadNewData = leadNewData.filter(
             (item) => item.status !== 'closed_won' && item.status !== 'closed_lost'
           )
         }

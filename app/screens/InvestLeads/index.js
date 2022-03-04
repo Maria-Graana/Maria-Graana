@@ -232,8 +232,7 @@ class InvestLeads extends React.Component {
       .then((res) => {
         let leadNewData = page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         if (leadNewData && navFrom) {
-          leadNewData = _.filter(
-            leadNewData,
+          leadNewData = leadNewData.filter(
             (item) => item.status !== 'closed_won' && item.status !== 'closed_lost'
           )
         }

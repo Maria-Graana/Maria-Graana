@@ -159,7 +159,7 @@ class DetailForm extends Component {
                   : ''
               }
             />
-            {checkValidation === true && selectedLead && selectedLead.id.toString() === '' && (
+            {checkValidation === true && selectedLead === null && (
               <ErrorMessage errorMessage={'Required'} />
             )}
           </View>
@@ -183,9 +183,9 @@ class DetailForm extends Component {
                   : ''
               }
             />
-            {checkValidation === true &&
-              selectedProperty &&
-              selectedProperty.id.toString() === '' && <ErrorMessage errorMessage={'Required'} />}
+            {checkValidation === true && selectedProperty === null && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
           </View>
         )}
 
@@ -234,6 +234,9 @@ class DetailForm extends Component {
               : ``
           }
         />
+        {checkValidation === true && slotsData === null && (
+          <ErrorMessage errorMessage={'Required'} />
+        )}
 
         {editableData === null &&
         (taskType === 'morning_meeting' ||

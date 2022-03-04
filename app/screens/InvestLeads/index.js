@@ -205,54 +205,41 @@ class InvestLeads extends React.Component {
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = navFrom
-              ? `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = navFrom
-              ? `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = navFrom
-              ? `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = navFrom
-              ? `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = navFrom
-              ? `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = navFrom
-              ? `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       }
     } else {
       if (statusFilter === 'in_progress') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = navFrom
-              ? `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = navFrom
-              ? `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = navFrom
-              ? `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = navFrom
-              ? `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&assignToMe=true&status[]=open&status[]=in-progress&status[]=token&status[]=payment&status[]=meeting&status[]=in_progress`
-              : `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       }
     }
     axios
       .get(`${query}`)
       .then((res) => {
+        let leadNewData = page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
+        if (leadNewData && navFrom) {
+          leadNewData = _.filter(
+            leadNewData,
+            (item) => item.status !== 'closed_won' && item.status !== 'closed_lost'
+          )
+        }
         this.setState(
           {
-            leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+            leadsData: leadNewData,
             loading: false,
             onEndReachedLoader: false,
             totalLeads: res.data.count,
@@ -673,7 +660,12 @@ class InvestLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions, lead, dispatch, referenceGuide } = this.props
-    const { screen, hasBooking = false, navFrom = null , hideCloseLostFilter} = this.props.route.params
+    const {
+      screen,
+      hasBooking = false,
+      navFrom = null,
+      hideCloseLostFilter,
+    } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
     return (
@@ -719,7 +711,11 @@ class InvestLeads extends React.Component {
                 <PickerComponent
                   placeholder={'Lead Status'}
                   data={
-                    hasBooking ? StaticData.investmentFilterDeals : hideCloseLostFilter ? StaticData.investmentFilterLeadsAddTask : StaticData.investmentFilterLeads
+                    hasBooking
+                      ? StaticData.investmentFilterDeals
+                      : hideCloseLostFilter
+                      ? StaticData.investmentFilterLeadsAddTask
+                      : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}

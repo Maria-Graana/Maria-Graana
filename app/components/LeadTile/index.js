@@ -62,6 +62,7 @@ class LeadTile extends React.Component {
       )
     else return ' '
   }
+  // removed call button temporarily
 
   render() {
     const {
@@ -185,7 +186,7 @@ class LeadTile extends React.Component {
                         },
                       ]}
                     >
-                     Demand Leads
+                      Demand Lead
                     </Text>
                   </View>
                 )}
@@ -236,7 +237,9 @@ class LeadTile extends React.Component {
                       {/* Disabled Sentry in development  Sentry in */}
                       {leadSize}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
-                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
+                      {(data.purpose && data.purpose === 'sale') || data.purpose === 'buy'
+                        ? 'Buy'
+                        : 'Rent'}
                     </Text>
                   )}
 
@@ -439,7 +442,7 @@ class LeadTile extends React.Component {
                 </View>
               </View>
 
-              {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
+              {/* {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
                 <></>
               ) : (
                 <View style={styles.phoneMain}>
@@ -462,7 +465,7 @@ class LeadTile extends React.Component {
                     </TouchableOpacity>
                   ) : null}
                 </View>
-              )}
+              )} */}
             </View>
           </View>
         </View>

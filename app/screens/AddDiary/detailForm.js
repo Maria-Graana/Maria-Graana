@@ -32,16 +32,29 @@ class DetailForm extends Component {
         taskCategory: null,
         slots: [],
         addedBy: 'self',
+        selectedLead: null,
+        selectedProperty: null,
       },
       buttonText: 'ADD TASK',
     }
   }
 
   componentDidMount() {
-    const { editableData, props } = this.props
+    const { editableData, navigation } = this.props
     if (editableData != null) {
       this.setFormValues(editableData)
     }
+    navigation.addListener('focus', () => {
+      const { lead, property } = this.props
+      const { formData } = this.state
+      let copyObject = Object.assign({}, formData)
+      if (lead) copyObject.selectedLead = lead
+      this.setState({ formData: copyObject })
+      if (property) {
+        copyObject.selectedProperty = property
+        this.setState({ formData: copyObject })
+      }
+    })
   }
 
   setFormValues = (data) => {
@@ -63,12 +76,33 @@ class DetailForm extends Component {
   handleForm = (value, name) => {
     const { formData } = this.state
     formData[name] = value
+    if (name === 'taskType') {
+      this.clearLeadAndProperty()
+      return
+    }
     this.setState({ formData })
   }
 
+  clearLeadAndProperty = () => {
+    let copyObject = Object.assign({}, this.state.formData)
+    copyObject.selectedLead = null
+    copyObject.selectedProperty = null
+    this.setState({ formData: copyObject })
+  }
+
   render() {
-    const { taskType, date, startTime, endTime, subject, notes, isRecurring, taskCategory } =
-      this.state.formData
+    const {
+      taskType,
+      date,
+      startTime,
+      endTime,
+      subject,
+      notes,
+      isRecurring,
+      taskCategory,
+      selectedLead,
+      selectedProperty,
+    } = this.state.formData
     const { formData, buttonText } = this.state
     const {
       formSubmit,
@@ -84,8 +118,6 @@ class DetailForm extends Component {
       goBackToDiary,
       goToLeads,
       goToLeadProperties,
-      lead,
-      property,
     } = this.props
     return (
       <View>
@@ -113,23 +145,48 @@ class DetailForm extends Component {
         )}
 
         {(taskType == 'viewing' || taskType == 'follow_up' || taskType == 'meeting') && (
-          <TouchableInput
-            placeholder="Lead ID"
-            showDropDownIcon={false}
-            disabled={formData.status === 'completed' || taskType === ''}
-            onPress={() => goToLeads(formData)}
-            value={lead ? lead.id.toString() : ''}
-          />
+          <View>
+            <TouchableInput
+              placeholder="Select Lead"
+              showDropDownIcon={false}
+              disabled={formData.status === 'completed' || taskType === ''}
+              onPress={() => goToLeads(formData)}
+              value={
+                selectedLead
+                  ? selectedLead.id
+                      .toString()
+                      .concat(' - ', selectedLead.customer.customerName.toString())
+                  : ''
+              }
+            />
+            {checkValidation === true && selectedLead === null && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
         )}
 
         {taskType == 'viewing' && (
-          <TouchableInput
-            placeholder="Property ID"
-            showDropDownIcon={false}
-            disabled={formData.status === 'completed' || taskType === ''}
-            onPress={() => goToLeadProperties(formData)}
-            value={property ? property.id.toString() : ''}
-          />
+          <View>
+            <TouchableInput
+              placeholder="Select Property"
+              showDropDownIcon={false}
+              disabled={formData.status === 'completed' || taskType === ''}
+              onPress={() => goToLeadProperties(formData)}
+              value={
+                selectedProperty
+                  ? selectedProperty.size
+                      .toString()
+                      .concat(' ', selectedProperty.size_unit)
+                      .concat(' ', selectedProperty.subtype)
+                      .concat(' in ')
+                      .concat(' ', selectedProperty.area && selectedProperty.area.name)
+                  : ''
+              }
+            />
+            {checkValidation === true && selectedProperty === null && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
         )}
 
         {editableData && editableData.taskType === 'follow_up' ? (
@@ -177,6 +234,9 @@ class DetailForm extends Component {
               : ``
           }
         />
+        {checkValidation === true && slotsData === null && (
+          <ErrorMessage errorMessage={'Required'} />
+        )}
 
         {editableData === null &&
         (taskType === 'morning_meeting' ||

@@ -419,6 +419,7 @@ class CMBottomNav extends React.Component {
       PermissionActions.UPDATE,
       permissions
     )
+    // console.log("closedWon" , closedWon)
 
     return (
       <View style={styles.bottomNavMain}>
@@ -567,8 +568,13 @@ class CMBottomNav extends React.Component {
                 leadData.status !== 'closed_lost' && (
                   <Menu.Item
                     onPress={() => {
-                      closedWon ? onHandleCloseLead(lead) : this.closeWonModel(true),
-                        this.openMenu(false)
+                      let hasError = checkCloseWon
+                      if (hasError.paymentEr != '' || hasError.documentEr != '') {
+                        this.closeWonModel(true)
+                      } else {
+                        onHandleCloseLead(lead)
+                      }
+                      this.openMenu(false)
                     }}
                     title="Closed Won"
                   />

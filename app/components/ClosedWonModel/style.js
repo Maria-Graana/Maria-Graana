@@ -14,7 +14,6 @@ export default styles = StyleSheet.create({
     shadowOpacity: 1,
     paddingHorizontal: 10,
     paddingTop: 15,
-    maxHeight: '65%',
   },
   mainTextWrap: {
     backgroundColor: '#fff',
@@ -26,6 +25,7 @@ export default styles = StyleSheet.create({
   titleView: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    paddingBottom: 20
   },
   closeBtn: {
     position: 'absolute',
@@ -46,7 +46,7 @@ export default styles = StyleSheet.create({
     color: '#1F2029',
     fontSize: 14,
     fontWeight: '600',
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   noBorder: {
     borderBottomWidth: 0,

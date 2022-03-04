@@ -185,7 +185,7 @@ class LeadTile extends React.Component {
                         },
                       ]}
                     >
-                     Demand Lead
+                      Demand Lead
                     </Text>
                   </View>
                 )}
@@ -441,7 +441,7 @@ class LeadTile extends React.Component {
                 </View>
               </View>
 
-              {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
+              {/* {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
                 <></>
               ) : (
                 <View style={styles.phoneMain}>
@@ -464,7 +464,7 @@ class LeadTile extends React.Component {
                     </TouchableOpacity>
                   ) : null}
                 </View>
-              )}
+              )} */}
             </View>
           </View>
         </View>

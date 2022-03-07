@@ -74,9 +74,9 @@ class CMLeadFrom extends Component {
               selectedItem={formData.projectId}
               placeholder="Project"
             />
-            {checkValidation === true && formData.projectId === '' && (
+            {/* {checkValidation === true && formData.projectId === '' && (
               <ErrorMessage errorMessage={'Required'} />
-            )}
+            )} */}
           </View>
         </View>
 

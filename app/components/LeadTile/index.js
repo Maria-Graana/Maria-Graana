@@ -222,7 +222,7 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMain, AppStyles.mbTen, { flexDirection: 'row' }]}>
                   {purposeTab === 'invest' ? (
                     <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                      {data.projectId && data.minPrice && data.maxPrice ? (
+                      {data && data.minPrice && data.maxPrice ? (
                         <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
                           {helper.convertPriceToIntegerString(
                             data.minPrice,
@@ -377,7 +377,7 @@ class LeadTile extends React.Component {
                 {/* ****** Price Wrap */}
                 {purposeTab != 'invest' ? (
                   <View style={[styles.contentMultiMain]}>
-                    {!data.projectId && data.min_price && data.price ? (
+                    {!data && data.min_price && data.price ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {helper.convertPriceToIntegerString(
                           data.min_price,
@@ -389,12 +389,10 @@ class LeadTile extends React.Component {
                   </View>
                 ) : (
                   <View style={[styles.contentMultiMain]}>
-                    {data.projectId ? (
+                    {data ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {purposeTab === 'invest' &&
-                          helper.capitalize(
-                            projectName != '' ? projectName : 'Project not specified'
-                          )}
+                          helper.capitalize(projectName != '' ? projectName : 'Any Project')}
                         {data.projectType &&
                           data.projectType != '' &&
                           ` - ${helper.capitalize(data.projectType)}`}

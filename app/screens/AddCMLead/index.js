@@ -122,7 +122,7 @@ class AddCMLead extends Component {
         return item.value === value
       })
       formData['armsProjectTypeId'] = value
-      formData['projectType'] = value
+      formData['projectType'] = getProName.name
     }
     this.setState({ formData })
   }

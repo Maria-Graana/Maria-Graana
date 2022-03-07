@@ -19,6 +19,76 @@ export default StaticData = {
       value: 'follow_up',
     },
   ],
+  diaryTasksMeet: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
+    },
+  ],
+  diaryTasksView: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Viewing',
+      value: 'viewing',
+    },
+  ],
+  diaryTasksMeetView: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Viewing',
+      value: 'viewing',
+    },
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
+    },
+  ],
   diaryTasksCM: [
     {
       name: 'Meeting',

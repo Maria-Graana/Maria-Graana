@@ -42,25 +42,23 @@ class AddDiary extends Component {
     let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
     if (
       getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.UPDATE, permissions) &&
-      StaticData.diaryTasks.length < 6
+      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.UPDATE, permissions)
     ) {
-      StaticData.diaryTasks.push({
-        name: 'Meeting with Client',
-        value: 'meeting',
-      })
-    }
-    if (
+      tasksList = StaticData.diaryTasksMeetView
+    } else if (
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.UPDATE, permissions) &&
+      !getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.UPDATE, permissions)
+    ) {
+      tasksList = StaticData.diaryTasksMeet
+    } else if (
       getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.UPDATE,
         permissions
       ) &&
-      StaticData.diaryTasks.length < 6
+      !getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.UPDATE, permissions)
     ) {
-      StaticData.diaryTasks.push({
-        name: 'Viewing',
-        value: 'viewing',
-      })
+      tasksList = StaticData.diaryTasksView
     }
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())

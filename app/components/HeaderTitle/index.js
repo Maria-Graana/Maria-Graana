@@ -42,7 +42,7 @@ class HeaderTitle extends React.Component {
           <Text numberOfLines={1} style={[styles.headerText]}>
             {leadSize}
             {lead.subtype && helper.capitalize(lead.subtype)} {lead.purpose != null && 'to '}
-            {lead.purpose === 'sale' ? 'Buy' : 'Rent'}
+            {lead.purpose === 'sale' || lead.purpose === 'buy'? 'Buy' : 'Rent'}
           </Text>
         ) : (
           <Text numberOfLines={1} style={[styles.headerText]}>

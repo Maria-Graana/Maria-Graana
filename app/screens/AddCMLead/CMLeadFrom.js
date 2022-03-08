@@ -87,8 +87,9 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProductType}
               name={'projectType'}
-              selectedItem={formData.projectType}
+              selectedItem={formData.armsProjectTypeId}
               placeholder="Product Type"
+              enabled={formData.projectId}
             />
             {/* {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />

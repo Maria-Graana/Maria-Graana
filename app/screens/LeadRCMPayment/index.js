@@ -1616,7 +1616,6 @@ class LeadRCMPayment extends React.Component {
   }
 
   showConfirmationDialogClosePayment = (value, addedBy) => {
-    const { lead } = this.props.route.params
     if (!value) {
       if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
       else this.setSellerCommissionApplicable(value)

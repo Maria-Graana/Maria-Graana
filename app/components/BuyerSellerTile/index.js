@@ -88,19 +88,20 @@ class BuyerSellerTile extends React.Component {
       leadType,
       updatePermission,
       closedLeadEdit,
+      commissionNotApplicableSeller,
+      commissionNotApplicableBuyer,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
     let disabledSwitch = this.checkSwitchVisibility() ? false : true
     let showSwitch = this.checkSwitchVisibility()
     let tileVisibility = this.checkTileVisibility()
-
     return (
       <View style={styles.tileView}>
         <View style={[styles.titleView, { paddingVertical: 0, paddingBottom: 10 }]}>
           <Text style={styles.titleText}>{tileTitle}</Text>
-          {showSwitch && leadType === 'rcm' && (
+          {showSwitch && leadType === 'rcm' && tileType === 'buyer' && (
             <Switch
-              disabled={disabledSwitch}
+              disabled={commissionNotApplicableSeller}
               trackColor={{ false: '#81b0ff', true: AppStyles.colors.primaryColor }}
               thumbColor={false ? AppStyles.colors.primaryColor : '#fff'}
               ios_backgroundColor="#81b0ff"
@@ -108,7 +109,21 @@ class BuyerSellerTile extends React.Component {
                 if (!this.switchToggle() && updatePermission)
                   setComissionApplicable(!commissionNotApplicableBuyerSeller, tileType)
               }}
-              value={commissionNotApplicableBuyerSeller ? false : true}
+              value={commissionNotApplicableBuyer ? false : true}
+              style={styles.switchView}
+            />
+          )}
+          {showSwitch && leadType === 'rcm' && tileType === 'seller' && (
+            <Switch
+              disabled={commissionNotApplicableBuyer}
+              trackColor={{ false: '#81b0ff', true: AppStyles.colors.primaryColor }}
+              thumbColor={false ? AppStyles.colors.primaryColor : '#fff'}
+              ios_backgroundColor="#81b0ff"
+              onValueChange={() => {
+                if (!this.switchToggle() && updatePermission)
+                  setComissionApplicable(!commissionNotApplicableBuyerSeller, tileType)
+              }}
+              value={commissionNotApplicableSeller ? false : true}
               style={styles.switchView}
             />
           )}

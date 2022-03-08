@@ -152,6 +152,7 @@ class LeadRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
+        this.fetchLeadInfo()
         this.getSelectedProperty(lead)
         this.getLegalDocumentsCount()
         this.getCallHistory()
@@ -159,9 +160,9 @@ class LeadRCMPayment extends React.Component {
         this.fetchLegalPaymentInfo()
         this.fetchSellerDocuments(lead)
         this.fetchBuyerDocuments(lead)
-        this.fetchLeadInfo()
       } else {
         const { lead } = this.props
+        this.fetchLeadInfo()
         this.getSelectedProperty(lead)
         this.getLegalDocumentsCount()
         this.getCallHistory()
@@ -169,10 +170,27 @@ class LeadRCMPayment extends React.Component {
         this.fetchLegalPaymentInfo()
         this.fetchSellerDocuments(lead)
         this.fetchBuyerDocuments(lead)
-        this.fetchLeadInfo()
       }
     })
   }
+  // componentDidUpdate(prevProps, prevState) {
+  //   // console.log(this.state.commissionNotApplicableBuyer, 'CURRENTBUYER')
+  //   // console.log(prevState.commissionNotApplicableBuyer, 'PREVSTATE')
+  //   const { lead } = this.props.route.params
+
+  //   if (prevState.commissionNotApplicableBuyer !== this.state.commissionNotApplicableBuyer) {
+  //     this.fetchSellerDocuments(lead)
+  //     this.fetchBuyerDocuments(lead)
+  //     console.log('BUYER')
+  //     this.checkCloseWon()
+  //   }
+  //   if (prevState.commissionNotApplicableSeller !== this.state.commissionNotApplicableSeller) {
+  //     console.log('SELLER')
+  //     this.fetchSellerDocuments(lead)
+  //     this.fetchBuyerDocuments(lead)
+  //     this.checkCloseWon()
+  //   }
+  // }
 
   fetchLegalPaymentInfo = () => {
     this.setState({ loading: true }, () => {
@@ -508,12 +526,12 @@ class LeadRCMPayment extends React.Component {
                   agreedAmount: lead.payment ? String(lead.payment) : '',
                   token: lead.token ? String(lead.token) : '',
                   commissions: lead.commissions ? lead.commissions : null,
-                  commissionNotApplicableBuyer: lead.commissionNotApplicableBuyer
-                    ? lead.commissionNotApplicableBuyer
-                    : false,
-                  commissionNotApplicableSeller: lead.commissionNotApplicableSeller
-                    ? lead.commissionNotApplicableSeller
-                    : false,
+                  // commissionNotApplicableBuyer: lead.commissionNotApplicableBuyer
+                  //   ? lead.commissionNotApplicableBuyer
+                  //   : false,
+                  // commissionNotApplicableSeller: lead.commissionNotApplicableSeller
+                  //   ? lead.commissionNotApplicableSeller
+                  //   : false,
                   formData: {
                     contract_months: lead.contract_months ? String(lead.contract_months) : '',
                     security: lead.security ? String(lead.security) : '',
@@ -1598,6 +1616,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   showConfirmationDialogClosePayment = (value, addedBy) => {
+    const { lead } = this.props.route.params
     if (!value) {
       if (addedBy === 'buyer') this.setBuyerCommissionApplicable(value)
       else this.setSellerCommissionApplicable(value)
@@ -1732,6 +1751,8 @@ class LeadRCMPayment extends React.Component {
       .then((res) => {
         this.setState({
           leadInfo: res.data,
+          commissionNotApplicableBuyer: res.data.commissionNotApplicableBuyer,
+          commissionNotApplicableSeller: res.data.commissionNotApplicableSeller,
         })
         this.props.dispatch(setlead(res.data))
         this.checkCloseWon()
@@ -1794,8 +1815,7 @@ class LeadRCMPayment extends React.Component {
 
     let paymentsValidationHtml = ''
     let documentsValidationHtml = ''
-
-    if (leadInfo.commissionNotApplicableBuyer === false) {
+    if (this.state.commissionNotApplicableBuyer === false) {
       if (isBuyerCommissionNotClear || !buyerCommissionPaymentFound)
         paymentsValidationHtml += `Buyer advisor's commission payment is not cleared.\n`
       if (isBuyerLegalPaymentNotClear)
@@ -1809,7 +1829,7 @@ class LeadRCMPayment extends React.Component {
         documentsValidationHtml += this.docsValidationHtml(legalBuyListing, "Buyer client's")
     }
 
-    if (leadInfo.commissionNotApplicableSeller === false) {
+    if (this.state.commissionNotApplicableSeller === false) {
       if (isSellerCommissionNotClear || !sellerCommissionPaymentFound)
         paymentsValidationHtml += `Seller advisor's commission payment is not cleared.\n`
       if (isSellerLegalPaymentNotClear)

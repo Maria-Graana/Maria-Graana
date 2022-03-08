@@ -165,6 +165,8 @@ const RentPaymentView = (props) => {
         readPermission={readPermission}
         updatePermission={updatePermission}
         closedLeadEdit={closedLeadEdit}
+        commissionNotApplicableSeller={commissionNotApplicableSeller}
+        commissionNotApplicableBuyer={commissionNotApplicableBuyer}
       />
       <BuyerSellerTile
         singleCommission={singleCommission}
@@ -192,6 +194,8 @@ const RentPaymentView = (props) => {
         readPermission={readPermission}
         updatePermission={updatePermission}
         closedLeadEdit={closedLeadEdit}
+        commissionNotApplicableSeller={commissionNotApplicableSeller}
+        commissionNotApplicableBuyer={commissionNotApplicableBuyer}
       />
     </View>
   )

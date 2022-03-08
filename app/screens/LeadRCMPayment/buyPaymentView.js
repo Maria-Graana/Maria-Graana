@@ -165,6 +165,8 @@ class BuyPaymentView extends React.Component {
           readPermission={readPermission}
           updatePermission={updatePermission}
           closedLeadEdit={closedLeadEdit}
+          // commissionNotApplicableSeller={commissionNotApplicableSeller}
+          // commissionNotApplicableBuyer={commissionNotApplicableBuyer}
         />
         <BuyerSellerTile
           singleCommission={singleCommission}
@@ -194,6 +196,8 @@ class BuyPaymentView extends React.Component {
           readPermission={readPermission}
           updatePermission={updatePermission}
           closedLeadEdit={closedLeadEdit}
+          // commissionNotApplicableSeller={commissionNotApplicableSeller}
+          // commissionNotApplicableBuyer={commissionNotApplicableBuyer}
         />
       </View>
     )

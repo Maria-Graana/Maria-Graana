@@ -498,9 +498,7 @@ class LeadDetail extends React.Component {
             <View style={styles.cardItemWhite}>
               <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
               {purposeTab === 'invest' ? (
-                <Text style={styles.labelText}>
-                  {projectName != '' ? projectName : 'Project not specified'}
-                </Text>
+                <Text style={styles.labelText}>{projectName ? projectName : 'Any Project'}</Text>
               ) : (
                 <Text style={styles.labelText}>
                   {!lead.projectId &&

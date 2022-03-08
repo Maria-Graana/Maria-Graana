@@ -33,7 +33,7 @@ class Client extends React.Component {
       totalCustomers: 0,
       loading: true,
       page: 1,
-      pageSize: 20,
+      pageSize: 30,
       onEndReachedLoader: false,
       searchText: '',
       isSelected: false,
@@ -54,6 +54,12 @@ class Client extends React.Component {
   componentWillUnmount() {
     this.clearStateValues()
     this._unsubscribe()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchText !== this.state.searchText) {
+      this.fetchCustomer()
+    }
   }
 
   clearStateValues = () => {
@@ -84,10 +90,13 @@ class Client extends React.Component {
   }
 
   fetchCustomer = () => {
-    const { customers, page, pageSize } = this.state
+    const { customers, page, pageSize, searchText } = this.state
     const { selectedClient, selectedPOC } = this.props.route.params
-    const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
-
+    let url = ''
+    const clientName = searchText.replace(' ', '%20')
+    searchText !== ''
+      ? (url = `/api/customer/find?searchBy=name&q=${clientName}`)
+      : (url = `/api/customer/find?pageSize=${pageSize}&page=${page}`)
     axios
       .get(url)
       .then((res) => {
@@ -306,7 +315,11 @@ class Client extends React.Component {
                 />
               )}
               onEndReached={() => {
-                if (customers.length < totalCustomers) {
+                if (
+                  customers.length < totalCustomers &&
+                  onEndReachedLoader === false &&
+                  searchText === ''
+                ) {
                   this.setState(
                     {
                       page: this.state.page + 1,

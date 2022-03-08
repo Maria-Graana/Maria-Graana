@@ -461,7 +461,7 @@ class GraanaInventories extends React.Component {
 
   _getLocationAsync = async () => {
     // get current lat/lng location of user when opting for auto mode
-    const { status } = await Location.requestPermissionsAsync()
+    const { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== 'granted') {
       alert('Permission to access location was denied')
     }

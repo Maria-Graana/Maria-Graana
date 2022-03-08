@@ -388,14 +388,14 @@ function TimeSlotManagement(props) {
       slotsData.push(e)
       slots.push(e.id)
       isSelected.push(e.id)
-      fortyPercent(e)
+      // fortyPercent(e)
       verifyDetail(e)
     } else {
       if (e.id == tempAray[0].id - 1 || e.id == tempAray[tempAray.length - 1].id + 1) {
         slotsData.push(e)
         slots.push(e.id)
         isSelected.push(e.id)
-        fortyPercent(e)
+        // fortyPercent(e)
         verifyDetail(e)
       } else if (_.contains(tempAray, e)) {
       } else {
@@ -404,7 +404,7 @@ function TimeSlotManagement(props) {
         setTempSlot([e.id])
         setIsSelected([e.id])
         setSSlots([])
-        fortyPercent(e)
+        // fortyPercent(e)
         verifyDetail(e)
       }
     }
@@ -416,7 +416,7 @@ function TimeSlotManagement(props) {
     isSelected.push(e.id)
     const tempAray = _.sortBy(slotsData, 'id')
 
-    fortyPercent(e)
+    // fortyPercent(e)
 
     if (tempAray[1] == undefined) {
       verifyDetail(e)
@@ -751,7 +751,7 @@ function TimeSlotManagement(props) {
         const end = shiftArr[2].armsShift.endTime
 
         if (isTimeBetween(start, end, e.startTime)) return true
-        else return false
+        else return true
       } else if (array && array[0].armsShift && array.length == 1) {
         const start = shiftArr[0].armsShift.startTime
         const end = shiftArr[0].armsShift.endTime
@@ -860,7 +860,7 @@ function TimeSlotManagement(props) {
           <View style={{ flexDirection: 'column' }}>
             {minArray.map((i) => {
               return (
-                <View style={styles.minCol}>
+                <View style={styles.minCol} key={i}>
                   <Text style={styles.timeText}>{i}</Text>
                 </View>
               )
@@ -927,7 +927,7 @@ function TimeSlotManagement(props) {
                                       : setColor(e) == 'closed'
                                       ? '#e6e6e6'
                                       : setShift(e) == true
-                                      ? 'white'
+                                      ? '#ffffff'
                                       : '#f1f1f1',
 
                                     borderColor: isSelected.includes(e.id) ? 'black' : 'grey',

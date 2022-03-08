@@ -8,6 +8,7 @@ import { Linking } from 'react-native'
 import _ from 'underscore'
 import Clients from '../assets/img/client.png'
 import DashboardImg from '../assets/img/Dashboard.png'
+import ContactsImg from '../assets/img/contacts.png'
 import DiaryImg from '../assets/img/diary.png'
 import LeadsImg from '../assets/img/lead-icon-l.png'
 import InventoryImg from '../assets/img/property_leads.png'
@@ -220,6 +221,8 @@ const helper = {
           return DealIcon
         case 'ProjectInventory':
           return ProjectInventoryIcon
+        case 'Contacts':
+          return ContactsImg
         default:
           break
       }

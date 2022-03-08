@@ -17,6 +17,9 @@ import Instruments from './addInstrument'
 import callMeetingStatus from './callMeetingFeedback'
 import slotManagement from './slotManagement' // ARMS-2180
 import diary from './diary'
+import armsContacts from './armsContacts'
+import drawer from './drawer'
+
 
 export default combineReducers({
   lead,
@@ -35,4 +38,6 @@ export default combineReducers({
   callMeetingStatus,
   slotManagement, // ARMS-2180
   diary,
+  armsContacts,
+  drawer
 })

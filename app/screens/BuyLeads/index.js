@@ -57,7 +57,7 @@ class BuyLeads extends React.Component {
       activeSortModal: false,
       totalLeads: 0,
       page: 1,
-      pageSize: 20,
+      pageSize: 50,
       onEndReachedLoader: false,
       showSearchBar: false,
       searchText: '',
@@ -176,59 +176,42 @@ class BuyLeads extends React.Component {
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
-    const { hasBooking } = this.props.route.params
+    const { hasBooking, navFrom } = this.props.route.params
+    let isAiraPermission = helper.getAiraPermission(permissions)
     let query = ``
-    if (helper.getAiraPermission(permissions)) {
-      if (showSearchBar) {
-        if (statusFilterType === 'name' && searchText !== '') {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        } else if (statusFilterType === 'id' && searchText !== '') {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&id=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        } else {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&aira=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        }
+    if (showSearchBar) {
+      if (statusFilterType === 'name' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&aira=${
+              isAiraPermission ? true : false
+            }&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=${true}`)
+      } else if (statusFilterType === 'id' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&id=${searchText}&aira=${
+              isAiraPermission ? true : false
+            }&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=${true}`)
       } else {
-        if (statusFilter === 'shortlisting') {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&aira=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        } else {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
-            : (query = `/api/leads?purpose[]=buy&aira=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        }
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}&aira=${
+              isAiraPermission ? true : false
+            }&assignToMe=${true}`)
       }
     } else {
-      if (showSearchBar) {
-        if (statusFilterType === 'name' && searchText !== '') {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        } else if (statusFilterType === 'id' && searchText !== '') {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&web=${true}`)
-        } else {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        }
+      if (statusFilter === 'shortlisting') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&aira=${
+              isAiraPermission ? true : false
+            }&assignToMe=${true}`)
       } else {
-        if (statusFilter === 'shortlisting') {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        } else {
-          user.armsUserRole && user.armsUserRole.groupManger
-            ? (query = `/api/leads?purpose[]=buy&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}&status=${statusFilter}${sort}`)
-            : (query = `/api/leads?purpose[]=buy&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
-        }
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&aira=${
+              isAiraPermission ? true : false
+            }&assignToMe=${true}`)
       }
     }
     axios
@@ -237,6 +220,12 @@ class BuyLeads extends React.Component {
         let leadNewData = helper.leadMenu(
           page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         )
+
+        if (leadNewData && navFrom) {
+          leadNewData = leadNewData.filter(
+            (item) => item.status !== 'closed_won' && item.status !== 'closed_lost'
+          )
+        }
         this.setState({
           leadsData: leadNewData,
           loading: false,
@@ -275,48 +264,58 @@ class BuyLeads extends React.Component {
   }
 
   navigateTo = (data) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
+    const { navigation } = this.props
+
     this.props.dispatch(setlead(data))
-    let page = ''
-    if (this.props.route.params?.screen === 'MyDeals') {
-      this.props.navigation.navigate('LeadDetail', {
+
+    if (navFrom) {
+      navigation.navigate('AddDiary', {
         lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
-      })
-    } else if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
-        lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
+        rcmLeadId: data.id,
       })
     } else {
-      if (data.status == 'open') {
-        page = 'Match'
+      let page = ''
+      if (this.props.route.params?.screen === 'MyDeals') {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'sale',
+          screenName: screen,
+        })
+      } else if (data.readAt === null) {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'sale',
+          screenName: screen,
+        })
+      } else {
+        if (data.status == 'open') {
+          page = 'Match'
+        }
+        if (data.status === 'viewing') {
+          page = 'Viewing'
+        }
+        if (data.status === 'offer') {
+          page = 'Offer'
+        }
+        if (data.status === 'propsure') {
+          page = 'Propsure'
+        }
+        if (data.status === 'payment') {
+          page = 'Payment'
+        }
+        if (
+          data.status === 'payment' ||
+          data.status === 'closed_won' ||
+          data.status === 'closed_lost'
+        ) {
+          page = 'Payment'
+        }
+        this.props.navigation.navigate('RCMLeadTabs', {
+          screen: page,
+          params: { lead: data },
+        })
       }
-      if (data.status === 'viewing') {
-        page = 'Viewing'
-      }
-      if (data.status === 'offer') {
-        page = 'Offer'
-      }
-      if (data.status === 'propsure') {
-        page = 'Propsure'
-      }
-      if (data.status === 'payment') {
-        page = 'Payment'
-      }
-      if (
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payment'
-      }
-      this.props.navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: data },
-      })
     }
   }
 
@@ -704,7 +703,12 @@ class BuyLeads extends React.Component {
       createProjectLead,
     } = this.state
     const { user, permissions } = this.props
-    const { screen, hasBooking = false } = this.props.route.params
+    const {
+      screen,
+      hasBooking = false,
+      navFrom = null,
+      hideCloseLostFilter,
+    } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
@@ -759,7 +763,11 @@ class BuyLeads extends React.Component {
                 <View style={styles.pickerMain}>
                   <PickerComponent
                     placeholder={'Lead Status'}
-                    data={StaticData.buyRentFilter}
+                    data={
+                      hideCloseLostFilter
+                        ? StaticData.buyRentFilterAddTask
+                        : StaticData.buyRentFilter
+                    }
                     customStyle={styles.pickerStyle}
                     customIconStyle={styles.customIconStyle}
                     onValueChange={this.changeStatus}
@@ -807,6 +815,7 @@ class BuyLeads extends React.Component {
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
                     callNumber={this.callNumber}
+                    navFrom={navFrom}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
                     screenName={screen}
@@ -849,7 +858,7 @@ class BuyLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

@@ -122,7 +122,7 @@ class AddCMLead extends Component {
         return item.value === value
       })
       formData['armsProjectTypeId'] = value
-      formData['projectType'] = value
+      formData['projectType'] = getProName.name
     }
     this.setState({ formData })
   }
@@ -133,7 +133,7 @@ class AddCMLead extends Component {
 
   formSubmit = () => {
     const { formData, getProject } = this.state
-    if (!formData.customerId || !formData.projectId) {
+    if (!formData.customerId || !formData.cityId) {
       this.setState({
         checkValidation: true,
       })
@@ -143,6 +143,9 @@ class AddCMLead extends Component {
           return item.value === formData.projectId
         })
         formData.projectName = project.name
+      } else {
+        formData.projectId = null
+        formData.projectName = null
       }
       formData.noProduct = false
       this.setState({ loading: true }, () => {

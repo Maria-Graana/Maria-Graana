@@ -392,7 +392,7 @@ class LeadTile extends React.Component {
                     {data ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {purposeTab === 'invest' &&
-                          helper.capitalize(projectName != '' ? projectName : 'Any Project')}
+                          helper.capitalize(projectName != '' ? projectName : 'Any')}
                         {data.projectType &&
                           data.projectType != '' &&
                           ` - ${helper.capitalize(data.projectType)}`}

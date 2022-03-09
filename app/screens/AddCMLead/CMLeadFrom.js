@@ -89,7 +89,7 @@ class CMLeadFrom extends Component {
               name={'projectType'}
               selectedItem={formData.armsProjectTypeId}
               placeholder="Product Type"
-              enabled={formData.projectId}
+              enabled={formData.projectId === '' || formData.projectId === null ? false : true}
             />
             {/* {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />

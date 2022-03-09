@@ -24,6 +24,7 @@ import { saveOrUpdateDiaryTask } from '../../actions/diary'
 import helper from '../../helper'
 import diaryHelper from '../Diary/diaryHelper'
 import axios from 'axios'
+import TouchableInput from '../../components/TouchableInput'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -952,6 +953,23 @@ function TimeSlotManagement(props) {
             </ScrollView>
           </View>
         </ScrollView>
+      </View>
+
+      <View style={styles.timeInput}>
+        <TouchableInput
+          placeholder="Start Time"
+          showDropDownIcon={false}
+          isRow={true}
+          iconSource={require('../../../assets/icons/time.png')}
+          showIconOrImage={true}
+        />
+        <TouchableInput
+          placeholder="End Time"
+          showDropDownIcon={false}
+          isRow={true}
+          iconSource={require('../../../assets/icons/time.png')}
+          showIconOrImage={true}
+        />
       </View>
 
       <View style={styles.buttonInputWrap}>

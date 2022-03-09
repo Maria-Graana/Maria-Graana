@@ -129,7 +129,7 @@ class InvestLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const { hasBooking = false } = this.props.route.params // for Deals we need to set filter to closed won
+    const { hasBooking = false, screen } = this.props.route.params // for Deals we need to set filter to closed won
     const sortValue = await this.getSortOrderFromStorage()
     let statusValue = ''
     if (hasBooking) {
@@ -142,10 +142,17 @@ class InvestLeads extends React.Component {
         this.fetchLeads()
       })
     } else {
-      storeItem('statusFilterInvest', 'open')
-      this.setState({ statusFilter: 'open', sort: sortValue }, () => {
-        this.fetchLeads()
-      })
+      if (screen === 'MyDeals') {
+        storeItem('statusFilterInvest', 'all')
+        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      } else {
+        storeItem('statusFilterInvest', 'open')
+        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      }
     }
   }
   setIsMenuVisible = (value, data) => {

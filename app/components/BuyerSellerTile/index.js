@@ -135,7 +135,9 @@ class BuyerSellerTile extends React.Component {
               btnImage={null}
               btnText={'LEGAL SERVICES'}
               checkLeadClosedOrNot={false}
-              hiddenBtn={commissionNotApplicableBuyerSeller}
+              hiddenBtn={
+                tileType === 'seller' ? commissionNotApplicableSeller : commissionNotApplicableBuyer
+              }
               addBorder={true}
             />
             {lead.commissions ? (
@@ -163,7 +165,11 @@ class BuyerSellerTile extends React.Component {
                     btnImage={RoundPlus}
                     btnText={RCMBTNTitle}
                     checkLeadClosedOrNot={false}
-                    hiddenBtn={onReadOnly}
+                    hiddenBtn={
+                      tileType === 'seller'
+                        ? commissionNotApplicableSeller
+                        : commissionNotApplicableBuyer
+                    }
                     addBorder={true}
                   />
                 </View>

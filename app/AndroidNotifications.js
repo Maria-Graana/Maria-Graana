@@ -7,7 +7,7 @@ import { View, Alert, Platform } from 'react-native'
 import axios from 'axios'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
-import * as Sentry from 'sentry-expo'
+// import * as Sentry from 'sentry-expo'
 
 class AndroidNotifications extends React.Component {
   constructor(props) {

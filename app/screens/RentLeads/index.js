@@ -200,8 +200,8 @@ class RentLeads extends React.Component {
     } else {
       if (statusFilter === 'shortlisting') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&aira=${
+          ? (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&status=shortlisting&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=rent&status[0]=offer&status[1]=viewing&status[2]=propsure&status=shortlisting&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&aira=${
               isAiraPermission ? true : false
             }&assignToMe=${true}`)
       } else {

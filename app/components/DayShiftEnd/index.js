@@ -127,7 +127,8 @@ export default function DayShiftEnd({
           <View style={styles.containerRow}>
             <View style={styles.TotalBox}>
               <Text style={styles.TotalLabel1}>
-                {remainingTasks}/{totalTasks}
+                {remainingTasks == 'NaN' ? 0 : remainingTasks}/
+                {totalTasks == 'NaN' ? 0 : totalTasks}
               </Text>
               <Text style={styles.TotalLabel2}>Total Tasks of the Day</Text>
             </View>
@@ -170,7 +171,8 @@ export default function DayShiftEnd({
               <View style={styles.bigBoxViewOuterLeft}>
                 <View style={styles.bigBoxViewInner}>
                   <Text style={styles.bigLabelBoxText1}>
-                    {remainingActions}/{totalActions}
+                    {remainingActions == 'NaN' ? 0 : remainingActions}/
+                    {totalActions == 'NaN' ? 0 : totalActions}
                   </Text>
                   <Text style={styles.bigLabelBoxText2}>Actions</Text>
                 </View>
@@ -178,7 +180,9 @@ export default function DayShiftEnd({
 
               <View style={styles.bigBoxViewOuterRight}>
                 <View style={styles.bigBoxViewInnerL}>
-                  <Text style={styles.bigLabelBoxText1}>{rejectedTasks}</Text>
+                  <Text style={styles.bigLabelBoxText1}>
+                    {rejectedTasks == 'NaN' ? 0 : rejectedTasks}
+                  </Text>
                   <Text style={styles.bigLabelBoxText2}>Leads Rejected</Text>
                 </View>
               </View>

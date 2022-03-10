@@ -419,12 +419,12 @@ export default StaticData = {
 
   investmentFilterDeals: [
     { value: 'all', name: 'All' },
-    { value: 'open', name: 'Open' },
-    { value: 'in_progress', name: 'In-progress' },
+    // { value: 'open', name: 'Open' },
+    // { value: 'in_progress', name: 'In-progress' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
-    { value: 'closed_lost', name: 'Closed Lost' },
+    // { value: 'closed_lost', name: 'Closed Lost' },
   ],
   commentsFeedbackCall: [
     { value: 'no_response', name: 'No Response', colorCode: '#FEC107' },

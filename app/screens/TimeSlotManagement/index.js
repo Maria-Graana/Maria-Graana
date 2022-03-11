@@ -25,6 +25,7 @@ import helper from '../../helper'
 import diaryHelper from '../Diary/diaryHelper'
 import axios from 'axios'
 import TouchableInput from '../../components/TouchableInput'
+import DateTimePicker from '../../components/DatePicker'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -50,6 +51,9 @@ function TimeSlotManagement(props) {
   const [tempEndTime, setTempEndTime] = useState(null)
   const [tempSlot, setTempSlot] = useState([])
   const [sSlots, setSSlots] = useState([])
+
+  const [timeStart, setTimeStart] = useState(null)
+  const [timeEnd, setTimeEnd] = useState(null)
 
   const [startDate, setStartDate] = useState(null)
   const [toDate, setToDate] = useState(null)
@@ -184,7 +188,7 @@ function TimeSlotManagement(props) {
     }
   }
 
-  const onEditSlots = (start, end) => {
+  const onEditSlots = (start, end, fromPicker = false) => {
     const { dispatch } = props
     const allSlots = props.allTimeSlot
 
@@ -195,6 +199,15 @@ function TimeSlotManagement(props) {
         isSelected.push(allSlots[i].id)
       }
     }
+
+    // if (fromPicker) {
+    //   setSlotsData(slotsData)
+    //   setSlots(slots)
+    //   setTempSlot(slots)
+    //   setIsSelected(isSelected)
+    //   setSSlots([])
+    // }
+
     setStartDate(slotsData[0].startTime)
     setToDate(slotsData[slotsData.length - 1].endTime)
     if (props.slotDiary == null) {
@@ -288,6 +301,8 @@ function TimeSlotManagement(props) {
     setTempSlot(slots)
     setStartDate(sDate)
     setToDate(eDate)
+    setTimeEnd(endTime)
+    setTimeStart(startTime)
 
     dispatch(setSlotData(date, startTime, endTime, slots))
     dispatch(setDataSlotsArray(sortedAray))
@@ -823,6 +838,32 @@ function TimeSlotManagement(props) {
     })
   }
 
+  const handleTimeStart = (time, name) => {
+    setTimeStart(time)
+
+    if (timeEnd) onHandleTimeSlotChange(time, 'start')
+  }
+
+  const handleTimeEnd = (time, name) => {
+    setTimeEnd(time)
+
+    if (timeStart) onHandleTimeSlotChange(time, 'end')
+  }
+
+  const onHandleTimeSlotChange = (time, from) => {
+    if (from == 'end') {
+      if (timeStart && time && time > timeStart) {
+        onEditSlots(timeStart, time, true)
+        setDisabled(false)
+      }
+    } else {
+      if (time && timeEnd && timeEnd > time) {
+        onEditSlots(time, timeEnd, true)
+        setDisabled(false)
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <CalendarComponent
@@ -955,7 +996,7 @@ function TimeSlotManagement(props) {
         </ScrollView>
       </View>
 
-      <View style={styles.timeInput}>
+      {/* <View style={styles.timeInput}>
         <TouchableInput
           placeholder="Start Time"
           showDropDownIcon={false}
@@ -969,6 +1010,32 @@ function TimeSlotManagement(props) {
           isRow={true}
           iconSource={require('../../../assets/icons/time.png')}
           showIconOrImage={true}
+        />
+      </View> */}
+
+      <View style={styles.timeInput}>
+        <DateTimePicker
+          placeholderLabel={'Select Time'}
+          name={'time'}
+          mode={'time'}
+          // showError={checkValidation === true && time === ''}
+          errorMessage={'Required'}
+          iconSource={require('../../../assets/icons/time.png')}
+          date={new Date()}
+          selectedValue={timeStart ? helper.formatTime(timeStart) : ''}
+          handleForm={(value, name) => handleTimeStart(value, name)}
+        />
+
+        <DateTimePicker
+          placeholderLabel={'Select Time'}
+          name={'time'}
+          mode={'time'}
+          // showError={checkValidation === true && viewing.time === ''}
+          errorMessage={'Required'}
+          iconSource={require('../../../assets/icons/time.png')}
+          date={new Date()}
+          selectedValue={timeEnd ? helper.formatTime(timeEnd) : ''}
+          handleForm={(value, name) => handleTimeEnd(value, name)}
         />
       </View>
 

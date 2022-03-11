@@ -341,6 +341,9 @@ const helper = {
   formatTime(time) {
     return moment(time).format('hh:mm a')
   },
+  formatTimeForSlot(time) {
+    return moment(time).format('hh:mm:ss')
+  },
   formatDateAndTime(date, time) {
     return moment(date + moment(time).format('hh:mm a'), 'YYYY-MM-DDLT').format(
       'YYYY-MM-DDTHH:mm:ssZ'
@@ -348,6 +351,9 @@ const helper = {
   },
   formatDateTime(date, time) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+  },
+  formatDateTimeforPicker(date, time) {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss.sssZ')
   },
   createContactPayload(customer) {
     let payload = []

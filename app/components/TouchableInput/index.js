@@ -41,9 +41,9 @@ const TouchableInput = ({
             style={[
               AppStyles.formFontSettings,
               !isRow && isFromDateFilter === false && AppStyles.inputPadLeft,
+              isRow && styles.rightPad,
               {
                 color: isEmpty(value) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor,
-                paddingRight: isRow && '10%',
               },
             ]}
           >
@@ -89,5 +89,9 @@ const styles = StyleSheet.create({
   isRow: {
     borderRadius: 4,
     padding: 15,
+  },
+  rightPad: {
+    paddingRight: '8%',
+    minWidth: '29%',
   },
 })

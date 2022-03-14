@@ -195,14 +195,20 @@ class Dialer extends Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <TouchableOpacity style={styles.callButton} onPress={() => this.callNumber()}>
-          <Image source={require(`../../../assets/img/dialer_call.png`)} />
-        </TouchableOpacity>
+        {index === 0 ? (
+          <TouchableOpacity style={styles.callButton} onPress={() => this.callNumber()}>
+            <Image source={require(`../../../assets/img/dialer_call.png`)} />
+          </TouchableOpacity>
+        ) : null}
+
         <TabView
           renderTabBar={this.renderTabBar}
           navigationState={{ index, routes }}
           renderScene={this.renderScene}
-          onIndexChange={(value) => this.setState({ index: value })}
+          onIndexChange={(value) => {
+            navigation.setOptions({ title: value === 0 ? 'Dialer' : 'Phonebook' })
+            this.setState({ index: value })
+          }}
           initialLayout={{ width: layout.width }}
           tabBarPosition={'bottom'}
         />

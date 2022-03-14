@@ -1,7 +1,7 @@
 /** @format */
 
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import Avatar from '../Avatar'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
 import AppStyles from '../../AppStyles'
@@ -9,8 +9,10 @@ import { Ionicons } from '@expo/vector-icons'
 import _ from 'underscore'
 import DiaryHelper from '../../screens/Diary/diaryHelper'
 import moment from 'moment'
+import TouchableButton from '../TouchableButton'
+import { connect } from 'react-redux'
 
-const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
+const ArmsContactTile = ({ data, onPress, isExpanded = false, selectedContact }) => {
   const getName = () => {
     const { firstName, lastName } = data
     if (firstName && lastName && firstName !== '' && lastName !== '') {
@@ -69,19 +71,30 @@ const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
               </View>
             ) : null}
           </View>
-          {/* {showCallButton ? (
-            <TouchableOpacity style={{ width: '15%' }} onPress={() => console.log('call')}>
-              <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
-            </TouchableOpacity>
-          ) : null} */}
         </View>
       </View>
+      {isExpanded && data.id === selectedContact.id ? (
+        <View style={styles.expandedListItem}>
+          <TouchableButton label="Call" containerStyle={styles.button} fontSize={12} />
+          <TouchableButton
+            label="Register as Client"
+            containerStyle={styles.button}
+            fontSize={12}
+          />
+        </View>
+      ) : null}
       <View style={styles.underLine} />
     </TouchableOpacity>
   )
 }
 
-export default ArmsContactTile
+mapStateToProps = (store) => {
+  return {
+    selectedContact: store.armsContacts.selectedContact,
+  }
+}
+
+export default connect(mapStateToProps)(ArmsContactTile)
 
 const styles = StyleSheet.create({
   listItem: {
@@ -89,6 +102,10 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     marginHorizontal: widthPercentageToDP('2%'),
     alignItems: 'center',
+    width: '100%',
+  },
+  expandedListItem: {
+    marginVertical: 10,
     width: '100%',
   },
   imageViewStyle: {
@@ -101,5 +118,15 @@ const styles = StyleSheet.create({
     height: 1,
     width: '100%',
     backgroundColor: '#f5f5f6',
+  },
+  button: {
+    padding: 2,
+    borderRadius: 4,
+    width: '50%',
+    height: 30,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginVertical: 5,
+    marginHorizontal: widthPercentageToDP('2%'),
   },
 })

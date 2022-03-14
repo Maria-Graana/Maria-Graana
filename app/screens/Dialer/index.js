@@ -23,6 +23,8 @@ import VirtualKeyboard from 'react-native-virtual-keyboard'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import PhoneBookContactsTile from '../../components/PhonebookContactsTile'
 import Search from '../../components/Search'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import { getPermissionValue } from '../../hoc/Permissions'
 
 const layout = Dimensions.get('window')
 
@@ -37,13 +39,15 @@ class Dialer extends Component {
         { key: 'second', title: 'Phonebook' },
       ],
       searchText: '',
+      isPhoneContactExpanded: false,
     }
   }
 
   onPhoneContactPress = (data) => {
     const { navigation, dispatch } = this.props
+    const { isPhoneContactExpanded } = this.state
     dispatch(setSelectedContact(data), false).then((res) => {
-      navigation.navigate('PhoneContactDetail')
+      this.setState({ isPhoneContactExpanded: !isPhoneContactExpanded })
     })
   }
 
@@ -64,7 +68,6 @@ class Dialer extends Component {
         firstName: selectedContact && selectedContact.firstName ? selectedContact.firstName : '',
         lastName: selectedContact && selectedContact.lastName ? selectedContact.lastName : '',
       }
-      // console.log('body=>', body)
       dispatch(setSelectedContact(body, true)).then((res) => {
         navigation.replace('ContactFeedback')
       })
@@ -94,7 +97,6 @@ class Dialer extends Component {
                 key={item.id.toString()}
                 data={item}
                 onPress={(data) => this.onContactPress(data)}
-                showCallButton={false}
               />
             ))}
         </ScrollView>
@@ -112,8 +114,8 @@ class Dialer extends Component {
   }
 
   SecondRoute = () => {
-    const { searchText } = this.state
-    const { contacts } = this.props
+    const { searchText, isPhoneContactExpanded } = this.state
+    const { contacts, permissions } = this.props
     let data = []
     if (searchText !== '' && data && data.length === 0) {
       data = fuzzy.filter(searchText, contacts, {
@@ -123,6 +125,12 @@ class Dialer extends Component {
     } else {
       data = contacts
     }
+
+    let createPermission = getPermissionValue(
+      PermissionFeatures.CONTACTS,
+      PermissionActions.CREATE,
+      permissions
+    )
     return (
       <View style={AppStyles.containerWithoutPadding}>
         <Search
@@ -133,7 +141,18 @@ class Dialer extends Component {
         <FlatList
           data={data}
           renderItem={({ item }) => (
-            <PhoneBookContactsTile data={item} onPress={(data) => this.onPhoneContactPress(data)} />
+            <PhoneBookContactsTile
+              data={item}
+              onPress={(data) => this.onPhoneContactPress(data)}
+              isPhoneContactExpanded={isPhoneContactExpanded}
+              createPermission={createPermission}
+              callNumber={(number) =>
+                this.setState({ numberTxt: number }, () => {
+                  console.log(this.state.numberTxt)
+                  this.callNumber()
+                })
+              }
+            />
           )}
           keyExtractor={(item) => item.id.toString()}
         />
@@ -191,7 +210,7 @@ class Dialer extends Component {
 
   render() {
     const { index, routes } = this.state
-    const { navigation, dispatch, permissions } = this.props
+    const { navigation } = this.props
 
     return (
       <View style={{ flex: 1 }}>
@@ -246,7 +265,6 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     armsContacts: store.armsContacts.armsContacts,
     selectedContact: store.armsContacts.selectedContact,
-    permissions: store.user.permissions,
   }
 }
 

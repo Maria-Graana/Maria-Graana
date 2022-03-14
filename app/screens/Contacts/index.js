@@ -18,6 +18,7 @@ export class Contacts extends Component {
     super(props)
     this.state = {
       searchText: '',
+      isExpanded: false,
     }
   }
 
@@ -28,11 +29,19 @@ export class Contacts extends Component {
 
   goToDialer = () => {
     const { navigation } = this.props
-    navigation.replace('Dialer')
+    navigation.navigate('Dialer')
+  }
+
+  onContactPress = (contact) => {
+    const { dispatch, navigation } = this.props
+    const { isExpanded } = this.state
+    dispatch(setSelectedContact(contact)).then((res) => {
+      this.setState({ numberTxt: contact.phone, isExpanded: !isExpanded })
+    })
   }
 
   render() {
-    const { searchText } = this.state
+    const { searchText, isExpanded } = this.state
     const { armsContacts, armsContactsLoading, permissions } = this.props
     let data = []
     if (searchText !== '' && data && data.length === 0) {
@@ -63,7 +72,13 @@ export class Contacts extends Component {
             />
             <FlatList
               data={data}
-              renderItem={({ item }) => <ArmsContactTile data={item} onPress={(contact) => null} />}
+              renderItem={({ item }) => (
+                <ArmsContactTile
+                  data={item}
+                  onPress={(contact) => this.onContactPress(contact)}
+                  isExpanded={isExpanded}
+                />
+              )}
               keyExtractor={(item) => item.id.toString()}
             />
             {createPermission ? (

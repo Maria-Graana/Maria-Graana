@@ -27,6 +27,7 @@ import axios from 'axios'
 import moment from 'moment'
 import OfficeLocationSelector from '../OfficeLocationSelector'
 import AddEditInstrument from '../AddEditInstrument'
+import MonthPicker from '../MonthPicker'
 
 const CMPaymentModal = ({
   onModalCloseClick,
@@ -44,6 +45,12 @@ const CMPaymentModal = ({
   handleOfficeLocationChange,
   assignToAccountsLoading,
   handleInstrumentInfoChange,
+  AllAssignedLeads,
+  SelectedLeadDetails,
+  months,
+  selectedMonth,
+  selectedYear,
+  showPicker,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -72,7 +79,7 @@ const CMPaymentModal = ({
   }
 
   return (
-    <Modal visible={CMPayment.visible}>
+    <Modal visible={CMPayment.visible} style={{ zIndex: 97 }}>
       <SafeAreaView style={AppStyles.mb1}>
         <ScrollView style={styles.modalMain}>
           <View style={styles.topHeader}>
@@ -167,6 +174,41 @@ const CMPaymentModal = ({
               </View>
             </View>
 
+            {CMPayment.type === 'Rent Adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <PickerComponent
+                    onValueChange={handleCommissionChange}
+                    enabled={CMPayment.status !== 'pendingAccount'}
+                    data={AllAssignedLeads}
+                    name={'rentAdjLeadID'}
+                    placeholder="Lead ID"
+                    selectedItem={CMPayment.rentAdjLeadID}
+                  />
+                  {modalValidation === true && CMPayment.rentAdjLeadID == null && (
+                    <ErrorMessage errorMessage={'Required'} />
+                  )}
+                </View>
+              </View>
+            )}
+
+            {CMPayment.rentAdjLeadID && SelectedLeadDetails[0] && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <View style={styles.detailsView}>
+                    <Text style={styles.labelText}>Reference number</Text>
+                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].referenceNumber}</Text>
+                    <Text style={styles.labelText}>Project</Text>
+                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].project.name}</Text>
+                    <Text style={styles.labelText}>Floor</Text>
+                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].floor.name}</Text>
+                    <Text style={styles.labelText}>Unit</Text>
+                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].unit.name}</Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
             {CMPayment.type === 'cheque' ||
             CMPayment.type === 'pay-Order' ||
             CMPayment.type === 'bank-Transfer' ? (
@@ -176,6 +218,35 @@ const CMPaymentModal = ({
                 errorMessage={CMPayment.instrumentDuplicateError}
               />
             ) : null}
+
+            {CMPayment.type === 'asset_adjustment' && (
+              <SimpleInputText
+                name={'assetAdjDetails'}
+                fromatName={false}
+                placeholder={'Asset Adjustment Details'}
+                label={'ASSET ADJUSTMENT DETAILS'}
+                value={CMPayment.assetAdjDetails != '' ? CMPayment.assetAdjDetails : ''}
+                editable={CMPayment.status !== 'pendingAccount'}
+                formatValue={''}
+                onChangeHandle={handleCommissionChange}
+              />
+            )}
+
+            {CMPayment.type === 'Rent Adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <TouchableOpacity onPress={() => showPicker()} style={styles.input}>
+                    <Image
+                      style={{ width: 26, height: 26 }}
+                      source={require('../../../assets/img/calendar.png')}
+                    />
+                    <Text style={styles.inputText}>
+                      {months[selectedMonth - 1]} {selectedYear}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
 
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
@@ -515,5 +586,39 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  detailsText: {
+    letterSpacing: 2,
+    color: '#0E73EE',
+    fontWeight: '600',
+    marginBottom: 10,
+    marginTop: 5,
+  },
+  labelText: {
+    color: '#23232C',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    marginTop: 5,
+  },
+  detailsView: {
+    backgroundColor: 'white',
+    padding: '4%',
+  },
+  input: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    width: '100%',
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 4,
+  },
+  inputText: {
+    fontSize: 16,
+    // fontWeight: '500',
+    marginLeft: 15,
   },
 })

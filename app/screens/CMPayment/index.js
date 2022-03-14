@@ -45,11 +45,27 @@ import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
 import * as Permissions from 'expo-permissions'
+import MonthPicker from '../../components/MonthPicker'
 
 var BUTTONS = ['Delete', 'Cancel']
 var CANCEL_INDEX = 1
 class CMPayment extends Component {
+  months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
   constructor(props) {
+    const date = new Date()
     super(props)
     const { lead, user, route, permissions } = this.props
     this.state = {
@@ -192,6 +208,13 @@ class CMPayment extends Component {
       tableData: [],
       isPrimary: false,
       selectedClient: null,
+      allLeads: null,
+      allLeadsData: null,
+      setLeadDetail: null,
+      startYear: 2000,
+      endYear: 2050,
+      selectedYear: date.getFullYear(),
+      selectedMonth: date.getMonth() + 1,
     }
   }
 
@@ -616,10 +639,15 @@ class CMPayment extends Component {
   }
 
   handleCommissionChange = (value, name) => {
+    const { allLeadsData } = this.state
     const { CMPayment, dispatch, lead, addInstrument } = this.props
     const newSecondFormData = {
       ...CMPayment,
-      visible: CMPayment.visible,
+      visible: name == 'rentMonth' ? true : CMPayment.visible,
+    }
+    if (name === 'type' && value !== 'Rent Adjustment') {
+      delete newSecondFormData['rentAdjLeadID']
+      delete newSecondFormData['rentMonth']
     }
     newSecondFormData[name] = value
     if (
@@ -641,8 +669,54 @@ class CMPayment extends Component {
       }
     }
 
+    if (name === 'rentAdjLeadID') {
+      const leadSelected = allLeadsData.map((item) => {
+        if (item.id == value) return item
+      })
+
+      this.setState({ setLeadDetail: leadSelected })
+    }
+
+    if (name === 'type' && value === 'Rent Adjustment') {
+      const url = `/api/leads/projects?leadsByUser=${lead.assigned_to_armsuser_id}&web=true&hasBooking=true`
+      axios.get(url).then((res) => {
+        const haveLeads = res.data.rows.map((item) => {
+          return { value: item.id, name: item.id }
+        })
+
+        this.setState({ allLeads: haveLeads, allLeadsData: res.data.rows })
+      })
+    }
+
     this.setState({ buyerNotZero: false })
     dispatch(setCMPayment(newSecondFormData))
+  }
+
+  showPicker = () => {
+    const { startYear, endYear, selectedYear, selectedMonth } = this.state
+    const { CMPayment, dispatch } = this.props
+
+    const newSecondFormData = {
+      ...CMPayment,
+      visible: false,
+    }
+    dispatch(setCMPayment(newSecondFormData))
+
+    this.picker
+      .show({ startYear, endYear, selectedYear, selectedMonth })
+      .then(({ year, month }) => {
+        this.setState(
+          {
+            selectedYear: year,
+            selectedMonth: month,
+          },
+          () => {
+            const rentMonthDate = moment(`01-${month + 1}-${year}`, 'DD-MM-YYYY').format()
+
+            this.handleCommissionChange(rentMonthDate, 'rentMonth')
+          }
+        )
+      })
   }
 
   handleInstrumentInfoChange = (value, name) => {
@@ -1907,6 +1981,10 @@ class CMPayment extends Component {
       selectedClient,
       callModal,
       meetings,
+      allLeads,
+      setLeadDetail,
+      selectedMonth,
+      selectedYear,
     } = this.state
     const { lead, navigation, contacts, route } = this.props
     const { screenName } = this.props.route.params
@@ -1920,6 +1998,9 @@ class CMPayment extends Component {
           progress={progressValue}
           color={'#0277FD'}
         />
+
+        <MonthPicker ref={(picker) => (this.picker = picker)} />
+
         <View style={{ flex: 1 }}>
           <AccountsPhoneNumbers
             toggleAccountPhone={this.toggleAccountPhone}
@@ -2019,6 +2100,12 @@ class CMPayment extends Component {
             handleOfficeLocationChange={this.handleOfficeLocation}
             assignToAccountsLoading={assignToAccountsLoading}
             handleInstrumentInfoChange={this.handleInstrumentInfoChange}
+            AllAssignedLeads={allLeads}
+            SelectedLeadDetails={setLeadDetail}
+            months={this.months}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            showPicker={this.showPicker}
           />
           <DeleteModal
             isVisible={deletePaymentVisible}

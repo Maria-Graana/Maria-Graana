@@ -834,6 +834,7 @@ export default StaticData = {
     { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
     { value: 'Rent Adjustment', name: 'Rent Adjustment' },
     { value: 'Inter-Mall Adjustment', name: 'Inter-Mall Adjustment' },
+    { value: 'asset_adjustment', name: 'Asset Adjustment' },
   ],
   unitType: [
     { value: 'fullUnit', name: 'Full Unit' },

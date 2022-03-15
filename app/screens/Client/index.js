@@ -276,15 +276,15 @@ class Client extends React.Component {
     const { user } = this.props
     let createPermission = this.createPermission()
 
-    let data = []
-    if (searchText !== '' && data && data.length === 0) {
-      data = fuzzy.filter(searchText, customers, {
-        extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
-      })
-      data = data.map((item) => item.original)
-    } else {
-      data = customers
-    }
+    // let data = customers
+    // if (searchText !== '' && data && data.length === 0) {
+    //   data = fuzzy.filter(searchText, customers, {
+    //     extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
+    //   })
+    //   data = data.map((item) => item.original)
+    // } else {
+    //   data = customers
+    // }
     return !loading ? (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={[AppStyles.container, styles.container]}>
@@ -304,9 +304,9 @@ class Client extends React.Component {
           >
             <Ionicons name="md-add" color="#ffffff" />
           </Fab>
-          {data && data.length > 0 ? (
+          {customers && customers.length > 0 ? (
             <FlatList
-              data={data}
+              data={customers}
               renderItem={(item, index) => (
                 <ClientTile
                   data={item}
@@ -317,8 +317,7 @@ class Client extends React.Component {
               onEndReached={() => {
                 if (
                   customers.length < totalCustomers &&
-                  onEndReachedLoader === false &&
-                  searchText === ''
+                  onEndReachedLoader === false 
                 ) {
                   this.setState(
                     {

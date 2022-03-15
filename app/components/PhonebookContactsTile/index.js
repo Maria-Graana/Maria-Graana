@@ -14,6 +14,7 @@ const PhoneBookContactsTile = ({
   selectedContact,
   isPhoneContactExpanded,
   createPermission,
+  showCallIcon = true,
   callNumber,
 }) => {
   return (
@@ -24,35 +25,40 @@ const PhoneBookContactsTile = ({
         </View>
         <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
           <View>
-            <Text style={[styles.textFont, { fontSize: 15 }]}>{data?.name}</Text>
+            <Text style={[styles.textFont, { fontSize: 16, paddingVertical: 5 }]}>
+              {data?.name}
+            </Text>
+            {isPhoneContactExpanded && data.id === selectedContact.id ? (
+              <View style={styles.expandedListItem}>
+                <FlatList
+                  data={selectedContact?.phoneNumbers}
+                  style={{ backgroundColor: '#fff' }}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.phoneContactTile}
+                      onPress={() => callNumber(item.number)}
+                    >
+                      <View style={{ width: '82%' }}>
+                        <Text style={[styles.textFont]}>{item.number}</Text>
+                      </View>
+                      {showCallIcon ? (
+                        <TouchableOpacity style={{ width: '10%' }}>
+                          <Ionicons
+                            name="ios-call-outline"
+                            size={24}
+                            color={AppStyles.colors.primaryColor}
+                          />
+                        </TouchableOpacity>
+                      ) : null}
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            ) : null}
           </View>
         </View>
       </View>
-      {isPhoneContactExpanded && data.id === selectedContact.id ? (
-        <View style={styles.expandedListItem}>
-          <FlatList
-            data={selectedContact?.phoneNumbers}
-            style={{ backgroundColor: '#fff' }}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.phoneContactTile}
-                onPress={() => callNumber(item.number)}
-              >
-                <View style={{ width: '85%' }}>
-                  <Text style={[styles.textFont]}>{item.number}</Text>
-                </View>
-                <TouchableOpacity style={{ width: '15%' }}>
-                  <Ionicons
-                    name="ios-call-outline"
-                    size={24}
-                    color={AppStyles.colors.primaryColor}
-                  />
-                </TouchableOpacity>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      ) : null}
+
       <View style={styles.underLine} />
     </TouchableOpacity>
   )
@@ -75,13 +81,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 15,
     marginHorizontal: widthPercentageToDP('2%'),
-    alignItems: 'center',
   },
   imageViewStyle: {
     paddingRight: 10,
   },
   textFont: {
     fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 14,
   },
   underLine: {
     height: 1,
@@ -89,14 +95,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f6',
   },
   expandedListItem: {
-    marginVertical: 5,
     width: '100%',
   },
   phoneContactTile: {
     flexDirection: 'row',
     width: '100%',
-    marginVertical: 10,
-    marginHorizontal: 15,
+    marginVertical: 5,
     alignItems: 'center',
   },
 })

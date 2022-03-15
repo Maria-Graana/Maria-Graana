@@ -1,6 +1,6 @@
 /** @format */
 
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import Avatar from '../Avatar'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
@@ -12,7 +12,14 @@ import moment from 'moment'
 import TouchableButton from '../TouchableButton'
 import { connect } from 'react-redux'
 
-const ArmsContactTile = ({ data, onPress, isExpanded = false, selectedContact }) => {
+const ArmsContactTile = ({
+  data,
+  onPress,
+  callNumber,
+  isExpanded = false,
+  selectedContact,
+  registerAsClient,
+}) => {
   const getName = () => {
     const { firstName, lastName } = data
     if (firstName && lastName && firstName !== '' && lastName !== '') {
@@ -38,51 +45,87 @@ const ArmsContactTile = ({ data, onPress, isExpanded = false, selectedContact })
           <View style={styles.imageViewStyle}>
             <Avatar data={data} />
           </View>
-          <View style={{ flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
+          <View
+            style={{
+              flexDirection: 'column',
+              // justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
             <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-              <Text style={[styles.textFont, { fontSize: 14, width: ' 50%' }]}>{getName()}</Text>
+              <Text style={[styles.textFont, { fontSize: 16, width: ' 50%' }]}>{getName()}</Text>
               {armsCallLatest ? (
                 <Text
                   style={{
                     width: '45%',
                     fontSize: 13,
-                    marginHorizontal: 2,
+                    marginRight: 10,
                     color:
                       armsCallLatest.feedback === 'needs_further_contact'
                         ? AppStyles.colors.primaryColor
                         : AppStyles.colors.redBg,
-                    textAlign: 'center',
+                    textAlign: 'right',
                   }}
                 >
-                  ({DiaryHelper.removeUnderscore(armsCallLatest.feedback)})
+                  {DiaryHelper.removeUnderscore(armsCallLatest.feedback)}
                 </Text>
               ) : null}
             </View>
-            {data.phone !== '' && data.phone !== null ? (
-              <View style={{ paddingTop: 5 }}>
+
+            {armsCallLatest ? (
+              <View
+                style={{
+                  alignItems: 'flex-end',
+                  marginRight: 10,
+                  width: '45%',
+                  alignSelf: 'flex-end',
+                }}
+              >
                 <Text
                   numberOfLines={1}
                   style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}
                 >
-                  {data.phone}{' '}
                   {armsCallLatest ? moment(armsCallLatest.time).format('DD MMM hh:mm a') : null}{' '}
-                  {armsCallLatest ? 'Outgoing' : null}
                 </Text>
+              </View>
+            ) : null}
+
+            {isExpanded && data.id === selectedContact.id && selectedContact.phone ? (
+              <View style={styles.expandedListItem}>
+                <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  data={selectedContact.phoneNumbers}
+                  style={{ backgroundColor: '#fff' }}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.phoneContactTile}
+                      onPress={() => callNumber(item.phone)}
+                    >
+                      <View style={{ width: '82%' }}>
+                        <Text style={[styles.textFont]}>{item.phoneWithDialCode}</Text>
+                      </View>
+                      <TouchableOpacity style={{ width: '10%' }}>
+                        <Ionicons
+                          name="ios-call-outline"
+                          size={24}
+                          color={AppStyles.colors.primaryColor}
+                        />
+                      </TouchableOpacity>
+                    </TouchableOpacity>
+                  )}
+                />
+                <TouchableButton
+                  label="Register as Client"
+                  containerStyle={styles.button}
+                  fontSize={14}
+                  onPress={() => registerAsClient(data)}
+                />
               </View>
             ) : null}
           </View>
         </View>
       </View>
-      {isExpanded && data.id === selectedContact.id ? (
-        <View style={styles.expandedListItem}>
-          <TouchableButton label="Call" containerStyle={styles.button} fontSize={12} />
-          <TouchableButton
-            label="Register as Client"
-            containerStyle={styles.button}
-            fontSize={12}
-          />
-        </View>
-      ) : null}
       <View style={styles.underLine} />
     </TouchableOpacity>
   )
@@ -110,9 +153,11 @@ const styles = StyleSheet.create({
   },
   imageViewStyle: {
     paddingRight: 10,
+    alignSelf: 'flex-start',
   },
   textFont: {
     fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 14,
   },
   underLine: {
     height: 1,
@@ -120,13 +165,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f6',
   },
   button: {
-    padding: 2,
+    padding: 10,
     borderRadius: 4,
     width: '50%',
-    height: 30,
+    height: 50,
     justifyContent: 'center',
-    alignSelf: 'center',
+    // alignSelf: 'center',
     marginVertical: 5,
-    marginHorizontal: widthPercentageToDP('2%'),
+    // marginHorizontal: widthPercentageToDP('2%'),
+  },
+  phoneContactTile: {
+    flexDirection: 'row',
+    width: '100%',
+    marginVertical: 5,
+    alignItems: 'center',
   },
 })

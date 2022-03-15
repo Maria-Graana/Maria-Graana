@@ -45,6 +45,7 @@ class AddClient extends Component {
         bank: '',
         iBan: '',
         bookUnit: true,
+        contactRegistrationId: null,
       },
       emailValidate: true,
       phoneValidate: false,
@@ -73,6 +74,7 @@ class AddClient extends Component {
       copyForm.firstName = data.firstName
       copyForm.lastName = data.lastName
       copyForm.contactNumber = data.phone
+      copyForm.contactRegistrationId = data.id
       this.setState({ formData: copyForm })
     }
     if ('update' in route.params && route.params.update) {
@@ -216,7 +218,7 @@ class AddClient extends Component {
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
 
-    console.log(client)
+    //console.log(client)
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,
@@ -491,50 +493,57 @@ class AddClient extends Component {
         if (formData.cnic === '') formData.cnic = null
         if (!update) {
           let body = this.createPayload()
+
           body.name = body.first_name + ' ' + body.last_name
           this.setState({ loading: true })
-          axios
-            .post(`/api/customer/create`, body)
-            .then((res) => {
-              if (res.status === 200 && res.data) {
-                if (res.data.message !== 'CLIENT CREATED') {
-                  // Error Messages
-                  if (res.data.message === 'Client already exists') {
-                    helper.errorToast(res.data.message)
-                  } else {
-                    // this is important error message so showing as alert
-                    Alert.alert('Client already Exists', res.data.message)
-                  }
-                } else {
-                  helper.successToast(res.data.message)
-                  isFromDropDown
-                    ? isPOC
-                      ? navigation.navigate(screenName, {
-                          selectedPOC: res.data.id
-                            ? {
-                                ...res.data,
-                                firstName: res.data.first_name ? res.data.first_name : '',
-                                lastName: res.data.last_name ? res.data.last_name : '',
-                              }
-                            : null,
-                        })
-                      : navigation.navigate(screenName, {
-                          client: res.data.id ? res.data : null,
-                          name: res.data.first_name
-                            ? res.data.first_name + ' ' + res.data.last_name
-                            : null,
-                        })
-                    : navigation.goBack()
-                }
-              }
-            })
-            .catch((error) => {
-              console.log(error)
-              helper.errorToast('ERROR CREATING CLIENT')
-            })
-            .finally(() => {
-              this.setState({ loading: false })
-            })
+          // console.log(formData.contactRegistrationId)
+          this.deleteARMSContact(formData.contactRegistrationId)
+          // axios
+          //   .post(`/api/customer/create`, body)
+          //   .then((res) => {
+          //     if (res.status === 200 && res.data) {
+          //       console.log(res)
+          //       if (res.data.message !== 'CLIENT CREATED') {
+          //         if (
+          //           formData.contactRegistrationId &&
+          //           res.data.message !== 'Client already exists'
+          //         ) {
+          //           this.deleteARMSContact(formData.contactRegistrationId)
+          //         }
+          //         // Error Messages
+          //         if (res.data.message === 'Client already exists') {
+          //           helper.errorToast(res.data.message)
+          //         }
+          //       } else {
+          //         helper.successToast(res.data.message)
+          //         isFromDropDown
+          //           ? isPOC
+          //             ? navigation.navigate(screenName, {
+          //                 selectedPOC: res.data.id
+          //                   ? {
+          //                       ...res.data,
+          //                       firstName: res.data.first_name ? res.data.first_name : '',
+          //                       lastName: res.data.last_name ? res.data.last_name : '',
+          //                     }
+          //                   : null,
+          //               })
+          //             : navigation.navigate(screenName, {
+          //                 client: res.data.id ? res.data : null,
+          //                 name: res.data.first_name
+          //                   ? res.data.first_name + ' ' + res.data.last_name
+          //                   : null,
+          //               })
+          //           : navigation.goBack()
+          //       }
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     console.log(error)
+          //     helper.errorToast('ERROR CREATING CLIENT')
+          //   })
+          //   .finally(() => {
+          //     this.setState({ loading: false })
+          //   })
         } else {
           let body = this.updatePayload()
           this.setState({ loading: true })
@@ -579,6 +588,21 @@ class AddClient extends Component {
         this.setState({ phoneVerified: false })
       }
     }
+  }
+
+  deleteARMSContact = (id) => {
+    let endPoint = ``
+    let body = {
+      id,
+    }
+    endPoint = `api/contacts/delete`
+    console.log(body)
+    axios
+      .delete(endPoint, body)
+      .then(function (response) {
+        console.log(response.data)
+      })
+      .catch(function (error) {})
   }
 
   hello = (object, name) => {

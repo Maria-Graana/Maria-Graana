@@ -19,6 +19,33 @@ export function getARMSContacts() {
       .get(endPoint)
       .then((res) => {
         if (res.data) {
+          res.data = res.data.rows.map((item) => {
+            let newObj = { ...item }
+            let newArr = []
+            newArr.push(
+              {
+                phoneWithDialCode: item.dialCode ? item.dialCode + item.phone : '',
+                phone: item.phone,
+                dialCode: item.dialCode,
+                countryCode: item.countryCode,
+              },
+              {
+                phoneWithDialCode: item.dialCode2 ? item.dialCode2 + item.phone2 : '',
+                phone: item.phone2,
+                dialCode: item.dialCode2,
+                countryCode: item.countryCode2,
+              },
+              {
+                phoneWithDialCode: item.dialCode3 ? item.dialCode3 + item.phone3 : '',
+                phone: item.phone3,
+                dialCode: item.dialCode3,
+                countryCode: item.countryCode3,
+              }
+            )
+            newObj.phoneNumbers = newArr
+            return newObj
+          })
+          // console.log('afterData', res.data)
           dispatch({
             type: types.GET_ARMS_CONTACTS,
             payload: res.data,

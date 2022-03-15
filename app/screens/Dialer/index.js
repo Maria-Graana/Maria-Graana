@@ -25,6 +25,7 @@ import PhoneBookContactsTile from '../../components/PhonebookContactsTile'
 import Search from '../../components/Search'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import { getPermissionValue } from '../../hoc/Permissions'
+import PhonebookContactsTile from '../../components/PhonebookContactsTile'
 
 const layout = Dimensions.get('window')
 
@@ -40,7 +41,24 @@ class Dialer extends Component {
       ],
       searchText: '',
       isPhoneContactExpanded: false,
+      allContacts: [],
     }
+  }
+
+  componentDidMount() {
+    const { dispatch } = this.props
+    const { contacts } = this.props
+    let newContactsArr = contacts.map((item) => {
+      if (item.phone) {
+        return item
+      } else {
+        return {
+          ...item,
+          phone: item.phoneNumbers[0].number,
+        }
+      }
+    })
+    this.setState({ allContacts: newContactsArr })
   }
 
   onPhoneContactPress = (data) => {
@@ -48,13 +66,6 @@ class Dialer extends Component {
     const { isPhoneContactExpanded } = this.state
     dispatch(setSelectedContact(data), false).then((res) => {
       this.setState({ isPhoneContactExpanded: !isPhoneContactExpanded })
-    })
-  }
-
-  onContactPress = (contact) => {
-    const { dispatch, navigation } = this.props
-    dispatch(setSelectedContact(contact)).then((res) => {
-      this.setState({ numberTxt: contact.phone })
     })
   }
 
@@ -77,15 +88,22 @@ class Dialer extends Component {
   }
 
   FirstRoute = () => {
-    const { numberTxt } = this.state
-    const { armsContacts } = this.props
+    const { numberTxt, allContacts, isPhoneContactExpanded } = this.state
+    const { contacts } = this.props
     let data = []
-    if (numberTxt !== '' && data && data.length === 0) {
-      data = fuzzy.filter(numberTxt, armsContacts.rows, {
-        extract: (e) => (e.phone ? e.phone : ''),
-      })
-      data = data.map((item) => item.original)
-    }
+    data = allContacts.filter((item) => {
+      if (numberTxt !== '') {
+        for (let i = 0; i < item.phoneNumbers.length; i++) {
+          if (
+            item.phoneNumbers[i].number
+              .replace(/[() .+-]/g, '')
+              .match(numberTxt.replace(/[() .+-]/g, ''))
+          ) {
+            return item
+          }
+        }
+      }
+    })
     return (
       <View style={AppStyles.containerWithoutPadding}>
         <ScrollView
@@ -93,10 +111,16 @@ class Dialer extends Component {
         >
           {data &&
             data.map((item) => (
-              <ArmsContactTile
+              <PhonebookContactsTile
                 key={item.id.toString()}
                 data={item}
-                onPress={(data) => this.onContactPress(data)}
+                onPress={(data) => this.onPhoneContactPress(data)}
+                isPhoneContactExpanded={isPhoneContactExpanded}
+                showCallIcon={false}
+                // createPermission={createPermission}
+                callNumber={(number) =>
+                  this.setState({ numberTxt: number.replace(/[() .+-]/g, '') })
+                }
               />
             ))}
         </ScrollView>
@@ -134,7 +158,7 @@ class Dialer extends Component {
     return (
       <View style={AppStyles.containerWithoutPadding}>
         <Search
-          placeholder={'Search Contacts'}
+          placeholder={'Search Phonebook'}
           searchText={searchText}
           setSearchText={(text) => this.setState({ searchText: text })}
         />
@@ -148,7 +172,6 @@ class Dialer extends Component {
               createPermission={createPermission}
               callNumber={(number) =>
                 this.setState({ numberTxt: number }, () => {
-                  console.log(this.state.numberTxt)
                   this.callNumber()
                 })
               }

@@ -236,13 +236,13 @@ const CMPaymentModal = ({
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
                   <TouchableOpacity onPress={() => showPicker()} style={styles.input}>
+                    <Text style={styles.inputText}>
+                      {months[selectedMonth - 1]} {selectedYear}
+                    </Text>
                     <Image
                       style={{ width: 26, height: 26 }}
                       source={require('../../../assets/img/calendar.png')}
                     />
-                    <Text style={styles.inputText}>
-                      {months[selectedMonth - 1]} {selectedYear}
-                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -607,10 +607,10 @@ const styles = StyleSheet.create({
   },
   input: {
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     width: '100%',
     flexDirection: 'row',
-    // justifyContent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 10,
@@ -619,6 +619,6 @@ const styles = StyleSheet.create({
   inputText: {
     fontSize: 16,
     // fontWeight: '500',
-    marginLeft: 15,
+    // marginLeft: 15,
   },
 })

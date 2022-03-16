@@ -24,6 +24,8 @@ import { saveOrUpdateDiaryTask } from '../../actions/diary'
 import helper from '../../helper'
 import diaryHelper from '../Diary/diaryHelper'
 import axios from 'axios'
+import TouchableInput from '../../components/TouchableInput'
+import DateTimePicker from '../../components/DatePicker'
 
 function TimeSlotManagement(props) {
   const data = props.timeSlots
@@ -49,6 +51,9 @@ function TimeSlotManagement(props) {
   const [tempEndTime, setTempEndTime] = useState(null)
   const [tempSlot, setTempSlot] = useState([])
   const [sSlots, setSSlots] = useState([])
+
+  const [timeStart, setTimeStart] = useState(null)
+  const [timeEnd, setTimeEnd] = useState(null)
 
   const [startDate, setStartDate] = useState(null)
   const [toDate, setToDate] = useState(null)
@@ -183,19 +188,35 @@ function TimeSlotManagement(props) {
     }
   }
 
-  const onEditSlots = (start, end) => {
+  const onEditSlots = (start, end, fromPicker = false) => {
     const { dispatch } = props
     const allSlots = props.allTimeSlot
+    let mySlotData = []
+    let myslots = []
+    let myisSelected = []
 
     for (var i = 0; i < allSlots.length; i++) {
       if (isTimeBetween(start, end, allSlots[i].startTime)) {
-        slotsData.push(allSlots[i])
-        slots.push(allSlots[i].id)
-        isSelected.push(allSlots[i].id)
+        mySlotData.push(allSlots[i])
+        myslots.push(allSlots[i].id)
+        myisSelected.push(allSlots[i].id)
       }
     }
-    setStartDate(slotsData[0].startTime)
-    setToDate(slotsData[slotsData.length - 1].endTime)
+    setSlotsData(mySlotData)
+    setSlots(myslots)
+    setIsSelected(myisSelected)
+
+    // if (fromPicker) {
+    //   setSlotsData(slotsData)
+    //   setSlots(slots)
+    //   setTempSlot(slots)
+    //   setIsSelected(isSelected)
+    //   setSSlots([])
+    // }
+
+    setStartDate(mySlotData[0].startTime)
+    setToDate(mySlotData[mySlotData.length - 1].endTime)
+
     if (props.slotDiary == null) {
       diaryData([], slots, dispatch)
     } else {
@@ -245,7 +266,7 @@ function TimeSlotManagement(props) {
     } else return false
   }
 
-  const verifyDetail = (e) => {
+  const verifyDetail = (e, myslots, mySlotData, myisSelected) => {
     const { dispatch } = props
     if (props.slotDiary == null) {
       diaryData([], slots, dispatch)
@@ -253,15 +274,16 @@ function TimeSlotManagement(props) {
       diaryData(props.slotDiary, slots, dispatch)
     }
 
-    setActualData()
+    setActualData(myslots, mySlotData, myisSelected)
   }
 
-  const setActualData = () => {
+  const setActualData = (myslots, mySlotData, myisSelected) => {
     const { dispatch } = props
-    const sortedAray = _.sortBy(slotsData, 'startTime')
+    const sortedAray = _.sortBy(mySlotData, 'startTime')
 
     const _format = 'YYYY-MM-DD'
     const date = selectedDate
+
     const nextDate = moment(selectedDate, _format).add(1, 'days').format(_format)
     const startTime = formatDateAndTime(selectedDate, sortedAray && sortedAray[0].startTime)
     const endTime = formatDateAndTime(
@@ -279,16 +301,21 @@ function TimeSlotManagement(props) {
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
+    setSlotsData(mySlotData)
+    setSlots(myslots)
+    setIsSelected(myisSelected)
     setCheck(true)
     setDisabled(false)
     setTempDate(date)
     setTempEndTime(endTime)
     setTempStartTime(startTime)
-    setTempSlot(slots)
+    setTempSlot(myslots)
     setStartDate(sDate)
     setToDate(eDate)
+    setTimeEnd(endTime)
+    setTimeStart(startTime)
 
-    dispatch(setSlotData(date, startTime, endTime, slots))
+    dispatch(setSlotData(date, startTime, endTime, myslots))
     dispatch(setDataSlotsArray(sortedAray))
   }
 
@@ -310,7 +337,7 @@ function TimeSlotManagement(props) {
   }
 
   const onDone = () => {
-    setActualData()
+    // setActualData()
     const dataActual = []
     const _format = 'YYYY-MM-DD'
     const { dispatch, navigation, route, allTimeSlot } = props
@@ -384,28 +411,31 @@ function TimeSlotManagement(props) {
 
   const showDetailNew = (e) => {
     const tempAray = slotsData.length != 0 ? _.sortBy(slotsData, 'id') : []
+    let mySlotData = [...slotsData]
+    let myslots = [...slots]
+    let myisSelected = [...isSelected]
     if (slotsData.length == 0) {
-      slotsData.push(e)
-      slots.push(e.id)
-      isSelected.push(e.id)
-      fortyPercent(e)
-      verifyDetail(e)
+      mySlotData.push(e)
+      myslots.push(e.id)
+      myisSelected.push(e.id)
+      // fortyPercent(e)
+      verifyDetail(e, myslots, mySlotData, myisSelected)
     } else {
       if (e.id == tempAray[0].id - 1 || e.id == tempAray[tempAray.length - 1].id + 1) {
-        slotsData.push(e)
-        slots.push(e.id)
-        isSelected.push(e.id)
-        fortyPercent(e)
-        verifyDetail(e)
+        mySlotData.push(e)
+        myslots.push(e.id)
+        myisSelected.push(e.id)
+        // fortyPercent(e)
+        verifyDetail(e, myslots, mySlotData, myisSelected)
       } else if (_.contains(tempAray, e)) {
       } else {
         setSlotsData([e])
         setSlots([e.id])
         setTempSlot([e.id])
         setIsSelected([e.id])
-        setSSlots([])
-        fortyPercent(e)
-        verifyDetail(e)
+        // setSSlots([])
+        // fortyPercent(e)
+        verifyDetail(e, [e.id], [e], [e.id])
       }
     }
   }
@@ -416,7 +446,7 @@ function TimeSlotManagement(props) {
     isSelected.push(e.id)
     const tempAray = _.sortBy(slotsData, 'id')
 
-    fortyPercent(e)
+    // fortyPercent(e)
 
     if (tempAray[1] == undefined) {
       verifyDetail(e)
@@ -751,7 +781,7 @@ function TimeSlotManagement(props) {
         const end = shiftArr[2].armsShift.endTime
 
         if (isTimeBetween(start, end, e.startTime)) return true
-        else return false
+        else return true
       } else if (array && array[0].armsShift && array.length == 1) {
         const start = shiftArr[0].armsShift.startTime
         const end = shiftArr[0].armsShift.endTime
@@ -822,6 +852,32 @@ function TimeSlotManagement(props) {
     })
   }
 
+  const handleTimeStart = (time, name) => {
+    setTimeStart(time)
+
+    if (timeEnd) onHandleTimeSlotChange(time, 'start')
+  }
+
+  const handleTimeEnd = (time, name) => {
+    setTimeEnd(time)
+
+    if (timeStart) onHandleTimeSlotChange(time, 'end')
+  }
+
+  const onHandleTimeSlotChange = (time, from) => {
+    if (from == 'end') {
+      if (timeStart && time && time > timeStart) {
+        onEditSlots(timeStart, time, true)
+        setDisabled(false)
+      }
+    } else {
+      if (time && timeEnd && timeEnd > time) {
+        onEditSlots(time, timeEnd, true)
+        setDisabled(false)
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <CalendarComponent
@@ -849,7 +905,7 @@ function TimeSlotManagement(props) {
           onPress={(value) => setCalendarVisible(value)}
         />
       </View>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={styles.slotView}>
         <ScrollView
           style={{ marginTop: '9%' }}
           scrollEnabled={false}
@@ -860,7 +916,7 @@ function TimeSlotManagement(props) {
           <View style={{ flexDirection: 'column' }}>
             {minArray.map((i) => {
               return (
-                <View style={styles.minCol}>
+                <View style={styles.minCol} key={i}>
                   <Text style={styles.timeText}>{i}</Text>
                 </View>
               )
@@ -927,7 +983,7 @@ function TimeSlotManagement(props) {
                                       : setColor(e) == 'closed'
                                       ? '#e6e6e6'
                                       : setShift(e) == true
-                                      ? 'white'
+                                      ? '#ffffff'
                                       : '#f1f1f1',
 
                                     borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
@@ -952,6 +1008,49 @@ function TimeSlotManagement(props) {
             </ScrollView>
           </View>
         </ScrollView>
+      </View>
+
+      {/* <View style={styles.timeInput}>
+        <TouchableInput
+          placeholder="Start Time"
+          showDropDownIcon={false}
+          isRow={true}
+          iconSource={require('../../../assets/icons/time.png')}
+          showIconOrImage={true}
+        />
+        <TouchableInput
+          placeholder="End Time"
+          showDropDownIcon={false}
+          isRow={true}
+          iconSource={require('../../../assets/icons/time.png')}
+          showIconOrImage={true}
+        />
+      </View> */}
+
+      <View style={styles.timeInput}>
+        <DateTimePicker
+          placeholderLabel={'Select Time'}
+          name={'time'}
+          mode={'time'}
+          // showError={checkValidation === true && time === ''}
+          errorMessage={'Required'}
+          iconSource={require('../../../assets/icons/time.png')}
+          date={timeStart ? new Date(moment(timeStart).format()) : new Date()}
+          selectedValue={timeStart ? helper.formatTime(timeStart) : ''}
+          handleForm={(value, name) => handleTimeStart(value, name)}
+        />
+
+        <DateTimePicker
+          placeholderLabel={'Select Time'}
+          name={'time'}
+          mode={'time'}
+          // showError={checkValidation === true && viewing.time === ''}
+          errorMessage={'Required'}
+          iconSource={require('../../../assets/icons/time.png')}
+          date={timeEnd ? new Date(moment(timeEnd).format()) : new Date()}
+          selectedValue={timeEnd ? helper.formatTime(timeEnd) : ''}
+          handleForm={(value, name) => handleTimeEnd(value, name)}
+        />
       </View>
 
       <View style={styles.buttonInputWrap}>

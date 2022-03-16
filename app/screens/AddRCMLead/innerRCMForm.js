@@ -270,6 +270,7 @@ class InnerRCMForm extends Component {
             label={'CREATE LEAD'}
             onPress={() => formSubmit(formData)}
             loading={loading}
+            disabled={loading}
           />
         </View>
       </View>

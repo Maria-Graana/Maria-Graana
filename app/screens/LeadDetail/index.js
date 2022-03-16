@@ -464,7 +464,9 @@ class LeadDetail extends React.Component {
               <Text style={styles.headingText}>Requirement </Text>
               <Text style={styles.labelText}>
                 {!lead.projectId && leadSize}
-                {!lead.projectId && `${helper.capitalize(lead.subtype)} to ${type}`}
+                {!lead.projectId && type !== 'Investment'
+                  ? `${helper.capitalize(lead.subtype)} to ${type}`
+                  : `Looking to Invest in Any Project`}
                 {lead.projectId && (lead.projectType ? helper.capitalize(lead.projectType) : '-')}
               </Text>
             </View>
@@ -498,9 +500,7 @@ class LeadDetail extends React.Component {
             <View style={styles.cardItemWhite}>
               <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
               {purposeTab === 'invest' ? (
-                <Text style={styles.labelText}>
-                  {projectName != '' ? projectName : 'Project not specified'}
-                </Text>
+                <Text style={styles.labelText}>{projectName ? projectName : 'Any Project'}</Text>
               ) : (
                 <Text style={styles.labelText}>
                   {!lead.projectId &&

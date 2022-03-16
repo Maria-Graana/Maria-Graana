@@ -74,9 +74,9 @@ class CMLeadFrom extends Component {
               selectedItem={formData.projectId}
               placeholder="Project"
             />
-            {checkValidation === true && formData.projectId === '' && (
+            {/* {checkValidation === true && formData.projectId === '' && (
               <ErrorMessage errorMessage={'Required'} />
-            )}
+            )} */}
           </View>
         </View>
 
@@ -87,8 +87,9 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProductType}
               name={'projectType'}
-              selectedItem={formData.projectType}
+              selectedItem={formData.armsProjectTypeId}
               placeholder="Product Type"
+              enabled={formData.projectId === '' || formData.projectId === null ? false : true}
             />
             {/* {
               checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
@@ -134,6 +135,7 @@ class CMLeadFrom extends Component {
             label={'CREATE LEAD'}
             onPress={() => formSubmit(formData)}
             loading={loading}
+            disabled={loading}
           />
         </View>
       </View>

@@ -21,7 +21,7 @@ import styles from './style'
 import types from '../../types'
 import config from '../../config'
 import helper from '../../helper'
-import * as Sentry from 'sentry-expo'
+// import * as Sentry from 'sentry-expo'
 import Constants from 'expo-constants'
 
 class Login extends Component {
@@ -68,33 +68,33 @@ class Login extends Component {
           password: formData.password,
           deviceId: Constants.deviceId,
         }
-        if (config.channel === 'production') {
-          Sentry.captureException(`Before Calling Login Action! ${JSON.stringify(creds.email)}`)
-        }
+        // if (config.channel === 'production') {
+        //   Sentry.captureException(`Before Calling Login Action! ${JSON.stringify(creds.email)}`)
+        // }
         this.props
           .dispatch(setuser(creds))
           .then((response) => {
-            if (config.channel === 'production') {
-              Sentry.captureException(
-                `After Calling Login Action Success! ${JSON.stringify(creds.email)}`
-              )
-            }
+            // if (config.channel === 'production') {
+            //   Sentry.captureException(
+            //     `After Calling Login Action Success! ${JSON.stringify(creds.email)}`
+            //   )
+            // }
             if (!response.data) {
               this.setState({ showError: true, validEmail: false })
             }
           })
           .catch((error) => {
-            helper.errorToast("Invalid Email or Password!")
+            helper.errorToast('Invalid Email or Password!')
             this.props.dispatch({
               type: types.USER_LOADED,
             })
-            if (config.channel === 'production') {
-              Sentry.captureException(
-                `After Calling Login Action Error! ${JSON.stringify(
-                  creds.email
-                )} : ${JSON.stringify(error)}`
-              )
-            }
+            // if (config.channel === 'production') {
+            //   Sentry.captureException(
+            //     `After Calling Login Action Error! ${JSON.stringify(
+            //       creds.email
+            //     )} : ${JSON.stringify(error)}`
+            //   )
+            // }
           })
       }
     }

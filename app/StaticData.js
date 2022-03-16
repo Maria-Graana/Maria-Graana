@@ -14,6 +14,80 @@ export default StaticData = {
       name: 'Meeting with PP',
       value: 'meeting_with_pp',
     },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+  ],
+  diaryTasksMeet: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
+    },
+  ],
+  diaryTasksView: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Viewing',
+      value: 'viewing',
+    },
+  ],
+  diaryTasksMeetView: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Viewing',
+      value: 'viewing',
+    },
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
+    },
   ],
   diaryTasksCM: [
     {
@@ -313,6 +387,13 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
+  buyRentFilterAddTask: [
+    { value: 'all', name: 'All' },
+    { value: 'open', name: 'Open' },
+    { value: 'shortlisting', name: 'Shortlisting' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
+  ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'called', name: 'Called' },
@@ -328,15 +409,22 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
-
-  investmentFilterDeals: [
+  investmentFilterLeadsAddTask: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
     { value: 'in_progress', name: 'In-progress' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
+  ],
+
+  investmentFilterDeals: [
+    { value: 'all', name: 'All' },
+    // { value: 'open', name: 'Open' },
+    // { value: 'in_progress', name: 'In-progress' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
-    { value: 'closed_lost', name: 'Closed Lost' },
+    // { value: 'closed_lost', name: 'Closed Lost' },
   ],
   commentsFeedbackCall: [
     { value: 'no_response', name: 'No Response', colorCode: '#FEC107' },
@@ -746,6 +834,7 @@ export default StaticData = {
     { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
     { value: 'Rent Adjustment', name: 'Rent Adjustment' },
     { value: 'Inter-Mall Adjustment', name: 'Inter-Mall Adjustment' },
+    { value: 'asset_adjustment', name: 'Asset Adjustment' },
   ],
   unitType: [
     { value: 'fullUnit', name: 'Full Unit' },

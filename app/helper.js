@@ -8,6 +8,7 @@ import { Linking } from 'react-native'
 import _ from 'underscore'
 import Clients from '../assets/img/client.png'
 import DashboardImg from '../assets/img/Dashboard.png'
+import ContactsImg from '../assets/img/contacts.png'
 import DiaryImg from '../assets/img/diary.png'
 import LeadsImg from '../assets/img/lead-icon-l.png'
 import InventoryImg from '../assets/img/property_leads.png'
@@ -220,6 +221,8 @@ const helper = {
           return DealIcon
         case 'ProjectInventory':
           return ProjectInventoryIcon
+        case 'Contacts':
+          return ContactsImg
         default:
           break
       }
@@ -338,6 +341,9 @@ const helper = {
   formatTime(time) {
     return moment(time).format('hh:mm a')
   },
+  formatTimeForSlot(time) {
+    return moment(time).format('hh:mm:ss')
+  },
   formatDateAndTime(date, time) {
     return moment(date + moment(time).format('hh:mm a'), 'YYYY-MM-DDLT').format(
       'YYYY-MM-DDTHH:mm:ssZ'
@@ -345,6 +351,9 @@ const helper = {
   },
   formatDateTime(date, time) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+  },
+  formatDateTimeforPicker(date, time) {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss.sssZ')
   },
   createContactPayload(customer) {
     let payload = []

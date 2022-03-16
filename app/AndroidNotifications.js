@@ -2,13 +2,12 @@
 
 import * as React from 'react'
 import { connect } from 'react-redux'
-import * as Permissions from 'expo-permissions'
+import Constants from 'expo-constants'
 import { View, Alert, Platform } from 'react-native'
 import axios from 'axios'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
-import * as Sentry from 'sentry-expo'
-import Constants from 'expo-constants'
+// import * as Sentry from 'sentry-expo'
 
 class AndroidNotifications extends React.Component {
   constructor(props) {
@@ -25,10 +24,10 @@ class AndroidNotifications extends React.Component {
   registerForPushNotificationsAsync = async () => {
     const { user } = this.props
     if (Constants.isDevice) {
-      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS)
+      const { status: existingStatus } = await Notifications.getPermissionsAsync()
       let finalStatus = existingStatus
       if (existingStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS)
+        const { status } = await Notifications.getPermissionsAsync()
         finalStatus = status
       }
       if (finalStatus !== 'granted') {

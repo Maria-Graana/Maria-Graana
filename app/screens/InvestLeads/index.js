@@ -30,6 +30,8 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import { addInvestmentGuide, setReferenceGuideData } from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -127,7 +129,7 @@ class InvestLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const { hasBooking = false } = this.props.route.params // for Deals we need to set filter to closed won
+    const { hasBooking = false, screen } = this.props.route.params // for Deals we need to set filter to closed won
     const sortValue = await this.getSortOrderFromStorage()
     let statusValue = ''
     if (hasBooking) {
@@ -140,10 +142,17 @@ class InvestLeads extends React.Component {
         this.fetchLeads()
       })
     } else {
-      storeItem('statusFilterInvest', 'open')
-      this.setState({ statusFilter: 'open', sort: sortValue }, () => {
-        this.fetchLeads()
-      })
+      if (screen === 'MyDeals') {
+        storeItem('statusFilterInvest', 'all')
+        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      } else {
+        storeItem('statusFilterInvest', 'open')
+        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      }
     }
   }
   setIsMenuVisible = (value, data) => {
@@ -196,7 +205,7 @@ class InvestLeads extends React.Component {
       statusFilter,
       statusFilterType,
     } = this.state
-    const { hasBooking } = this.props.route.params
+    const { hasBooking, navFrom } = this.props.route.params
     const { user } = this.props
     this.setState({ loading: true })
     let query = ``
@@ -204,33 +213,39 @@ class InvestLeads extends React.Component {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads/projects?id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&assignToMe=${true}&page=${page}&hasBooking=${hasBooking}`)
+          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       }
     } else {
       if (statusFilter === 'in_progress') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&assignToMe=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
       }
     }
     axios
       .get(`${query}`)
       .then((res) => {
+        let leadNewData = page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
+        if (leadNewData && navFrom) {
+          leadNewData = leadNewData.filter(
+            (item) => item.status !== 'closed_won' && item.status !== 'closed_lost'
+          )
+        }
         this.setState(
           {
-            leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+            leadsData: leadNewData,
             loading: false,
             onEndReachedLoader: false,
             totalLeads: res.data.count,
@@ -333,34 +348,42 @@ class InvestLeads extends React.Component {
     }
   }
   navigateTo = (data) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
     const { navigation, route } = this.props
     const unitData = route.params.unitData
 
-    this.props.dispatch(setlead(data))
-    let page = ''
-    if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
+    if (navFrom) {
+      this.props.dispatch(setlead(data))
+      navigation.navigate('AddDiary', {
         lead: data,
-        purposeTab: 'invest',
-        screenName: screen,
+        cmLeadId: data.id,
       })
     } else {
-      if (
-        data.status === 'token' ||
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payments'
+      this.props.dispatch(setlead(data))
+      let page = ''
+      if (data.readAt === null) {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: data,
+          purposeTab: 'invest',
+          screenName: screen,
+        })
       } else {
-        page = 'Meetings'
-      }
+        if (
+          data.status === 'token' ||
+          data.status === 'payment' ||
+          data.status === 'closed_won' ||
+          data.status === 'closed_lost'
+        ) {
+          page = 'Payments'
+        } else {
+          page = 'Meetings'
+        }
 
-      navigation.navigate('CMLeadTabs', {
-        screen: unitData ? 'Payments' : page,
-        params: { lead: data, unitData: unitData, screenName: screen },
-      })
+        navigation.navigate('CMLeadTabs', {
+          screen: unitData ? 'Payments' : page,
+          params: { lead: data, unitData: unitData, screenName: screen },
+        })
+      }
     }
   }
 
@@ -642,8 +665,13 @@ class InvestLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
     } = this.state
-    const { user, permissions } = this.props
-    const { screen, hasBooking = false } = this.props.route.params
+    const { user, permissions, lead, dispatch, referenceGuide } = this.props
+    const {
+      screen,
+      hasBooking = false,
+      navFrom = null,
+      hideCloseLostFilter,
+    } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
     return (
@@ -689,7 +717,11 @@ class InvestLeads extends React.Component {
                 <PickerComponent
                   placeholder={'Lead Status'}
                   data={
-                    hasBooking ? StaticData.investmentFilterDeals : StaticData.investmentFilterLeads
+                    hasBooking
+                      ? StaticData.investmentFilterDeals
+                      : hideCloseLostFilter
+                      ? StaticData.investmentFilterLeadsAddTask
+                      : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -722,6 +754,19 @@ class InvestLeads extends React.Component {
             </View>
           )}
         </View>
+        <ReferenceGuideModal
+          isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
+          hideReferenceGuideModal={() =>
+            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
+          }
+          addInvestmentGuide={(guideNo, attachments) =>
+            dispatch(addInvestmentGuide({ guideNo, attachments }, lead)).then((res) => {
+              this.fetchLeads()
+            })
+          }
+          referenceGuideLoading={referenceGuide.referenceGuideLoading}
+          referenceErrorMessage={referenceGuide.referenceErrorMessage}
+        />
         {leadsData && leadsData.length > 0 ? (
           <FlatList
             data={leadsData}
@@ -737,11 +782,17 @@ class InvestLeads extends React.Component {
                 callNumber={this.callAgain}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
-                screen={screen}
+                screen={navFrom ? 'AddDiary' : screen}
+                navFrom={navFrom}
                 isMenuVisible={isMenuVisible}
                 setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
                 checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
                 navigateToShareScreen={(data) => this.navigateToShareScreen(data)}
+                addGuideReference={() =>
+                  dispatch(
+                    setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true })
+                  )
+                }
               />
             )}
             onEndReached={() => {
@@ -764,7 +815,7 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"
@@ -836,6 +887,7 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    referenceGuide: store.diary.referenceGuide,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

@@ -62,6 +62,7 @@ class LeadTile extends React.Component {
       )
     else return ' '
   }
+  // removed call button temporarily
 
   render() {
     const {
@@ -89,6 +90,7 @@ class LeadTile extends React.Component {
       assignLeadTo,
       goToHistory,
       getCallHistory,
+      addGuideReference = null,
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -184,7 +186,7 @@ class LeadTile extends React.Component {
                         },
                       ]}
                     >
-                      Provide Listings
+                      Demand Lead
                     </Text>
                   </View>
                 )}
@@ -220,7 +222,7 @@ class LeadTile extends React.Component {
                 <View style={[styles.contentMain, AppStyles.mbTen, { flexDirection: 'row' }]}>
                   {purposeTab === 'invest' ? (
                     <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                      {data.projectId && data.minPrice && data.maxPrice ? (
+                      {data && data.minPrice && data.maxPrice ? (
                         <Text style={[styles.largeText, changeColor]} numberOfLines={1}>
                           {helper.convertPriceToIntegerString(
                             data.minPrice,
@@ -235,7 +237,9 @@ class LeadTile extends React.Component {
                       {/* Disabled Sentry in development  Sentry in */}
                       {leadSize}
                       {helper.capitalize(data.subtype)} {data.purpose != null && 'to '}
-                      {data.purpose === 'sale' ? 'Buy' : 'Rent'}
+                      {(data.purpose && data.purpose === 'sale') || data.purpose === 'buy'
+                        ? 'Buy'
+                        : 'Rent'}
                     </Text>
                   )}
 
@@ -285,6 +289,16 @@ class LeadTile extends React.Component {
                           }}
                           title="Re-Assign"
                         />
+                        {data && !data.guideReference ? (
+                          <Menu.Item
+                            onPress={() => {
+                              addGuideReference()
+                              setIsMenuVisible(false, data)
+                            }}
+                            title="Add Guide Reference #"
+                          />
+                        ) : null}
+
                         <Menu.Item onPress={() => {}} title="Delete" disabled />
                       </Menu>
                     ) : null}
@@ -336,7 +350,7 @@ class LeadTile extends React.Component {
                             }}
                             title="Assign To Investment Advisor"
                           />
-                        ) : data && data.purpose == 'sell' ? (
+                        ) : data && (data.purpose == 'sell' || data.purpose == 'rentout') ? (
                           <Menu.Item
                             onPress={() => {
                               assignLeadTo(data)
@@ -363,7 +377,7 @@ class LeadTile extends React.Component {
                 {/* ****** Price Wrap */}
                 {purposeTab != 'invest' ? (
                   <View style={[styles.contentMultiMain]}>
-                    {!data.projectId && data.min_price && data.price ? (
+                    {!data && data.min_price && data.price ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {helper.convertPriceToIntegerString(
                           data.min_price,
@@ -375,12 +389,10 @@ class LeadTile extends React.Component {
                   </View>
                 ) : (
                   <View style={[styles.contentMultiMain]}>
-                    {data.projectId ? (
+                    {data ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {purposeTab === 'invest' &&
-                          helper.capitalize(
-                            projectName != '' ? projectName : 'Project not specified'
-                          )}
+                          helper.capitalize(projectName != '' ? projectName : 'Any Project')}
                         {data.projectType &&
                           data.projectType != '' &&
                           ` - ${helper.capitalize(data.projectType)}`}
@@ -428,7 +440,7 @@ class LeadTile extends React.Component {
                 </View>
               </View>
 
-              {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
+              {/* {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
                 <></>
               ) : (
                 <View style={styles.phoneMain}>
@@ -451,7 +463,7 @@ class LeadTile extends React.Component {
                     </TouchableOpacity>
                   ) : null}
                 </View>
-              )}
+              )} */}
             </View>
           </View>
         </View>

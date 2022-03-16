@@ -4,9 +4,9 @@ import axios from 'axios'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
-import * as Permissions from 'expo-permissions'
 import { StyleProvider } from 'native-base'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -15,10 +15,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import { connect } from 'react-redux'
-import _ from 'underscore'
+import * as MediaLibrary from 'expo-media-library'
+import { Camera } from 'expo-camera'
 import getTheme from '../../../native-base-theme/components'
 import formTheme from '../../../native-base-theme/variables/formTheme'
+import _ from 'underscore'
 import {
   addImage,
   flushImages,
@@ -508,9 +509,9 @@ class AddInventory extends Component {
   }
 
   getPermissionAsync = async () => {
-    let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL)
+    let { status: camStatus } = await MediaLibrary.requestPermissionsAsync()
     if (camStatus !== 'granted') {
-      const status = await Permissions.askAsync(Permissions.CAMERA_ROLL).status
+      const status = await MediaLibrary.requestPermissionsAsync().status
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!')
         return false
@@ -531,9 +532,9 @@ class AddInventory extends Component {
   }
 
   takePhotos = async () => {
-    let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA)
+    let { status: camStatus } = await Camera.requestPermissionsAsync()
     if (camStatus !== 'granted') {
-      const status = await Permissions.askAsync(Permissions.CAMERA).status
+      const status = await Camera.requestPermissionsAsync().status
       if (status !== 'granted') {
         return
       }
@@ -616,7 +617,7 @@ class AddInventory extends Component {
   }
 
   _getLocationAsync = async () => {
-    const { status } = await Location.requestPermissionsAsync()
+    const { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== 'granted') {
       alert('Permission to access location was denied')
     }

@@ -11,7 +11,8 @@ import {
 } from 'react-native'
 import { StyleProvider } from 'native-base'
 import * as Location from 'expo-location'
-import * as Permissions from 'expo-permissions'
+import * as MediaLibrary from 'expo-media-library'
+import { Camera } from 'expo-camera'
 import * as ImagePicker from 'expo-image-picker'
 import getTheme from '../../../native-base-theme/components'
 import formTheme from '../../../native-base-theme/variables/formTheme'
@@ -519,9 +520,9 @@ class EditFieldAppProperty extends Component {
   }
 
   getPermissionAsync = async () => {
-    let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA_ROLL)
+    let { status: camStatus } = await MediaLibrary.requestPermissionsAsync()
     if (camStatus !== 'granted') {
-      const status = await Permissions.askAsync(Permissions.CAMERA_ROLL).status
+      const status = await MediaLibrary.requestPermissionsAsync().status
       if (status !== 'granted') {
         alert('Sorry, we need camera roll permissions to make this work!')
         return false
@@ -542,9 +543,9 @@ class EditFieldAppProperty extends Component {
   }
 
   takePhotos = async () => {
-    let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA)
+    let { status: camStatus } = await Camera.requestPermissionsAsync()
     if (camStatus !== 'granted') {
-      const status = await Permissions.askAsync(Permissions.CAMERA).status
+      const status = await Camera.requestPermissionsAsync().status
       if (status !== 'granted') {
         return
       }
@@ -627,11 +628,11 @@ class EditFieldAppProperty extends Component {
   }
 
   _getLocationAsync = async () => {
-    const { status } = await Location.requestPermissionsAsync()
+    const { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== 'granted') {
       alert('Permission to access location was denied')
     }
-    const location = await Location.getCurrentPositionAsync()
+    const location = await Location.getCurrentPositionAsync().status
     if (location && location.coords && location.coords.latitude && location.coords.longitude) {
       this.handleForm(location.coords.latitude, 'lat')
       this.handleForm(location.coords.longitude, 'lon')

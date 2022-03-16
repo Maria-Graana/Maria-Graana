@@ -105,14 +105,14 @@ class ManualMap extends Component {
   }
 
   getLocation = async () => {
-    const { status } = await Location.requestPermissionsAsync()
+    const { status } = await Location.requestBackgroundPermissionsAsync()
     if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied')
+      alert(
+        'Permission to access location was denied, please go to phone settings and give permission to ARMS app to continue'
+      )
       return
     }
     const location = await Location.getCurrentPositionAsync({})
-    //setLocation(location);
-    //console.log('Location : ', location);
     const region = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,

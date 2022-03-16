@@ -20,6 +20,7 @@ const TouchableInput = ({
   disabled = false,
   isFromDateFilter = false,
   iconMarginHorizontal = 6,
+  isRow = false,
 }) => {
   return (
     <View>
@@ -29,6 +30,7 @@ const TouchableInput = ({
             AppStyles.mainInputWrap,
             !isFromDateFilter && AppStyles.formControl,
             styles.rowStyle,
+            isRow && styles.isRow,
             { backgroundColor: disabled ? '#ddd' : '#fff' },
           ]}
         >
@@ -38,7 +40,8 @@ const TouchableInput = ({
           <Text
             style={[
               AppStyles.formFontSettings,
-              isFromDateFilter === false && AppStyles.inputPadLeft,
+              !isRow && isFromDateFilter === false && AppStyles.inputPadLeft,
+              isRow && styles.rightPad,
               {
                 color: isEmpty(value) ? AppStyles.colors.subTextColor : AppStyles.colors.textColor,
               },
@@ -56,7 +59,11 @@ const TouchableInput = ({
               />
             ) : (
               <Image
-                style={{ width: 26, height: 26, marginHorizontal: iconMarginHorizontal }}
+                style={{
+                  width: isRow ? 20 : 26,
+                  height: isRow ? 20 : 26,
+                  marginHorizontal: iconMarginHorizontal,
+                }}
                 source={iconSource}
               />
             )
@@ -78,5 +85,13 @@ const styles = StyleSheet.create({
   },
   iconStyle: {
     // paddingRight: 20,
+  },
+  isRow: {
+    borderRadius: 4,
+    padding: 15,
+  },
+  rightPad: {
+    paddingRight: '8%',
+    minWidth: '29%',
   },
 })

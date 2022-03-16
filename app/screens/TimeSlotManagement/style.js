@@ -6,7 +6,7 @@ export default styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    paddingBottom: '53%',
+    paddingBottom: '72%',
   },
   timePageBtn: {
     justifyContent: 'center',
@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
     marginRight: 15,
   },
   buttonInputWrap: {
-    marginTop: 15,
+    // marginTop: 15,
     justifyContent: 'flex-end',
   },
   minCol: {
@@ -61,5 +61,14 @@ export default styles = StyleSheet.create({
     paddingLeft: 5,
     paddingTop: 3,
     paddingBottom: 3,
+  },
+  slotView: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  timeInput: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginBottom: 10,
   },
 })

@@ -122,7 +122,7 @@ class AddCMLead extends Component {
         return item.value === value
       })
       formData['armsProjectTypeId'] = value
-      formData['projectType'] = value
+      formData['projectType'] = getProName.name
     }
     this.setState({ formData })
   }
@@ -133,7 +133,7 @@ class AddCMLead extends Component {
 
   formSubmit = () => {
     const { formData, getProject } = this.state
-    if (!formData.customerId || !formData.projectId) {
+    if (!formData.customerId || !formData.cityId) {
       this.setState({
         checkValidation: true,
       })
@@ -143,29 +143,24 @@ class AddCMLead extends Component {
           return item.value === formData.projectId
         })
         formData.projectName = project.name
+      } else {
+        formData.projectId = null
+        formData.projectName = null
       }
-      this.setState({ loading: true })
       formData.noProduct = false
-      axios
-        .post(`/api/leads/project`, formData)
-        .then((res) => {
-          helper.successToast('Lead created successfully')
-          RootNavigation.navigate('Leads')
-          // if (res.data.message) {
-          //   Alert.alert(
-          //     'Lead cannot be created as same lead already exists:',
-          //     `Lead id: ${res.data.leadId}\nAgent Name: ${res.data.agent}\nContact: ${res.data.contact}`,
-          //     [{ text: 'OK', style: 'cancel' }],
-          //     { cancelable: false }
-          //   )
-          // } else 
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => {
-          this.setState({ loading: false })
-        })
+      this.setState({ loading: true }, () => {
+        axios
+          .post(`/api/leads/project`, formData)
+          .then((res) => {
+            helper.successToast('Lead created successfully')
+            RootNavigation.navigate('Leads')
+            this.setState({ loading: false })
+          })
+          .catch((error) => {
+            console.log(error)
+            this.setState({ loading: false })
+          })
+      })
     }
   }
 

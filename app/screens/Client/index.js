@@ -34,6 +34,7 @@ class Client extends React.Component {
       loading: true,
       page: 1,
       pageSize: 50,
+      pageSize: 30,
       onEndReachedLoader: false,
       searchText: '',
       isSelected: false,
@@ -54,6 +55,12 @@ class Client extends React.Component {
   componentWillUnmount() {
     this.clearStateValues()
     this._unsubscribe()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchText !== this.state.searchText) {
+      this.fetchCustomer()
+    }
   }
 
   clearStateValues = () => {
@@ -84,10 +91,13 @@ class Client extends React.Component {
   }
 
   fetchCustomer = () => {
-    const { customers, page, pageSize } = this.state
+    const { customers, page, pageSize, searchText } = this.state
     const { selectedClient, selectedPOC } = this.props.route.params
-    const url = `/api/customer/find?pageSize=${pageSize}&page=${page}`
-
+    let url = ''
+    const clientName = searchText.replace(' ', '%20')
+    searchText !== ''
+      ? (url = `/api/customer/find?searchBy=name&q=${clientName}`)
+      : (url = `/api/customer/find?pageSize=${pageSize}&page=${page}`)
     axios
       .get(url)
       .then((res) => {
@@ -272,15 +282,15 @@ class Client extends React.Component {
     const { user } = this.props
     let createPermission = this.createPermission()
 
-    let data = []
-    if (searchText !== '' && data && data.length === 0) {
-      data = fuzzy.filter(searchText, customers, {
-        extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
-      })
-      data = data.map((item) => item.original)
-    } else {
-      data = customers
-    }
+    // let data = customers
+    // if (searchText !== '' && data && data.length === 0) {
+    //   data = fuzzy.filter(searchText, customers, {
+    //     extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
+    //   })
+    //   data = data.map((item) => item.original)
+    // } else {
+    //   data = customers
+    // }
     return !loading ? (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={[AppStyles.container, styles.container]}>
@@ -300,9 +310,9 @@ class Client extends React.Component {
           >
             <Ionicons name="md-add" color="#ffffff" />
           </Fab>
-          {data && data.length > 0 ? (
+          {customers && customers.length > 0 ? (
             <FlatList
-              data={data}
+              data={customers}
               renderItem={(item, index) => (
                 <ClientTile
                   data={item}

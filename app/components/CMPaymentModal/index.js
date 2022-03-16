@@ -220,30 +220,46 @@ const CMPaymentModal = ({
             ) : null}
 
             {CMPayment.type === 'asset_adjustment' && (
-              <SimpleInputText
-                name={'assetAdjDetails'}
-                fromatName={false}
-                placeholder={'Asset Adjustment Details'}
-                label={'ASSET ADJUSTMENT DETAILS'}
-                value={CMPayment.assetAdjDetails != '' ? CMPayment.assetAdjDetails : ''}
-                editable={CMPayment.status !== 'pendingAccount'}
-                formatValue={''}
-                onChangeHandle={handleCommissionChange}
-              />
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <SimpleInputText
+                    name={'assetAdjDetails'}
+                    fromatName={false}
+                    placeholder={'Asset Adjustment Details'}
+                    label={'ASSET ADJUSTMENT DETAILS'}
+                    value={CMPayment.assetAdjDetails != '' ? CMPayment.assetAdjDetails : ''}
+                    editable={CMPayment.status !== 'pendingAccount'}
+                    formatValue={''}
+                    onChangeHandle={handleCommissionChange}
+                  />
+                  {modalValidation === true &&
+                    (CMPayment.assetAdjDetails == undefined || CMPayment.assetAdjDetails == '') && (
+                      <ErrorMessage errorMessage={'Required'} />
+                    )}
+                </View>
+              </View>
             )}
 
             {CMPayment.type === 'Rent Adjustment' && (
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
                   <TouchableOpacity onPress={() => showPicker()} style={styles.input}>
-                    <Text style={styles.inputText}>
-                      {months[selectedMonth - 1]} {selectedYear}
-                    </Text>
+                    {CMPayment.rentMonth == undefined || CMPayment.rentMonth == '' ? (
+                      <Text style={styles.inputTextLabel}>Select Month</Text>
+                    ) : (
+                      <Text style={styles.inputText}>
+                        {months[selectedMonth - 1]} {selectedYear}
+                      </Text>
+                    )}
                     <Image
                       style={{ width: 26, height: 26 }}
                       source={require('../../../assets/img/calendar.png')}
                     />
                   </TouchableOpacity>
+                  {modalValidation === true &&
+                    (CMPayment.rentMonth == undefined || CMPayment.rentMonth == '') && (
+                      <ErrorMessage errorMessage={'Required'} />
+                    )}
                 </View>
               </View>
             )}
@@ -619,6 +635,12 @@ const styles = StyleSheet.create({
   inputText: {
     fontSize: 16,
     // fontWeight: '500',
+    // marginLeft: 15,
+  },
+  inputTextLabel: {
+    fontSize: 16,
+    fontWeight: '300',
+    color: '#8e8e8e',
     // marginLeft: 15,
   },
 })

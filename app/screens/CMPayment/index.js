@@ -867,75 +867,96 @@ class CMPayment extends Component {
       return
     }
     if (
-      CMPayment.installmentAmount != null &&
-      CMPayment.installmentAmount != '' &&
-      CMPayment.type != ''
+      CMPayment.type &&
+      CMPayment.type == 'Rent Adjustment' &&
+      (CMPayment.rentAdjLeadID == null ||
+        CMPayment.rentAdjLeadID == undefined ||
+        CMPayment.rentMonth == '' ||
+        CMPayment.rentMonth == undefined)
     ) {
-      this.setState({
-        addPaymentLoading: true,
-      })
-      if (Number(CMPayment.installmentAmount) <= 0) {
-        this.setState({
-          buyerNotZero: true,
-          addPaymentLoading: false,
-          assignToAccountsLoading: false,
-        })
-        return
-      }
-      let body = {}
-
-      if (editable === false) {
-        // for payment addition
-        if (
-          CMPayment.type === 'cheque' ||
-          CMPayment.type === 'pay-Order' ||
-          CMPayment.type === 'bank-Transfer'
-        ) {
-          // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation()
-          if (isValid) {
-            this.addEditCMInstrumentOnServer()
-          }
-        } else {
-          // for all other types
-          body = {
-            ...CMPayment,
-            cmLeadId: lead.id,
-            armsUserId: user.id,
-            addedBy: 'buyer',
-            installmentAmount: CMPayment.installmentAmount,
-          }
-          this.addCMPayment(body)
-        }
-        delete body.visible
-      } else {
-        // for payment updation
-        if (
-          CMPayment.type === 'cheque' ||
-          CMPayment.type === 'pay-Order' ||
-          CMPayment.type === 'bank-Transfer'
-        ) {
-          // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation()
-          if (isValid) {
-            this.addEditCMInstrumentOnServer(true)
-          }
-        } else {
-          // for all other types
-          body = {
-            ...CMPayment,
-            cmLeadId: lead.id,
-            armsUserId: user.id,
-            installmentAmount: CMPayment.installmentAmount,
-          }
-          this.updateCMPayment(body)
-        }
-      }
-    } else {
-      // Installment amount or type is missing so validation goes true, show error
       this.setState({
         modalValidation: true,
       })
+    } else if (
+      CMPayment.type &&
+      CMPayment.type == 'asset_adjustment' &&
+      (CMPayment.assetAdjDetails == '' || CMPayment.assetAdjDetails == undefined)
+    ) {
+      this.setState({
+        modalValidation: true,
+      })
+    } else {
+      if (
+        CMPayment.installmentAmount != null &&
+        CMPayment.installmentAmount != '' &&
+        CMPayment.type != ''
+      ) {
+        this.setState({
+          addPaymentLoading: true,
+        })
+        if (Number(CMPayment.installmentAmount) <= 0) {
+          this.setState({
+            buyerNotZero: true,
+            addPaymentLoading: false,
+            assignToAccountsLoading: false,
+          })
+          return
+        }
+        let body = {}
+
+        if (editable === false) {
+          // for payment addition
+          if (
+            CMPayment.type === 'cheque' ||
+            CMPayment.type === 'pay-Order' ||
+            CMPayment.type === 'bank-Transfer'
+          ) {
+            // for cheque,pay order and bank transfer
+            let isValid = this.checkInstrumentValidation()
+            if (isValid) {
+              this.addEditCMInstrumentOnServer()
+            }
+          } else {
+            // for all other types
+            body = {
+              ...CMPayment,
+              cmLeadId: lead.id,
+              armsUserId: user.id,
+              addedBy: 'buyer',
+              installmentAmount: CMPayment.installmentAmount,
+            }
+            this.addCMPayment(body)
+          }
+          delete body.visible
+        } else {
+          // for payment updation
+          if (
+            CMPayment.type === 'cheque' ||
+            CMPayment.type === 'pay-Order' ||
+            CMPayment.type === 'bank-Transfer'
+          ) {
+            // for cheque,pay order and bank transfer
+            let isValid = this.checkInstrumentValidation()
+            if (isValid) {
+              this.addEditCMInstrumentOnServer(true)
+            }
+          } else {
+            // for all other types
+            body = {
+              ...CMPayment,
+              cmLeadId: lead.id,
+              armsUserId: user.id,
+              installmentAmount: CMPayment.installmentAmount,
+            }
+            this.updateCMPayment(body)
+          }
+        }
+      } else {
+        // Installment amount or type is missing so validation goes true, show error
+        this.setState({
+          modalValidation: true,
+        })
+      }
     }
   }
 

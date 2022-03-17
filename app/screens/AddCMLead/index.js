@@ -154,7 +154,6 @@ class AddCMLead extends Component {
           .then((res) => {
             helper.successToast('Lead created successfully')
             RootNavigation.navigate('Leads')
-            this.setState({ loading: false })
           })
           .catch((error) => {
             console.log(error)

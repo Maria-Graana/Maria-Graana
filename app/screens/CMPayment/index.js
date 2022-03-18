@@ -886,7 +886,7 @@ class CMPayment extends Component {
     ) {
       this.setState({
         modalValidation: true,
-      })
+      }) //For Rebate Adjustment
     } else if (
       CMPayment.type &&
       CMPayment.type == 'asset_adjustment' &&

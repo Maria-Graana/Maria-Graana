@@ -192,6 +192,7 @@ const CMPaymentModal = ({
               </View>
             )}
 
+            {/* The View for Lead Details */}
             {CMPayment.rentAdjLeadID &&
               SelectedLeadDetails &&
               SelectedLeadDetails.length != 0 &&
@@ -320,6 +321,7 @@ const CMPaymentModal = ({
               )
             ) : null}
 
+            {/* Attachments View */}
             {CMPayment.installmentAmount != null &&
               CMPayment.installmentAmount != '' &&
               CMPayment.type != '' &&
@@ -356,6 +358,7 @@ const CMPaymentModal = ({
                       >
                         ATTACHMENTS
                       </Text>
+                      {/* For Check if Required in case of Rebate */}
                     </TouchableOpacity>
                     {CMPayment.type == 'Rebate Adjustment' &&
                       modalValidation === true &&

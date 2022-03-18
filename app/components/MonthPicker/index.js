@@ -60,7 +60,7 @@ class MonthPicker extends Component {
 
   dismiss = () => {
     const { CMPayment = null, dispatch } = this.props
-
+    //On Cancel Picker Should open the modal Add payments again
     if (CMPayment) {
       const newSecondFormData = {
         ...CMPayment,

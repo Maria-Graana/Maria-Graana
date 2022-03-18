@@ -670,7 +670,7 @@ class CMPayment extends Component {
     }
 
     if (name === 'rentAdjLeadID') {
-      const leadSelected = allLeadsData.map((item) => {
+      const leadSelected = allLeadsData.filter((item) => {
         if (item.id == value) return item
       })
 
@@ -873,6 +873,16 @@ class CMPayment extends Component {
         CMPayment.rentAdjLeadID == undefined ||
         CMPayment.rentMonth == '' ||
         CMPayment.rentMonth == undefined)
+    ) {
+      this.setState({
+        modalValidation: true,
+      })
+    } else if (
+      CMPayment.type &&
+      CMPayment.type == 'Rebate Adjustment' &&
+      (CMPayment.paymentAttachments.length == 0 ||
+        CMPayment.paymentAttachments === null ||
+        CMPayment.paymentAttachments == undefined)
     ) {
       this.setState({
         modalValidation: true,
@@ -2007,7 +2017,7 @@ class CMPayment extends Component {
       selectedMonth,
       selectedYear,
     } = this.state
-    const { lead, navigation, contacts, route } = this.props
+    const { lead, navigation, contacts, route, CMPayment, dispatch } = this.props
     const { screenName } = this.props.route.params
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
@@ -2020,7 +2030,11 @@ class CMPayment extends Component {
           color={'#0277FD'}
         />
 
-        <MonthPicker ref={(picker) => (this.picker = picker)} />
+        <MonthPicker
+          ref={(picker) => (this.picker = picker)}
+          CMPayment={CMPayment}
+          dispatch={dispatch}
+        />
 
         <View style={{ flex: 1 }}>
           <AccountsPhoneNumbers

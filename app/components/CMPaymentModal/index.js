@@ -192,22 +192,28 @@ const CMPaymentModal = ({
               </View>
             )}
 
-            {CMPayment.rentAdjLeadID && SelectedLeadDetails[0] && (
-              <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <View style={styles.detailsView}>
-                    <Text style={styles.labelText}>Reference number</Text>
-                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].referenceNumber}</Text>
-                    <Text style={styles.labelText}>Project</Text>
-                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].project.name}</Text>
-                    <Text style={styles.labelText}>Floor</Text>
-                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].floor.name}</Text>
-                    <Text style={styles.labelText}>Unit</Text>
-                    <Text style={styles.detailsText}>{SelectedLeadDetails[0].unit.name}</Text>
+            {/* The View for Lead Details */}
+            {CMPayment.rentAdjLeadID &&
+              SelectedLeadDetails &&
+              SelectedLeadDetails.length != 0 &&
+              SelectedLeadDetails[0] && (
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={[AppStyles.inputWrap]}>
+                    <View style={styles.detailsView}>
+                      <Text style={styles.labelText}>Reference number</Text>
+                      <Text style={styles.detailsText}>
+                        {SelectedLeadDetails[0].referenceNumber}
+                      </Text>
+                      <Text style={styles.labelText}>Project</Text>
+                      <Text style={styles.detailsText}>{SelectedLeadDetails[0].project.name}</Text>
+                      <Text style={styles.labelText}>Floor</Text>
+                      <Text style={styles.detailsText}>{SelectedLeadDetails[0].floor.name}</Text>
+                      <Text style={styles.labelText}>Unit</Text>
+                      <Text style={styles.detailsText}>{SelectedLeadDetails[0].unit.name}</Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            )}
+              )}
 
             {CMPayment.type === 'cheque' ||
             CMPayment.type === 'pay-Order' ||
@@ -315,40 +321,54 @@ const CMPaymentModal = ({
               )
             ) : null}
 
+            {/* Attachments View */}
             {CMPayment.installmentAmount != null &&
               CMPayment.installmentAmount != '' &&
               CMPayment.type != '' &&
               !checkFirstFormToken && (
-                <TouchableOpacity
-                  disabled={CMPayment.status === 'pendingAccount'}
-                  style={[
-                    styles.addPaymentBtn,
-                    {
-                      backgroundColor: CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
-                      borderColor:
-                        CMPayment.status === 'pendingAccount'
-                          ? '#8baaef'
-                          : AppStyles.colors.primaryColor,
-                    },
-                  ]}
-                  onPress={() => {
-                    goToPayAttachments()
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.addPaymentBtnText,
-                      {
-                        color:
-                          CMPayment.status === 'pendingAccount'
-                            ? '#f3f5f7'
-                            : AppStyles.colors.primaryColor,
-                      },
-                    ]}
-                  >
-                    ATTACHMENTS
-                  </Text>
-                </TouchableOpacity>
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={[AppStyles.inputWrap]}>
+                    <TouchableOpacity
+                      disabled={CMPayment.status === 'pendingAccount'}
+                      style={[
+                        styles.addPaymentBtn,
+                        {
+                          backgroundColor:
+                            CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                          borderColor:
+                            CMPayment.status === 'pendingAccount'
+                              ? '#8baaef'
+                              : AppStyles.colors.primaryColor,
+                        },
+                      ]}
+                      onPress={() => {
+                        goToPayAttachments()
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.addPaymentBtnText,
+                          {
+                            color:
+                              CMPayment.status === 'pendingAccount'
+                                ? '#f3f5f7'
+                                : AppStyles.colors.primaryColor,
+                          },
+                        ]}
+                      >
+                        ATTACHMENTS
+                      </Text>
+                      {/* For Check if Required in case of Rebate */}
+                    </TouchableOpacity>
+                    {CMPayment.type == 'Rebate Adjustment' &&
+                      modalValidation === true &&
+                      (CMPayment.paymentAttachments.length == 0 ||
+                        CMPayment.paymentAttachments === null ||
+                        CMPayment.paymentAttachments == undefined) && (
+                        <ErrorMessage errorMessage={'Required'} />
+                      )}
+                  </View>
+                </View>
               )}
 
             {CMPayment.id ? (
@@ -634,13 +654,13 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 16,
-    // fontWeight: '500',
-    // marginLeft: 15,
+    fontSize: 14,
+    fontFamily: 'OpenSans_regular',
   },
   inputTextLabel: {
-    fontSize: 16,
-    fontWeight: '300',
-    color: '#8e8e8e',
-    // marginLeft: 15,
+    fontSize: 14,
+    fontFamily: 'OpenSans_regular',
+    fontWeight: '200',
+    color: '#a8a8aa',
   },
 })

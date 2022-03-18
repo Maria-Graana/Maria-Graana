@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+/** @format */
+
+import React, { Component } from 'react'
 import {
   View,
   Text,
@@ -6,44 +8,42 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Modal,
-  Platform
-} from 'react-native';
+  Platform,
+} from 'react-native'
 import moment from 'moment'
 import AppStyles from '../../AppStyles'
-import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
-import {Picker} from '@react-native-picker/picker';
-
+import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
+import { Picker } from '@react-native-picker/picker'
+import { setCMPayment } from '../../actions/addCMPayment'
 
 class MonthPicker extends Component {
-
-
   constructor(props) {
-    super(props);
-    let { startYear, endYear, selectedYear, selectedMonth, visible } = props;
-    let years = this.getYears(startYear, endYear);
-    let months = this.getMonths();
-    selectedYear = selectedYear || years[0];
-    selectedMonth = selectedMonth || ((new Date()).getMonth() + 1);
+    super(props)
+    let { startYear, endYear, selectedYear, selectedMonth, visible } = props
+    let years = this.getYears(startYear, endYear)
+    let months = this.getMonths()
+    selectedYear = selectedYear || years[0]
+    selectedMonth = selectedMonth || new Date().getMonth() + 1
     this.state = {
       years,
       months,
       selectedYear,
       selectedMonth,
-      visible: visible
+      visible: visible,
     }
   }
 
   show = async ({ startYear, endYear, selectedYear, selectedMonth }) => {
-    let years = this.getYears(startYear, endYear);
-    let months = this.getMonths();
-    selectedYear = selectedYear || years[0];
-    selectedMonth = selectedMonth || ((new Date()).getMonth() + 1);
+    let years = this.getYears(startYear, endYear)
+    let months = this.getMonths()
+    selectedYear = selectedYear || years[0]
+    selectedMonth = selectedMonth || new Date().getMonth() + 1
     let promise = new Promise((resolve) => {
       this.confirm = (year, month) => {
         resolve({
           year,
-          month
-        });
+          month,
+        })
       }
       this.setState({
         visible: true,
@@ -55,76 +55,96 @@ class MonthPicker extends Component {
         selectedMonth: selectedMonth,
       })
     })
-    return promise;
+    return promise
   }
 
   dismiss = () => {
+    const { CMPayment = null, dispatch } = this.props
+    //On Cancel Picker Should open the modal Add payments again
+    if (CMPayment) {
+      const newSecondFormData = {
+        ...CMPayment,
+        visible: true,
+      }
+      dispatch(setCMPayment(newSecondFormData))
+    }
     this.setState({
-      visible: false
+      visible: false,
     })
   }
 
   getYears = (startYear, endYear) => {
-    startYear = startYear || (new Date()).getFullYear();
-    endYear = endYear || (new Date()).getFullYear();
+    startYear = startYear || new Date().getFullYear()
+    endYear = endYear || new Date().getFullYear()
     let years = []
     for (let i = startYear; i <= endYear; i++) {
       years.push(i)
     }
-    return years;
+    return years
   }
 
   getMonths = () => {
     let months = []
     for (let i = 1; i <= 12; i++) {
-      months.push({ value: i, name: moment().month(i - 1).format("MMM") });
+      months.push({
+        value: i,
+        name: moment()
+          .month(i - 1)
+          .format('MMM'),
+      })
     }
-    return months;
+    return months
   }
 
   renderPickerItems = (data) => {
     let items = data.map((value, index) => {
-      return (<Picker.Item key={'r-' + index} label={'' + value} value={value} />)
+      return <Picker.Item key={'r-' + index} label={'' + value} value={value} />
     })
-    return items;
+    return items
   }
 
   renderMonthPickerItems = (data) => {
     let items = data.map((item, index) => {
-      return (<Picker.Item key={'r-' + index} label={'' + item.name} value={item.value} />)
+      return <Picker.Item key={'r-' + index} label={'' + item.name} value={item.value} />
     })
-    return items;
+    return items
   }
 
   onCancelPress = () => {
-    this.dismiss();
+    this.dismiss()
   }
 
   onConfirmPress = () => {
-    const confirm = this.confirm;
-    const { selectedYear, selectedMonth } = this.state;
-    confirm && confirm(selectedYear, selectedMonth);
-    this.dismiss();
+    const confirm = this.confirm
+    const { selectedYear, selectedMonth } = this.state
+    confirm && confirm(selectedYear, selectedMonth)
+    this.dismiss()
   }
 
   render() {
-    const { years, months, selectedYear, selectedMonth, visible } = this.state;
-    if (!visible) return null;
+    const { years, months, selectedYear, selectedMonth, visible } = this.state
+    if (!visible) return null
     return (
-      <Modal
-        visible={visible}
-        animationType="slide"
-      >
-        <SafeAreaView style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}>
-          <AntDesign style={styles.closeStyle} onPress={this.onCancelPress} name="close" size={26} color={AppStyles.colors.textColor} />
+      <Modal visible={visible} animationType="slide">
+        <SafeAreaView
+          style={[AppStyles.mb1, { justifyContent: 'center', backgroundColor: '#e7ecf0' }]}
+        >
+          <AntDesign
+            style={styles.closeStyle}
+            onPress={this.onCancelPress}
+            name="close"
+            size={26}
+            color={AppStyles.colors.textColor}
+          />
           <View style={[styles.viewContainer]}>
             <View style={styles.innerContainer}>
               <Picker
                 style={[styles.picker]}
                 selectedValue={selectedYear}
                 mode="dropdown"
-                onValueChange={(itemValue, itemIndex) => this.setState({ selectedYear: itemValue }, () => {
-                })}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({ selectedYear: itemValue }, () => {})
+                }
               >
                 {this.renderPickerItems(years)}
               </Picker>
@@ -132,8 +152,9 @@ class MonthPicker extends Component {
                 style={styles.picker}
                 selectedValue={selectedMonth}
                 mode="dropdown"
-                onValueChange={(itemValue, itemIndex) => this.setState({ selectedMonth: itemValue }, () => {
-                })}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({ selectedMonth: itemValue }, () => {})
+                }
               >
                 {this.renderMonthPickerItems(months)}
               </Picker>
@@ -159,13 +180,13 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     marginRight: 25,
     justifyContent: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   closeStyle: {
     position: 'absolute',
     right: 15,
     top: Platform.OS == 'android' ? 10 : 40,
-    paddingVertical: 5
+    paddingVertical: 5,
   },
   toolBar: {
     flexDirection: 'row',
@@ -187,10 +208,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
   picker: {
-    width: '50%'
-  }
+    width: '50%',
+  },
 })
 
-export default MonthPicker;
-
-
+export default MonthPicker

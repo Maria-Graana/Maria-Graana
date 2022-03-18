@@ -21,7 +21,7 @@ const armContactsLoading = (state = false, action) => {
   }
 }
 
-const selectedContact = (state = {}, action) => {
+const selectedContact = (state = null, action) => {
   switch (action.type) {
     case types.SET_SELECTED_CONTACT:
       return action.payload

@@ -61,10 +61,10 @@ class Landing extends React.Component {
           tile: 'Targets',
           actions: 'TARGETS',
         },
-        // {
-        //   tile: 'Contacts',
-        //   actions: 'CONTACTS',
-        // },
+        {
+          tile: 'Contacts',
+          actions: 'CONTACTS',
+        },
       ],
       loading: true,
       userStatistics: null,
@@ -201,9 +201,9 @@ class Landing extends React.Component {
       const { tile, actions } = oneTile
       let label = tile
       tile = tile.replace(/ /g, '')
-      // if (oneTile.tile === 'Contacts') {
-      //   getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
-      // }
+      if (oneTile.tile === 'Contacts') {
+        getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
+      }
       if (oneTile.tile === 'Leads' || oneTile.tile === 'My Deals') {
         if (
           getPermissionValue(
@@ -478,14 +478,8 @@ class Landing extends React.Component {
         ) : null} */}
 
         {/* <View style={styles.btnView}> */}
-        {getPermissionValue(
-          PermissionFeatures.PROPERTIES,
-          PermissionActions.CREATE,
-          permissions) ||
-        getPermissionValue(
-          PermissionFeatures.CLIENTS,
-          PermissionActions.CREATE, 
-          permissions) ||
+        {getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) ||
+        getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ||
         getPermissionValue(
           PermissionFeatures.BUY_RENT_LEADS,
           PermissionActions.CREATE,
@@ -496,10 +490,7 @@ class Landing extends React.Component {
           PermissionActions.CREATE,
           permissions
         ) ||
-        getPermissionValue(
-          PermissionFeatures.DIARY,
-          PermissionActions.CREATE,
-          permissions) ? (
+        getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) ? (
           <FAB.Group
             open={open}
             icon={open ? 'close' : 'plus'}

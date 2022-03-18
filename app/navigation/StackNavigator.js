@@ -60,7 +60,6 @@ import RescheduleViewings from '../screens/RescheduleViewings'
 import Contacts from '../screens/Contacts'
 import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 import Dialer from '../screens/Dialer'
-import PhoneContacts from '../screens/PhoneContacts'
 import PhoneContactDetail from '../screens/PhoneContactDetail'
 import ContactRegistrationFeedback from '../screens/ContactRegistrationFeedback'
 import PropertyList from '../screens/PropertyList'
@@ -600,16 +599,6 @@ function MainStack() {
         name="Dialer"
         component={Dialer}
         options={({ navigation, route }) => ({
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
-          headerTitleAlign: 'center',
-        })}
-      />
-      <Stack.Screen
-        name="PhoneContacts"
-        component={PhoneContacts}
-        options={({ navigation, route }) => ({
-          title: 'PHONEBOOK',
           headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',

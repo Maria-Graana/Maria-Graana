@@ -40,7 +40,6 @@ export class Contacts extends Component {
 
   onContactPress = (contact) => {
     const { dispatch, navigation } = this.props
-    // console.log(contact)
     const { isExpanded } = this.state
     dispatch(setSelectedContact(contact)).then((res) => {
       this.setState({ numberTxt: contact.phone, isExpanded: !isExpanded })

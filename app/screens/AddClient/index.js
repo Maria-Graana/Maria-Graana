@@ -233,7 +233,6 @@ class AddClient extends Component {
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
 
-    //console.log(client)
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,

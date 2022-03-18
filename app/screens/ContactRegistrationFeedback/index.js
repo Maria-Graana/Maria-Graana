@@ -71,7 +71,6 @@ export class ContactRegistrationFeedback extends Component {
     let contactBool = false
     let contact1Bool = false
     let contact2Bool = false
-    console.log(selectedContact)
     // if (selectedContact.phoneNumbers && selectedContact.phoneNumbers.length > 0) {
     //   for (let i = 0; i < selectedContact.phoneNumbers.length; i++) {
     //     if (i === 0)
@@ -191,9 +190,7 @@ export class ContactRegistrationFeedback extends Component {
       contact1: number1,
       contact2: number2,
     }
-    this.setState({ formData }, () => {
-      console.log('here=>', this.state.formData)
-    })
+    this.setState({ formData })
   }
 
   validatePhone = (value) => {

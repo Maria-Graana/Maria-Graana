@@ -912,7 +912,6 @@ class RentLeads extends React.Component {
         ) : (
           <LoadingNoResult loading={loading} />
         )}
-        {console.log(!hideCloseLostFilter)}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
         {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group

@@ -72,15 +72,27 @@ class Dialer extends Component {
   callNumber = () => {
     const { numberTxt } = this.state
     const { dispatch, navigation, selectedContact } = this.props
+    let body = {}
+    let newArr = []
     if (numberTxt !== '') {
-      let body = {
-        phone: numberTxt,
-        id: selectedContact && selectedContact.id ? selectedContact.id : null,
-        firstName: selectedContact && selectedContact.firstName ? selectedContact.firstName : '',
-        lastName: selectedContact && selectedContact.lastName ? selectedContact.lastName : '',
+      if (selectedContact) {
+        body = Object.assign({ ...selectedContact, phone: numberTxt })
+      } else {
+        newArr.push({
+          number: numberTxt,
+          countryCode: 'PK',
+          callingCode: '+92',
+        }),
+          (body = {
+            phone: numberTxt,
+            phoneNumbers: newArr,
+            firstName: '',
+            lastName: '',
+            id: null,
+          })
       }
       dispatch(setSelectedContact(body, true)).then((res) => {
-        navigation.replace('ContactFeedback')
+        navigation.navigate('ContactFeedback')
       })
     } else {
       alert('Please enter a valid number')
@@ -92,7 +104,7 @@ class Dialer extends Component {
     const { contacts } = this.props
     let data = []
     data = allContacts.filter((item) => {
-      if (numberTxt !== '') {
+      if (numberTxt !== '' && numberTxt.length >= 3) {
         for (let i = 0; i < item.phoneNumbers.length; i++) {
           if (
             item.phoneNumbers[i].number
@@ -106,9 +118,7 @@ class Dialer extends Component {
     })
     return (
       <View style={AppStyles.containerWithoutPadding}>
-        <ScrollView
-          style={{ minHeight: heightPercentageToDP('20%'), maxHeight: heightPercentageToDP('40%') }}
-        >
+        <ScrollView style={{ height: heightPercentageToDP('45%') }}>
           {data &&
             data.map((item) => (
               <PhonebookContactsTile
@@ -125,7 +135,12 @@ class Dialer extends Component {
             ))}
         </ScrollView>
         <View style={styles.underLine} />
-        <View style={{ paddingVertical: 10 }}>
+        <View
+          style={{
+            paddingVertical: 10,
+            height: '55%',
+          }}
+        >
           <Text style={styles.inputStyle}>{this.state.numberTxt}</Text>
           <VirtualKeyboard
             color="black"
@@ -195,7 +210,7 @@ class Dialer extends Component {
       tabStyle={{
         backgroundColor: 'white',
         borderTopColor: AppStyles.colors.subTextColor,
-        borderTopWidth: 0.2,
+        borderTopWidth: 0.5,
       }}
       renderLabel={({ route, focused, color }) => (
         <Text
@@ -263,9 +278,8 @@ const styles = StyleSheet.create({
   inputStyle: {
     color: AppStyles.colors.primaryColor,
     fontFamily: AppStyles.fonts.defaultFont,
-    fontSize: AppStyles.fontSize.large,
+    fontSize: 26,
     textAlign: 'center',
-    marginVertical: 10,
     letterSpacing: 0.5,
   },
   callButton: {
@@ -277,7 +291,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   underLine: {
-    height: 0.2,
+    height: 0.5,
     width: '100%',
     backgroundColor: AppStyles.colors.subTextColor,
   },

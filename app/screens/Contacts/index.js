@@ -7,7 +7,11 @@ import AppStyles from '../../AppStyles'
 import ArmsContactTile from '../../components/ArmsContactTile'
 import Loader from '../../components/loader'
 import { connect } from 'react-redux'
-import { getARMSContacts, setSelectedContact } from '../../actions/armsContacts'
+import {
+  createARMSContactPayload,
+  getARMSContacts,
+  setSelectedContact,
+} from '../../actions/armsContacts'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
 import fuzzy from 'fuzzy'
 import { getPermissionValue } from '../../hoc/Permissions'
@@ -23,8 +27,10 @@ export class Contacts extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch(getARMSContacts())
+    const { dispatch, navigation } = this.props
+    this._unsubscribe = navigation.addListener('focus', () => {
+      dispatch(getARMSContacts())
+    })
   }
 
   goToDialer = () => {
@@ -45,12 +51,7 @@ export class Contacts extends Component {
     const { numberTxt } = this.state
     const { dispatch, navigation, selectedContact } = this.props
     if (numberTxt !== '') {
-      let body = {
-        phone: numberTxt,
-        id: selectedContact && selectedContact.id ? selectedContact.id : null,
-        firstName: selectedContact && selectedContact.firstName ? selectedContact.firstName : '',
-        lastName: selectedContact && selectedContact.lastName ? selectedContact.lastName : '',
-      }
+      let body = Object.assign({ ...selectedContact, phone: numberTxt })
       dispatch(setSelectedContact(body, true)).then((res) => {
         navigation.replace('ContactFeedback')
       })
@@ -59,14 +60,21 @@ export class Contacts extends Component {
 
   registerAsClient = () => {
     const { dispatch, navigation, selectedContact } = this.props
+    let body = createARMSContactPayload({
+      ...selectedContact,
+      callingCode: selectedContact.dialCode,
+      callingCode1: selectedContact.dialCode2,
+      callingCode2: selectedContact.dialCode3,
+      countryCode: selectedContact.countryCode,
+      countryCode1: selectedContact.countryCode2,
+      countryCode2: selectedContact.countryCode3,
+      contactNumber: selectedContact.phone,
+      contact1: selectedContact.phone2,
+      contact2: selectedContact.phone3,
+    })
     navigation.replace('AddClient', {
       title: 'ADD CLIENT INFO',
-      data: {
-        phone: selectedContact.phone,
-        id: selectedContact.id,
-        firstName: selectedContact.firstName,
-        lastName: selectedContact.lastName,
-      },
+      data: body,
       isFromScreen: 'ContactRegistration',
     })
   }

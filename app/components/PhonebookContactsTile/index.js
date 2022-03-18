@@ -28,7 +28,7 @@ const PhoneBookContactsTile = ({
             <Text style={[styles.textFont, { fontSize: 16, paddingVertical: 5 }]}>
               {data?.name}
             </Text>
-            {isPhoneContactExpanded && data.id === selectedContact.id ? (
+            {isPhoneContactExpanded && selectedContact && data.id === selectedContact.id ? (
               <View style={styles.expandedListItem}>
                 <FlatList
                   data={selectedContact?.phoneNumbers}
@@ -38,14 +38,18 @@ const PhoneBookContactsTile = ({
                       style={styles.phoneContactTile}
                       onPress={() => callNumber(item.number)}
                     >
-                      <View style={{ width: '82%' }}>
+                      <View style={{ width: '75%' }}>
                         <Text style={[styles.textFont]}>{item.number}</Text>
                       </View>
                       {showCallIcon ? (
-                        <TouchableOpacity style={{ width: '10%' }}>
+                        <TouchableOpacity
+                          style={{ width: '20%' }}
+                          onPress={() => callNumber(item.number)}
+                        >
                           <Ionicons
                             name="ios-call-outline"
                             size={24}
+                            style={{ alignSelf: 'flex-start' }}
                             color={AppStyles.colors.primaryColor}
                           />
                         </TouchableOpacity>
@@ -100,6 +104,7 @@ const styles = StyleSheet.create({
   phoneContactTile: {
     flexDirection: 'row',
     width: '100%',
+    paddingVertical: 5,
     marginVertical: 5,
     alignItems: 'center',
   },

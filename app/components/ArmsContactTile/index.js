@@ -54,7 +54,9 @@ const ArmsContactTile = ({
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-              <Text style={[styles.textFont, { fontSize: 16, width: ' 50%' }]}>{getName()}</Text>
+              <Text style={[styles.textFont, { fontSize: 16, width: ' 50%' }]} numberOfLines={1}>
+                {getName()}
+              </Text>
               {armsCallLatest ? (
                 <Text
                   style={{
@@ -91,7 +93,10 @@ const ArmsContactTile = ({
               </View>
             ) : null}
 
-            {isExpanded && data.id === selectedContact.id && selectedContact.phone ? (
+            {isExpanded &&
+            selectedContact &&
+            data.id === selectedContact.id &&
+            selectedContact.phone ? (
               <View style={styles.expandedListItem}>
                 <FlatList
                   keyExtractor={(item, index) => index.toString()}
@@ -100,14 +105,18 @@ const ArmsContactTile = ({
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={styles.phoneContactTile}
-                      onPress={() => callNumber(item.phone)}
+                      onPress={() => callNumber(item.number)}
                     >
-                      <View style={{ width: '82%' }}>
-                        <Text style={[styles.textFont]}>{item.phoneWithDialCode}</Text>
+                      <View style={{ width: '80%' }}>
+                        <Text style={[styles.textFont]}>{item.number}</Text>
                       </View>
-                      <TouchableOpacity style={{ width: '10%' }}>
+                      <TouchableOpacity
+                        style={{ width: '20%' }}
+                        onPress={() => callNumber(item.number)}
+                      >
                         <Ionicons
                           name="ios-call-outline"
+                          style={{ alignSelf: 'flex-start' }}
                           size={24}
                           color={AppStyles.colors.primaryColor}
                         />
@@ -178,6 +187,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     marginVertical: 5,
+    paddingVertical: 5,
     alignItems: 'center',
   },
 })

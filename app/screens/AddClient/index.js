@@ -19,11 +19,12 @@ import { connect } from 'react-redux'
 import helper from '../../helper'
 import _ from 'underscore'
 import { getAllCountries } from 'react-native-country-picker-modal'
+import { setSelectedContact } from '../../actions/armsContacts'
 
+var defaultCountry = { name: 'PK', code: '+92' }
 class AddClient extends Component {
   constructor(props) {
     super(props)
-    var defaultCountry = { name: 'PK', code: '+92' }
     this.state = {
       checkValidation: false,
       cities: [],
@@ -70,12 +71,26 @@ class AddClient extends Component {
 
     const { isFromScreen, data } = route.params
     if (isFromScreen === 'ContactRegistration' && data) {
+      console.log('clientScreen=>', data)
       let copyForm = { ...this.state.formData }
       copyForm.firstName = data.firstName
       copyForm.lastName = data.lastName
-      copyForm.contactNumber = data.phone
-      copyForm.contactRegistrationId = data.id
-      this.setState({ formData: copyForm })
+      copyForm.contactNumber = data.phone ? data.phone.phone : ''
+      copyForm.contact1 = data.contact1 ? data.contact1.contact1 : ''
+      copyForm.contact2 = data.contact2 ? data.phone.contact2 : ''
+      copyForm.contactRegistrationId = data.contactRegistrationId
+      this.setState(
+        {
+          formData: copyForm,
+          countryCode: data.phone ? data.phone.countryCode : defaultCountry.name,
+          callingCode: data.phone ? data.phone.dialCode : defaultCountry.code,
+          countryCode1: data.contact1 ? data.contact1.countryCode : defaultCountry.name,
+          callingCode1: data.contact1 ? data.contact1.dialCode : defaultCountry.code,
+          countryCode2: data.contact2 ? data.contact2.countryCode : defaultCountry.name,
+          callingCode2: data.contact2 ? data.contact2.dialCode : defaultCountry.code,
+        },
+        () => {}
+      )
     }
     if ('update' in route.params && route.params.update) {
       navigation.setParams({ title: 'UPDATE CLIENT INFO' })
@@ -475,7 +490,7 @@ class AddClient extends Component {
   }
   formSubmit = () => {
     const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
-    const { route, navigation, contacts } = this.props
+    const { route, navigation, contacts, armsContacts } = this.props
     const { update, client, isFromDropDown, screenName, isPOC } = route.params
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
     if (
@@ -493,57 +508,55 @@ class AddClient extends Component {
         if (formData.cnic === '') formData.cnic = null
         if (!update) {
           let body = this.createPayload()
-
           body.name = body.first_name + ' ' + body.last_name
           this.setState({ loading: true })
-          // console.log(formData.contactRegistrationId)
-          this.deleteARMSContact(formData.contactRegistrationId)
-          // axios
-          //   .post(`/api/customer/create`, body)
-          //   .then((res) => {
-          //     if (res.status === 200 && res.data) {
-          //       console.log(res)
-          //       if (res.data.message !== 'CLIENT CREATED') {
-          //         if (
-          //           formData.contactRegistrationId &&
-          //           res.data.message !== 'Client already exists'
-          //         ) {
-          //           this.deleteARMSContact(formData.contactRegistrationId)
-          //         }
-          //         // Error Messages
-          //         if (res.data.message === 'Client already exists') {
-          //           helper.errorToast(res.data.message)
-          //         }
-          //       } else {
-          //         helper.successToast(res.data.message)
-          //         isFromDropDown
-          //           ? isPOC
-          //             ? navigation.navigate(screenName, {
-          //                 selectedPOC: res.data.id
-          //                   ? {
-          //                       ...res.data,
-          //                       firstName: res.data.first_name ? res.data.first_name : '',
-          //                       lastName: res.data.last_name ? res.data.last_name : '',
-          //                     }
-          //                   : null,
-          //               })
-          //             : navigation.navigate(screenName, {
-          //                 client: res.data.id ? res.data : null,
-          //                 name: res.data.first_name
-          //                   ? res.data.first_name + ' ' + res.data.last_name
-          //                   : null,
-          //               })
-          //           : navigation.goBack()
-          //       }
-          //     }
-          //   })
-          //   .catch((error) => {
-          //     console.log(error)
-          //     helper.errorToast('ERROR CREATING CLIENT')
-          //   })
-          //   .finally(() => {
-          //     this.setState({ loading: false })
-          //   })
+          axios
+            .post(`/api/customer/create`, body)
+            .then((res) => {
+              if (res.status === 200 && res.data) {
+                if (formData.contactRegistrationId) {
+                  let isContactExists = armsContacts.find(
+                    (item) => item.id === formData.contactRegistrationId
+                  )
+                  if (isContactExists) {
+                    this.deleteARMSContact(formData.contactRegistrationId)
+                  }
+                }
+                if (res.data.message !== 'CLIENT CREATED') {
+                  // Error Messages
+                  if (res.data.message === 'Client already exists') {
+                    helper.errorToast(res.data.message)
+                  }
+                } else {
+                  helper.successToast(res.data.message)
+                  isFromDropDown
+                    ? isPOC
+                      ? navigation.navigate(screenName, {
+                          selectedPOC: res.data.id
+                            ? {
+                                ...res.data,
+                                firstName: res.data.first_name ? res.data.first_name : '',
+                                lastName: res.data.last_name ? res.data.last_name : '',
+                              }
+                            : null,
+                        })
+                      : navigation.navigate(screenName, {
+                          client: res.data.id ? res.data : null,
+                          name: res.data.first_name
+                            ? res.data.first_name + ' ' + res.data.last_name
+                            : null,
+                        })
+                    : navigation.goBack()
+                }
+              }
+            })
+            .catch((error) => {
+              console.log(error)
+              helper.errorToast('ERROR CREATING CLIENT')
+            })
+            .finally(() => {
+              this.setState({ loading: false })
+            })
         } else {
           let body = this.updatePayload()
           this.setState({ loading: true })
@@ -592,17 +605,17 @@ class AddClient extends Component {
 
   deleteARMSContact = (id) => {
     let endPoint = ``
-    let body = {
-      id,
-    }
-    endPoint = `api/contacts/delete`
-    console.log(body)
+    const { dispatch } = this.props
+    endPoint = `/api/contacts/delete`
     axios
-      .delete(endPoint, body)
-      .then(function (response) {
-        console.log(response.data)
+      .delete(endPoint, { data: { id } })
+      .then(function (response) {})
+      .catch(function (error) {
+        console.log(error)
       })
-      .catch(function (error) {})
+      .finally(() => {
+        dispatch(setSelectedContact(null))
+      })
   }
 
   hello = (object, name) => {
@@ -684,6 +697,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    armsContacts: store.armsContacts.armsContacts,
   }
 }
 

@@ -33,6 +33,7 @@ class Client extends React.Component {
       totalCustomers: 0,
       loading: true,
       page: 1,
+      pageSize: 50,
       pageSize: 30,
       onEndReachedLoader: false,
       searchText: '',
@@ -102,7 +103,12 @@ class Client extends React.Component {
       .then((res) => {
         this.setState(
           {
-            customers: page === 1 ? res.data.rows : [...customers, ...res.data.rows],
+            customers:
+              searchText !== ''
+                ? res.data.rows
+                : page === 1
+                ? res.data.rows
+                : [...customers, ...res.data.rows],
             totalCustomers: res.data.count,
             onEndReachedLoader: false,
             loading: false,
@@ -315,10 +321,7 @@ class Client extends React.Component {
                 />
               )}
               onEndReached={() => {
-                if (
-                  customers.length < totalCustomers &&
-                  onEndReachedLoader === false 
-                ) {
+                if (customers.length < totalCustomers && onEndReachedLoader === false) {
                   this.setState(
                     {
                       page: this.state.page + 1,

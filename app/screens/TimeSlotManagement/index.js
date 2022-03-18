@@ -1036,7 +1036,7 @@ function TimeSlotManagement(props) {
           errorMessage={'Required'}
           iconSource={require('../../../assets/icons/time.png')}
           date={timeStart ? new Date(moment(timeStart).format()) : new Date()}
-          selectedValue={timeStart ? helper.formatTime(timeStart) : ''}
+          selectedValue={timeStart ? helper.formatTimeForTimePicker(timeStart) : ''}
           handleForm={(value, name) => handleTimeStart(value, name)}
         />
 
@@ -1048,7 +1048,7 @@ function TimeSlotManagement(props) {
           errorMessage={'Required'}
           iconSource={require('../../../assets/icons/time.png')}
           date={timeEnd ? new Date(moment(timeEnd).format()) : new Date()}
-          selectedValue={timeEnd ? helper.formatTime(timeEnd) : ''}
+          selectedValue={timeEnd ? helper.formatTimeForTimePicker(timeEnd) : ''}
           handleForm={(value, name) => handleTimeEnd(value, name)}
         />
       </View>

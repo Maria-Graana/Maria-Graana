@@ -341,6 +341,14 @@ const helper = {
   formatTime(time) {
     return moment(time).format('hh:mm a')
   },
+  formatTimeForTimePicker(time) {
+    let t = moment(time)
+    const formatedTime = moment(time).format('hh:mm a')
+    const min = parseInt(moment(t).format('mm'))
+    const roundoff = Math.ceil(min / 5) * 5
+    t.set({ minute: roundoff })
+    return t.format('hh:mm a')
+  },
   formatTimeForSlot(time) {
     return moment(time).format('hh:mm:ss')
   },

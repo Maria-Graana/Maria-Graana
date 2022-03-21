@@ -19,6 +19,7 @@ const ArmsContactTile = ({
   isExpanded = false,
   selectedContact,
   registerAsClient,
+  updatePermission,
 }) => {
   const getName = () => {
     const { firstName, lastName } = data
@@ -61,7 +62,7 @@ const ArmsContactTile = ({
                 <Text
                   style={{
                     width: '45%',
-                    fontSize: 13,
+                    fontSize: 12,
                     marginRight: 10,
                     color:
                       armsCallLatest.feedback === 'needs_further_contact'
@@ -106,28 +107,32 @@ const ArmsContactTile = ({
                     <TouchableOpacity
                       style={styles.phoneContactTile}
                       onPress={() => callNumber(item.number)}
+                      disabled={!updatePermission}
                     >
                       <View style={{ width: '80%' }}>
                         <Text style={[styles.textFont]}>{item.number}</Text>
                       </View>
-                      <TouchableOpacity
-                        style={{ width: '20%' }}
-                        onPress={() => callNumber(item.number)}
-                      >
-                        <Ionicons
-                          name="ios-call-outline"
-                          style={{ alignSelf: 'flex-start' }}
-                          size={24}
-                          color={AppStyles.colors.primaryColor}
-                        />
-                      </TouchableOpacity>
+                      {updatePermission ? (
+                        <TouchableOpacity
+                          style={{ width: '20%' }}
+                          onPress={() => callNumber(item.number)}
+                        >
+                          <Ionicons
+                            name="ios-call-outline"
+                            style={{ alignSelf: 'flex-start' }}
+                            size={24}
+                            color={AppStyles.colors.primaryColor}
+                          />
+                        </TouchableOpacity>
+                      ) : null}
                     </TouchableOpacity>
                   )}
                 />
                 <TouchableButton
                   label="Register as Client"
                   containerStyle={styles.button}
-                  fontSize={14}
+                  disabled={!updatePermission}
+                  fontSize={12}
                   onPress={() => registerAsClient(data)}
                 />
               </View>
@@ -174,10 +179,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f6',
   },
   button: {
-    padding: 10,
+    padding: 5,
     borderRadius: 4,
-    width: '50%',
-    height: 50,
+    width: '45%',
+    height: 35,
     justifyContent: 'center',
     // alignSelf: 'center',
     marginVertical: 5,

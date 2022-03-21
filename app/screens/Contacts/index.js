@@ -97,6 +97,12 @@ export class Contacts extends Component {
       permissions
     )
 
+    let updatePermission = getPermissionValue(
+      PermissionFeatures.CONTACTS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+
     return (
       <View style={AppStyles.containerWithoutPadding}>
         {armsContactsLoading ? (
@@ -110,6 +116,7 @@ export class Contacts extends Component {
             />
             <FlatList
               data={data}
+              style={{ paddingHorizontal: 5 }}
               renderItem={({ item }) => (
                 <ArmsContactTile
                   data={item}
@@ -120,6 +127,7 @@ export class Contacts extends Component {
                       this.callNumber()
                     })
                   }
+                  updatePermission={updatePermission}
                   registerAsClient={(contact) => this.registerAsClient(contact)}
                 />
               )}
@@ -143,6 +151,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'flex-end',
     marginBottom: 10,
+    zIndex: 10,
+    elevation: 10,
   },
 })
 

@@ -71,13 +71,12 @@ class AddClient extends Component {
 
     const { isFromScreen, data } = route.params
     if (isFromScreen === 'ContactRegistration' && data) {
-      console.log('clientScreen=>', data)
       let copyForm = { ...this.state.formData }
       copyForm.firstName = data.firstName
       copyForm.lastName = data.lastName
       copyForm.contactNumber = data.phone ? data.phone.phone : ''
       copyForm.contact1 = data.contact1 ? data.contact1.contact1 : ''
-      copyForm.contact2 = data.contact2 ? data.phone.contact2 : ''
+      copyForm.contact2 = data.contact2 ? data.contact2.contact2 : ''
       copyForm.contactRegistrationId = data.contactRegistrationId
       this.setState(
         {

@@ -866,13 +866,19 @@ function TimeSlotManagement(props) {
 
   const onHandleTimeSlotChange = (time, from) => {
     if (from == 'end') {
-      if (timeStart && time && time > timeStart) {
-        onEditSlots(timeStart, time, true)
+      let tempStartPick = moment(timeStart).format('H:mm:ss')
+      let tempEndPick = moment(time).format('H:mm:ss')
+
+      if (timeStart && time && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
+        onEditSlots(tempStartPick, tempEndPick, true)
         setDisabled(false)
       }
     } else {
-      if (time && timeEnd && timeEnd > time) {
-        onEditSlots(time, timeEnd, true)
+      let tempStartPick = moment(time).format('H:mm:ss')
+      let tempEndPick = moment(timeEnd).format('H:mm:ss')
+
+      if (time && timeEnd && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
+        onEditSlots(tempStartPick, tempEndPick, true)
         setDisabled(false)
       }
     }

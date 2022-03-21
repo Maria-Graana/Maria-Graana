@@ -52,7 +52,7 @@ export class Contacts extends Component {
     if (numberTxt !== '') {
       let body = Object.assign({ ...selectedContact, phone: numberTxt })
       dispatch(setSelectedContact(body, true)).then((res) => {
-        navigation.replace('ContactFeedback')
+        navigation.navigate('ContactFeedback')
       })
     }
   }

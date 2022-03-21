@@ -361,6 +361,8 @@ export class ContactRegistrationFeedback extends Component {
       contact2Validate,
       contact1Validate,
     } = this.state
+    const { armsContacts } = this.props
+    let isContactExists = armsContacts.find((item) => item.id === formData.id)
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ScrollView style={AppStyles.container}>
@@ -375,7 +377,7 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.firstName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'First Name'}
-                editable={formData.id === null}
+                editable={isContactExists ? false : true}
               />
             </View>
             {checkValidation === true &&
@@ -394,7 +396,7 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.lastName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'Last Name'}
-                editable={formData.id === null}
+                editable={isContactExists ? false : true}
               />
             </View>
             {checkValidation === true &&
@@ -420,7 +422,7 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contactNumber'}
                 placeholder={'Phone'}
-                editable={formData.id === null}
+                editable={isContactExists ? false : true}
               />
               {phoneValidate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
@@ -444,7 +446,7 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contact1'}
                 placeholder={'Contact Number 2'}
-                editable={formData.id === null}
+                editable={isContactExists ? false : true}
               />
               {contact1Validate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
@@ -463,7 +465,7 @@ export class ContactRegistrationFeedback extends Component {
                   this.setCountryCode(object, 'contact2')
                 }}
                 onChangeHandle={this.handleForm}
-                editable={formData.id === null}
+                editable={isContactExists ? false : true}
                 name={'contact2'}
                 placeholder={'Contact Number 3'}
               />

@@ -375,7 +375,7 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.firstName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'First Name'}
-                // editable={formData.firstName === ''}
+                editable={formData.id === null}
               />
             </View>
             {checkValidation === true &&
@@ -394,7 +394,7 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.lastName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'Last Name'}
-                // editable={formData.lastName === ''}
+                editable={formData.id === null}
               />
             </View>
             {checkValidation === true &&
@@ -420,13 +420,14 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contactNumber'}
                 placeholder={'Phone'}
+                editable={formData.id === null}
               />
               {phoneValidate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
               )}
-              {phoneValidate == false && checkValidation === true && formData.phone === '' && (
-                <ErrorMessage errorMessage={'Required'} />
-              )}
+              {phoneValidate == false &&
+                checkValidation === true &&
+                formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />}
             </View>
           </View>
           {/* **************************************** */}
@@ -443,6 +444,7 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contact1'}
                 placeholder={'Contact Number 2'}
+                editable={formData.id === null}
               />
               {contact1Validate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
@@ -461,6 +463,7 @@ export class ContactRegistrationFeedback extends Component {
                   this.setCountryCode(object, 'contact2')
                 }}
                 onChangeHandle={this.handleForm}
+                editable={formData.id === null}
                 name={'contact2'}
                 placeholder={'Contact Number 3'}
               />

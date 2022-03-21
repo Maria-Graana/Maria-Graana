@@ -249,7 +249,16 @@ const CMPaymentModal = ({
             {CMPayment.type === 'Rent Adjustment' && (
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-                  <TouchableOpacity onPress={() => showPicker()} style={styles.input}>
+                  <TouchableOpacity
+                    onPress={() => showPicker()}
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                      },
+                    ]}
+                    disabled={CMPayment.status === 'pendingAccount'}
+                  >
                     {CMPayment.rentMonth == undefined || CMPayment.rentMonth == '' ? (
                       <Text style={styles.inputTextLabel}>Select Month</Text>
                     ) : (
@@ -648,7 +657,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 4,
   },

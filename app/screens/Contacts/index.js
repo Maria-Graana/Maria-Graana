@@ -147,12 +147,10 @@ export class Contacts extends Component {
 
 const styles = StyleSheet.create({
   keypadButton: {
-    flex: 1,
     alignSelf: 'center',
-    justifyContent: 'flex-end',
     marginBottom: 10,
     zIndex: 10,
-    elevation: 10,
+    elevation: 15,
   },
 })
 

@@ -107,6 +107,13 @@ class InvestLeads extends React.Component {
     this.clearStateValues()
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.referenceGuide !== prevProps.referenceGuide) {
+      // reload page when reference guide is added
+      this.fetchLeads()
+    }
+  }
+
   fetchAddedLeads = (client) => {
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
@@ -640,9 +647,7 @@ class InvestLeads extends React.Component {
             dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
           }
           addInvestmentGuide={(guideNo, attachments) =>
-            dispatch(addInvestmentGuide({ guideNo, attachments }, lead)).then((res) => {
-              this.fetchLeads()
-            })
+            dispatch(addInvestmentGuide({ guideNo, attachments }, lead))
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
           referenceErrorMessage={referenceGuide.referenceErrorMessage}

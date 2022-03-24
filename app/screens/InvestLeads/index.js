@@ -31,7 +31,7 @@ import styles from './style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
-import { addInvestmentGuide, setReferenceGuideData } from '../../actions/diary'
+import { addInvestmentGuide, callNumberFromLeads, setReferenceGuideData } from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -394,10 +394,6 @@ class InvestLeads extends React.Component {
     })
   }
 
-  openStatus = () => {
-    this.setState({ activeSortModal: !this.state.activeSortModal })
-  }
-
   setKey = (index) => {
     return String(index)
   }
@@ -448,120 +444,12 @@ class InvestLeads extends React.Component {
     }
   }
 
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
-    })
-  }
-
-  openModalInMeetingMode = (edit = false, id = null) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  // ************ Function for Reject modal ************
-  goToRejectForm = () => {
-    const { statusfeedbackModalVisible } = this.state
-    this.setState({
-      statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject',
-    })
-  }
-
-  rejectLead = (body) => {
-    const { navigation, lead } = this.props
-    const { selectedLead } = this.state
-    if (selectedLead) {
-      var leadId = []
-      leadId.push(selectedLead.id)
-      axios
-        .patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-          this.fetchLeads()
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    }
-  }
-
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
   changeStatusType = (status) => {
     this.setState({ statusFilterType: status })
   }
 
-  callAgain = (data) => {
-    const { contacts, dispatch } = this.props
-    this.setState({ selectedLead: data }, () => {
-      if (data && data.customer) {
-        let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
-          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            //  multiple numbers to select
-            this.showMultiPhoneModal(true)
-          } else {
-            dispatch(
-              setCallPayload(
-                selectedClientContacts ? selectedClientContacts.phone : null,
-                'phone',
-                data
-              )
-            )
-            helper.callNumber(selectedClientContacts, contacts)
-            this.showStatusFeedbackModal(true, 'call')
-          }
-        })
-      }
-    })
-  }
-
-  setNewActionModal = (value) => {
-    this.setState({ newActionModal: value })
-  }
-
   showMultiPhoneModal = (value) => {
     this.setState({ isMultiPhoneModalVisible: value })
-  }
-
-  handlePhoneSelectDone = (phone) => {
-    const { contacts, dispatch } = this.props
-    const { selectedLead } = this.state
-    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          dispatch(
-            setCallPayload(
-              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
-              'phone',
-              selectedLead
-            )
-          )
-          helper.callNumber(copySelectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
-      )
-    }
   }
 
   bookUnit = () => {
@@ -650,22 +538,14 @@ class InvestLeads extends React.Component {
       searchText,
       showSearchBar,
       serverTime,
-      active,
-      statusfeedbackModalVisible,
-      isFollowUpMode,
-      modalMode,
-      selectedLead,
-      selectedClientContacts,
       isMultiPhoneModalVisible,
       statusFilterType,
-      comment,
-      newActionModal,
       isMenuVisible,
       fabActions,
       createBuyRentLead,
       createProjectLead,
     } = this.state
-    const { user, permissions, lead, dispatch, referenceGuide } = this.props
+    const { user, permissions, lead, dispatch, referenceGuide, navigation } = this.props
     const {
       screen,
       hasBooking = false,
@@ -779,7 +659,16 @@ class InvestLeads extends React.Component {
                 data={item}
                 navigateTo={this.navigateTo}
                 navigateFromMenu={this.navigateFromMenu}
-                callNumber={this.callAgain}
+                callNumber={(data) => {
+                  // getting complete project lead object that contains customer contacts as well
+                  axios.get(`api/leads/project/byId?id=${data.id}`).then((lead) => {
+                    dispatch(callNumberFromLeads(lead.data, 'Project')).then((res) => {
+                      if (res !== null) {
+                        this.showMultiPhoneModal(true)
+                      }
+                    })
+                  })
+                }}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
                 screen={navFrom ? 'AddDiary' : screen}
@@ -834,47 +723,10 @@ class InvestLeads extends React.Component {
           sort={sort}
         />
 
-        <SubmitFeedbackOptionsModal
-          showModal={newActionModal}
-          modalMode={modalMode}
-          setShowModal={(value) => this.setNewActionModal(value)}
-          performMeeting={() => this.openModalInMeetingMode()}
-          performFollowUp={this.openModalInFollowupMode}
-          performReject={this.goToRejectForm}
-          call={() => this.callAgain(selectedLead)}
-          bookUnit={this.bookUnit}
-          leadType={'CM'}
-        />
-
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
-          contacts={selectedClientContacts.payload}
-          showMultiPhoneModal={this.showMultiPhoneModal}
-          handlePhoneSelectDone={this.handlePhoneSelectDone}
-        />
-
-        <MeetingFollowupModal
-          closeModal={() => this.closeMeetingFollowupModal()}
-          active={active}
-          isFollowUpMode={isFollowUpMode}
-          lead={selectedLead}
-          leadType={'CM'}
-        />
-
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : modalMode === 'meeting'
-              ? StaticData.commentsFeedbackMeeting
-              : StaticData.leadClosedCommentsFeedback
-          }
-          modalMode={modalMode}
-          rejectLead={(body) => this.rejectLead(body)}
-          setNewActionModal={(value) => this.setNewActionModal(value)}
-          leadType={'CM'}
+          showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
+          navigation={navigation}
         />
       </View>
     )

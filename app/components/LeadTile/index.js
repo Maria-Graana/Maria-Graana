@@ -437,33 +437,32 @@ class LeadTile extends React.Component {
                     {data.id ? `ID: ${data.id}, ` : ''}{' '}
                     {`Created: ${moment(data.createdAt).format('MMM DD YYYY, hh:mm A')}`}
                   </Text>
-                </View>
-              </View>
 
-              {/* {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
-                <></>
-              ) : (
-                <View style={styles.phoneMain}>
-                  {showPhone ? (
+                  {getPermissionValue(
+                    purposeTab === 'invest'
+                      ? PermissionFeatures.PROJECT_LEADS
+                      : PermissionFeatures.BUY_RENT_LEADS,
+                    PermissionActions.UPDATE,
+                    permissions
+                  ) && data.assigned_to_armsuser_id == user.id ? (
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={styles.phoneMain}
                       onPress={() => {
-                        if (
-                          getPermissionValue(
-                            PermissionFeatures.BUY_RENT_LEADS,
-                            PermissionActions.UPDATE,
-                            permissions
-                          ) &&
-                          data.assigned_to_armsuser_id == user.id
-                        )
-                          callNumber(data)
+                        callNumber(data)
                       }}
                     >
-                      <Image style={[styles.fireIcon, AppStyles.mlFive]} source={phone} />
+                      <Image
+                        style={[
+                          styles.fireIcon,
+                          AppStyles.mlFive,
+                          { alignSelf: purposeTab === 'invest' ? 'flex-end' : 'center' },
+                        ]}
+                        source={phone}
+                      />
                     </TouchableOpacity>
                   ) : null}
                 </View>
-              )} */}
+              </View>
             </View>
           </View>
         </View>

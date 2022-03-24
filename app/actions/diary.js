@@ -713,8 +713,6 @@ export const callNumberFromLeads = (lead, leadType) => {
               currentSlot: true,
               [leadType === 'Project' ? 'leadId' : 'armsLeadId']: lead.id,
             }
-
-            // get all information for lead as it information is not sufficient
             saveOrUpdateDiaryTask(createDiaryPayload).then((diary) => {
               if (diary && diary.data.length === 2 && diary.data[1].length) {
                 let finalLeadObj = {

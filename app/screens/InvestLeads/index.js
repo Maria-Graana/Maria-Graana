@@ -647,9 +647,7 @@ class InvestLeads extends React.Component {
             dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
           }
           addInvestmentGuide={(guideNo, attachments) =>
-            dispatch(addInvestmentGuide({ guideNo, attachments }, lead)).then((res) => {
-              this.fetchLeads()
-            })
+            dispatch(addInvestmentGuide({ guideNo, attachments }, lead))
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
           referenceErrorMessage={referenceGuide.referenceErrorMessage}

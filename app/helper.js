@@ -1149,37 +1149,48 @@ const helper = {
       return !_.findWhere(shortListedProperties, obj)
     })
   },
-  setBuyerAgent(lead, type, user) {
-    if (type === 'buyerSide') {
-      return lead.assigned_to_armsuser_id === user.id ? true : false
-    } else return false
+  setBuyerAgent(lead, type, user, property) {
+
+    if (property && !property.sellerFlowAgent) {
+      return true
+    } else {
+      return lead.assigned_to_armsuser_id === user.id
+    }
+    // if (type === 'buyerSide') {
+    //   return lead.assigned_to_armsuser_id === user.id ? true : false
+    // } else return false
   },
   setSellerAgent(lead, property, type, user) {
+    if (property && !property.sellerFlowAgent) {
+      return true
+    } else {
+      return property && property.sellerFlowAgent.id === user.id
+    }
     // console.log('lead: ', lead)
     // console.log('property: ', property)
     // console.log('type: ', type)
     // console.log('user: ', user)
-    if (type === 'buyerSide') {
-      // console.log('buyerSide')
-      if (lead.assigned_to_armsuser_id === user.id && property && !property.sellerFlowAgent)
-        return true
-      // console.log('buyerSide 1')
-      if (
-        lead.assigned_to_armsuser_id === user.id &&
-        property &&
-        property.sellerFlowAgent &&
-        property.sellerFlowAgent.id === user.id
-      )
-        return true
-      else false
-      // console.log('buyerSide 2')
-    } else {
-      // console.log('buyerSide 3')
-      if (property && property.sellerFlowAgent && property.sellerFlowAgent.id === user.id)
-        return true
-      else false
-      // console.log('buyerSide 4')
-    }
+    // if (type === 'buyerSide') {
+    //   // console.log('buyerSide')
+    //   if (lead.assigned_to_armsuser_id === user.id && property && !property.sellerFlowAgent)
+    //     return true
+    //   // console.log('buyerSide 1')
+    //   if (
+    //     lead.assigned_to_armsuser_id === user.id &&
+    //     property &&
+    //     property.sellerFlowAgent &&
+    //     property.sellerFlowAgent.id === user.id
+    //   )
+    //     return true
+    //   else false
+    //   // console.log('buyerSide 2')
+    // } else {
+    //   // console.log('buyerSide 3')
+    //   if (property && property.sellerFlowAgent && property.sellerFlowAgent.id === user.id)
+    //     return true
+    //   else false
+    //   // console.log('buyerSide 4')
+    // }
   },
   getAiraPermission(permissions) {
     return getPermissionValue(

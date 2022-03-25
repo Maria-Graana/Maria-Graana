@@ -70,7 +70,7 @@ const RentPaymentView = (props) => {
   const isLeadClosed =
     lead.status === StaticData.Constants.lead_closed_lost ||
     lead.status === StaticData.Constants.lead_closed_won
-  let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user)
+  let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user, property)
   let sellerCommission = helper.setSellerAgent(lead, property, 'buyerSide', user)
   let singleCommission = buyerCommission && sellerCommission ? true : false
   const buyer = _.find(
@@ -88,7 +88,6 @@ const RentPaymentView = (props) => {
   )
   let showMenu = helper.showBuyerTokenMenu(tokenPayment)
   if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
-
   return (
     <View>
       {/* <MonthlyTile /> */}
@@ -143,7 +142,7 @@ const RentPaymentView = (props) => {
         singleCommission={singleCommission}
         isLeadClosed={isLeadClosed}
         setComissionApplicable={setBuyerCommissionApplicable}
-        commissionNotApplicableBuyerSeller={buyerCommission ? commissionNotApplicableBuyer : true}
+        commissionBuyer={!buyerCommission}
         tileType={'buyer'}
         tileTitle={
           buyerCommission && commissionNotApplicableBuyer
@@ -172,7 +171,7 @@ const RentPaymentView = (props) => {
         singleCommission={singleCommission}
         isLeadClosed={isLeadClosed}
         setComissionApplicable={setSellerCommissionApplicable}
-        commissionNotApplicableBuyerSeller={sellerCommission ? commissionNotApplicableSeller : true}
+        commissionSeller={!sellerCommission}
         tileType={'seller'}
         tileTitle={
           sellerCommission && commissionNotApplicableSeller

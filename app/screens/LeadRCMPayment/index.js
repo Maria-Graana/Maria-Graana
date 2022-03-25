@@ -2108,7 +2108,6 @@ class LeadRCMPayment extends React.Component {
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
-
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -2232,7 +2231,7 @@ class LeadRCMPayment extends React.Component {
               ListFooterComponent={
                 <View style={{ marginHorizontal: 10 }}>
                   {lead.shortlist_id !== null ? (
-                    lead.purpose === 'sale' ? (
+                    lead.purpose === 'sale' || lead.purpose === 'buy' ? (
                       <BuyPaymentView
                         lead={lead}
                         agreedAmount={agreedAmount}

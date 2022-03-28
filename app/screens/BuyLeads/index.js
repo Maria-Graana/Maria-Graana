@@ -34,7 +34,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
-import { callNumberFromLeads } from '../../actions/diary'
+import { callNumberFromLeads, setMultipleModalVisible } from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -105,6 +105,13 @@ class BuyLeads extends React.Component {
 
   componentWillUnmount() {
     this.clearStateValues()
+    this.showMultiPhoneModal(false)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
+      this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
   }
 
   onFocus = async () => {
@@ -372,7 +379,8 @@ class BuyLeads extends React.Component {
   }
 
   showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
   }
 
   openStatus = () => {
@@ -575,13 +583,12 @@ class BuyLeads extends React.Component {
       shortListedProperties,
       popupLoading,
       serverTime,
-      isMultiPhoneModalVisible,
       statusFilterType,
       fabActions,
       createBuyRentLead,
       createProjectLead,
     } = this.state
-    const { user, permissions, dispatch, navigation } = this.props
+    const { user, permissions, dispatch, navigation, isMultiPhoneModalVisible } = this.props
     const {
       screen,
       hasBooking = false,
@@ -784,6 +791,7 @@ mapStateToProps = (store) => {
     count: store.listings.count,
     contacts: store.contacts.contacts,
     PPBuyNotification: store.Notification.PPBuyNotification,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     permissions: store.user.permissions,
   }
 }

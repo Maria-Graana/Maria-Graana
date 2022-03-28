@@ -36,7 +36,12 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
-import { callNumberFromLeads, initiateConnectFlow, setSelectedDiary } from '../../actions/diary'
+import {
+  callNumberFromLeads,
+  initiateConnectFlow,
+  setMultipleModalVisible,
+  setSelectedDiary,
+} from '../../actions/diary'
 import { alltimeSlots, setTimeSlots } from '../../actions/slotManagement'
 
 var BUTTONS = [
@@ -99,6 +104,13 @@ class RentLeads extends React.Component {
 
   componentWillUnmount() {
     this.clearStateValues()
+    this.showMultiPhoneModal(false)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
+      this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
   }
 
   getServerTime = () => {
@@ -376,7 +388,8 @@ class RentLeads extends React.Component {
   }
 
   showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
   }
 
   openStatus = () => {
@@ -588,13 +601,12 @@ class RentLeads extends React.Component {
       shortListedProperties,
       popupLoading,
       serverTime,
-      isMultiPhoneModalVisible,
       statusFilterType,
       fabActions,
       createBuyRentLead,
       createProjectLead,
     } = this.state
-    const { user, navigation, permissions, dispatch } = this.props
+    const { user, navigation, permissions, dispatch, isMultiPhoneModalVisible } = this.props
     const {
       screen,
       hasBooking = false,
@@ -798,6 +810,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
   }

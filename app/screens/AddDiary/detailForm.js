@@ -118,14 +118,13 @@ class DetailForm extends Component {
       goBackToDiary,
       goToLeads,
       goToLeadProperties,
-      taskTypeName,
     } = this.props
     return (
       <View>
         {editableData ? (
           <View style={styles.editViewContainer}>
             <Text style={styles.headingText}> Task Type: </Text>
-            <Text style={styles.labelText}> {`${DiaryHelper.removeUnderscore(taskTypeName)}`} </Text>
+            <Text style={styles.labelText}> {`${DiaryHelper.showTaskType(taskType)}`} </Text>
           </View>
         ) : (
           <View style={[AppStyles.mainInputWrap]}>

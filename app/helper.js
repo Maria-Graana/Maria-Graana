@@ -261,27 +261,14 @@ const helper = {
   callNumber(body, contacts, title = 'ARMS') {
     let url = body.url
     if (url && url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            helper.errorToast(`No application available to dial phone number`)
-            console.log("Can't handle url: " + url)
-          } else {
-            if (contacts) {
-              let result = helper.contacts(body.phone, contacts)
-              if (
-                body.name &&
-                body.name !== '' &&
-                body.name !== ' ' &&
-                body.phone &&
-                body.phone !== ''
-              )
-                if (!result) helper.addContact(body, title)
-            }
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
+      helper.errorToast(`No application available to dial phone number`)
+      console.log("Can't handle url: " + url)
+      if (contacts) {
+        let result = helper.contacts(body.phone, contacts)
+        if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '')
+          if (!result) helper.addContact(body, title)
+      }
+      return Linking.openURL(url).catch((err) => console.error('An error occurred', err))
     } else {
       helper.errorToast(`No Phone Number`)
     }
@@ -1150,7 +1137,6 @@ const helper = {
     })
   },
   setBuyerAgent(lead, type, user, property) {
-
     if (property && !property.sellerFlowAgent) {
       return true
     } else {

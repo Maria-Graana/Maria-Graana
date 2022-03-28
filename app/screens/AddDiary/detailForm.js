@@ -41,24 +41,31 @@ class DetailForm extends Component {
 
   componentDidMount() {
     const { editableData, navigation } = this.props
-    if (editableData != null) {
-      this.setFormValues(editableData)
-    }
+
     navigation.addListener('focus', () => {
       const { lead, property } = this.props
       const { formData } = this.state
-      let copyObject = Object.assign({}, formData)
-      if (lead) copyObject.selectedLead = lead
-      this.setState({ formData: copyObject })
-      if (property) {
-        copyObject.selectedProperty = property
+      if (editableData != null) {
+        this.setFormValues(editableData)
+      } else {
+        let copyObject = Object.assign({}, formData)
+        if (lead) copyObject.selectedLead = lead
         this.setState({ formData: copyObject })
+        if (property) {
+          copyObject.selectedProperty = property
+          this.setState({ formData: copyObject })
+        }
       }
     })
   }
 
   setFormValues = (data) => {
     const { formData } = this.state
+    let leadObj = data.armsProjectLeadId
+      ? data.armsProjectLead
+      : data.armsLeadId
+      ? data.armsLead
+      : null
     const newObject = Object.assign({}, formData, data)
     newObject.subject = data.subject
     newObject.notes = data.notes
@@ -70,6 +77,15 @@ class DetailForm extends Component {
     newObject.status = data.status
     newObject.taskCategory = data.taskCategory
     newObject.isRecurring = data.isRecurring
+    newObject.selectedProperty = data.property ? data.property : null
+    if (leadObj && leadObj.customer) {
+      leadObj.customer = {
+        ...leadObj.customer,
+        customerName: leadObj.customer.first_name + ' ' + leadObj.customer.last_name,
+      }
+
+      newObject.selectedLead = leadObj
+    }
     this.setState({ formData: newObject, buttonText: 'UPDATE TASK' })
   }
 
@@ -149,7 +165,7 @@ class DetailForm extends Component {
             <TouchableInput
               placeholder="Select Lead"
               showDropDownIcon={false}
-              disabled={formData.status === 'completed' || taskType === ''}
+              disabled={formData.status === 'completed' || taskType === '' || editableData !== null}
               onPress={() => goToLeads(formData)}
               value={
                 selectedLead
@@ -170,7 +186,7 @@ class DetailForm extends Component {
             <TouchableInput
               placeholder="Select Property"
               showDropDownIcon={false}
-              disabled={formData.status === 'completed' || taskType === ''}
+              disabled={formData.status === 'completed' || taskType === '' || editableData !== null}
               onPress={() => goToLeadProperties(formData)}
               value={
                 selectedProperty

@@ -1408,7 +1408,7 @@ class PropertyRCMPayment extends React.Component {
               ListFooterComponent={
                 <View style={{ marginHorizontal: 10 }}>
                   {lead.shortlist_id !== null ? (
-                    lead.purpose === 'sale' ? (
+                    lead.purpose === 'sale' || lead.purpose === 'buy' ? (
                       <BuyPaymentView
                         user={user}
                         currentProperty={allProperties}

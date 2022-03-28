@@ -47,7 +47,7 @@ class BuyPaymentView extends React.Component {
       property.armsuser &&
       property.armsuser.armsUserRole &&
       property.armsuser.armsUserRole.subRole
-    let buyerCommission = helper.setBuyerAgent(lead, 'sellerSide', user)
+    let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user, property)
     let sellerCommission = helper.setSellerAgent(lead, property, 'sellerSide', user)
     const buyer = _.find(
       lead.commissions,
@@ -113,7 +113,7 @@ class BuyPaymentView extends React.Component {
           singleCommission={false}
           isLeadClosed={isLeadClosed}
           setComissionApplicable={() => {}}
-          commissionNotApplicableBuyerSeller={true}
+          commissionBuyer={!buyerCommission}
           tileType={'buyer'}
           tileTitle={'Buyer Side'}
           closeLegalDocument={closeLegalDocument}
@@ -133,7 +133,7 @@ class BuyPaymentView extends React.Component {
           singleCommission={false}
           isLeadClosed={isLeadClosed}
           setComissionApplicable={() => {}}
-          commissionNotApplicableBuyerSeller={false}
+          commissionSeller={!sellerCommission}
           tileType={'seller'}
           tileTitle={'Seller Side'}
           closeLegalDocument={closeLegalDocument}

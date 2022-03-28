@@ -31,7 +31,12 @@ import styles from './style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
-import { addInvestmentGuide, callNumberFromLeads, setReferenceGuideData } from '../../actions/diary'
+import {
+  addInvestmentGuide,
+  callNumberFromLeads,
+  setMultipleModalVisible,
+  setReferenceGuideData,
+} from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -105,6 +110,22 @@ class InvestLeads extends React.Component {
 
   componentWillUnmount() {
     this.clearStateValues()
+    this.showMultiPhoneModal(false)
+  }
+
+  showMultiPhoneModal = (value) => {
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.referenceGuide !== prevProps.referenceGuide) {
+      // reload page when reference guide is added
+      this.fetchLeads()
+    }
+    if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
+      this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -455,10 +476,6 @@ class InvestLeads extends React.Component {
     this.setState({ statusFilterType: status })
   }
 
-  showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
-  }
-
   bookUnit = () => {
     const { navigation } = this.props
     navigation.navigate('CMLeadTabs', { screen: 'Payments' })
@@ -545,14 +562,21 @@ class InvestLeads extends React.Component {
       searchText,
       showSearchBar,
       serverTime,
-      isMultiPhoneModalVisible,
       statusFilterType,
       isMenuVisible,
       fabActions,
       createBuyRentLead,
       createProjectLead,
     } = this.state
-    const { user, permissions, lead, dispatch, referenceGuide, navigation } = this.props
+    const {
+      user,
+      permissions,
+      lead,
+      dispatch,
+      referenceGuide,
+      navigation,
+      isMultiPhoneModalVisible,
+    } = this.props
     const {
       screen,
       hasBooking = false,
@@ -745,6 +769,7 @@ mapStateToProps = (store) => {
     lead: store.lead.lead,
     permissions: store.user.permissions,
     referenceGuide: store.diary.referenceGuide,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

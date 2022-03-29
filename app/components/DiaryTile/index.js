@@ -60,7 +60,7 @@ class DiaryTile extends React.Component {
       <View style={styles.mainContainer}>
         <View style={styles.rowTwo}>
           <View style={styles.timeView}>
-            {screenName === 'overduetasks' ? (
+            {screenName === 'overduetasks' || screenName === 'scheduledTasks' ? (
               <Text style={styles.time}>{moment(diary.start).format('DD MMM')}</Text>
             ) : null}
             <Text style={styles.time}>{moment(diary.start).format('hh:mm a')}</Text>

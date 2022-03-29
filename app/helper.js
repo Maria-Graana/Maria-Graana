@@ -261,8 +261,6 @@ const helper = {
   callNumber(body, contacts, title = 'ARMS') {
     let url = body.url
     if (url && url != 'tel:null') {
-      helper.errorToast(`No application available to dial phone number`)
-      console.log("Can't handle url: " + url)
       if (contacts) {
         let result = helper.contacts(body.phone, contacts)
         if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '')

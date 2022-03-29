@@ -297,7 +297,6 @@ class Client extends React.Component {
             placeholder="Search clients here"
             searchText={searchText}
             setSearchText={(value) => {
-              console.log(value)
               this.setState({
                 searchText: value,
                 page: value === '' ? 1 : page,

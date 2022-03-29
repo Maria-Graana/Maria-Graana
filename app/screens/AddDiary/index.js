@@ -219,12 +219,11 @@ class AddDiary extends Component {
               })
             )
           }
-
           navigation.navigate(screenName, { cmLeadId, rcmLeadId })
         } else {
           helper.errorToast('ERROR: SOMETHING WENT WRONG')
+          this.setState({ loading: false })
         }
-        this.setState({ loading: false })
       })
       .catch((error) => {
         helper.errorToast('ERROR: ADDING DIARY')

@@ -72,8 +72,7 @@ class AddDiary extends Component {
     if (rcmLeadId) {
       tasksList = StaticData.diaryTasksRCM
     } else if (cmLeadId) {
-      tasksList = StaticData.diary
-      TasksCM
+      tasksList = StaticData.diaryTasksCM
     }
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT TASK' })

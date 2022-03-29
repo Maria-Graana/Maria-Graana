@@ -562,7 +562,7 @@ function MainStack() {
         options={({ navigation, route }) => ({
           title: 'LOCATE PROPERTY ON MAP',
           // headerTitle: (props) => <HeaderTitle {...props} />,
-          // headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           // headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}

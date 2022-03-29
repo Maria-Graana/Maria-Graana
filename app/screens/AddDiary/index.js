@@ -224,12 +224,11 @@ class AddDiary extends Component {
         } else {
           helper.errorToast('ERROR: SOMETHING WENT WRONG')
         }
+        this.setState({ loading: false })
       })
       .catch((error) => {
         helper.errorToast('ERROR: ADDING DIARY')
         console.log('error', error.message)
-      })
-      .finally(() => {
         this.setState({ loading: false })
       })
   }
@@ -277,8 +276,6 @@ class AddDiary extends Component {
       .catch((error) => {
         helper.errorToast('ERROR: UPDATING TASK')
         console.log(error)
-      })
-      .finally(() => {
         this.setState({ loading: false })
       })
   }

@@ -34,6 +34,7 @@ export const PermissionActions = {
   READ: 'Read',
   UPDATE: 'Update',
   DELETE: 'Delete',
+  CreateUpdateContact: 'Create & Update',
   LEADS_ASSIGNMENT_BUSINESS_RULE: 'Leads Assignment Business Rule',
   ELIGIABLE_FOR_COMPANY_LEADS: 'Eligiable for Company Leads',
   Assign_Company_Leads: 'Assign Company Leads',

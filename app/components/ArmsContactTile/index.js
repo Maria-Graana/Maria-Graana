@@ -128,13 +128,15 @@ const ArmsContactTile = ({
                     </TouchableOpacity>
                   )}
                 />
-                <TouchableButton
-                  label="Register as Client"
-                  containerStyle={styles.button}
-                  disabled={!updatePermission}
-                  fontSize={12}
-                  onPress={() => registerAsClient(data)}
-                />
+                {updatePermission && (
+                  <TouchableButton
+                    label="Register as Client"
+                    containerStyle={styles.button}
+                    disabled={!updatePermission}
+                    fontSize={12}
+                    onPress={() => registerAsClient(data)}
+                  />
+                )}
               </View>
             ) : null}
           </View>

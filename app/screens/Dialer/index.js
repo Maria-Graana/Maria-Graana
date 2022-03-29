@@ -127,7 +127,6 @@ class Dialer extends Component {
                 onPress={(data) => this.onPhoneContactPress(data)}
                 isPhoneContactExpanded={isPhoneContactExpanded}
                 showCallIcon={false}
-                // createPermission={createPermission}
                 callNumber={(number) =>
                   this.setState({ numberTxt: number.replace(/[() .+-]/g, '') })
                 }
@@ -167,7 +166,7 @@ class Dialer extends Component {
 
     let createPermission = getPermissionValue(
       PermissionFeatures.CONTACTS,
-      PermissionActions.CREATE,
+      PermissionActions.CreateUpdateContact,
       permissions
     )
     return (

@@ -134,6 +134,7 @@ class DetailForm extends Component {
       goBackToDiary,
       goToLeads,
       goToLeadProperties,
+      lead,
     } = this.props
     return (
       <View>
@@ -160,26 +161,29 @@ class DetailForm extends Component {
           </View>
         )}
 
-        {(taskType == 'viewing' || taskType == 'follow_up' || taskType == 'meeting') && (
-          <View>
-            <TouchableInput
-              placeholder="Select Lead"
-              showDropDownIcon={false}
-              disabled={formData.status === 'completed' || taskType === '' || editableData !== null}
-              onPress={() => goToLeads(formData)}
-              value={
-                selectedLead
-                  ? selectedLead.id
-                      .toString()
-                      .concat(' - ', selectedLead.customer.customerName.toString())
-                  : ''
-              }
-            />
-            {checkValidation === true && selectedLead === null && (
-              <ErrorMessage errorMessage={'Required'} />
-            )}
-          </View>
-        )}
+        {(taskType == 'viewing' || taskType == 'follow_up' || taskType == 'meeting') &&
+          lead !== null && (
+            <View>
+              <TouchableInput
+                placeholder="Select Lead"
+                showDropDownIcon={false}
+                disabled={
+                  formData.status === 'completed' || taskType === '' || editableData !== null
+                }
+                onPress={() => goToLeads(formData)}
+                value={
+                  selectedLead
+                    ? selectedLead.id
+                        .toString()
+                        .concat(' - ', selectedLead.customer.customerName.toString())
+                    : ''
+                }
+              />
+              {checkValidation === true && selectedLead === null && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
+            </View>
+          )}
 
         {taskType == 'viewing' && (
           <View>

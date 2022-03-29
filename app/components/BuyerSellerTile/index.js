@@ -198,6 +198,8 @@ class BuyerSellerTile extends React.Component {
                   showAccountPhone={true}
                   updatePermission={updatePermission}
                   closedLeadEdit={closedLeadEdit}
+                  disabledCall= {tileType === 'seller' ? commissionSeller : commissionBuyer}
+
                 />
               ) : (
                 <View style={{ paddingTop: 10 }}>

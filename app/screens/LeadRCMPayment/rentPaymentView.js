@@ -42,7 +42,7 @@ const RentPaymentView = (props) => {
     closedLeadEdit,
   } = props
 
-  MonthlyTile = () => {
+  const MonthlyTile = () => {
     return (
       <View style={styles.monthlyTile}>
         <View style={{ justifyContent: 'space-between' }}>
@@ -90,7 +90,7 @@ const RentPaymentView = (props) => {
   if (singleCommission) showMenu = helper.showSingleBuyerTokenMenu(tokenPayment)
   return (
     <View>
-      {/* <MonthlyTile /> */}
+      <MonthlyTile />
       <View style={{ paddingVertical: 5 }} />
       {!tokenPayment ? (
         <RCMBTN

@@ -15,7 +15,7 @@ import { formatPrice } from '../../PriceFormate'
 import styles from './styles'
 
 const RentPaymentView = (props) => {
-  MonthlyTile = () => {
+ const MonthlyTile = () => {
     return (
       <View style={styles.monthlyTile}>
         <View style={{ justifyContent: 'space-between' }}>
@@ -80,7 +80,8 @@ const RentPaymentView = (props) => {
   let showMenu = helper.showSellerTokenMenu(tokenPayment)
   return (
     <View>
-      <MonthlyTile />
+     { MonthlyTile()}
+      {/* <MonthlyTile /> */}
       <View style={{ paddingVertical: 5 }} />
       <RCMRentMonthlyModal
         isVisible={rentMonthlyToggle}

@@ -26,6 +26,7 @@ class CommissionTile extends Component {
       call,
       updatePermission,
       closedLeadEdit,
+      disabledCall
     } = this.props
     var showStatus =
       data && data.status != ''
@@ -79,6 +80,7 @@ class CommissionTile extends Component {
                 }}
                 style={[styles.phoneView]}
                 underlayColor={AppStyles.colors.backgroundColor}
+                disabled={disabledCall}
               >
                 <Image
                   source={require('../../../assets/img/call.png')}

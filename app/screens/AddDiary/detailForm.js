@@ -299,6 +299,7 @@ class DetailForm extends Component {
             <TouchableButton
               containerStyle={[AppStyles.formBtn]}
               label={buttonText}
+              disabled={loading}
               onPress={() => formSubmit(formData)}
               loading={loading}
             />

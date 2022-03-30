@@ -258,7 +258,7 @@ export class ContactRegistrationFeedback extends Component {
       callingCode2,
     } = this.state
     const { dispatch, armsContacts, navigation } = this.props
-    if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
+    if (!formData.firstName || !formData.contactNumber) {
       this.setState({
         checkValidation: true,
       })
@@ -399,10 +399,10 @@ export class ContactRegistrationFeedback extends Component {
                 editable={isContactExists ? false : true}
               />
             </View>
-            {checkValidation === true &&
+            {/* {checkValidation === true &&
               (formData.lastName === '' || formData.lastName === undefined) && (
                 <ErrorMessage errorMessage={'Required'} />
-              )}
+              )} */}
           </View>
 
           {/* **************************************** */}

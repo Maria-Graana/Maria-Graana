@@ -23,13 +23,13 @@ class TaskDetails extends React.Component {
 
   render() {
     const { route, user } = this.props
-    const { diary, agentId = null } = route.params
+    const { diary, agentId = null, isFromTimeSlot = false } = route.params
     return (
       <View style={AppStyles.container}>
         <View style={styles.innerContainer}>
           <View style={styles.flexRow}>
             <Text style={[styles.headingText, { width: '90%' }]}> Task Type: </Text>
-            {diary && diary.status === 'pending' && agentId === user.id ? (
+            {diary && diary.status === 'pending' && agentId === user.id && !isFromTimeSlot ? (
               <View style={{ width: '10%' }}>
                 {
                   <MaterialCommunityIcons

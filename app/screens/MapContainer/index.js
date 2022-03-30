@@ -65,17 +65,10 @@ class MapContainer extends Component {
 
   componentDidMount() {
     this.props.navigation.setOptions({
-      headerTitle: () => {
-        return (
-          <View style={styles.navigationContainer}>
-            <Text style={styles.toolbarTitle}>
-              {this.props.route.params?.geotaggingType === 'Propsure'
-                ? 'Propsure Geotagging'
-                : 'Manual Geotagging'}
-            </Text>
-          </View>
-        )
-      },
+      title:
+        this.props.route.params?.geotaggingType === 'PROPSURE'
+          ? 'PROPSURE GEOTAGGING'
+          : 'MANUAL GEOTAGGING',
     })
 
     if (

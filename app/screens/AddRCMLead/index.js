@@ -433,7 +433,6 @@ class AddRCMLead extends Component {
                     onModalPriceDonePressed={(minValue, maxValue) =>
                       this.onModalPriceDonePressed(minValue, maxValue)
                     }
-                    sizeUnitList={sizeUnitList}
                     isSizeModalVisible={isSizeModalVisible}
                     showSizeModal={() => this.showSizeModal()}
                     onModalSizeDonePressed={(minValue, maxValue, unit) =>

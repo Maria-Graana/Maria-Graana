@@ -34,6 +34,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
+import { callNumberFromLeads, setMultipleModalVisible } from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -74,7 +75,6 @@ class BuyLeads extends React.Component {
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       statusFilterType: 'id',
-      newActionModal: false,
       fabActions: [],
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
@@ -105,6 +105,13 @@ class BuyLeads extends React.Component {
 
   componentWillUnmount() {
     this.clearStateValues()
+    this.showMultiPhoneModal(false)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
+      this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
   }
 
   onFocus = async () => {
@@ -128,6 +135,13 @@ class BuyLeads extends React.Component {
         })
       }
     }
+  }
+
+  sendStatus = (status) => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+      storeItem('sortBuy', status)
+      this.fetchLeads()
+    })
   }
 
   getServerTime = () => {
@@ -364,68 +378,9 @@ class BuyLeads extends React.Component {
     }
   }
 
-  callNumber = (data) => {
-    const { contacts, dispatch } = this.props
-    this.setState({ selectedLead: data }, () => {
-      if (data && data.customer) {
-        let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
-          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            //  multiple numbers to select
-            this.showMultiPhoneModal(true)
-          } else {
-            dispatch(
-              setCallPayload(
-                selectedClientContacts ? selectedClientContacts.phone : null,
-                'phone',
-                data
-              )
-            )
-            helper.callNumber(selectedClientContacts, contacts)
-            // this.showStatusFeedbackModal(true, 'call')
-          }
-        })
-      }
-    })
-  }
-
-  setNewActionModal = (value) => {
-    this.setState({ newActionModal: value })
-  }
-
   showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
-  }
-
-  handlePhoneSelectDone = (phone) => {
-    const { contacts, dispatch } = this.props
-    const { selectedLead } = this.state
-    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          dispatch(
-            setCallPayload(
-              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
-              'phone',
-              selectedLead
-            )
-          )
-          helper.callNumber(copySelectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
-      )
-    }
-  }
-
-  sendStatus = (status) => {
-    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
-      storeItem('sortBuy', status)
-      this.fetchLeads()
-    })
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
   }
 
   openStatus = () => {
@@ -579,67 +534,6 @@ class BuyLeads extends React.Component {
       })
   }
 
-  closePopup = () => {
-    const { openPopup, selectedLead } = this.state
-    this.setState({
-      openPopup: !openPopup,
-      selectedLead: openPopup === false ? {} : selectedLead,
-    })
-  }
-
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-  //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
-    })
-  }
-
-  openModalInMeetingMode = (edit = false, id = null) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  // ************ Function for Reject modal ************
-  goToRejectForm = () => {
-    const { statusfeedbackModalVisible } = this.state
-    this.setState({
-      statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject',
-    })
-  }
-
-  rejectLead = (body) => {
-    const { navigation, lead } = this.props
-    const { selectedLead } = this.state
-    if (selectedLead) {
-      var leadId = []
-      leadId.push(selectedLead.id)
-      axios
-        .patch(`/api/leads`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    }
-  }
-
-  showStatusFeedbackModal = (value, modalMode) => {
-    this.setState({ statusfeedbackModalVisible: value, modalMode })
-  }
-
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
@@ -689,20 +583,12 @@ class BuyLeads extends React.Component {
       shortListedProperties,
       popupLoading,
       serverTime,
-      active,
-      statusfeedbackModalVisible,
-      isFollowUpMode,
-      modalMode,
-      selectedClientContacts,
-      isMultiPhoneModalVisible,
       statusFilterType,
-      newActionModal,
-      selectedLead,
       fabActions,
       createBuyRentLead,
       createProjectLead,
     } = this.state
-    const { user, permissions } = this.props
+    const { user, permissions, dispatch, navigation, isMultiPhoneModalVisible } = this.props
     const {
       screen,
       hasBooking = false,
@@ -814,7 +700,13 @@ class BuyLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={this.callNumber}
+                    callNumber={(data) =>
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.showMultiPhoneModal(true)
+                        }
+                      })
+                    }
                     navFrom={navFrom}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
@@ -828,7 +720,13 @@ class BuyLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={this.callNumber}
+                    callNumber={(data) =>
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.showMultiPhoneModal(true)
+                        }
+                      })
+                    }
                     handleLongPress={this.handleLongPress}
                     changeLeadStatus={this.changeLeadStatus}
                     redirectToCompare={this.redirectToCompare}
@@ -871,41 +769,10 @@ class BuyLeads extends React.Component {
         ) : null}
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
-          contacts={selectedClientContacts.payload}
-          showMultiPhoneModal={this.showMultiPhoneModal}
-          handlePhoneSelectDone={this.handlePhoneSelectDone}
+          showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
+          navigation={navigation}
         />
 
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          modalMode={modalMode}
-          rejectLead={(body) => this.rejectLead(body)}
-          setNewActionModal={(value) => this.setNewActionModal(value)}
-          leadType={'RCM'}
-        />
-        <SubmitFeedbackOptionsModal
-          showModal={newActionModal}
-          modalMode={modalMode}
-          setShowModal={(value) => this.setNewActionModal(value)}
-          performFollowUp={this.openModalInFollowupMode}
-          performReject={this.goToRejectForm}
-          //call={this.callAgain}
-          goToViewingScreen={this.goToViewingScreen}
-          leadType={'RCM'}
-        />
-        <MeetingFollowupModal
-          closeModal={() => this.closeMeetingFollowupModal()}
-          active={active}
-          isFollowUpMode={isFollowUpMode}
-          lead={selectedLead}
-          leadType={'RCM'}
-        />
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -924,6 +791,7 @@ mapStateToProps = (store) => {
     count: store.listings.count,
     contacts: store.contacts.contacts,
     PPBuyNotification: store.Notification.PPBuyNotification,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     permissions: store.user.permissions,
   }
 }

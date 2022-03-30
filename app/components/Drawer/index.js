@@ -129,7 +129,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                drawerMenuOptions && (
+                  drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -191,7 +191,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                drawerMenuOptions && (
+                  drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -355,7 +355,7 @@ class CustomDrawerContent extends React.Component {
             }}
           />
           <View style={{ alignSelf: 'center', justifyContent: 'flex-end', flex: 1 }}>
-            <Text style={AppStyles.blackInputText}>SDK 42 v{AppJson.expo.version}</Text>
+            <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -371,7 +371,7 @@ mapStateToProps = (store) => {
     loading: store.user.loading,
     count: store.listings.count,
     permissions: store.user.permissions,
-    drawerMenuOptions: store.drawer.drawerMenuOptions
+    drawerMenuOptions: store.drawer.drawerMenuOptions,
   }
 }
 

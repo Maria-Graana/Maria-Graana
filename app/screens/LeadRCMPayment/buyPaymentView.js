@@ -65,7 +65,7 @@ class BuyPaymentView extends React.Component {
     const isLeadClosed =
       lead.status === StaticData.Constants.lead_closed_lost ||
       lead.status === StaticData.Constants.lead_closed_won
-    let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user)
+    let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user, property)
     let sellerCommission = helper.setSellerAgent(lead, property, 'buyerSide', user)
     let singleCommission = buyerCommission && sellerCommission ? true : false
     const buyer = _.find(
@@ -147,7 +147,6 @@ class BuyPaymentView extends React.Component {
           singleCommission={singleCommission}
           isLeadClosed={isLeadClosed}
           setComissionApplicable={setBuyerCommissionApplicable}
-          commissionNotApplicableBuyerSeller={buyerCommission ? commissionNotApplicableBuyer : true}
           tileType={'buyer'}
           tileTitle={commissionNotApplicableBuyer ? 'Buyer Side Not Applicable' : 'Buyer Side'}
           closeLegalDocument={closeLegalDocument}
@@ -165,16 +164,15 @@ class BuyPaymentView extends React.Component {
           readPermission={readPermission}
           updatePermission={updatePermission}
           closedLeadEdit={closedLeadEdit}
-          // commissionNotApplicableSeller={commissionNotApplicableSeller}
-          // commissionNotApplicableBuyer={commissionNotApplicableBuyer}
+          commissionBuyer={!buyerCommission}
+          commissionNotApplicableSeller={commissionNotApplicableSeller}
+          commissionNotApplicableBuyer={commissionNotApplicableBuyer}
         />
         <BuyerSellerTile
           singleCommission={singleCommission}
           isLeadClosed={isLeadClosed}
           setComissionApplicable={setSellerCommissionApplicable}
-          commissionNotApplicableBuyerSeller={
-            sellerCommission ? commissionNotApplicableSeller : true
-          }
+          commissionSeller={!sellerCommission}
           tileType={'seller'}
           tileTitle={
             sellerCommission && commissionNotApplicableSeller
@@ -196,8 +194,8 @@ class BuyPaymentView extends React.Component {
           readPermission={readPermission}
           updatePermission={updatePermission}
           closedLeadEdit={closedLeadEdit}
-          // commissionNotApplicableSeller={commissionNotApplicableSeller}
-          // commissionNotApplicableBuyer={commissionNotApplicableBuyer}
+          commissionNotApplicableSeller={commissionNotApplicableSeller}
+          commissionNotApplicableBuyer={commissionNotApplicableBuyer}
         />
       </View>
     )

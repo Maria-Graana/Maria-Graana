@@ -232,7 +232,7 @@ export class ContactRegistrationFeedback extends Component {
       callingCode2,
     })
     delete body.contactRegistrationId
-    navigation.replace('AddClient', {
+    navigation.navigate('AddClient', {
       title: 'ADD CLIENT INFO',
       data: body,
       isFromScreen: 'ContactRegistration',
@@ -314,13 +314,7 @@ export class ContactRegistrationFeedback extends Component {
           })
           updateContact(body).then((res) => {
             if (res) {
-              addCall({
-                feedback: action,
-                armsContactId: res.id,
-                time: moment(),
-              }).then((callRes) => {
-                navigation.replace('Contacts')
-              })
+              navigation.replace('Contacts')
             }
           })
         }

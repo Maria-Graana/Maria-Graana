@@ -71,7 +71,7 @@ export class Contacts extends Component {
       contact1: selectedContact.phone2,
       contact2: selectedContact.phone3,
     })
-    navigation.replace('AddClient', {
+    navigation.navigate('AddClient', {
       title: 'ADD CLIENT INFO',
       data: body,
       isFromScreen: 'ContactRegistration',

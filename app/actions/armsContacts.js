@@ -191,7 +191,7 @@ export function createContact(body) {
 export function updateContact(body) {
   let url = `api/contacts/update`
   let promise = axios
-    .post(url, body)
+    .patch(url, body)
     .then((res) => {
       return res.data
     })

@@ -549,6 +549,10 @@ class InvestLeads extends React.Component {
     })
   }
 
+  openStatus = () => {
+    this.setState({ activeSortModal: !this.state.activeSortModal })
+  }
+
   render() {
     const {
       leadsData,

@@ -173,7 +173,7 @@ class LeadTile extends React.Component {
                     </Text>
                   </View>
                 )}
-                {data && data.requiredProperties && (
+                {/* {data && data.requiredProperties && (
                   <View style={styles.sharedLead}>
                     <Text
                       style={[
@@ -189,7 +189,7 @@ class LeadTile extends React.Component {
                       Demand Lead
                     </Text>
                   </View>
-                )}
+                )} */}
                 {data && data.leadCategory ? (
                   <View style={[styles.sharedLead, screen === 'Leads' && { padding: 0 }]}>
                     <Text

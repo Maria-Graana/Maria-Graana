@@ -11,12 +11,13 @@ import {
   createARMSContactPayload,
   createContact,
   setSelectedContact,
+  updateARMSContact,
+  updateContact,
 } from '../../actions/armsContacts'
 import moment from 'moment'
 import { getAllCountries } from 'react-native-country-picker-modal'
 import PhoneInputComponent from '../../components/PhoneCountry/PhoneInput'
 import _ from 'underscore'
-import helper from '../../helper'
 
 export class ContactRegistrationFeedback extends Component {
   constructor(props) {
@@ -61,7 +62,7 @@ export class ContactRegistrationFeedback extends Component {
     const { selectedContact } = this.props
     let contact1 = selectedContact.contact1 ? selectedContact.contact1.substring(1) : null
     let contact2 = selectedContact.contact2 ? selectedContact.contact2.substring(1) : null
-    let phone = selectedContact.phone ? selectedContact.phone.substring(3) : null
+    let phone = selectedContact.phone ? selectedContact.phone.substring(1) : null
     let countryCode = null
     let countryCode1 = null
     let countryCode2 = null
@@ -301,6 +302,27 @@ export class ContactRegistrationFeedback extends Component {
               }
             })
           }
+        } else if ('updateContact') {
+          let body = updateARMSContact({
+            ...formData,
+            countryCode,
+            countryCode1,
+            countryCode2,
+            callingCode,
+            callingCode1,
+            callingCode2,
+          })
+          updateContact(body).then((res) => {
+            if (res) {
+              addCall({
+                feedback: action,
+                armsContactId: res.id,
+                time: moment(),
+              }).then((callRes) => {
+                navigation.replace('Contacts')
+              })
+            }
+          })
         }
       }
     }
@@ -377,7 +399,6 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.firstName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'First Name'}
-                editable={isContactExists ? false : true}
               />
             </View>
             {checkValidation === true &&
@@ -396,7 +417,6 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.lastName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'Last Name'}
-                editable={isContactExists ? false : true}
               />
             </View>
             {/* {checkValidation === true &&
@@ -422,7 +442,6 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contactNumber'}
                 placeholder={'Phone'}
-                editable={isContactExists ? false : true}
                 applyMaxLengthLimit={false}
               />
               {phoneValidate == true && (
@@ -447,7 +466,6 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contact1'}
                 placeholder={'Contact Number 2'}
-                editable={isContactExists ? false : true}
                 applyMaxLengthLimit={false}
               />
               {contact1Validate == true && (
@@ -467,7 +485,6 @@ export class ContactRegistrationFeedback extends Component {
                   this.setCountryCode(object, 'contact2')
                 }}
                 onChangeHandle={this.handleForm}
-                editable={isContactExists ? false : true}
                 name={'contact2'}
                 placeholder={'Contact Number 3'}
                 applyMaxLengthLimit={false}
@@ -477,6 +494,18 @@ export class ContactRegistrationFeedback extends Component {
               )}
             </View>
           </View>
+
+          {/* **************************************** */}
+
+          {isContactExists ? (
+            <View style={[AppStyles.mainInputWrap]}>
+              <TouchableButton
+                containerStyle={[AppStyles.formBtn]}
+                label={'UPDATE'}
+                onPress={() => this.performAction('updateContact')}
+              />
+            </View>
+          ) : null}
 
           {/* **************************************** */}
 

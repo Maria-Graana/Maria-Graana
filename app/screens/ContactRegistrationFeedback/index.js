@@ -423,6 +423,7 @@ export class ContactRegistrationFeedback extends Component {
                 name={'contactNumber'}
                 placeholder={'Phone'}
                 editable={isContactExists ? false : true}
+                applyMaxLengthLimit={false}
               />
               {phoneValidate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
@@ -447,6 +448,7 @@ export class ContactRegistrationFeedback extends Component {
                 name={'contact1'}
                 placeholder={'Contact Number 2'}
                 editable={isContactExists ? false : true}
+                applyMaxLengthLimit={false}
               />
               {contact1Validate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
@@ -468,6 +470,7 @@ export class ContactRegistrationFeedback extends Component {
                 editable={isContactExists ? false : true}
                 name={'contact2'}
                 placeholder={'Contact Number 3'}
+                applyMaxLengthLimit={false}
               />
               {contact2Validate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />

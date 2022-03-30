@@ -849,6 +849,7 @@ function TimeSlotManagement(props) {
     navigation.navigate('ScheduledTasks', {
       fromDate: startDate,
       toDate: toDate,
+      isFromTimeSlot: true
     })
   }
 

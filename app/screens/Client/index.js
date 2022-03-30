@@ -326,7 +326,11 @@ class Client extends React.Component {
                 />
               )}
               onEndReached={() => {
-                if (customers.length < totalCustomers && onEndReachedLoader === false) {
+                if (
+                  customers.length < totalCustomers &&
+                  onEndReachedLoader === false &&
+                  searchText === ''
+                ) {
                   this.setState(
                     {
                       page: this.state.page + 1,

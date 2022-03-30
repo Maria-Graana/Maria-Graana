@@ -121,20 +121,10 @@ export function setSelectedContact(contact, call = false) {
   return (dispatch, getsState) => {
     if (call) {
       let url = 'tel:' + contact.phone
-      if (url && url != 'tel:null') {
-        Linking.canOpenURL(url)
-          .then((supported) => {
-            if (!supported) {
-              helper.errorToast(`No application available to dial phone number`)
-              console.log("Can't handle url: " + url)
-            } else {
-              Linking.openURL(url)
-            }
-          })
-          .catch((err) => console.error('An error occurred', err))
-      } else {
-        helper.errorToast(`No Phone Number`)
-      }
+      console.log("Can't handle url: " + url)
+      Linking.openURL(url)
+    } else {
+      helper.errorToast(`No Phone Number`)
     }
     dispatch({
       type: types.SET_SELECTED_CONTACT,

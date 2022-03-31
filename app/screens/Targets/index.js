@@ -51,12 +51,13 @@ class Targets extends Component {
 
   getMyTarget = () => {
     const { selectedMonth, selectedYear } = this.state
+    const { user } = this.props
     let date = `${selectedYear}-${moment()
       .month(selectedMonth - 1)
       .format('MM')}`
     this.setState({ loading: true })
     axios
-      .get(`/api/user/getTeamtarget?targetMonth=${date}&mobile=${true}`)
+      .get(`/api/user/getAgentTatget?userId=${user.id}&fromDate=${date}`) // API changed
       .then((response) => {
         if (response.status === 200) {
           this.setState({ data: response.data, loading: false })

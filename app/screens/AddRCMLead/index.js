@@ -154,12 +154,18 @@ class AddRCMLead extends Component {
 
   handleRCMForm = (value, name) => {
     const { RCMFormData } = this.state
-    const { dispatch } = this.props
-    RCMFormData[name] = value
-    if (name === 'size_unit') this.setSizeUnitList(value)
-    this.setState({ RCMFormData })
-    if (RCMFormData.type != '') {
-      this.selectSubtype(RCMFormData.type)
+    if (name === 'description') {
+      const copyObject = { ...RCMFormData }
+      copyObject.description = value
+      this.setState({ RCMFormData: copyObject })
+    } else {
+      const { dispatch } = this.props
+      RCMFormData[name] = value
+      if (name === 'size_unit') this.setSizeUnitList(value)
+      this.setState({ RCMFormData })
+      if (RCMFormData.type != '') {
+        this.selectSubtype(RCMFormData.type)
+      }
     }
   }
 

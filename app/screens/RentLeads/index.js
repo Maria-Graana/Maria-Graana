@@ -193,21 +193,15 @@ class RentLeads extends React.Component {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&aira=${
-              isAiraPermission ? true : false
-            }&pageSize=${pageSize}&page=${page}&assignToMe=${true}`)
+          : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads?purpose[]=rent&id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&id=${searchText}&aira=${
-              isAiraPermission ? true : false
-            }&pageSize=${pageSize}&page=${page}&assignToMe=${true}`)
+          : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&aira=${
-              isAiraPermission ? true : false
-            }&assignToMe=${true}`)
+          : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'shortlisting') {

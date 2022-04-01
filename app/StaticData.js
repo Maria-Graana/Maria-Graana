@@ -1500,4 +1500,11 @@ export default StaticData = {
     { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
     { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
   ],
+  filterLeadsValueProject: [
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+    { name: 'TEAM LEADS', value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
+  ],
 }

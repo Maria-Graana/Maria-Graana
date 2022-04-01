@@ -50,6 +50,7 @@ class InvestLeads extends React.Component {
   constructor(props) {
     super(props)
     const { permissions } = this.props
+    const { hasBooking = false } = this.props.route.params
     this.state = {
       leadsData: [],
       purposeTab: 'invest',
@@ -89,6 +90,9 @@ class InvestLeads extends React.Component {
         PermissionActions.CREATE,
         permissions
       ),
+      pageType: hasBooking
+        ? '&pageType=myDeals&hasBooking=true'
+        : '&pageType=myLeads&hasBooking=false',
     }
   }
 
@@ -232,6 +236,7 @@ class InvestLeads extends React.Component {
       searchText,
       statusFilter,
       statusFilterType,
+      pageType,
     } = this.state
     const { hasBooking, navFrom } = this.props.route.params
     const { user } = this.props
@@ -240,26 +245,26 @@ class InvestLeads extends React.Component {
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'in_progress') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
     axios
@@ -310,6 +315,13 @@ class InvestLeads extends React.Component {
         this.fetchLeads()
       })
     }
+  }
+
+  changePageType = (value) => {
+    this.clearStateValues()
+    this.setState({ pageType: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
   }
 
   navigateFromMenu = (data, name) => {
@@ -571,6 +583,7 @@ class InvestLeads extends React.Component {
       fabActions,
       createBuyRentLead,
       createProjectLead,
+      pageType,
     } = this.state
     const {
       user,
@@ -644,6 +657,20 @@ class InvestLeads extends React.Component {
                   selectedItem={statusFilter}
                 />
               </View>
+
+              <View style={styles.pageTypeRow}>
+                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
+                <PickerComponent
+                  placeholder={'Lead Filter'}
+                  data={StaticData.filterLeadsValueProject}
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changePageType}
+                  selectedItem={pageType}
+                  showPickerArrow={false}
+                />
+              </View>
+              <View style={styles.verticleLine} />
 
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity

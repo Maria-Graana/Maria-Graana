@@ -377,6 +377,7 @@ class CMBottomNav extends React.Component {
       closedWonOptionVisible,
       checkCloseWon,
       leadData,
+      closeWonOptionVisibleFromInvest,
     } = this.props
     const {
       visible,
@@ -574,6 +575,18 @@ class CMBottomNav extends React.Component {
                       } else {
                         onHandleCloseLead(lead)
                       }
+                      this.openMenu(false)
+                    }}
+                    title="Closed Won"
+                  />
+                )}
+              {closeWonOptionVisibleFromInvest &&
+                closedWon &&
+                lead.status !== 'closed_won' &&
+                lead.status !== 'closed_lost' && (
+                  <Menu.Item
+                    onPress={() => {
+                      onHandleCloseLead(lead)
                       this.openMenu(false)
                     }}
                     title="Closed Won"

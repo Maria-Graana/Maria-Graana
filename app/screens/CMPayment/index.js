@@ -2021,7 +2021,6 @@ class CMPayment extends Component {
     const { screenName } = this.props.route.params
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
-
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -2275,6 +2274,8 @@ class CMPayment extends Component {
               onHandleCloseLead={this.onHandleCloseLead}
               fetchLead={this.fetchLead}
               screenName={screenName}
+              lead={lead}
+              closeWonOptionVisibleFromInvest={true}
             />
           </View>
         </View>

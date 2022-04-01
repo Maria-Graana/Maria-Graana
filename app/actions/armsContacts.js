@@ -151,8 +151,8 @@ export function updateARMSContact(data) {
     id,
     contactRegistrationId: id,
   }
-  if (!contact1) delete body.contact1
-  if (!contact2) delete body.contact2
+  if (!contact1) body.contact1 = null
+  if (!contact2) body.contact2 = null
   return body
 }
 

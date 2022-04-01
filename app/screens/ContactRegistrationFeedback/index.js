@@ -146,7 +146,6 @@ export class ContactRegistrationFeedback extends Component {
       callingCode1,
       callingCode2,
     })
-    delete body.contactRegistrationId
     navigation.navigate('AddClient', {
       title: 'ADD CLIENT INFO',
       data: body,

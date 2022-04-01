@@ -382,7 +382,10 @@ class CMPayment extends Component {
       return
     }
     let fullPaymentDiscount = PaymentHelper.findPaymentPlanDiscount(lead, unit)
-    let discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
+    let discountAmount = ''
+    if (unit.type !== 'pearl')
+      discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
+    else discountAmount = unit.discounted_price
     let finalPrice = PaymentMethods.findFinalPrice(
       unit,
       discountAmount,

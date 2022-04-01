@@ -151,8 +151,6 @@ export function updateARMSContact(data) {
     id,
     contactRegistrationId: id,
   }
-  if (!contact1) body.contact1 = null
-  if (!contact2) body.contact2 = null
   return body
 }
 
@@ -191,6 +189,7 @@ export function createContact(body) {
 
 export function updateContact(body) {
   let url = `api/contacts/update`
+
   let promise = axios
     .patch(url, body)
     .then((res) => {

@@ -149,6 +149,7 @@ export function updateARMSContact(data) {
       dialCode: checkUndefined(callingCode2),
     },
     id,
+    contactRegistrationId: id,
   }
   if (!contact1) delete body.contact1
   if (!contact2) delete body.contact2
@@ -160,11 +161,11 @@ export function setSelectedContact(contact, call = false) {
     if (call) {
       let url = 'tel:' + contact.phone
       if (url && url != 'tel:null') {
-        console.log("Can't handle url: " + url)
-        return Linking.openURL(url).catch((err) => console.error('An error occurred', err))
       } else {
         helper.errorToast(`No Phone Number`)
       }
+      // console.log("Can't handle url: " + url)
+      Linking.openURL(url)
     }
     dispatch({
       type: types.SET_SELECTED_CONTACT,
@@ -193,7 +194,9 @@ export function updateContact(body) {
   let promise = axios
     .patch(url, body)
     .then((res) => {
-      return res.data
+      if (res && res.data) {
+        return res.data
+      }
     })
     .catch((err) => {
       console.error('An error occurred while updating contact', err)

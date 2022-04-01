@@ -60,92 +60,7 @@ export class ContactRegistrationFeedback extends Component {
   fetchCountryCode = () => {
     const { countries } = this.state
     const { selectedContact } = this.props
-    let contact1 = selectedContact.contact1 ? selectedContact.contact1.substring(1) : null
-    let contact2 = selectedContact.contact2 ? selectedContact.contact2.substring(1) : null
-    let phone = selectedContact.phone ? selectedContact.phone.substring(1) : null
-    let countryCode = null
-    let countryCode1 = null
-    let countryCode2 = null
-    let cca2Contact = null
-    let cca2Contact1 = null
-    let cca2Contact2 = null
-    let contactBool = false
-    let contact1Bool = false
-    let contact2Bool = false
-    // if (selectedContact.phoneNumbers && selectedContact.phoneNumbers.length > 0) {
-    //   for (let i = 0; i < selectedContact.phoneNumbers.length; i++) {
-    //     if (i === 0)
-    //       phone = selectedContact.phoneNumbers[i].number
-    //         ? selectedContact.phoneNumbers[i].number.substring(1)
-    //         : null
-    //     if (i === 1)
-    //       contact1 = selectedContact.phoneNumbers[i].number
-    //         ? selectedContact.phoneNumbers[i].number.substring(1)
-    //         : null
-    //     if (i === 2)
-    //       contact2 = selectedContact.phoneNumbers[i].number
-    //         ? selectedContact.phoneNumbers[i].number.substring(1)
-    //         : null
-    //   }
-    //   let result = _.map(_.where(countries), function (country) {
-    //     return { callingCode: country.callingCode, cca2: country.cca2 }
-    //   })
-    //   let newResult = []
-    //   if (result.length) {
-    //     result.map((item) => {
-    //       let callingCode = item.callingCode
-    //       if (callingCode.length) {
-    //         callingCode.map((code) => {
-    //           let obj = {
-    //             cca2: item.cca2,
-    //             callingCode: Number(code),
-    //           }
-    //           newResult.push(obj)
-    //         })
-    //       }
-    //     })
-    //   }
-    //   newResult = _.sortBy(newResult, 'callingCode').reverse()
-    //   for (let i = 0; i < newResult.length; i++) {
-    //     if (phone && phone.startsWith(newResult[i].callingCode)) {
-    //       if (!contactBool) {
-    //         if (!selectedContact.phoneNumbers[0].dialCode) {
-    //           countryCode = '+' + newResult[i].callingCode
-    //           cca2Contact = newResult[i].cca2
-    //           contactBool = true
-    //         } else {
-    //           countryCode = selectedContact.phoneNumbers[0].dialCode
-    //           cca2Contact = selectedContact.phoneNumbers[0].countryCode
-    //         }
-    //       }
-    //     }
-    //     if (contact1 && contact1.startsWith(newResult[i].callingCode)) {
-    //       if (!contact1Bool) {
-    //         if (!selectedContact.phoneNumbers[1].dialCode) {
-    //           countryCode1 = '+' + newResult[i].callingCode
-    //           cca2Contact1 = newResult[i].cca2
-    //           contact1Bool = true
-    //         } else {
-    //           countryCode1 = selectedContact.phoneNumbers[1].dialCode
-    //           cca2Contact1 = selectedContact.phoneNumbers[1].countryCode
-    //         }
-    //       }
-    //     }
-    //     if (contact2 && contact2.startsWith(newResult[i].callingCode)) {
-    //       if (!contact2Bool) {
-    //         if (!selectedContact.phoneNumbers[2].dialCode) {
-    //           countryCode2 = '+' + newResult[i].callingCode
-    //           cca2Contact2 = newResult[i].cca2
-    //           contact2Bool = true
-    //         } else {
-    //           countryCode2 = selectedContact.phoneNumbers[2].dialCode
-    //           cca2Contact2 = selectedContact.phoneNumbers[2].countryCode
-    //         }
-    //       }
-    //     }
-    //     if (contactBool && contact1Bool && contact2Bool) break
-    //   }
-    // }
+    // console.log(selectedContact)
     this.setState(
       {
         countryCode:
@@ -212,7 +127,7 @@ export class ContactRegistrationFeedback extends Component {
   }
 
   navigateToClientScreen = () => {
-    const { navigation } = this.props
+    const { navigation, route } = this.props
     const {
       formData,
       countryCode,

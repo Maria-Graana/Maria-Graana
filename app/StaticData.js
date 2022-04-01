@@ -1450,22 +1450,6 @@ export default StaticData = {
       label: 'Cold',
       color: '#1688db',
     },
-    // {
-    //   label: 'Call back',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Interested to meet',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Powered off',
-    //   color: '#9a9a9a',
-    // },
-    // {
-    //   label: 'No response',
-    //   color: '#9a9a9a',
-    // },
   ],
   unitStatuses: [
     { name: 'Available', value: 'Available' },
@@ -1507,5 +1491,13 @@ export default StaticData = {
     { name: 'Time Based', value: '' },
     { name: 'Task Type', value: 'type' },
     { name: 'Classification', value: 'class' },
+  ],
+  filterLeadsValue: [
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+    { name: 'TEAM LEADS', value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'DEMAND LEADS', value: '&pageType=demandLeads&hasBooking=false' },
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
   ],
 }

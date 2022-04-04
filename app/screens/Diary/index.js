@@ -359,9 +359,9 @@ class Diary extends React.Component {
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
-      this.navigateToReferAssignLead('refer')
+      this.navigateToShareScreen()
     } else if (action === 'reassign_lead') {
-      this.navigateToReferAssignLead('reassign')
+      this.checkAssignedLead()
     } else if (action === 'activity_history') {
       getActivityHistory(selectedLead, diaryHelper.getLeadType(selectedDiary)).then((res) => {
         if (res) {
@@ -391,20 +391,97 @@ class Diary extends React.Component {
     }
   }
 
-  navigateToReferAssignLead = (mode) => {
-    const { navigation, selectedDiary, selectedLead } = this.props
+  // navigateToReferAssignLead = (mode) => {
+  //   const { navigation, selectedDiary, selectedLead } = this.props
+  //   let type = null
+  //   if (selectedDiary.armsProjectLeadId) {
+  //     type = 'Investment'
+  //   } else if (selectedDiary.armsLeadId) {
+  //     type = selectedLead.purpose
+  //   }
+  //   navigation.navigate('AssignLead', {
+  //     leadId: selectedLead.id,
+  //     type: type,
+  //     purpose: mode,
+  //     screenName: 'Diary',
+  //   })
+  // }
+  navigateToShareScreen = () => {
+    const { user, selectedLead, navigation, selectedDiary, permissions } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
       type = 'Investment'
     } else if (selectedDiary.armsLeadId) {
       type = selectedLead.purpose
     }
-    navigation.navigate('AssignLead', {
-      leadId: selectedLead.id,
-      type: type,
-      purpose: mode,
-      screenName: 'Diary',
-    })
+    if (selectedLead) {
+      if (
+        (getPermissionValue(
+          selectedLead.projectId && selectedLead.project
+            ? PermissionFeatures.PROJECT_LEADS
+            : PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.REFER,
+          permissions
+        ) &&
+          selectedLead.status === StaticData.Constants.lead_closed_lost) ||
+        selectedLead.status === StaticData.Constants.lead_closed_won
+      ) {
+        helper.errorToast('Closed leads cannot be shared with other agents')
+        return
+      }
+      if (user.id === selectedLead.assigned_to_armsuser_id) {
+        if (selectedLead.shared_with_armsuser_id) {
+          helper.errorToast('lead is already shared')
+        } else {
+          navigation.navigate('AssignLead', {
+            leadId: selectedLead.id,
+            type: type,
+            purpose: 'refer',
+            screenName: 'Diary',
+          })
+        }
+      } else {
+        helper.errorToast('Only the leads assigned to you can be shared')
+      }
+    } else {
+      helper.errorToast('Something went wrong!')
+    }
+  }
+  checkAssignedLead = () => {
+    const { user, navigation, selectedDiary, selectedLead , permissions } = this.props
+    let type = null
+    if (selectedDiary.armsProjectLeadId) {
+      type = 'Investment'
+    } else if (selectedDiary.armsLeadId) {
+      type = selectedLead.purpose
+    }
+    // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
+    if (
+      getPermissionValue(
+        selectedLead.projectId && selectedLead.project
+          ? PermissionFeatures.PROJECT_LEADS
+          : PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.REFER,
+        permissions
+      ) &&
+      selectedLead.status !== StaticData.Constants.lead_closed_lost &&
+      selectedLead.status !== StaticData.Constants.lead_closed_won
+    ) {
+      // Lead can only be assigned to someone else if it is assigned to no one or to current user
+      if (
+        selectedLead.assigned_to_armsuser_id === null ||
+        user.id === selectedLead.assigned_to_armsuser_id
+      ) {
+        navigation.navigate('AssignLead', {
+          leadId: selectedLead.id,
+          type: type,
+          purpose: 'reassign',
+          screenName: 'Diary',
+        })
+      }
+    } else {
+      helper.errorToast('Sorry you are not authorized to assign lead')
+    }
   }
 
   navigateToLeadDetail = (data) => {

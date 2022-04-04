@@ -823,6 +823,14 @@ export default StaticData = {
     { value: 'bank-Transfer', name: 'Bank-Transfer' },
     { value: 'e-Gateway', name: 'E-Gateway' },
   ],
+  investmentPaymentType: [
+    { value: 'payment', name: 'Payment' },
+    { value: 'possession charges', name: 'Possession Charges' },
+    { value: 'installment', name: 'Installment' },
+    { value: 'down payment', name: 'Down Payment' },
+    { value: 'full payment', name: 'Full Payment' },
+  ],
+  investmentTaxType: [{ value: 'tax', name: 'Tax' }],
   investFullPaymentType: [
     { value: 'cash', name: 'Cash' },
     { value: 'cheque', name: 'Cheque' },
@@ -841,10 +849,7 @@ export default StaticData = {
     { value: 'pearl', name: 'Pearl' },
   ],
   onlyUnitType: [{ value: 'fullUnit', name: 'Full Unit' }],
-  paymentTypeForToken: [
-    { value: 'Token', name: 'Token' },
-    { value: 'Payment', name: 'Other Payment' },
-  ],
+  paymentTypeForToken: [{ value: 'token', name: 'Token' }],
   statusOptions: [
     { label: 'Open', value: 'open' },
     { label: 'Pending Account', value: 'pendingAccount' },

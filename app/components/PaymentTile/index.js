@@ -70,7 +70,7 @@ class PaymentTile extends React.Component {
         <View style={styles.tileTopWrap}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>
-              {`${data.paymentCategory} ${data.paymentCategory != 'token' ? count : ''}`}{' '}
+              {`${data.paymentCategory}`}{' '}
               <Text style={{ textTransform: 'capitalize' }}>
                 (
                 {data.type && data.type === 'asset_adjustment'

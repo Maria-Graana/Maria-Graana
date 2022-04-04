@@ -122,24 +122,6 @@ class CMPayment extends Component {
       },
       unitPearlDetailsData: route.params?.unitData != null ? route.params?.unitData.floor : {},
       oneUnitData: route.params?.unitData != null ? route.params?.unitData : {},
-      RCMFormData: {
-        type: '',
-        subtype: '',
-        leadAreas: [],
-        customerId: '',
-        city_id: '',
-        size_unit: 'marla',
-        description: '',
-        org: '',
-        bed: null,
-        maxBed: null,
-        bath: null,
-        maxBath: null,
-        size: StaticData.sizeMarla[0],
-        maxSize: StaticData.sizeMarla[StaticData.sizeMarla.length - 1],
-        minPrice: 0,
-        maxPrice: 0,
-      },
       unitDetailModal: false,
       checkValidation: false,
       pearlUnit: false,
@@ -827,6 +809,7 @@ class CMPayment extends Component {
         ...payment,
         visible: true,
         officeLocationId: locationId,
+        paymentType: payment.paymentCategory ? payment.paymentCategory : '',
       })
     )
     if (payment && payment.paymentInstrument && lead) {

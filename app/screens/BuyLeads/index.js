@@ -649,29 +649,31 @@ class BuyLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              {hasBooking ? (
+              {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
-              ) : (
-                <View style={styles.pickerMain}>
-                  <PickerComponent
-                    placeholder={'Lead Status'}
-                    data={
-                      hideCloseLostFilter
-                        ? StaticData.buyRentFilterAddTask
-                        : StaticData.buyRentFilter
-                    }
-                    customStyle={styles.pickerStyle}
-                    customIconStyle={styles.customIconStyle}
-                    onValueChange={this.changeStatus}
-                    selectedItem={statusFilter}
-                  />
-                </View>
-              )}
+              ) : ( */}
+              <View style={styles.pickerMain}>
+                <PickerComponent
+                  placeholder={'Lead Status'}
+                  data={
+                    hasBooking
+                      ? StaticData.buyRentFilterDeals
+                      : hideCloseLostFilter
+                      ? StaticData.buyRentFilterAddTask
+                      : StaticData.buyRentFilter
+                  }
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatus}
+                  selectedItem={statusFilter}
+                />
+              </View>
+              {/* )} */}
               <View style={styles.pageTypeRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
                 <PickerComponent
-                  placeholder={'Lead Filter'}
-                  data={StaticData.filterLeadsValue}
+                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                  data={hasBooking ? StaticData.filterDealsValue : StaticData.filterLeadsValue}
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
                   onValueChange={this.changePageType}

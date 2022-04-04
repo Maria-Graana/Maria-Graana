@@ -661,8 +661,12 @@ class InvestLeads extends React.Component {
               <View style={styles.pageTypeRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
                 <PickerComponent
-                  placeholder={'Lead Filter'}
-                  data={StaticData.filterLeadsValueProject}
+                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                  data={
+                    hasBooking
+                      ? StaticData.filterDealsValueProject
+                      : StaticData.filterLeadsValueProject
+                  }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
                   onValueChange={this.changePageType}

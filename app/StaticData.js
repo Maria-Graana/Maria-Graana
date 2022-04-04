@@ -1493,18 +1493,23 @@ export default StaticData = {
     { name: 'Classification', value: 'class' },
   ],
   filterLeadsValue: [
-    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
     { name: 'TEAM LEADS', value: '&pageType=teamLeads&hasBooking=false' },
     { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
     { name: 'DEMAND LEADS', value: '&pageType=demandLeads&hasBooking=false' },
-    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
-    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
   ],
   filterLeadsValueProject: [
-    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
     { name: 'TEAM LEADS', value: '&pageType=teamLeads&hasBooking=false' },
     { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
-    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
-    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
   ],
+  filterDealsValue: [
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  filterDealsValueProject: [
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  buyRentFilterDeals: [{ value: 'closed_won', name: 'Closed Won' }],
 }

@@ -449,7 +449,6 @@ class InvestLeads extends React.Component {
     const { user } = this.props
     // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
     if (
-      Ability.canView(user.subRole, 'AssignLead') &&
       lead.status !== StaticData.Constants.lead_closed_lost &&
       lead.status !== StaticData.Constants.lead_closed_won
     ) {

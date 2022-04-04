@@ -121,6 +121,20 @@ class LeadTile extends React.Component {
     let leadSize = this.leadSize()
     let showPhone = displayPhone === false || displayPhone ? displayPhone : true
     let leadStatus = this.leadStatus()
+    let referPermission = getPermissionValue(
+      lead.projectId && lead.project
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.REFER,
+      permissions
+    )
+    let assignPermission = getPermissionValue(
+      lead.projectId && lead.project
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.ASSIGN_REASSIGN,
+      permissions
+    )
     return (
       <TouchableOpacity
         disabled={screen === 'Leads' ? true : false}
@@ -279,13 +293,19 @@ class LeadTile extends React.Component {
                         />
                         <Menu.Item
                           onPress={() => {
-                            navigateToShareScreen(data), setIsMenuVisible(false, data)
+                            if (referPermission) {
+                              navigateToShareScreen(data)
+                              setIsMenuVisible(false, data)
+                            }
                           }}
                           title="Refer"
                         />
                         <Menu.Item
                           onPress={() => {
-                            checkAssignedLead(lead), setIsMenuVisible(false, data)
+                            if (assignPermission) {
+                              checkAssignedLead(lead)
+                              setIsMenuVisible(false, data)
+                            }
                           }}
                           title="Re-Assign"
                         />

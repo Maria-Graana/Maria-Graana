@@ -68,6 +68,28 @@ const helper = {
     }
     return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5, 12)}-${onlyNums.slice(12, 13)}`
   },
+  normalizeCnicAndNTN(value) {
+    if (!value) {
+      return value
+    }
+    const onlyNums = value && value.toString().replace(/[^\d]/g, '')
+    if (onlyNums.length <= 5) {
+      return onlyNums
+    }
+
+    if (onlyNums.length === 7) {
+      return value
+    }
+
+    if (onlyNums.length === 8) {
+      return `${onlyNums.slice(0, 7)}-${onlyNums.slice(7)}`
+    }
+
+    if (onlyNums.length <= 12) {
+      return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5)}`
+    }
+    return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5, 12)}-${onlyNums.slice(12, 13)}`
+  },
   normalizePhone(value) {
     if (!value) {
       return value

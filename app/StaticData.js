@@ -1512,4 +1512,19 @@ export default StaticData = {
     { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
   ],
   buyRentFilterDeals: [{ value: 'closed_won', name: 'Closed Won' }],
+
+  filterLeadsValueTerminal: [
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'DEMAND LEADS', value: '&pageType=demandLeads&hasBooking=false' },
+  ],
+  filterDealsValueTerminal: [{ name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' }],
+  filterLeadsValueProjectTerminal: [
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+  ],
+  filterDealsValueProjectTerminal: [
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+  ],
 }

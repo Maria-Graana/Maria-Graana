@@ -593,6 +593,7 @@ class InvestLeads extends React.Component {
       referenceGuide,
       navigation,
       isMultiPhoneModalVisible,
+      getIsTerminalUser,
     } = this.props
     const {
       screen,
@@ -664,7 +665,11 @@ class InvestLeads extends React.Component {
                   placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
                   data={
                     hasBooking
-                      ? StaticData.filterDealsValueProject
+                      ? getIsTerminalUser
+                        ? StaticData.filterDealsValueProjectTerminal
+                        : StaticData.filterDealsValueProject
+                      : getIsTerminalUser
+                      ? StaticData.filterLeadsValueProjectTerminal
                       : StaticData.filterLeadsValueProject
                   }
                   customStyle={styles.pickerStyle}
@@ -805,6 +810,7 @@ mapStateToProps = (store) => {
     permissions: store.user.permissions,
     referenceGuide: store.diary.referenceGuide,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
+    getIsTerminalUser: store.user.getIsTerminalUser,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

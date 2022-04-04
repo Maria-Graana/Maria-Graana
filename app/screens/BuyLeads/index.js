@@ -594,7 +594,8 @@ class BuyLeads extends React.Component {
       createProjectLead,
       pageType,
     } = this.state
-    const { user, permissions, dispatch, navigation, isMultiPhoneModalVisible } = this.props
+    const { user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
+      this.props
     const {
       screen,
       hasBooking = false,
@@ -673,7 +674,15 @@ class BuyLeads extends React.Component {
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
                 <PickerComponent
                   placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
-                  data={hasBooking ? StaticData.filterDealsValue : StaticData.filterLeadsValue}
+                  data={
+                    hasBooking
+                      ? getIsTerminalUser
+                        ? StaticData.filterDealsValueTerminal
+                        : StaticData.filterDealsValue
+                      : getIsTerminalUser
+                      ? StaticData.filterLeadsValueTerminal
+                      : StaticData.filterLeadsValue
+                  }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
                   onValueChange={this.changePageType}
@@ -814,6 +823,7 @@ mapStateToProps = (store) => {
     PPBuyNotification: store.Notification.PPBuyNotification,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     permissions: store.user.permissions,
+    getIsTerminalUser: store.user.getIsTerminalUser,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

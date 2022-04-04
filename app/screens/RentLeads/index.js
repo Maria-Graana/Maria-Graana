@@ -217,7 +217,7 @@ class RentLeads extends React.Component {
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
     }
-    console.log(query)
+    // console.log(query)
     axios
       .get(`${query}`)
       .then((res) => {
@@ -613,7 +613,8 @@ class RentLeads extends React.Component {
       createProjectLead,
       pageType,
     } = this.state
-    const { user, navigation, permissions, dispatch, isMultiPhoneModalVisible } = this.props
+    const { user, navigation, permissions, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } =
+      this.props
     const {
       screen,
       hasBooking = false,
@@ -695,7 +696,15 @@ class RentLeads extends React.Component {
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
                 <PickerComponent
                   placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
-                  data={hasBooking ? StaticData.filterDealsValue : StaticData.filterLeadsValue}
+                  data={
+                    hasBooking
+                      ? getIsTerminalUser
+                        ? StaticData.filterDealsValueTerminal
+                        : StaticData.filterDealsValue
+                      : getIsTerminalUser
+                      ? StaticData.filterLeadsValueTerminal
+                      : StaticData.filterLeadsValue
+                  }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
                   onValueChange={this.changePageType}
@@ -835,6 +844,7 @@ mapStateToProps = (store) => {
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
+    getIsTerminalUser: store.user.getIsTerminalUser,
   }
 }
 export default connect(mapStateToProps)(RentLeads)

@@ -123,23 +123,29 @@ const CMPaymentModal = ({
 
           <View style={styles.moreViewContainer}>
             {/* **************************************** */}
-            {CMPayment.paymentType === 'token' && (
+            {
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
                   <PickerComponent
                     enabled={CMPayment.status !== 'pendingAccount'}
                     onValueChange={handleCommissionChange}
-                    data={StaticData.paymentTypeForToken}
-                    name={'paymentCategory'}
+                    data={
+                      CMPayment.paymentType === 'token'
+                        ? StaticData.paymentTypeForToken
+                        : CMPayment.paymentType === 'tax'
+                        ? StaticData.investmentTaxType
+                        : StaticData.investmentPaymentType
+                    }
+                    name={'paymentType'}
                     placeholder="Payment Type"
-                    selectedItem={CMPayment.paymentCategory}
+                    selectedItem={CMPayment.paymentType}
                   />
-                  {modalValidation === true && CMPayment.paymentCategory == '' && (
+                  {modalValidation === true && CMPayment.paymentType == '' && (
                     <ErrorMessage errorMessage={'Required'} />
                   )}
                 </View>
               </View>
-            )}
+            }
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
               name={'installmentAmount'}
@@ -165,7 +171,7 @@ const CMPaymentModal = ({
                   onValueChange={handleCommissionChange}
                   data={StaticData.investFullPaymentType}
                   name={'type'}
-                  placeholder="Type"
+                  placeholder="Payment Category"
                   selectedItem={CMPayment.type}
                 />
                 {modalValidation === true && CMPayment.type == '' && (

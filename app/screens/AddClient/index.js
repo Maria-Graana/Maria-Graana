@@ -271,14 +271,14 @@ class AddClient extends Component {
   }
 
   validateCnic = (value) => {
-    if (value.length < 15 && value !== '') this.setState({ cnicValidate: true })
+    if (value.length <= 7 && value !== '') this.setState({ cnicValidate: true })
     else this.setState({ cnicValidate: false })
   }
 
   handleForm = (value, name) => {
     const { formData } = this.state
     if (name == 'cnic') {
-      value = helper.normalizeCnic(value)
+      value = helper.normalizeCnicAndNTN(value)
       this.validateCnic(value)
     }
     if (name == 'email') this.validateEmail(value)

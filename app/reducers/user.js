@@ -84,6 +84,15 @@ const updateLoader = (state = false, action) => {
   }
 }
 
+const getIsTerminalUser = (state = false, action) => {
+  switch (action.type) {
+    case types.SET_IS_TERMINAL_USER:
+      return action.data
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   user,
   error,
@@ -92,4 +101,5 @@ export default combineReducers({
   isInternetConnected,
   updateLoader,
   permissions,
+  getIsTerminalUser,
 })

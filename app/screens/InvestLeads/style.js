@@ -2,6 +2,7 @@
 
 import { StyleSheet } from 'react-native'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
+import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   filterRow: {
@@ -11,13 +12,13 @@ export default styles = StyleSheet.create({
     paddingBottom: 10,
     width: '100%',
   },
-  emptyViewWidth: {
-    width: '75%',
-  },
+  // emptyViewWidth: {
+  //   width: '75%',
+  // },
   pickerMain: {
-    width: '80%',
+    width: '37%',
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 4,
     borderColor: '#ebebeb',
     overflow: 'hidden',
   },
@@ -58,7 +59,7 @@ export default styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     alignItems: 'center',
-    width: '20%',
+    width: '30%',
   },
   idPicker: {
     width: '25%',
@@ -70,5 +71,16 @@ export default styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: '#ebebeb',
     overflow: 'hidden',
+  },
+  pageTypeRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '37%',
+    marginHorizontal: 10,
+  },
+  verticleLine: {
+    height: '100%',
+    width: 1,
+    backgroundColor: AppStyles.colors.subTextColor,
   },
 })

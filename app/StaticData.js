@@ -1450,22 +1450,6 @@ export default StaticData = {
       label: 'Cold',
       color: '#1688db',
     },
-    // {
-    //   label: 'Call back',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Interested to meet',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Powered off',
-    //   color: '#9a9a9a',
-    // },
-    // {
-    //   label: 'No response',
-    //   color: '#9a9a9a',
-    // },
   ],
   unitStatuses: [
     { name: 'Available', value: 'Available' },
@@ -1507,5 +1491,40 @@ export default StaticData = {
     { name: 'Time Based', value: '' },
     { name: 'Task Type', value: 'type' },
     { name: 'Classification', value: 'class' },
+  ],
+  filterLeadsValue: [
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'TEAM LEADS', value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'DEMAND LEADS', value: '&pageType=demandLeads&hasBooking=false' },
+  ],
+  filterLeadsValueProject: [
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'TEAM LEADS', value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+  ],
+  filterDealsValue: [
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  filterDealsValueProject: [
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  buyRentFilterDeals: [{ value: 'closed_won', name: 'Closed Won' }],
+
+  filterLeadsValueTerminal: [
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'DEMAND LEADS', value: '&pageType=demandLeads&hasBooking=false' },
+  ],
+  filterDealsValueTerminal: [{ name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' }],
+  filterLeadsValueProjectTerminal: [
+    { name: 'MY LEAD', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'REFERRED BY ME LEADS', value: '&pageType=referredLeads&hasBooking=false' },
+  ],
+  filterDealsValueProjectTerminal: [
+    { name: 'MY DEAL', value: '&pageType=myDeals&hasBooking=true' },
+    { name: 'TEAM DEALS', value: '&pageType=teamDeals&hasBooking=true' },
   ],
 }

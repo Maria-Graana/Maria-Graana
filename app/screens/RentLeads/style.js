@@ -11,6 +11,7 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     paddingBottom: 10,
     width: '100%',
+    alignItems: 'center',
   },
   pickerMain: {
     width: '37%',
@@ -69,14 +70,19 @@ export default styles = StyleSheet.create({
     width: '30%',
   },
   pageTypeRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    width: '37%',
-    marginHorizontal: 10,
+    // alignItems: 'center',
+    // flexDirection: 'row',
+    width: '30%',
+    // marginHorizontal: 10,
   },
   verticleLine: {
     height: '100%',
     width: 1,
     backgroundColor: AppStyles.colors.subTextColor,
+  },
+  iconRow: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: '3%',
   },
 })

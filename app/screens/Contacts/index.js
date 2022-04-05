@@ -34,8 +34,10 @@ export class Contacts extends Component {
   }
 
   goToDialer = () => {
-    const { navigation } = this.props
-    navigation.navigate('Dialer')
+    const { navigation, dispatch } = this.props
+    dispatch(setSelectedContact(null, false)).then((res) => {
+      navigation.navigate('Dialer')
+    })
   }
 
   onContactPress = (contact) => {

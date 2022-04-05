@@ -692,8 +692,12 @@ class RentLeads extends React.Component {
                 />
               </View>
               {/* )} */}
-              <View style={styles.pageTypeRow}>
+
+              <View style={styles.iconRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
+              </View>
+
+              <View style={styles.pageTypeRow}>
                 <PickerComponent
                   placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
                   data={

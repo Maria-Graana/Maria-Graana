@@ -1,13 +1,10 @@
 /** @format */
 
-import axios from 'axios'
-import moment from 'moment'
 import React from 'react'
 import { FlatList, Modal, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import BackButton from '../../components/BackButton'
-import helper from '../../helper'
 import HistoryTile from '../HistoryTile'
 import LoadingNoResult from '../LoadingNoResult'
 
@@ -20,9 +17,7 @@ class HistoryModal extends React.Component {
   }
 
   render() {
-    const { openPopup, closePopup, lead, user, data } = this.props
-    const { doneStatusId, visibleStatus } = this.state
-    // let leadAssign = helper.checkAssignedSharedStatus(user, lead)
+    const { openPopup, data } = this.props
     return (
       <Modal visible={openPopup} animationType="slide" onRequestClose={this.props.closePopup}>
         <SafeAreaView style={[AppStyles.mb1, styles.container]}>
@@ -55,7 +50,6 @@ class HistoryModal extends React.Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#e7ecf0',
-    paddingVertical: 10,
   },
   topHeader: {
     flexDirection: 'row',

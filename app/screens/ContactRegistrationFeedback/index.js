@@ -171,6 +171,8 @@ export class ContactRegistrationFeedback extends Component {
       callingCode,
       callingCode1,
       callingCode2,
+      contact1Validate,
+      contact2Validate,
     } = this.state
     const { dispatch, armsContacts, navigation } = this.props
     if (!formData.firstName || !formData.contactNumber) {
@@ -178,7 +180,7 @@ export class ContactRegistrationFeedback extends Component {
         checkValidation: true,
       })
     } else {
-      if (!phoneValidate) {
+      if (!phoneValidate && !contact1Validate && !contact2Validate) {
         if (action === 'register_as_client') {
           this.navigateToClientScreen()
         } else if (action === 'needs_further_contact' || action === 'not_interested') {

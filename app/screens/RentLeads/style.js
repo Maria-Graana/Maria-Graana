@@ -72,8 +72,8 @@ export default styles = StyleSheet.create({
   pageTypeRow: {
     // alignItems: 'center',
     // flexDirection: 'row',
-    width: '25%',
-    marginHorizontal: 10,
+    width: '30%',
+    // marginHorizontal: 10,
   },
   verticleLine: {
     height: '100%',
@@ -83,6 +83,6 @@ export default styles = StyleSheet.create({
   iconRow: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: '4%',
+    marginLeft: '3%',
   },
 })

@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   arrowIcon: {
     position: 'absolute',
-    right: 15,
+    right: 10,
     top: 8,
     zIndex: 2,
   },

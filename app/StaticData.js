@@ -1530,6 +1530,5 @@ export default StaticData = {
   ],
   filterDealsValueProjectTerminal: [
     { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
-    { name: "Team's Deals", value: '&pageType=teamDeals&hasBooking=true' },
   ],
 }

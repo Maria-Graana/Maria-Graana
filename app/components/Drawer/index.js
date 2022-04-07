@@ -270,7 +270,7 @@ class CustomDrawerContent extends React.Component {
               navigateTo={() => {
                 this.props.navigation.closeDrawer();
                 this.props.navigation.dispatch(
-                  StackActions.replace('Leads', {
+                  StackActions.push('Leads', {
                     screen: 'Leads', hasBooking: false
                   })
                 );
@@ -295,7 +295,7 @@ class CustomDrawerContent extends React.Component {
               navigateTo={() => {
                 this.props.navigation.closeDrawer();
                 this.props.navigation.dispatch(
-                  StackActions.replace('Leads', {
+                  StackActions.push('Leads', {
                     screen: 'MyDeals', hasBooking: true
                   })
                 );

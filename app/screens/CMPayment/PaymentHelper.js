@@ -36,12 +36,14 @@ const PaymentHelper = {
     if (value === 'project') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['clientName'] = firstForm.clientName
+      copyFirstForm['parkingAvailable'] = firstForm.parkingAvailable
 
     }
     if (value === 'floor') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['floor'] = firstForm.floor
       copyFirstForm['clientName'] = firstForm.clientName
+      copyFirstForm['parkingAvailable'] = firstForm.parkingAvailable
 
     }
     if (value === 'unitType') {
@@ -49,6 +51,7 @@ const PaymentHelper = {
       copyFirstForm['floor'] = firstForm.floor
       copyFirstForm['unitType'] = firstForm.unitType
       copyFirstForm['clientName'] = firstForm.clientName
+      copyFirstForm['parkingAvailable'] = firstForm.parkingAvailable
 
     }
     return copyFirstForm

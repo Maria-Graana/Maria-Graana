@@ -1,6 +1,13 @@
 /** @format */
 
 export default StaticData = {
+
+  parkingAvailable: [
+    { name: 'Yes', value: 'Yes' },
+    { name: 'No', value: 'No' },
+
+  ],
+
   diaryTasks: [
     {
       name: 'Morning Meeting',

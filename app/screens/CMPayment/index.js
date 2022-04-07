@@ -86,16 +86,19 @@ class CMPayment extends Component {
       meetings: [],
       pickerUnits: [],
       firstFormData: {
+        parkingCharges: lead.project && lead.project.parkingCharges ? lead.project.parkingCharges : null,
+
+        parkingAvailable: lead.project && lead.project.parkingAvailable ? lead.project.parkingAvailable : "No",
         customerId: lead.customerId != null ? lead.customerId : '',
         clientName: lead.customer.customerName != null ? lead.customer.customerName : '',
         project:
           route.params?.unitData != null
             ? route.params?.unitData.projectId
             : lead.paidProject != null
-            ? lead.paidProject.id
-            : lead.project
-            ? lead.project.id
-            : '',
+              ? lead.paidProject.id
+              : lead.project
+                ? lead.project.id
+                : '',
         floor: route.params?.unitData != null ? route.params?.unitData.floorId : '',
         unitType: route.params?.unitData != null ? 'fullUnit' : null,
         pearl: route.params?.unitData != null ? null : '',
@@ -103,8 +106,8 @@ class CMPayment extends Component {
           route.params?.unitData != null
             ? route.params?.unitData.id
             : lead.unit != null
-            ? lead.unit.id
-            : '',
+              ? lead.unit.id
+              : '',
         unitPrice: route.params?.unitData != null ? route.params?.unitData.unit_price : 0,
         cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
         paymentPlan: 'no',
@@ -343,6 +346,7 @@ class CMPayment extends Component {
       discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
     else discountAmount = unit.discounted_price
     let finalPrice = PaymentMethods.findFinalPrice(
+      0,
       unit,
       discountAmount,
       fullPaymentDiscount,
@@ -369,6 +373,7 @@ class CMPayment extends Component {
       discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
     else discountAmount = unit.discounted_price
     let finalPrice = PaymentMethods.findFinalPrice(
+      0,
       unit,
       discountAmount,
       fullPaymentDiscount,
@@ -799,8 +804,8 @@ class CMPayment extends Component {
       payment && payment.officeLocationId
         ? payment.officeLocationId
         : user && user.officeLocation
-        ? user.officeLocation.id
-        : null
+          ? user.officeLocation.id
+          : null
     if (officeLocations[0] && officeLocations.length === 1) {
       locationId = officeLocations[0].value
     }
@@ -1011,8 +1016,8 @@ class CMPayment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = CMPayment.paymentAttachments
           ? _.filter(CMPayment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1276,6 +1281,13 @@ class CMPayment extends Component {
     let newShowInstallmentFields = showInstallmentFields
     let newPaymentPlanDuration = paymentPlanDuration
     let newInstallmentFrequency = installmentFrequency
+
+    newData['parkingCharges'] = lead?.project?.parkingCharges;
+
+    if (name === 'parkingAvailable') {
+      newData['parkingAvailable'] = value;
+    }
+
     if (name === 'project') {
       // if (lead.projectId !== value) {
       this.changeProject(value)
@@ -1362,9 +1374,12 @@ class CMPayment extends Component {
       newData.paymentPlan = oneProduct.projectProduct.paymentPlan
     }
     if (oneUnit) {
+
+
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['finalPrice'] = Math.ceil(
         PaymentMethods.findFinalPrice(
+          newData['parkingAvailable'] == 'Yes' ? lead?.project?.parkingCharges : 0,
           oneUnit,
           newData['approvedDiscountPrice'],
           newData['fullPaymentDiscountPrice'],
@@ -1538,24 +1553,24 @@ class CMPayment extends Component {
     const { firstFormData, oneProductData, isPrimary, selectedClient } = this.state
     let body = noProduct
       ? PaymentHelper.generateApiPayload(
-          firstFormData,
-          lead,
-          unitId,
-          CMPayment,
-          addInstrument,
-          isPrimary,
-          selectedClient
-        )
+        firstFormData,
+        lead,
+        unitId,
+        CMPayment,
+        addInstrument,
+        isPrimary,
+        selectedClient
+      )
       : PaymentHelper.generateProductApiPayload(
-          firstFormData,
-          lead,
-          unitId,
-          CMPayment,
-          oneProductData,
-          addInstrument,
-          isPrimary,
-          selectedClient
-        )
+        firstFormData,
+        lead,
+        unitId,
+        CMPayment,
+        oneProductData,
+        addInstrument,
+        isPrimary,
+        selectedClient
+      )
     let leadId = []
     body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
@@ -2007,6 +2022,9 @@ class CMPayment extends Component {
     const { screenName } = this.props.route.params
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
+
+
+
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar
@@ -2212,8 +2230,8 @@ class CMPayment extends Component {
               modalMode === 'call'
                 ? StaticData.commentsFeedbackCall
                 : modalMode === 'meeting'
-                ? StaticData.commentsFeedbackMeeting
-                : StaticData.leadClosedCommentsFeedback
+                  ? StaticData.commentsFeedbackMeeting
+                  : StaticData.leadClosedCommentsFeedback
             }
             modalMode={modalMode}
             rejectLead={(body) => this.rejectLead(body)}

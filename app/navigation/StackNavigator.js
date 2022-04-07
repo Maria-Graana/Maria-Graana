@@ -232,7 +232,9 @@ function MainStack() {
         component={Lead}
         options={({ navigation, route }) => ({
           title: 'LEADS',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation}
+            leftScreen={'Landing'}
+            leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}

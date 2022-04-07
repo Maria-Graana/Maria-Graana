@@ -1398,7 +1398,7 @@ class CMPayment extends Component {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['finalPrice'] = Math.ceil(
         PaymentMethods.findFinalPrice(
-          newData['parkingAvailable'] == 'Yes' ? lead?.project?.parkingCharges : 0,
+          newData['parkingAvailable'] == 'Yes' && lead?.project?.parkingCharges != null ? lead?.project?.parkingCharges : 0,
           oneUnit,
           newData['approvedDiscountPrice'],
           newData['fullPaymentDiscountPrice'],

@@ -683,7 +683,6 @@ class CMPayment extends Component {
         this.setState({ allLeads: haveLeads, allLeadsData: res.data.rows })
       })
     }
-    console.log(newSecondFormData)
     this.setState({ buyerNotZero: false })
     dispatch(setCMPayment(newSecondFormData))
   }
@@ -815,7 +814,6 @@ class CMPayment extends Component {
     if (officeLocations[0] && officeLocations.length === 1) {
       locationId = officeLocations[0].value
     }
-    console.log(payment)
     dispatch(
       setCMPayment({
         ...payment,
@@ -855,7 +853,6 @@ class CMPayment extends Component {
   submitCommissionCMPayment = async () => {
     const { CMPayment, user, lead } = this.props
     const { editable, firstForm } = this.state
-    console.log('Here=>', CMPayment)
     if (
       (firstForm && CMPayment.paymentCategory === null) ||
       (firstForm && CMPayment.paymentCategory === '')

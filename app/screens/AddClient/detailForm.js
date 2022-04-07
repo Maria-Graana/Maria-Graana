@@ -209,7 +209,7 @@ class DetailForm extends Component {
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
                 keyboardType={'number-pad'}
-                maxLength={15}
+                maxLength={13}
                 value={formData.cnic}
                 onChangeText={(text) => {
                   handleForm(text, 'cnic')

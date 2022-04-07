@@ -411,9 +411,10 @@ class CMFirstForm extends Component {
         {cnicEditable && (
           <SimpleInputText
             name={'cnic'}
-            placeholder={'Client CNIC'}
-            label={'CLIENT CNIC'}
-            value={helper.normalizeCnic(firstFormData.cnic)}
+            placeholder={'Client CNIC/NTN'}
+            label={'CLIENT CNIC/NTN'}
+            value={firstFormData.cnic}
+            maxLength={13}
             keyboardType={'numeric'}
             onChangeHandle={handleFirstForm}
             formatValue={''}
@@ -424,13 +425,13 @@ class CMFirstForm extends Component {
         {/* {cnicEditable != false && firstFormData.cnic === null && (
          <ErrorMessage errorMessage={'Required'} />
         )}
-        {cnicValidate ? (
-          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
-        ) : null} */}
+        // {cnicValidate ? (
+        //   <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        // ) : null} */}
         {firstFormData.cnic === null && firstFormValidate ? (
           <ErrorMessage errorMessage={'Required'} />
-        ) : cnicValidate && firstFormValidate ? (
-          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        ) : cnicValidate ? (
+          <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />
         ) : null}
         <View
           style={{

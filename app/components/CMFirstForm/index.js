@@ -6,7 +6,6 @@ import styles from './style'
 import PickerComponent from '../../components/Picker/index'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
-import moment from 'moment'
 import SimpleInputText from '../../components/SimpleInputField'
 import { formatPrice } from '../../PriceFormate'
 import ErrorMessage from '../../components/ErrorMessage'
@@ -15,7 +14,6 @@ import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import helper from '../../helper'
 import TouchableInput from '../TouchableInput'
-import { Client } from '../../hoc/role'
 
 class CMFirstForm extends Component {
   constructor(props) {
@@ -38,7 +36,7 @@ class CMFirstForm extends Component {
         firstFormData.unit != null &&
         firstFormData.unit != 'no' &&
         checkLeadClosedOrNot === true) ||
-      (firstFormData.pearl != null && firstFormData.pearl != '')
+        (firstFormData.pearl != null && firstFormData.pearl != '')
         ? true
         : false
     return checkForUnitIdavail
@@ -92,10 +90,16 @@ class CMFirstForm extends Component {
       handleClientClick,
       updatePermission,
     } = this.props
+
+
+
+
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
     const { noProduct } = lead
+
+
     return (
       <View style={styles.mainFormWrap}>
         <View style={{ paddingVertical: 10 }}>
@@ -209,7 +213,7 @@ class CMFirstForm extends Component {
                   keyboardType={'numeric'}
                   onClicked={openUnitsTable}
                   onPress={true}
-                  onChangeHandle={() => {}}
+                  onChangeHandle={() => { }}
                 />
               </View>
             )}
@@ -369,6 +373,27 @@ class CMFirstForm extends Component {
               firstFormData.productId != '')
           }
         />
+
+
+        <View style={{ paddingVertical: 10 }}>
+          <PickerComponent
+            onValueChange={handleFirstForm}
+            data={StaticData.parkingAvailable}
+            name={'parkingAvailable'}
+            placeholder="Parking Available"
+            selectedItem={firstFormData.parkingAvailable}
+            enabled={updatePermission}
+          />
+          {firstFormValidate === true && !firstFormData.parkingAvailable && firstFormData.parkingAvailable === '' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
+
+        </View>
+
+        {firstFormData.parkingAvailable === 'Yes' &&
+
+          <Text style={styles.parkingCharges}>Parking Charges:{lead?.project?.parkingCharges} </Text>
+        }
         {checkFirstFormPayment && (
           <View>
             <PaymentTile

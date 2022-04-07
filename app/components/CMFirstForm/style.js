@@ -3,6 +3,12 @@
 import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 export default styles = StyleSheet.create({
+  parkingCharges: {
+    marginBottom: 10,
+    marginTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
   mainFormWrap: {
     flex: 1,
     paddingHorizontal: 10,

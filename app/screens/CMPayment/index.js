@@ -234,7 +234,9 @@ class CMPayment extends Component {
       this.fetchLead()
       this.getAllProjects()
       this.setdefaultFields(this.props.lead)
-      this.validateCnic(lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null)
+      lead.customer && lead.customer.cnic != null
+        ? this.validateCnic(lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null)
+        : null
       if (route.params) this.setClient()
     })
   }
@@ -1372,8 +1374,7 @@ class CMPayment extends Component {
       newData['fullPaymentDiscountPrice'] = 0
     }
     if (name === 'cnic') {
-      value = helper.normalizeCnic(value)
-      this.validateCnic(value)
+      value ? this.validateCnic(value) : null
     }
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
     newData[name] = value
@@ -1477,11 +1478,9 @@ class CMPayment extends Component {
   }
 
   validateCnic = (value) => {
-    if ((value && value.length < 15) || value === '' || !value) {
+    if (value.length < 8 || (value.length > 8 && value.length < 13 && value !== ''))
       this.setState({ cnicValidate: true, cnicEditable: true })
-    } else {
-      this.setState({ cnicValidate: false })
-    }
+    else this.setState({ cnicValidate: false })
   }
 
   firstFormValidateModal = (status) => {

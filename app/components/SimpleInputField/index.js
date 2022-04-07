@@ -57,6 +57,7 @@ class SimpleInputField extends React.Component {
       showLable = true,
       onPress = false,
       onClicked,
+      maxLength = 50,
     } = this.props
     const val = value != null || '' ? value.toString() : ''
     return (
@@ -84,6 +85,7 @@ class SimpleInputField extends React.Component {
               onChangeText={(e) => {
                 onChangeHandle(e, name)
               }}
+              maxLength={maxLength}
               placeholderTextColor="#96999E"
               placeholderFontWeight="400"
               editable={editable}

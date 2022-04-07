@@ -252,6 +252,27 @@ const CMPaymentModal = ({
               </View>
             )}
 
+            {CMPayment.type === 'Inter-Mall Adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <SimpleInputText
+                    name={'adjustedRefNo'}
+                    fromatName={false}
+                    placeholder={'Reference # of adjusted unit'}
+                    label={'Reference # of adjusted unit'}
+                    value={CMPayment.adjustedRefNo != '' ? CMPayment.adjustedRefNo : ''}
+                    editable={CMPayment.status !== 'pendingAccount'}
+                    formatValue={''}
+                    onChangeHandle={handleCommissionChange}
+                  />
+                  {modalValidation === true &&
+                    (CMPayment.adjustedRefNo == undefined || CMPayment.adjustedRefNo == '') && (
+                      <ErrorMessage errorMessage={'Required'} />
+                    )}
+                </View>
+              </View>
+            )}
+
             {CMPayment.type === 'Rent Adjustment' && (
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>

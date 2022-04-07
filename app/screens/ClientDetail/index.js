@@ -132,7 +132,7 @@ class ClientDetail extends React.Component {
               <Text style={styles.labelText}>{client.email}</Text>
               <Text style={styles.headingText}>CNIC</Text>
               <Text style={styles.labelText}>
-                {client.cnic && helper.normalizeCnic(client.cnic)}
+                {client.cnic && helper.normalizeCnicAndNTN(client.cnic)}
               </Text>
               <Text style={styles.headingText}>Son / Daughter/ Spouse of</Text>
               <Text style={styles.labelText}>{client.familyMember}</Text>

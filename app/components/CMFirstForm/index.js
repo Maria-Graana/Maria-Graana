@@ -392,7 +392,7 @@ class CMFirstForm extends Component {
 
         {firstFormData.parkingAvailable === 'Yes' &&
 
-          <Text style={styles.parkingCharges}>Parking Charges:{lead?.project?.parkingCharges} </Text>
+          <Text style={styles.parkingCharges}>Parking Charges:{lead?.project?.parkingCharges != null ? lead?.project?.parkingCharges : 0} </Text>
         }
         {checkFirstFormPayment && (
           <View>

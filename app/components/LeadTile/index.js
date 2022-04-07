@@ -56,7 +56,7 @@ class LeadTile extends React.Component {
 
   setCustomerName = () => {
     const { user, data } = this.props
-    if (user.id === data.assigned_to_armsuser_id)
+    if (data.requiredProperties !== true)
       return (
         data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
       )
@@ -443,9 +443,7 @@ class LeadTile extends React.Component {
                     style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                     numberOfLines={1}
                   >
-                    {customerName != ''
-                      ? customerName
-                      : data.customer && data.customer.customerName}
+                    {customerName === ' ' ? '' : data.customer && data.customer.customerName}
                   </Text>
                 </View>
                 {/* ****** Location Wrap */}

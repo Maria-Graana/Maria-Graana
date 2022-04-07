@@ -1034,6 +1034,7 @@ class CMPayment extends Component {
       this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
       return
     }
+    body.paymentCategory = CMPayment.paymentType
     axios
       .patch(`/api/leads/project/payment?id=${body.id}`, body)
       .then((res) => {

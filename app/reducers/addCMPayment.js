@@ -5,6 +5,7 @@ import * as types from '../types'
 
 const payment = {
   installmentAmount: null,
+  adjustedRefNo: '',
   type: '',
   cmLeadId: null,
   details: '',

@@ -36,20 +36,17 @@ const PaymentHelper = {
     if (value === 'project') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['clientName'] = firstForm.clientName
-
     }
     if (value === 'floor') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['floor'] = firstForm.floor
       copyFirstForm['clientName'] = firstForm.clientName
-
     }
     if (value === 'unitType') {
       copyFirstForm['project'] = firstForm.project
       copyFirstForm['floor'] = firstForm.floor
       copyFirstForm['unitType'] = firstForm.unitType
       copyFirstForm['clientName'] = firstForm.clientName
-
     }
     return copyFirstForm
   },
@@ -168,7 +165,15 @@ const PaymentHelper = {
       name: 'name',
     }
   },
-  generateApiPayload(firstFormData, lead, unitId, CMPayment, instrument, isPrimary, selectedClient) {
+  generateApiPayload(
+    firstFormData,
+    lead,
+    unitId,
+    CMPayment,
+    instrument,
+    isPrimary,
+    selectedClient
+  ) {
     return {
       unitId: unitId,
       projectId: firstFormData.project,
@@ -201,7 +206,7 @@ const PaymentHelper = {
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
       isPrimary,
-      purchaserId : selectedClient ? selectedClient.id : lead.customer.id
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
     }
   },
   generateProductApiPayload(
@@ -231,7 +236,7 @@ const PaymentHelper = {
         firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
           ? null
           : firstFormData.approvedDiscountPrice,
-      unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
+      unitStatus: CMPayment.paymentCategory === 'token' ? 'Token' : 'Sold',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
@@ -252,7 +257,7 @@ const PaymentHelper = {
           ? PaymentMethods.calculateDownPayment(
               oneProduct,
               firstFormData.finalPrice,
-              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+              CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
             )
           : null,
       noOfInstallment:
@@ -273,12 +278,12 @@ const PaymentHelper = {
           ? PaymentMethods.calculatePossessionCharges(
               oneProduct,
               firstFormData.finalPrice,
-              CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+              CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
             )
           : null,
       possessionChargesPercentage: projectProduct.possessionCharges,
       downPaymentPercentage: projectProduct.downPayment,
-      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
     }
   },
   normalizeProjectProducts(products) {
@@ -531,9 +536,9 @@ const PaymentHelper = {
       paymentPlanDuration: firstFormData.paymentPlanDuration
         ? Number(firstFormData.paymentPlanDuration)
         : null,
-      unitStatus: CMPayment.paymentCategory === 'Token' ? 'Token' : 'Sold',
+      unitStatus: CMPayment.paymentCategory === 'token' ? 'Token' : 'Sold',
       installmentAmount: CMPayment.installmentAmount,
-      purchaserId: selectedClient ? selectedClient.id : lead.customer.id
+      purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
     }
     return body
   },

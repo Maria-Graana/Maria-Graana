@@ -566,7 +566,14 @@ class CMPayment extends Component {
   addPaymentModalToggle = (visible, paymentType) => {
     const { CMPayment, dispatch } = this.props
     const { secondForm } = this.state
-    dispatch(setCMPayment({ ...CMPayment, visible: visible, paymentType: paymentType }))
+    dispatch(
+      setCMPayment({
+        ...CMPayment,
+        visible: visible,
+        paymentType: paymentType,
+        paymentCategory: paymentType,
+      })
+    )
     this.setState({
       checkFirstFormToken: secondForm ? false : true,
     })
@@ -634,6 +641,10 @@ class CMPayment extends Component {
       delete newSecondFormData['rentAdjLeadID']
       delete newSecondFormData['rentMonth']
     }
+    if (name === 'type' && value !== 'Inter-mall Adjustment') {
+      delete newSecondFormData['adjustedRefNo']
+    }
+
     newSecondFormData[name] = value
     if (
       name === 'type' &&
@@ -672,7 +683,6 @@ class CMPayment extends Component {
         this.setState({ allLeads: haveLeads, allLeadsData: res.data.rows })
       })
     }
-
     this.setState({ buyerNotZero: false })
     dispatch(setCMPayment(newSecondFormData))
   }
@@ -865,6 +875,14 @@ class CMPayment extends Component {
       })
     } else if (
       CMPayment.type &&
+      CMPayment.type == 'Inter-Mall Adjustment' &&
+      (CMPayment.adjustedRefNo == '' || CMPayment.adjustedRefNo == undefined)
+    ) {
+      this.setState({
+        modalValidation: true,
+      })
+    } else if (
+      CMPayment.type &&
       CMPayment.type == 'Rebate Adjustment' &&
       (CMPayment.paymentAttachments.length == 0 ||
         CMPayment.paymentAttachments === null ||
@@ -963,6 +981,7 @@ class CMPayment extends Component {
         setCMPayment({
           ...CMPayment,
           visible: false,
+          paymentCategory: CMPayment.paymentType,
         })
       )
       dispatch(setInstrumentInformation({ ...addInstrument, id: body.instrumentId }))
@@ -1778,12 +1797,12 @@ class CMPayment extends Component {
         downPayment = PaymentMethods.calculateDownPayment(
           oneProductData,
           firstFormData.finalPrice,
-          CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+          CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
         )
         possessionCharges = PaymentMethods.calculatePossessionCharges(
           oneProductData,
           firstFormData.finalPrice,
-          CMPayment.paymentCategory === 'Token' ? CMPayment.installmentAmount : 0
+          CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
         )
       }
       let leadId = []

@@ -1301,7 +1301,7 @@ class CMPayment extends Component {
     let newPaymentPlanDuration = paymentPlanDuration
     let newInstallmentFrequency = installmentFrequency
 
-    newData['parkingCharges'] = lead?.project?.parkingCharges;
+    newData['parkingCharges'] = lead?.project?.parkingCharges != null? lead?.project?.parkingCharges: null;
 
     if (name === 'parkingAvailable') {
       newData['parkingAvailable'] = value;

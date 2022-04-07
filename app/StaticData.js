@@ -849,7 +849,14 @@ export default StaticData = {
     { value: 'pearl', name: 'Pearl' },
   ],
   onlyUnitType: [{ value: 'fullUnit', name: 'Full Unit' }],
-  paymentTypeForToken: [{ value: 'token', name: 'Token' }],
+  paymentTypeForToken: [
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
+    { value: 'possession charges', name: 'Possession Charges' },
+    { value: 'installment', name: 'Installment' },
+    { value: 'down payment', name: 'Down Payment' },
+    { value: 'full payment', name: 'Full Payment' },
+  ],
   statusOptions: [
     { label: 'Open', value: 'open' },
     { label: 'Pending Account', value: 'pendingAccount' },

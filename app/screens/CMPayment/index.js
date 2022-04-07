@@ -1478,7 +1478,7 @@ class CMPayment extends Component {
   }
 
   validateCnic = (value) => {
-    if (value.length < 8 || (value.length > 8 && value.length < 13 && value !== ''))
+    if (value.length < 7 || (value.length > 8 && value.length < 13 && value !== ''))
       this.setState({ cnicValidate: true, cnicEditable: true })
     else this.setState({ cnicValidate: false })
   }

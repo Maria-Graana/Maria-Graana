@@ -93,7 +93,6 @@ class CMFirstForm extends Component {
     } = this.props
 
 
-    console.log("firstFormData", firstFormData)
 
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()

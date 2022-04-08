@@ -76,6 +76,7 @@ const PaymentMethods = {
   },
   findFinalPrice(parkingCharges, unit, approvedDiscountPrice, fullPaymentDiscountPrice, isPearl) {
     if (unit) {
+      
       approvedDiscountPrice = PaymentMethods.handleEmptyValue(approvedDiscountPrice)
       fullPaymentDiscountPrice = PaymentMethods.handleEmptyValue(fullPaymentDiscountPrice)
       let totalDiscountPrice = approvedDiscountPrice + fullPaymentDiscountPrice
@@ -105,6 +106,7 @@ const PaymentMethods = {
     return Math.ceil(payment * (taxAmount / 100))
   },
   findRemaningPayment(payment, finalPrice) {
+    console.log("finalPrice",finalPrice)
     finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
     let totalPayments = 0
     let remainingTax = 0

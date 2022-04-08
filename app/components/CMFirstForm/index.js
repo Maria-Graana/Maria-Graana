@@ -397,7 +397,7 @@ class CMFirstForm extends Component {
             name={'parkingCharges'}
             placeholder={'Parking Charges'}
             label={'PARKING CHARGES'}
-            value={lead?.project?.parkingCharges != null ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
+            value={lead?.project?.parkingCharges != null && lead?.project?.parkingCharges != "" ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
             formatValue={''}
             editable={false}
             fromatName={false}

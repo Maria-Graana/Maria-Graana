@@ -52,7 +52,7 @@ class CMSecondForm extends React.Component {
               onClick={() => {
                 this.props.toggleBookingDetailsModal(true)
               }}
-              btnText={'BOOKING DETAILS'}
+              btnText={'BOOKING DETAIL'}
               checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
             <CMBTN

@@ -254,6 +254,7 @@ class Landing extends React.Component {
               permissions
             ))
         ) {
+          if (label === 'Project Inventory') label = 'Inventory'
           if (label === 'InventoryTabs') label = 'Properties'
           if (label === 'Team Diary') label = "Team's Diary"
           if (tile === 'Leads') label = 'Leads'

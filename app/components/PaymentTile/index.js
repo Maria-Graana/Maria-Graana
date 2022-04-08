@@ -128,7 +128,7 @@ class PaymentTile extends React.Component {
                 <Text style={styles.priceDate}>
                   {moment(data.createdAt).format('DD MMM YY - h:mm a')}
                 </Text>
-                {data.status !== 'open' && tileForToken === false ? (
+                {data.status !== 'open' && tileForToken === false && data.status !== 'cleared' ? (
                   <TouchableHighlight
                     onPress={() => {
                       call(data)

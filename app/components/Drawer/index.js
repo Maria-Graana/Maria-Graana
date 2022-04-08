@@ -332,7 +332,7 @@ class CustomDrawerContent extends React.Component {
             permissions
           ) && (
               <DrawerItem
-                screen={'Project Inventory'}
+                screen={'Inventory'}
                 navigateTo={() => {
                   this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
                 }}

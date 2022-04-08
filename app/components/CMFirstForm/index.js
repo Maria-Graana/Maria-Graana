@@ -57,6 +57,7 @@ class CMFirstForm extends Component {
 
   render() {
     const {
+      allProjects,
       handleFirstForm,
       pickerFloors,
       pickerProjects,
@@ -93,11 +94,11 @@ class CMFirstForm extends Component {
 
 
 
-
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
-    const { noProduct } = lead
+    const { noProduct } = lead;
+
 
 
     return (
@@ -374,8 +375,9 @@ class CMFirstForm extends Component {
           }
         />
 
-
+        <Text style={styles.parkingAvaiable}>PARKING AVAILABLE </Text>
         <View style={{ paddingVertical: 10 }}>
+
           <PickerComponent
             onValueChange={handleFirstForm}
             data={StaticData.parkingAvailable}
@@ -390,9 +392,19 @@ class CMFirstForm extends Component {
 
         </View>
 
-        {firstFormData.parkingAvailable === 'Yes' &&
+        {firstFormData.parkingAvailable === 'yes' &&
 
-          <Text style={styles.parkingCharges}>Parking Charges:{lead?.project?.parkingCharges != null ? lead?.project?.parkingCharges : 0} </Text>
+          <SimpleInputText
+            name={'parkingCharges'}
+            placeholder={'Parking Charges'}
+            label={'PARKING CHARGES'}
+            value={firstFormData.parkingCharges}
+            // value={lead?.project?.parkingCharges != null && lead?.project?.parkingCharges != "" ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
+            formatValue={''}
+            editable={false}
+            fromatName={false}
+          />
+
         }
         {checkFirstFormPayment && (
           <View>

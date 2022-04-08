@@ -3,11 +3,24 @@
 import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 export default styles = StyleSheet.create({
+
+  parkingAvaiable:{
+    paddingLeft: 10,
+    paddingRight: 10,
+    color: '#23232C',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+  },
   parkingCharges: {
     marginBottom: 10,
     marginTop: 10,
     paddingLeft: 10,
     paddingRight: 10,
+    color: '#23232C',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 2,
   },
   mainFormWrap: {
     flex: 1,

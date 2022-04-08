@@ -139,6 +139,8 @@ class LegalTile extends React.Component {
               >
                 {data.name === 'Cnic'
                   ? data.name.toUpperCase()
+                  : data.name === 'Police Verification Report Optional'
+                  ? data.name.replace(' Optional', '')
                   : isLeadSCA
                   ? 'Service Charge Agreement'
                   : data.name}
@@ -156,6 +158,9 @@ class LegalTile extends React.Component {
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
               )}
             </View>
+            {data.name === 'Police Verification Report Optional' && (
+              <Text style={[styles.uploadedText, { color: 'black' }]}>(Optional)</Text>
+            )}
             <Text style={styles.uploadedText}>
               UPLOADED{' '}
               <Text style={styles.dateText}>

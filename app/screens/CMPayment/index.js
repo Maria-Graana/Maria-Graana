@@ -86,11 +86,10 @@ class CMPayment extends Component {
       meetings: [],
       pickerUnits: [],
       firstFormData: {
-        parkingCharges:
-          lead.project && lead.project.parkingCharges ? lead.project.parkingCharges : null,
 
         parkingAvailable:
-          lead.project && lead.project.parkingAvailable ? lead.project.parkingAvailable : 'No',
+          lead.project && lead.project.parkingAvailable ? lead.project.parkingAvailable : 'no',
+        parkingCharges: lead.project && lead.project.parkingCharges ? lead.project.parkingCharges : null,
         customerId: lead.customerId != null ? lead.customerId : '',
         clientName: lead.customer.customerName != null ? lead.customer.customerName : '',
         project:
@@ -350,8 +349,6 @@ class CMPayment extends Component {
       discountAmount = PaymentMethods.findApprovedDiscountAmount(unit, unit.discount)
     else discountAmount = unit.discounted_price
 
-
-    //console.log(lead.unit.finalPrice)
     let finalPrice = PaymentMethods.findFinalPrice(
       0,
       unit,
@@ -420,6 +417,7 @@ class CMPayment extends Component {
           res.data.items.map((item, index) => {
             return projectArray.push({ value: item.id, name: item.name })
           })
+        
         this.setState(
           {
             pickerProjects: projectArray,
@@ -1312,14 +1310,26 @@ class CMPayment extends Component {
     let newPaymentPlanDuration = paymentPlanDuration
     let newInstallmentFrequency = installmentFrequency
 
-    newData['parkingCharges'] = lead?.project?.parkingCharges ? lead?.project?.parkingCharges : 0;
-
     if (name === 'parkingAvailable') {
+
+      const { allProjects } = this.state
+      const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
       newData['parkingAvailable'] = value
+      console.log("parkingCharges",parkingObj.parkingCharges)
+      newData['parkingCharges'] = parkingObj?.parkingCharges != null && parkingObj?.parkingCharges != "" ? parkingObj?.parkingCharges : 0
     }
 
+    const { allProjects } = this.state
+    const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
+
+    newData['parkingCharges'] = parkingObj?.parkingCharges
+
     if (name === 'project') {
-      // if (lead.projectId !== value) {
+
+      const { allProjects } = this.state
+      const parkingObj = this.getParkingDetails(allProjects, value)
+      newData['parkingAvailable'] = 'no'
+      // newData['parkingAvailable'] = (parkingObj.parkingAvailable).toLowerCase()
       this.changeProject(value)
       // }
       this.getFloors(value)
@@ -1329,6 +1339,7 @@ class CMPayment extends Component {
       oneFloor = {}
       copyPearlUnitPrice = 0
     }
+   
     if (name === 'floor') {
       oneFloor = PaymentHelper.findFloor(allFloors, value)
       newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
@@ -1407,8 +1418,8 @@ class CMPayment extends Component {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['finalPrice'] = Math.ceil(
         PaymentMethods.findFinalPrice(
-          newData['parkingAvailable'] === 'Yes' && lead?.project?.parkingCharges != "" && lead?.project?.parkingCharges != null
-            ? lead?.project?.parkingCharges
+          newData['parkingAvailable'] === 'yes' && newData['parkingCharges'] != "" && newData['parkingCharges'] != null
+            ? newData['parkingCharges']
             : 0,
           oneUnit,
           newData['approvedDiscountPrice'],
@@ -1429,6 +1440,21 @@ class CMPayment extends Component {
       toggleUnitsTable: false,
     })
   }
+
+
+
+  getParkingDetails = (allProjects, value) => {
+    let parkingObj;
+    const map1 = allProjects.map(project => {
+      if (project.id == value) {
+        parkingObj = { parkingAvailable: project.parkingAvailable, parkingCharges: project.parkingCharges };
+        return parkingObj
+      }
+    }
+    );
+    return parkingObj
+  }
+
 
   pearlCalculations = (oneFloor, value) => {
     let totalSqft = oneFloor.pearlArea
@@ -2181,6 +2207,7 @@ class CMPayment extends Component {
               <View style={{ flex: 1, marginBottom: 60 }}>
                 {firstForm && (
                   <CMFirstForm
+                    allProjects={allProjects}
                     pickerFloors={pickerFloors}
                     pickerProjects={pickerProjects}
                     pickerUnits={pickerUnits}

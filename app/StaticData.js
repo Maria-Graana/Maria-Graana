@@ -3,8 +3,8 @@
 export default StaticData = {
 
   parkingAvailable: [
-    { name: 'Yes', value: 'Yes' },
-    { name: 'No', value: 'No' },
+    { name: 'Yes', value: 'yes' },
+    { name: 'No', value: 'no' },
 
   ],
 

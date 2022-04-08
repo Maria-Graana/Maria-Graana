@@ -417,7 +417,7 @@ class CMPayment extends Component {
           res.data.items.map((item, index) => {
             return projectArray.push({ value: item.id, name: item.name })
           })
-        
+
         this.setState(
           {
             pickerProjects: projectArray,
@@ -1315,21 +1315,22 @@ class CMPayment extends Component {
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
       newData['parkingAvailable'] = value
-      console.log("parkingCharges",parkingObj.parkingCharges)
-      newData['parkingCharges'] = parkingObj?.parkingCharges != null && parkingObj?.parkingCharges != "" ? parkingObj?.parkingCharges : 0
+
+      newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
     }
 
     const { allProjects } = this.state
     const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
 
-    newData['parkingCharges'] = parkingObj?.parkingCharges
+    newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
 
     if (name === 'project') {
 
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, value)
-      newData['parkingAvailable'] = 'no'
-      // newData['parkingAvailable'] = (parkingObj.parkingAvailable).toLowerCase()
+      
+      newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
+       newData['parkingAvailable'] = (parkingObj.parkingAvailable).toLowerCase()
       this.changeProject(value)
       // }
       this.getFloors(value)
@@ -1339,7 +1340,7 @@ class CMPayment extends Component {
       oneFloor = {}
       copyPearlUnitPrice = 0
     }
-   
+
     if (name === 'floor') {
       oneFloor = PaymentHelper.findFloor(allFloors, value)
       newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
@@ -1445,7 +1446,7 @@ class CMPayment extends Component {
 
   getParkingDetails = (allProjects, value) => {
     let parkingObj;
-    const map1 = allProjects.map(project => {
+    allProjects.map(project => {
       if (project.id == value) {
         parkingObj = { parkingAvailable: project.parkingAvailable, parkingCharges: project.parkingCharges };
         return parkingObj

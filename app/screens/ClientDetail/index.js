@@ -99,7 +99,7 @@ class ClientDetail extends React.Component {
 
   updatePermission = () => {
     const { permissions } = this.props
-    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.UPDATE, permissions)
+    return getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.UPDATE, permissions)
   }
 
   render() {

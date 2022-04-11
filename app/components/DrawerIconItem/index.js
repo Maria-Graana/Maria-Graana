@@ -11,7 +11,8 @@ import {
   Image,
   StyleSheet,
   Platform,
-} from 'react-native'
+} from 'react-native';
+
 import { Button, ListItem, Text, Icon, Left, Body, Right, Switch } from 'native-base'
 import { Divider } from 'react-native-paper'
 
@@ -21,13 +22,17 @@ export default class DrawerIconItem extends React.Component {
   }
 
   render() {
-    const { screen, badges, isSub, isSuper, imageIcon, display, buttonStyling } = this.props
+    const { screen, badges, isSub, navigation, isSuper, imageIcon, display, buttonStyling } = this.props
+
 
     return (
       <TouchableWithoutFeedback
         activeOpacity={0.7}
         onPress={() => {
-          this.props.navigateTo()
+         // alert("hi")
+       
+          // navigation.push('Leads', { screen: 'Leads', hasBooking: false })
+           this.props.navigateTo()
         }}
       >
         <ListItem icon style={{ marginBottom: 10 }}>

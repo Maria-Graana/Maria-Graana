@@ -152,27 +152,25 @@ class LeadRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
-        this.fetchLeadInfo()
-        this.getSelectedProperty(lead)
-        this.getLegalDocumentsCount()
-        this.getCallHistory()
-        this.fetchOfficeLocations()
-        this.fetchLegalPaymentInfo()
-        this.fetchSellerDocuments(lead)
-        this.fetchBuyerDocuments(lead)
+        this.fetchFunctions(lead)
       } else {
         const { lead } = this.props
-        this.fetchLeadInfo()
-        this.getSelectedProperty(lead)
-        this.getLegalDocumentsCount()
-        this.getCallHistory()
-        this.fetchOfficeLocations()
-        this.fetchLegalPaymentInfo()
-        this.fetchSellerDocuments(lead)
-        this.fetchBuyerDocuments(lead)
+        this.fetchFunctions(lead)
       }
     })
   }
+
+  fetchFunctions = (lead) => {
+    this.fetchLeadInfo()
+    this.getSelectedProperty(lead)
+    this.getLegalDocumentsCount()
+    this.getCallHistory()
+    this.fetchOfficeLocations()
+    this.fetchLegalPaymentInfo()
+    this.fetchSellerDocuments(lead)
+    this.fetchBuyerDocuments(lead)
+  }
+
   // componentDidUpdate(prevProps, prevState) {
   //   // console.log(this.state.commissionNotApplicableBuyer, 'CURRENTBUYER')
   //   // console.log(prevState.commissionNotApplicableBuyer, 'PREVSTATE')
@@ -1335,6 +1333,7 @@ class LeadRCMPayment extends React.Component {
         modalValidation: true,
       })
     }
+    this.fetchFunctions(lead)
   }
 
   addRCMPayment = (body) => {
@@ -2108,7 +2107,6 @@ class LeadRCMPayment extends React.Component {
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
-
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -2232,7 +2230,7 @@ class LeadRCMPayment extends React.Component {
               ListFooterComponent={
                 <View style={{ marginHorizontal: 10 }}>
                   {lead.shortlist_id !== null ? (
-                    lead.purpose === 'sale' ? (
+                    lead.purpose === 'sale' || lead.purpose === 'buy' ? (
                       <BuyPaymentView
                         lead={lead}
                         agreedAmount={agreedAmount}

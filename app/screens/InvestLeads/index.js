@@ -31,7 +31,12 @@ import styles from './style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
-import { addInvestmentGuide, setReferenceGuideData } from '../../actions/diary'
+import {
+  addInvestmentGuide,
+  callNumberFromLeads,
+  setMultipleModalVisible,
+  setReferenceGuideData,
+} from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -45,6 +50,7 @@ class InvestLeads extends React.Component {
   constructor(props) {
     super(props)
     const { permissions } = this.props
+    const { hasBooking = false } = this.props.route.params
     this.state = {
       leadsData: [],
       purposeTab: 'invest',
@@ -84,6 +90,9 @@ class InvestLeads extends React.Component {
         PermissionActions.CREATE,
         permissions
       ),
+      pageType: hasBooking
+        ? '&pageType=myDeals&hasBooking=true'
+        : '&pageType=myLeads&hasBooking=false',
     }
   }
 
@@ -105,6 +114,29 @@ class InvestLeads extends React.Component {
 
   componentWillUnmount() {
     this.clearStateValues()
+    this.showMultiPhoneModal(false)
+  }
+
+  showMultiPhoneModal = (value) => {
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.referenceGuide !== prevProps.referenceGuide) {
+      // reload page when reference guide is added
+      this.fetchLeads()
+    }
+    if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
+      this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.referenceGuide !== prevProps.referenceGuide) {
+      // reload page when reference guide is added
+      this.fetchLeads()
+    }
   }
 
   fetchAddedLeads = (client) => {
@@ -129,7 +161,7 @@ class InvestLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const { hasBooking = false } = this.props.route.params // for Deals we need to set filter to closed won
+    const { hasBooking = false, screen } = this.props.route.params // for Deals we need to set filter to closed won
     const sortValue = await this.getSortOrderFromStorage()
     let statusValue = ''
     if (hasBooking) {
@@ -142,10 +174,17 @@ class InvestLeads extends React.Component {
         this.fetchLeads()
       })
     } else {
-      storeItem('statusFilterInvest', 'open')
-      this.setState({ statusFilter: 'open', sort: sortValue }, () => {
-        this.fetchLeads()
-      })
+      if (screen === 'MyDeals') {
+        storeItem('statusFilterInvest', 'all')
+        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      } else {
+        storeItem('statusFilterInvest', 'open')
+        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+          this.fetchLeads()
+        })
+      }
     }
   }
   setIsMenuVisible = (value, data) => {
@@ -197,6 +236,7 @@ class InvestLeads extends React.Component {
       searchText,
       statusFilter,
       statusFilterType,
+      pageType,
     } = this.state
     const { hasBooking, navFrom } = this.props.route.params
     const { user } = this.props
@@ -205,26 +245,26 @@ class InvestLeads extends React.Component {
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'in_progress') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
     axios
@@ -275,6 +315,13 @@ class InvestLeads extends React.Component {
         this.fetchLeads()
       })
     }
+  }
+
+  changePageType = (value) => {
+    this.clearStateValues()
+    this.setState({ pageType: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
   }
 
   navigateFromMenu = (data, name) => {
@@ -387,10 +434,6 @@ class InvestLeads extends React.Component {
     })
   }
 
-  openStatus = () => {
-    this.setState({ activeSortModal: !this.state.activeSortModal })
-  }
-
   setKey = (index) => {
     return String(index)
   }
@@ -406,7 +449,6 @@ class InvestLeads extends React.Component {
     const { user } = this.props
     // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
     if (
-      Ability.canView(user.subRole, 'AssignLead') &&
       lead.status !== StaticData.Constants.lead_closed_lost &&
       lead.status !== StaticData.Constants.lead_closed_won
     ) {
@@ -441,120 +483,8 @@ class InvestLeads extends React.Component {
     }
   }
 
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
-    })
-  }
-
-  openModalInMeetingMode = (edit = false, id = null) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  // ************ Function for Reject modal ************
-  goToRejectForm = () => {
-    const { statusfeedbackModalVisible } = this.state
-    this.setState({
-      statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject',
-    })
-  }
-
-  rejectLead = (body) => {
-    const { navigation, lead } = this.props
-    const { selectedLead } = this.state
-    if (selectedLead) {
-      var leadId = []
-      leadId.push(selectedLead.id)
-      axios
-        .patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-          this.fetchLeads()
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    }
-  }
-
-  showStatusFeedbackModal = (value) => {
-    this.setState({ statusfeedbackModalVisible: value })
-  }
-
   changeStatusType = (status) => {
     this.setState({ statusFilterType: status })
-  }
-
-  callAgain = (data) => {
-    const { contacts, dispatch } = this.props
-    this.setState({ selectedLead: data }, () => {
-      if (data && data.customer) {
-        let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
-          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            //  multiple numbers to select
-            this.showMultiPhoneModal(true)
-          } else {
-            dispatch(
-              setCallPayload(
-                selectedClientContacts ? selectedClientContacts.phone : null,
-                'phone',
-                data
-              )
-            )
-            helper.callNumber(selectedClientContacts, contacts)
-            this.showStatusFeedbackModal(true, 'call')
-          }
-        })
-      }
-    })
-  }
-
-  setNewActionModal = (value) => {
-    this.setState({ newActionModal: value })
-  }
-
-  showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
-  }
-
-  handlePhoneSelectDone = (phone) => {
-    const { contacts, dispatch } = this.props
-    const { selectedLead } = this.state
-    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          dispatch(
-            setCallPayload(
-              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
-              'phone',
-              selectedLead
-            )
-          )
-          helper.callNumber(copySelectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
-      )
-    }
   }
 
   bookUnit = () => {
@@ -630,6 +560,10 @@ class InvestLeads extends React.Component {
     })
   }
 
+  openStatus = () => {
+    this.setState({ activeSortModal: !this.state.activeSortModal })
+  }
+
   render() {
     const {
       leadsData,
@@ -643,22 +577,23 @@ class InvestLeads extends React.Component {
       searchText,
       showSearchBar,
       serverTime,
-      active,
-      statusfeedbackModalVisible,
-      isFollowUpMode,
-      modalMode,
-      selectedLead,
-      selectedClientContacts,
-      isMultiPhoneModalVisible,
       statusFilterType,
-      comment,
-      newActionModal,
       isMenuVisible,
       fabActions,
       createBuyRentLead,
       createProjectLead,
+      pageType,
     } = this.state
-    const { user, permissions, lead, dispatch, referenceGuide } = this.props
+    const {
+      user,
+      permissions,
+      lead,
+      dispatch,
+      referenceGuide,
+      navigation,
+      isMultiPhoneModalVisible,
+      getIsTerminalUser,
+    } = this.props
     const {
       screen,
       hasBooking = false,
@@ -723,6 +658,30 @@ class InvestLeads extends React.Component {
                 />
               </View>
 
+              <View style={styles.iconRow}>
+                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
+              </View>
+              <View style={styles.pageTypeRow}>
+                <PickerComponent
+                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                  data={
+                    hasBooking
+                      ? getIsTerminalUser
+                        ? StaticData.filterDealsValueProjectTerminal
+                        : StaticData.filterDealsValueProject
+                      : getIsTerminalUser
+                      ? StaticData.filterLeadsValueProjectTerminal
+                      : StaticData.filterLeadsValueProject
+                  }
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changePageType}
+                  selectedItem={pageType}
+                  showPickerArrow={false}
+                />
+              </View>
+              <View style={styles.verticleLine} />
+
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}
@@ -753,9 +712,7 @@ class InvestLeads extends React.Component {
             dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
           }
           addInvestmentGuide={(guideNo, attachments) =>
-            dispatch(addInvestmentGuide({ guideNo, attachments }, lead)).then((res) => {
-              this.fetchLeads()
-            })
+            dispatch(addInvestmentGuide({ guideNo, attachments }, lead))
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
           referenceErrorMessage={referenceGuide.referenceErrorMessage}
@@ -772,7 +729,17 @@ class InvestLeads extends React.Component {
                 data={item}
                 navigateTo={this.navigateTo}
                 navigateFromMenu={this.navigateFromMenu}
-                callNumber={this.callAgain}
+                pageType={pageType}
+                callNumber={(data) => {
+                  // getting complete project lead object that contains customer contacts as well
+                  axios.get(`api/leads/project/byId?id=${data.id}`).then((lead) => {
+                    dispatch(callNumberFromLeads(lead.data, 'Project')).then((res) => {
+                      if (res !== null) {
+                        this.showMultiPhoneModal(true)
+                      }
+                    })
+                  })
+                }}
                 handleLongPress={this.handleLongPress}
                 serverTime={serverTime}
                 screen={navFrom ? 'AddDiary' : screen}
@@ -827,47 +794,10 @@ class InvestLeads extends React.Component {
           sort={sort}
         />
 
-        <SubmitFeedbackOptionsModal
-          showModal={newActionModal}
-          modalMode={modalMode}
-          setShowModal={(value) => this.setNewActionModal(value)}
-          performMeeting={() => this.openModalInMeetingMode()}
-          performFollowUp={this.openModalInFollowupMode}
-          performReject={this.goToRejectForm}
-          call={() => this.callAgain(selectedLead)}
-          bookUnit={this.bookUnit}
-          leadType={'CM'}
-        />
-
         <MultiplePhoneOptionModal
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
-          contacts={selectedClientContacts.payload}
-          showMultiPhoneModal={this.showMultiPhoneModal}
-          handlePhoneSelectDone={this.handlePhoneSelectDone}
-        />
-
-        <MeetingFollowupModal
-          closeModal={() => this.closeMeetingFollowupModal()}
-          active={active}
-          isFollowUpMode={isFollowUpMode}
-          lead={selectedLead}
-          leadType={'CM'}
-        />
-
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : modalMode === 'meeting'
-              ? StaticData.commentsFeedbackMeeting
-              : StaticData.leadClosedCommentsFeedback
-          }
-          modalMode={modalMode}
-          rejectLead={(body) => this.rejectLead(body)}
-          setNewActionModal={(value) => this.setNewActionModal(value)}
-          leadType={'CM'}
+          showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
+          navigation={navigation}
         />
       </View>
     )
@@ -881,6 +811,8 @@ mapStateToProps = (store) => {
     lead: store.lead.lead,
     permissions: store.user.permissions,
     referenceGuide: store.diary.referenceGuide,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
+    getIsTerminalUser: store.user.getIsTerminalUser,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

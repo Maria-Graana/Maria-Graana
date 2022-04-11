@@ -33,7 +33,7 @@ class Client extends React.Component {
       totalCustomers: 0,
       loading: true,
       page: 1,
-      pageSize: 30,
+      pageSize: 50,
       onEndReachedLoader: false,
       searchText: '',
       isSelected: false,
@@ -90,7 +90,7 @@ class Client extends React.Component {
   }
 
   fetchCustomer = () => {
-    const { customers, page, pageSize, searchText } = this.state
+    const { customers, searchText, page, pageSize } = this.state
     const { selectedClient, selectedPOC } = this.props.route.params
     let url = ''
     const clientName = searchText.replace(' ', '%20')
@@ -102,7 +102,12 @@ class Client extends React.Component {
       .then((res) => {
         this.setState(
           {
-            customers: page === 1 ? res.data.rows : [...customers, ...res.data.rows],
+            customers:
+              searchText !== ''
+                ? res.data.rows
+                : page === 1
+                ? res.data.rows
+                : [...customers, ...res.data.rows],
             totalCustomers: res.data.count,
             onEndReachedLoader: false,
             loading: false,
@@ -272,26 +277,32 @@ class Client extends React.Component {
   }
 
   render() {
-    const { customers, loading, totalCustomers, onEndReachedLoader, searchText } = this.state
+    const { customers, loading, totalCustomers, onEndReachedLoader, searchText, page } = this.state
     const { user } = this.props
     let createPermission = this.createPermission()
 
-    let data = []
-    if (searchText !== '' && data && data.length === 0) {
-      data = fuzzy.filter(searchText, customers, {
-        extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
-      })
-      data = data.map((item) => item.original)
-    } else {
-      data = customers
-    }
+    // let data = customers
+    // if (searchText !== '' && data && data.length === 0) {
+    //   data = fuzzy.filter(searchText, customers, {
+    //     extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
+    //   })
+    //   data = data.map((item) => item.original)
+    // } else {
+    //   data = customers
+    // }
     return !loading ? (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={[AppStyles.container, styles.container]}>
           <Search
             placeholder="Search clients here"
             searchText={searchText}
-            setSearchText={(value) => this.setState({ searchText: value })}
+            setSearchText={(value) => {
+              this.setState({
+                searchText: value,
+                page: value === '' ? 1 : page,
+                pageSize: 50,
+              })
+            }}
           />
           <Fab
             active="true"
@@ -304,9 +315,9 @@ class Client extends React.Component {
           >
             <Ionicons name="md-add" color="#ffffff" />
           </Fab>
-          {data && data.length > 0 ? (
+          {customers && customers.length > 0 ? (
             <FlatList
-              data={data}
+              data={customers}
               renderItem={(item, index) => (
                 <ClientTile
                   data={item}

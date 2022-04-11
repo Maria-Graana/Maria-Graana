@@ -125,9 +125,11 @@ class LeadDetail extends React.Component {
         let leadData = purposeTab == 'wanted' ? res.data.rows[0] : res.data
         if (
           leadData.added_by_armsuser_id !== user.id &&
-          leadData.assigned_to_armsuser_id !== user.id
-        )
+          leadData.assigned_to_armsuser_id !== user.id &&
+          purposeTab !== 'invest'
+        ) {
           leadType = 'Property'
+        }
 
         this.setState(
           {
@@ -154,7 +156,6 @@ class LeadDetail extends React.Component {
   navigateTo = () => {
     const { navigation, user } = this.props
     const { lead, type } = this.state
-    console.log('navigateTo: ')
     var status = lead.status
     let page = ''
     if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead)) {
@@ -221,8 +222,6 @@ class LeadDetail extends React.Component {
   goBack = () => {
     const { lead, type, fromScreen } = this.state
     const { navigation } = this.props
-    console.log('type: ', type)
-    console.log('fromScreen: ', fromScreen)
     goBack({ lead, type, fromScreen, navigation })
   }
 
@@ -431,22 +430,20 @@ class LeadDetail extends React.Component {
           <View style={styles.cardContainer}>
             <View style={styles.cardItemGrey}>
               <View style={styles.rowContainer}>
-                {lead && lead.assigned_to_armsuser_id === user.id ? (
-                  <View>
-                    <Text style={styles.headingText}>Client Name </Text>
-                    {screenName === 'diary' ? (
-                      <Text style={styles.labelText}>
-                        {setCustomerName === 'undefined'
-                          ? setCustomerName
-                          : lead.customer && lead.customer.customerName}
-                      </Text>
-                    ) : (
-                      <Text style={styles.labelText}>
-                        {lead.customer && lead.customer.customerName}
-                      </Text>
-                    )}
-                  </View>
-                ) : null}
+                <View>
+                  <Text style={styles.headingText}>Client Name </Text>
+                  {screenName === 'diary' ? (
+                    <Text style={styles.labelText}>
+                      {setCustomerName === 'undefined'
+                        ? setCustomerName
+                        : lead.customer && lead.customer.customerName}
+                    </Text>
+                  ) : (
+                    <Text style={styles.labelText}>
+                      {lead.customer && lead.customer.customerName}
+                    </Text>
+                  )}
+                </View>
 
                 {purposeTab !== 'property' && (
                   <TouchableOpacity
@@ -464,7 +461,9 @@ class LeadDetail extends React.Component {
               <Text style={styles.headingText}>Requirement </Text>
               <Text style={styles.labelText}>
                 {!lead.projectId && leadSize}
-                {!lead.projectId && `${helper.capitalize(lead.subtype)} to ${type}`}
+                {!lead.projectId && type !== 'Investment'
+                  ? `${helper.capitalize(lead.subtype)} to ${type}`
+                  : `Looking to Invest in Any Project`}
                 {lead.projectId && (lead.projectType ? helper.capitalize(lead.projectType) : '-')}
               </Text>
             </View>

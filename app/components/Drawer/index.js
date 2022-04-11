@@ -11,7 +11,8 @@ import { setSlotData } from '../../actions/slotManagement'
 import { logoutUser } from '../../actions/user'
 import AppStyles from '../../AppStyles'
 import config from '../../config'
-import helper from '../../helper'
+import helper from '../../helper';
+import { StackActions } from '@react-navigation/native';
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import * as RootNavigation from '../../navigation/RootNavigation'
@@ -92,26 +93,26 @@ class CustomDrawerContent extends React.Component {
           )} */}
           <View style={{ width: '100%' }}>
             {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) ||
-            getPermissionValue(
-              PermissionFeatures.PROPERTIES,
-              PermissionActions.CREATE,
-              permissions
-            ) ||
-            getPermissionValue(
-              PermissionFeatures.BUY_RENT_LEADS,
-              PermissionActions.CREATE,
-              permissions
-            ) ||
-            getPermissionValue(
-              PermissionFeatures.PROJECT_LEADS,
-              PermissionActions.CREATE,
-              permissions
-            ) ||
-            getPermissionValue(
-              PermissionFeatures.CLIENTS,
-              PermissionActions.CREATE,
-              permissions
-            ) ? (
+              getPermissionValue(
+                PermissionFeatures.PROPERTIES,
+                PermissionActions.CREATE,
+                permissions
+              ) ||
+              getPermissionValue(
+                PermissionFeatures.BUY_RENT_LEADS,
+                PermissionActions.CREATE,
+                permissions
+              ) ||
+              getPermissionValue(
+                PermissionFeatures.PROJECT_LEADS,
+                PermissionActions.CREATE,
+                permissions
+              ) ||
+              getPermissionValue(
+                PermissionFeatures.CLIENTS,
+                PermissionActions.CREATE,
+                permissions
+              ) ? (
               <DrawerIconItem
                 screen={'+ Create '}
                 navigateTo={() => {
@@ -129,7 +130,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                drawerMenuOptions && (
+                  drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -191,7 +192,7 @@ class CustomDrawerContent extends React.Component {
                   PermissionActions.CREATE,
                   permissions
                 ) &&
-                drawerMenuOptions && (
+                  drawerMenuOptions && (
                     <View style={styles.optionView}>
                       <TouchableWithoutFeedback
                         activeOpacity={0.7}
@@ -252,21 +253,28 @@ class CustomDrawerContent extends React.Component {
             PermissionActions.READ,
             permissions
           ) ||
-          getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
-            permissions
-          ) ||
-          getPermissionValue(
-            PermissionFeatures.WANTED_LEADS,
-            PermissionActions.READ,
-            permissions
-          ) ? (
+            getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.READ,
+              permissions
+            ) ||
+            getPermissionValue(
+              PermissionFeatures.WANTED_LEADS,
+              PermissionActions.READ,
+              permissions
+            ) ? (
             <DrawerIconItem
               screen={user && user.organization && user.organization.isPP ? 'Leads' : 'Leads'}
               badges={count.leads}
+              navigation={this.props.navigation}
               navigateTo={() => {
-                this.props.navigation.navigate('Leads', { screen: 'Leads', hasBooking: false })
+                this.props.navigation.closeDrawer();
+                this.props.navigation.dispatch(
+                  StackActions.push('Leads', {
+                    screen: 'Leads', hasBooking: false
+                  })
+                );
+
               }}
             />
           ) : null}
@@ -275,17 +283,24 @@ class CustomDrawerContent extends React.Component {
             PermissionActions.READ,
             permissions
           ) ||
-          getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
-            permissions
-          ) ? (
+            getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.READ,
+              permissions
+            ) ? (
             <DrawerIconItem
               screen={user && user.organization && user.organization.isPP ? 'Deals' : 'Deals'}
               badges={count.leads}
+
               navigateTo={() => {
-                this.props.navigation.navigate('Leads', { screen: 'MyDeals', hasBooking: true })
+                this.props.navigation.closeDrawer();
+                this.props.navigation.dispatch(
+                  StackActions.push('Leads', {
+                    screen: 'MyDeals', hasBooking: true
+                  })
+                );
               }}
+         
             />
           ) : null}
           {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.READ, permissions) && (
@@ -301,28 +316,28 @@ class CustomDrawerContent extends React.Component {
             PermissionActions.READ,
             permissions
           ) && (
-            <DrawerIconItem
-              screen={
-                user && user.organization && user.organization.isPP ? 'Properties' : 'Properties'
-              }
-              badges={count.inventory}
-              navigateTo={() => {
-                this.navigateToProperties()
-              }}
-            />
-          )}
+              <DrawerIconItem
+                screen={
+                  user && user.organization && user.organization.isPP ? 'Properties' : 'Properties'
+                }
+                badges={count.inventory}
+                navigateTo={() => {
+                  this.navigateToProperties()
+                }}
+              />
+            )}
           {getPermissionValue(
             PermissionFeatures.APP_PAGES,
             PermissionActions.PROJECT_INVENTORY_PAGE_VIEW,
             permissions
           ) && (
-            <DrawerItem
-              screen={'Project Inventory'}
-              navigateTo={() => {
-                this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
-              }}
-            />
-          )}
+              <DrawerItem
+                screen={'Inventory'}
+                navigateTo={() => {
+                  this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
+                }}
+              />
+            )}
           {getPermissionValue(PermissionFeatures.TARGETS, PermissionActions.READ, permissions) && (
             <DrawerItem
               screen={'Targets'}
@@ -355,7 +370,7 @@ class CustomDrawerContent extends React.Component {
             }}
           />
           <View style={{ alignSelf: 'center', justifyContent: 'flex-end', flex: 1 }}>
-            <Text style={AppStyles.blackInputText}>SDK 42 v{AppJson.expo.version}</Text>
+            <Text style={AppStyles.blackInputText}>v{AppJson.expo.version}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -371,7 +386,7 @@ mapStateToProps = (store) => {
     loading: store.user.loading,
     count: store.listings.count,
     permissions: store.user.permissions,
-    drawerMenuOptions: store.drawer.drawerMenuOptions
+    drawerMenuOptions: store.drawer.drawerMenuOptions,
   }
 }
 

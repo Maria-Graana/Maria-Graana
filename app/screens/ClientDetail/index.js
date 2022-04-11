@@ -2,7 +2,7 @@
 
 import React from 'react'
 import styles from './style'
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -99,7 +99,7 @@ class ClientDetail extends React.Component {
 
   updatePermission = () => {
     const { permissions } = this.props
-    return getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.UPDATE, permissions)
+    return getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.UPDATE, permissions)
   }
 
   render() {
@@ -115,48 +115,52 @@ class ClientDetail extends React.Component {
           { backgroundColor: AppStyles.colors.backgroundColor },
         ]}
       >
-        <View style={styles.outerContainer}>
-          <View style={styles.innerContainer}>
-            <Text style={styles.headingText}>First Name</Text>
-            <Text style={styles.labelText}>{client.first_name}</Text>
-            <Text style={styles.headingText}>Last Name</Text>
-            <Text style={styles.labelText}>{client.last_name}</Text>
-            <Text style={styles.headingText}>Contact Number</Text>
-            <Text style={styles.labelText}>{client.phone}</Text>
-            <Text style={styles.headingText}>Contact Number 2</Text>
-            <Text style={styles.labelText}>{clientPhones.contact2 && clientPhones.contact2}</Text>
-            <Text style={styles.headingText}>Contact Number 3</Text>
-            <Text style={styles.labelText}>{clientPhones.contact3 && clientPhones.contact3}</Text>
-            <Text style={styles.headingText}>Email</Text>
-            <Text style={styles.labelText}>{client.email}</Text>
-            <Text style={styles.headingText}>CNIC</Text>
-            <Text style={styles.labelText}>{client.cnic && helper.normalizeCnic(client.cnic)}</Text>
-            <Text style={styles.headingText}>Son / Daughter/ Spouse of</Text>
-            <Text style={styles.labelText}>{client.familyMember}</Text>
-            <Text style={styles.headingText}>Bank</Text>
-            <Text style={styles.labelText}>{client.bank}</Text>
-            <Text style={styles.headingText}>Account Title</Text>
-            <Text style={styles.labelText}>{client.accountTitle}</Text>
-            <Text style={styles.headingText}>IBAN</Text>
-            <Text style={styles.labelText}>{client.iBan}</Text>
-            <Text style={styles.headingText}>Address</Text>
-            <Text style={styles.labelText}>{client.address}</Text>
-            <Text style={styles.headingText}>Secondary Address</Text>
-            <Text style={styles.labelText}>{client.secondary_address}</Text>
-            <Text style={styles.headingText}>Belongs To</Text>
-            <Text style={styles.labelText}>{belongs}</Text>
+        <ScrollView>
+          <View style={styles.outerContainer}>
+            <View style={styles.innerContainer}>
+              <Text style={styles.headingText}>First Name</Text>
+              <Text style={styles.labelText}>{client.first_name}</Text>
+              <Text style={styles.headingText}>Last Name</Text>
+              <Text style={styles.labelText}>{client.last_name}</Text>
+              <Text style={styles.headingText}>Contact Number</Text>
+              <Text style={styles.labelText}>{client.phone}</Text>
+              <Text style={styles.headingText}>Contact Number 2</Text>
+              <Text style={styles.labelText}>{clientPhones.contact2 && clientPhones.contact2}</Text>
+              <Text style={styles.headingText}>Contact Number 3</Text>
+              <Text style={styles.labelText}>{clientPhones.contact3 && clientPhones.contact3}</Text>
+              <Text style={styles.headingText}>Email</Text>
+              <Text style={styles.labelText}>{client.email}</Text>
+              <Text style={styles.headingText}>CNIC/NTN</Text>
+              <Text style={styles.labelText}>
+                {client.cnic && helper.normalizeCnicAndNTN(client.cnic)}
+              </Text>
+              <Text style={styles.headingText}>Son / Daughter/ Spouse of</Text>
+              <Text style={styles.labelText}>{client.familyMember}</Text>
+              <Text style={styles.headingText}>Bank</Text>
+              <Text style={styles.labelText}>{client.bank}</Text>
+              <Text style={styles.headingText}>Account Title</Text>
+              <Text style={styles.labelText}>{client.accountTitle}</Text>
+              <Text style={styles.headingText}>IBAN</Text>
+              <Text style={styles.labelText}>{client.iBan}</Text>
+              <Text style={styles.headingText}>Address</Text>
+              <Text style={styles.labelText}>{client.address}</Text>
+              <Text style={styles.headingText}>Secondary Address</Text>
+              <Text style={styles.labelText}>{client.secondary_address}</Text>
+              <Text style={styles.headingText}>Belongs To</Text>
+              <Text style={styles.labelText}>{belongs}</Text>
+            </View>
+            <View style={styles.pad}>
+              <MaterialCommunityIcons
+                onPress={() => {
+                  if (updatePermission) this.navigateTo()
+                }}
+                name="square-edit-outline"
+                size={26}
+                color={AppStyles.colors.primaryColor}
+              />
+            </View>
           </View>
-          <View style={styles.pad}>
-            <MaterialCommunityIcons
-              onPress={() => {
-                if (updatePermission) this.navigateTo()
-              }}
-              name="square-edit-outline"
-              size={26}
-              color={AppStyles.colors.primaryColor}
-            />
-          </View>
-        </View>
+        </ScrollView>
       </View>
     ) : (
       <Loader loading={loading} />

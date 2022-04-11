@@ -70,8 +70,14 @@ class PaymentTile extends React.Component {
         <View style={styles.tileTopWrap}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>
-              {`${data.paymentCategory} ${data.paymentCategory != 'token' ? count : ''}`}{' '}
-              <Text style={{ textTransform: 'capitalize' }}>({data.type && data.type})</Text>
+              {`${data.paymentCategory}`}{' '}
+              <Text style={{ textTransform: 'capitalize' }}>
+                (
+                {data.type && data.type === 'asset_adjustment'
+                  ? data.type.replace('_', ' ')
+                  : data.type && data.type}
+                )
+              </Text>
             </Text>
             {data.status != '' && (
               <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
@@ -84,7 +90,7 @@ class PaymentTile extends React.Component {
               <Text style={styles.priceDate}>
                 {moment(data.createdAt).format('DD MMM YY - h:mm a')}
               </Text>
-              {data.status !== 'open' && tileForToken === false ? (
+              {data.status !== 'open' && data.status !== 'cleared' && tileForToken === false ? (
                 <TouchableHighlight
                   onPress={() => {
                     call(data)
@@ -122,7 +128,7 @@ class PaymentTile extends React.Component {
                 <Text style={styles.priceDate}>
                   {moment(data.createdAt).format('DD MMM YY - h:mm a')}
                 </Text>
-                {data.status !== 'open' && tileForToken === false ? (
+                {data.status !== 'open' && tileForToken === false && data.status !== 'cleared' ? (
                   <TouchableHighlight
                     onPress={() => {
                       call(data)

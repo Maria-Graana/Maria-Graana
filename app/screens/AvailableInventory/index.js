@@ -102,10 +102,10 @@ class AvailableInventory extends Component {
     this.setState({ disabled: true, active: false, selectedRow: null })
     let url = ``
     if (projectId) {
-      url = `/api/project/shops?projectId=${projectId}&status=${status}`
+      url = `/api/project/shops?projectId=${projectId}&status=${status}&currentInventory=true&all=true`
     }
     if (projectId && floorId) {
-      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=${status}`
+      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=${status}&currentInventory=true&all=true`
     }
     axios
       .get(url)

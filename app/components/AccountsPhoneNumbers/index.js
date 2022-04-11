@@ -94,7 +94,19 @@ const AccountsPhoneNumbers = ({
             />
           </View>
         ) : (
-          <Loader loading={loading} />
+          <View
+            style={
+              ([styles.modalMain],
+              { height: '75%', backgroundColor: '#FFF', marginTop: '20%', borderRadius: 7 })
+            }
+          >
+            <View style={{ justifyContent: 'flex-end', paddingTop: 10, paddingRight: 10 }}>
+              <TouchableOpacity style={styles.closeBtn} onPress={() => toggleAccountPhone(false)}>
+                <Image source={close} style={styles.closeImg} />
+              </TouchableOpacity>
+            </View>
+            <Loader loading={loading} />
+          </View>
         )}
       </SafeAreaView>
     </Modal>

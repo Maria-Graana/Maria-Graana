@@ -56,7 +56,7 @@ class LeadTile extends React.Component {
 
   setCustomerName = () => {
     const { user, data } = this.props
-    if (user.id === data.assigned_to_armsuser_id)
+    if (data.requiredProperties !== true)
       return (
         data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
       )
@@ -71,9 +71,7 @@ class LeadTile extends React.Component {
       callNumber,
       user,
       purposeTab,
-      contacts,
       handleLongPress,
-      displayPhone,
       propertyLead,
       serverTime,
       screen,
@@ -91,6 +89,7 @@ class LeadTile extends React.Component {
       goToHistory,
       getCallHistory,
       addGuideReference = null,
+      pageType = '',
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -119,8 +118,47 @@ class LeadTile extends React.Component {
           })`
         : ''
     let leadSize = this.leadSize()
-    let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+    // let showPhone = displayPhone === false || displayPhone ? displayPhone : true
     let leadStatus = this.leadStatus()
+    let referPermission = getPermissionValue(
+      lead.projectId && lead.project
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.REFER,
+      permissions
+    )
+    let assignPermission = getPermissionValue(
+      lead.projectId && lead.project
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.ASSIGN_REASSIGN,
+      permissions
+    )
+    let permissionLeadUpdate = getPermissionValue(
+      purposeTab === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+    let showPhone = false
+    if (permissionLeadUpdate) {
+      // check permission first
+      if (pageType === '&pageType=demandLeads&hasBooking=false') {
+        // is demand lead
+        showPhone = true
+      } else {
+        // all other leads assigned to user himself
+        if (data.assigned_to_armsuser_id == user.id) {
+          showPhone = true
+        } else {
+          showPhone = false
+        }
+      }
+    } else {
+      showPhone = false
+    }
+
     return (
       <TouchableOpacity
         disabled={screen === 'Leads' ? true : false}
@@ -173,7 +211,7 @@ class LeadTile extends React.Component {
                     </Text>
                   </View>
                 )}
-                {data && data.requiredProperties && (
+                {/* {data && data.requiredProperties && (
                   <View style={styles.sharedLead}>
                     <Text
                       style={[
@@ -189,7 +227,7 @@ class LeadTile extends React.Component {
                       Demand Lead
                     </Text>
                   </View>
-                )}
+                )} */}
                 {data && data.leadCategory ? (
                   <View style={[styles.sharedLead, screen === 'Leads' && { padding: 0 }]}>
                     <Text
@@ -279,13 +317,19 @@ class LeadTile extends React.Component {
                         />
                         <Menu.Item
                           onPress={() => {
-                            navigateToShareScreen(data), setIsMenuVisible(false, data)
+                            if (referPermission) {
+                              navigateToShareScreen(data)
+                              setIsMenuVisible(false, data)
+                            }
                           }}
                           title="Refer"
                         />
                         <Menu.Item
                           onPress={() => {
-                            checkAssignedLead(lead), setIsMenuVisible(false, data)
+                            if (assignPermission) {
+                              checkAssignedLead(lead)
+                              setIsMenuVisible(false, data)
+                            }
                           }}
                           title="Re-Assign"
                         />
@@ -392,7 +436,7 @@ class LeadTile extends React.Component {
                     {data ? (
                       <Text style={[styles.priceText, changeColor, AppStyles.mbFive]}>
                         {purposeTab === 'invest' &&
-                          helper.capitalize(projectName != '' ? projectName : 'Any')}
+                          helper.capitalize(projectName != '' ? projectName : 'Any Project')}
                         {data.projectType &&
                           data.projectType != '' &&
                           ` - ${helper.capitalize(data.projectType)}`}
@@ -423,9 +467,7 @@ class LeadTile extends React.Component {
                     style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                     numberOfLines={1}
                   >
-                    {customerName != ''
-                      ? customerName
-                      : data.customer && data.customer.customerName}
+                    {customerName === ' ' ? '' : data.customer && data.customer.customerName}
                   </Text>
                 </View>
                 {/* ****** Location Wrap */}
@@ -437,33 +479,26 @@ class LeadTile extends React.Component {
                     {data.id ? `ID: ${data.id}, ` : ''}{' '}
                     {`Created: ${moment(data.createdAt).format('MMM DD YYYY, hh:mm A')}`}
                   </Text>
-                </View>
-              </View>
 
-              {/* {screen === 'Leads' || screenName === 'Leads' || screen === 'AvailableUnitLead' ? (
-                <></>
-              ) : (
-                <View style={styles.phoneMain}>
                   {showPhone ? (
                     <TouchableOpacity
-                      style={styles.actionBtn}
+                      style={styles.phoneMain}
                       onPress={() => {
-                        if (
-                          getPermissionValue(
-                            PermissionFeatures.BUY_RENT_LEADS,
-                            PermissionActions.UPDATE,
-                            permissions
-                          ) &&
-                          data.assigned_to_armsuser_id == user.id
-                        )
-                          callNumber(data)
+                        callNumber(data)
                       }}
                     >
-                      <Image style={[styles.fireIcon, AppStyles.mlFive]} source={phone} />
+                      <Image
+                        style={[
+                          styles.fireIcon,
+                          AppStyles.mlFive,
+                          { alignSelf: purposeTab === 'invest' ? 'flex-end' : 'center' },
+                        ]}
+                        source={phone}
+                      />
                     </TouchableOpacity>
                   ) : null}
                 </View>
-              )} */}
+              </View>
             </View>
           </View>
         </View>

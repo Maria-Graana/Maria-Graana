@@ -1,7 +1,7 @@
 /** @format */
 
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native'
+import React, { useState } from 'react'
 import Avatar from '../Avatar'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
 import AppStyles from '../../AppStyles'
@@ -9,8 +9,18 @@ import { Ionicons } from '@expo/vector-icons'
 import _ from 'underscore'
 import DiaryHelper from '../../screens/Diary/diaryHelper'
 import moment from 'moment'
+import TouchableButton from '../TouchableButton'
+import { connect } from 'react-redux'
 
-const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
+const ArmsContactTile = ({
+  data,
+  onPress,
+  callNumber,
+  isExpanded = false,
+  selectedContact,
+  registerAsClient,
+  updatePermission,
+}) => {
   const getName = () => {
     const { firstName, lastName } = data
     if (firstName && lastName && firstName !== '' && lastName !== '') {
@@ -36,44 +46,100 @@ const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
           <View style={styles.imageViewStyle}>
             <Avatar data={data} />
           </View>
-          <View style={{ flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
+          <View
+            style={{
+              flexDirection: 'column',
+              // justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
             <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
-              <Text style={[styles.textFont, { fontSize: 14, width: ' 50%' }]}>{getName()}</Text>
+              <Text style={[styles.textFont, { fontSize: 16, width: ' 50%' }]} numberOfLines={1}>
+                {getName()}
+              </Text>
               {armsCallLatest ? (
                 <Text
                   style={{
                     width: '45%',
-                    fontSize: 13,
-                    marginHorizontal: 2,
+                    fontSize: 12,
+                    marginRight: 10,
                     color:
                       armsCallLatest.feedback === 'needs_further_contact'
                         ? AppStyles.colors.primaryColor
                         : AppStyles.colors.redBg,
-                    textAlign: 'center',
+                    textAlign: 'right',
                   }}
                 >
-                  ({DiaryHelper.removeUnderscore(armsCallLatest.feedback)})
+                  {DiaryHelper.removeUnderscore(armsCallLatest.feedback)}
                 </Text>
               ) : null}
             </View>
-            {data.phone !== '' && data.phone !== null ? (
-              <View style={{ paddingTop: 5 }}>
+
+            {armsCallLatest ? (
+              <View
+                style={{
+                  alignItems: 'flex-end',
+                  marginRight: 10,
+                  width: '45%',
+                  alignSelf: 'flex-end',
+                }}
+              >
                 <Text
                   numberOfLines={1}
                   style={[styles.textFont, { fontSize: 12, color: AppStyles.colors.subTextColor }]}
                 >
-                  {data.phone}{' '}
                   {armsCallLatest ? moment(armsCallLatest.time).format('DD MMM hh:mm a') : null}{' '}
-                  {armsCallLatest ? 'Outgoing' : null}
                 </Text>
               </View>
             ) : null}
+
+            {isExpanded &&
+            selectedContact &&
+            data.id === selectedContact.id &&
+            selectedContact.phone ? (
+              <View style={styles.expandedListItem}>
+                <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  data={selectedContact.phoneNumbers}
+                  style={{ backgroundColor: '#fff' }}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.phoneContactTile}
+                      onPress={() => callNumber(item.number)}
+                      disabled={!updatePermission}
+                    >
+                      <View style={{ width: '80%' }}>
+                        <Text style={[styles.textFont]}>{item.number}</Text>
+                      </View>
+                      {updatePermission ? (
+                        <TouchableOpacity
+                          style={{ width: '20%' }}
+                          onPress={() => callNumber(item.number)}
+                        >
+                          <Ionicons
+                            name="ios-call-outline"
+                            style={{ alignSelf: 'flex-start' }}
+                            size={24}
+                            color={AppStyles.colors.primaryColor}
+                          />
+                        </TouchableOpacity>
+                      ) : null}
+                    </TouchableOpacity>
+                  )}
+                />
+                {updatePermission && (
+                  <TouchableButton
+                    label="Register as Client"
+                    containerStyle={styles.button}
+                    disabled={!updatePermission}
+                    fontSize={12}
+                    onPress={() => registerAsClient(data)}
+                  />
+                )}
+              </View>
+            ) : null}
           </View>
-          {/* {showCallButton ? (
-            <TouchableOpacity style={{ width: '15%' }} onPress={() => console.log('call')}>
-              <Ionicons name="ios-call-outline" size={24} color={AppStyles.colors.primaryColor} />
-            </TouchableOpacity>
-          ) : null} */}
         </View>
       </View>
       <View style={styles.underLine} />
@@ -81,7 +147,13 @@ const ArmsContactTile = ({ data, onPress, showCallButton = false }) => {
   )
 }
 
-export default ArmsContactTile
+mapStateToProps = (store) => {
+  return {
+    selectedContact: store.armsContacts.selectedContact,
+  }
+}
+
+export default connect(mapStateToProps)(ArmsContactTile)
 
 const styles = StyleSheet.create({
   listItem: {
@@ -91,15 +163,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  expandedListItem: {
+    marginVertical: 10,
+    width: '100%',
+  },
   imageViewStyle: {
     paddingRight: 10,
+    alignSelf: 'flex-start',
   },
   textFont: {
     fontFamily: AppStyles.fonts.defaultFont,
+    fontSize: 14,
   },
   underLine: {
     height: 1,
     width: '100%',
     backgroundColor: '#f5f5f6',
+  },
+  button: {
+    padding: 5,
+    borderRadius: 4,
+    width: '45%',
+    height: 35,
+    justifyContent: 'center',
+    // alignSelf: 'center',
+    marginVertical: 5,
+    // marginHorizontal: widthPercentageToDP('2%'),
+  },
+  phoneContactTile: {
+    flexDirection: 'row',
+    width: '100%',
+    marginVertical: 5,
+    paddingVertical: 5,
+    alignItems: 'center',
   },
 })

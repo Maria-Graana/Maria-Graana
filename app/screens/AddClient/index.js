@@ -19,11 +19,12 @@ import { connect } from 'react-redux'
 import helper from '../../helper'
 import _ from 'underscore'
 import { getAllCountries } from 'react-native-country-picker-modal'
+import { setSelectedContact } from '../../actions/armsContacts'
 
+var defaultCountry = { name: 'PK', code: '+92' }
 class AddClient extends Component {
   constructor(props) {
     super(props)
-    var defaultCountry = { name: 'PK', code: '+92' }
     this.state = {
       checkValidation: false,
       cities: [],
@@ -45,6 +46,7 @@ class AddClient extends Component {
         bank: '',
         iBan: '',
         bookUnit: true,
+        contactRegistrationId: null,
       },
       emailValidate: true,
       phoneValidate: false,
@@ -72,8 +74,22 @@ class AddClient extends Component {
       let copyForm = { ...this.state.formData }
       copyForm.firstName = data.firstName
       copyForm.lastName = data.lastName
-      copyForm.contactNumber = data.phone
-      this.setState({ formData: copyForm })
+      copyForm.contactNumber = data.phone ? data.phone.phone : ''
+      copyForm.contact1 = data.contact1 ? data.contact1.contact1 : ''
+      copyForm.contact2 = data.contact2 ? data.contact2.contact2 : ''
+      copyForm.contactRegistrationId = data.contactRegistrationId
+      this.setState(
+        {
+          formData: copyForm,
+          countryCode: data.phone ? data.phone.countryCode : defaultCountry.name,
+          callingCode: data.phone ? data.phone.dialCode : defaultCountry.code,
+          countryCode1: data.contact1 ? data.contact1.countryCode : defaultCountry.name,
+          callingCode1: data.contact1 ? data.contact1.dialCode : defaultCountry.code,
+          countryCode2: data.contact2 ? data.contact2.countryCode : defaultCountry.name,
+          callingCode2: data.contact2 ? data.contact2.dialCode : defaultCountry.code,
+        },
+        () => {}
+      )
     }
     if ('update' in route.params && route.params.update) {
       navigation.setParams({ title: 'UPDATE CLIENT INFO' })
@@ -216,7 +232,6 @@ class AddClient extends Component {
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
 
-    console.log(client)
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,
@@ -256,14 +271,14 @@ class AddClient extends Component {
   }
 
   validateCnic = (value) => {
-    if (value.length < 15 && value !== '') this.setState({ cnicValidate: true })
+    if (value.length < 7 || (value.length > 8 && value.length < 13 && value !== ''))
+      this.setState({ cnicValidate: true })
     else this.setState({ cnicValidate: false })
   }
 
   handleForm = (value, name) => {
     const { formData } = this.state
     if (name == 'cnic') {
-      value = helper.normalizeCnic(value)
       this.validateCnic(value)
     }
     if (name == 'email') this.validateEmail(value)
@@ -473,8 +488,8 @@ class AddClient extends Component {
   }
   formSubmit = () => {
     const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
-    const { route, navigation, contacts } = this.props
-    const { update, client, isFromDropDown, screenName, isPOC } = route.params
+    const { route, navigation, contacts, armsContacts } = this.props
+    const { update, client, isFromDropDown, screenName, isPOC, isFromScreen = null } = route.params
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
     if (
       !formData.firstName ||
@@ -497,13 +512,18 @@ class AddClient extends Component {
             .post(`/api/customer/create`, body)
             .then((res) => {
               if (res.status === 200 && res.data) {
+                if (formData.contactRegistrationId) {
+                  let isContactExists = armsContacts.find(
+                    (item) => item.id === formData.contactRegistrationId
+                  )
+                  if (isContactExists) {
+                    this.deleteARMSContact(formData.contactRegistrationId)
+                  }
+                }
                 if (res.data.message !== 'CLIENT CREATED') {
                   // Error Messages
                   if (res.data.message === 'Client already exists') {
                     helper.errorToast(res.data.message)
-                  } else {
-                    // this is important error message so showing as alert
-                    Alert.alert('Client already Exists', res.data.message)
                   }
                 } else {
                   helper.successToast(res.data.message)
@@ -524,6 +544,8 @@ class AddClient extends Component {
                             ? res.data.first_name + ' ' + res.data.last_name
                             : null,
                         })
+                    : isFromScreen
+                    ? navigation.navigate('Contacts')
                     : navigation.goBack()
                 }
               }
@@ -579,6 +601,21 @@ class AddClient extends Component {
         this.setState({ phoneVerified: false })
       }
     }
+  }
+
+  deleteARMSContact = (id) => {
+    let endPoint = ``
+    const { dispatch } = this.props
+    endPoint = `/api/contacts/delete`
+    axios
+      .delete(endPoint, { data: { id } })
+      .then(function (response) {})
+      .catch(function (error) {
+        console.log(error)
+      })
+      .finally(() => {
+        dispatch(setSelectedContact(null))
+      })
   }
 
   hello = (object, name) => {
@@ -660,6 +697,7 @@ mapStateToProps = (store) => {
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
+    armsContacts: store.armsContacts.armsContacts,
   }
 }
 

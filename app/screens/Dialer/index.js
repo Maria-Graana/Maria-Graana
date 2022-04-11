@@ -8,11 +8,8 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
-  TextInput,
-  TouchableWithoutFeedback,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
+  Dimensions,
+  ScrollView,
 } from 'react-native'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -20,93 +17,129 @@ import { getARMSContacts, setSelectedContact } from '../../actions/armsContacts'
 import _ from 'underscore'
 import ArmsContactTile from '../../components/ArmsContactTile'
 import AppStyles from '../../AppStyles'
-import { Feather } from '@expo/vector-icons'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 import fuzzy from 'fuzzy'
 import VirtualKeyboard from 'react-native-virtual-keyboard'
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
+import PhoneBookContactsTile from '../../components/PhonebookContactsTile'
+import Search from '../../components/Search'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import { getPermissionValue } from '../../hoc/Permissions'
+import PhonebookContactsTile from '../../components/PhonebookContactsTile'
+
+const layout = Dimensions.get('window')
 
 class Dialer extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      allContacts: [],
       numberTxt: '',
+      index: 0,
+      routes: [
+        { key: 'first', title: 'Keypad' },
+        { key: 'second', title: 'Phonebook' },
+      ],
+      searchText: '',
+      isPhoneContactExpanded: false,
+      allContacts: [],
     }
   }
 
   componentDidMount() {
     const { dispatch } = this.props
-    dispatch(getARMSContacts()).then((res) => {
-      const { armsContacts, contacts } = this.props
-      let newContactsArr = _.uniq(armsContacts.rows.concat(contacts), false)
-      newContactsArr = newContactsArr.map((item) => {
-        if (item.phone) {
-          return item
-        } else {
-          return {
-            ...item,
-            phone: item.phoneNumbers[0].number,
-          }
+    const { contacts } = this.props
+    let newContactsArr = contacts.map((item) => {
+      if (item.phone) {
+        return item
+      } else {
+        return {
+          ...item,
+          phone: item.phoneNumbers[0].number,
         }
-      })
-      this.setState({ allContacts: newContactsArr })
+      }
     })
+    this.setState({ allContacts: newContactsArr })
   }
 
-  onContactPress = (contact) => {
-    const { dispatch, navigation } = this.props
-    dispatch(setSelectedContact(contact)).then((res) => {
-      this.setState({ numberTxt: contact.phone })
+  onPhoneContactPress = (data) => {
+    const { navigation, dispatch } = this.props
+    const { isPhoneContactExpanded } = this.state
+    dispatch(setSelectedContact(data), false).then((res) => {
+      this.setState({ isPhoneContactExpanded: !isPhoneContactExpanded })
     })
   }
 
   callNumber = () => {
     const { numberTxt } = this.state
     const { dispatch, navigation, selectedContact } = this.props
+    let body = {}
+    let newArr = []
     if (numberTxt !== '') {
-      let body = {
-        phone: numberTxt,
-        id: selectedContact && selectedContact.id ? selectedContact.id : null,
-        firstName: selectedContact && selectedContact.firstName ? selectedContact.firstName : '',
-        lastName: selectedContact && selectedContact.lastName ? selectedContact.lastName : '',
+      if (selectedContact) {
+        body = Object.assign({ ...selectedContact, phone: numberTxt })
+      } else {
+        newArr.push({
+          number: numberTxt,
+          countryCode: 'PK',
+          callingCode: '+92',
+        }),
+          (body = {
+            phone: numberTxt,
+            phoneNumbers: newArr,
+            firstName: '',
+            lastName: '',
+            id: null,
+          })
       }
-      console.log('body=>', body)
       dispatch(setSelectedContact(body, true)).then((res) => {
-        navigation.replace('ContactFeedback')
+        navigation.navigate('ContactFeedback')
       })
     } else {
       alert('Please enter a valid number')
     }
   }
 
-  render() {
-    const { allContacts, numberTxt } = this.state
-    const { navigation, dispatch, permissions } = this.props
+  FirstRoute = () => {
+    const { numberTxt, allContacts, isPhoneContactExpanded } = this.state
+    const { contacts } = this.props
     let data = []
-    if (numberTxt !== '' && data && data.length === 0) {
-      data = fuzzy.filter(numberTxt, allContacts, {
-        extract: (e) => (e.phone ? e.phone : ''),
-      })
-      data = data.map((item) => item.original)
-    }
-
+    data = allContacts.filter((item) => {
+      if (numberTxt !== '' && numberTxt.length >= 3) {
+        for (let i = 0; i < item.phoneNumbers.length; i++) {
+          if (
+            item.phoneNumbers[i].number
+              .replace(/[() .+-]/g, '')
+              .match(numberTxt.replace(/[() .+-]/g, ''))
+          ) {
+            return item
+          }
+        }
+      }
+    })
     return (
-      <SafeAreaView style={AppStyles.containerWithoutPadding}>
-        <FlatList
-          data={data}
-          renderItem={({ item }) => (
-            <ArmsContactTile
-              data={item}
-              onPress={(data) => this.onContactPress(data)}
-              showCallButton={false}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()}
-        />
-
+      <View style={AppStyles.containerWithoutPadding}>
+        <ScrollView style={{ height: heightPercentageToDP('45%') }}>
+          {data &&
+            data.map((item) => (
+              <PhonebookContactsTile
+                key={item.id.toString()}
+                data={item}
+                onPress={(data) => this.onPhoneContactPress(data)}
+                isPhoneContactExpanded={isPhoneContactExpanded}
+                showCallIcon={false}
+                callNumber={(number) =>
+                  this.setState({ numberTxt: number.replace(/[() .+-]/g, '') })
+                }
+              />
+            ))}
+        </ScrollView>
         <View style={styles.underLine} />
-
-        <View style={{ paddingVertical: 20 }}>
+        <View
+          style={{
+            paddingVertical: 10,
+            height: '55%',
+          }}
+        >
           <Text style={styles.inputStyle}>{this.state.numberTxt}</Text>
           <VirtualKeyboard
             color="black"
@@ -114,57 +147,145 @@ class Dialer extends Component {
             onPress={(val) => this.setState({ numberTxt: val })}
           />
         </View>
+      </View>
+    )
+  }
 
-        <TouchableOpacity style={styles.callButton} onPress={() => this.callNumber()}>
-          <Image source={require(`../../../assets/img/dialer_call.png`)} />
-        </TouchableOpacity>
+  SecondRoute = () => {
+    const { searchText, isPhoneContactExpanded } = this.state
+    const { contacts, permissions } = this.props
+    let data = []
+    if (searchText !== '' && data && data.length === 0) {
+      data = fuzzy.filter(searchText, contacts, {
+        extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
+      })
+      data = data.map((item) => item.original)
+    } else {
+      data = contacts
+    }
 
-        <View style={styles.bottomTab}>
-          <TouchableOpacity
-            style={styles.bottomTabViews}
-            onPress={() => console.log('focus to control')}
-          >
-            <Image source={require(`../../../assets/img/dial_pad.png`)} />
+    let createPermission = getPermissionValue(
+      PermissionFeatures.CONTACTS,
+      PermissionActions.CreateUpdateContact,
+      permissions
+    )
+    return (
+      <View style={AppStyles.containerWithoutPadding}>
+        <Search
+          placeholder={'Search Phonebook'}
+          searchText={searchText}
+          setSearchText={(text) => this.setState({ searchText: text })}
+        />
+        <FlatList
+          data={data}
+          renderItem={({ item }) => (
+            <PhoneBookContactsTile
+              data={item}
+              onPress={(data) => this.onPhoneContactPress(data)}
+              isPhoneContactExpanded={isPhoneContactExpanded}
+              createPermission={createPermission}
+              callNumber={(number) =>
+                this.setState({ numberTxt: number }, () => {
+                  this.callNumber()
+                })
+              }
+            />
+          )}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
+    )
+  }
+
+  renderScene = SceneMap({
+    first: this.FirstRoute,
+    second: this.SecondRoute,
+  })
+
+  renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: 'white' }}
+      tabStyle={{
+        backgroundColor: 'white',
+        borderTopColor: AppStyles.colors.subTextColor,
+        borderTopWidth: 0.5,
+      }}
+      renderLabel={({ route, focused, color }) => (
+        <Text
+          style={{
+            color: focused ? AppStyles.colors.primaryColor : AppStyles.colors.textColor,
+            fontFamily: AppStyles.fonts.defaultFont,
+            fontSize: 12,
+            margin: 5,
+          }}
+        >
+          {route.title}
+        </Text>
+      )}
+      renderIcon={({ route, focused, color }) =>
+        route.key === 'first' ? (
+          <Image
+            source={
+              focused
+                ? require(`../../../assets/img/dial_pad_blue.png`)
+                : require(`../../../assets/img/dial_pad.png`)
+            }
+          />
+        ) : (
+          <Image
+            source={
+              focused
+                ? require(`../../../assets/img/phonebook_blue.png`)
+                : require(`../../../assets/img/phonebook.png`)
+            }
+          />
+        )
+      }
+    />
+  )
+
+  render() {
+    const { index, routes } = this.state
+    const { navigation } = this.props
+
+    return (
+      <View style={{ flex: 1 }}>
+        {index === 0 ? (
+          <TouchableOpacity style={styles.callButton} onPress={() => this.callNumber()}>
+            <Image source={require(`../../../assets/img/dialer_call.png`)} />
           </TouchableOpacity>
+        ) : null}
 
-          <TouchableOpacity
-            style={styles.bottomTabViews}
-            onPress={() => navigation.navigate('PhoneContacts')}
-          >
-            <Image source={require(`../../../assets/img/phonebook.png`)} />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+        <TabView
+          renderTabBar={this.renderTabBar}
+          navigationState={{ index, routes }}
+          renderScene={this.renderScene}
+          onIndexChange={(value) => {
+            navigation.setOptions({ title: value === 0 ? 'Dialer' : 'Phonebook' })
+            this.setState({ index: value })
+          }}
+          initialLayout={{ width: layout.width }}
+          tabBarPosition={'bottom'}
+        />
+      </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
-  bottomTab: {
-    height: heightPercentageToDP('10%'),
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: 'white',
-    borderTopWidth: 0.5,
-    borderTopColor: AppStyles.colors.subTextColor,
-  },
-  bottomTabViews: {
-    width: '50%',
-    alignItems: 'center',
-  },
   inputStyle: {
     color: AppStyles.colors.primaryColor,
     fontFamily: AppStyles.fonts.defaultFont,
-    fontSize: AppStyles.fontSize.large,
+    fontSize: 26,
     textAlign: 'center',
-    marginVertical: 10,
     letterSpacing: 0.5,
   },
   callButton: {
     zIndex: 10,
     elevation: 10,
-    marginBottom: -30,
+    position: 'absolute',
+    bottom: 40,
     alignSelf: 'center',
     justifyContent: 'flex-end',
   },
@@ -180,7 +301,6 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     armsContacts: store.armsContacts.armsContacts,
     selectedContact: store.armsContacts.selectedContact,
-    permissions: store.user.permissions,
   }
 }
 

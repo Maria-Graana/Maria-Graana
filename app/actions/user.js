@@ -306,3 +306,22 @@ export function getGoogleAuth() {
     }
   }
 }
+
+export function isTerminalUser() {
+  return (dispatch, getsState) => {
+    let user = getsState().user.user
+    let groupManagerParam = ''
+    const userRoleId = user.armsUserRoleId
+    const userRole = user.armsUserRole
+    if (userRole && userRole.groupManger && userRole.groupManger.toString() == 'true') {
+      groupManagerParam = `&groupManager=true`
+    }
+    axios.get(`/api/role/sub-users?roleId=${userRoleId}${groupManagerParam}`).then((res) => {
+      if (res && res.data && res.data.length) {
+        return dispatch({ type: types.SET_IS_TERMINAL_USER, data: false })
+      } else {
+        return dispatch({ type: types.SET_IS_TERMINAL_USER, data: true })
+      }
+    })
+  }
+}

@@ -25,7 +25,7 @@ export default styles = StyleSheet.create({
   legalBtnView: {
     flexDirection: 'row',
     // flex: 1,
-    height: 60,
+    height: 70,
     backgroundColor: '#fff',
     marginVertical: 10,
     marginHorizontal: 15,

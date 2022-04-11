@@ -4,6 +4,8 @@ import * as types from '../types'
 import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
+import { alltimeSlots, setTimeSlots } from './slotManagement'
+import { Linking } from 'react-native'
 
 export const FEEDBACK_ACTIONS = {
   ADD_MEETING: 'Add Meeting',
@@ -672,4 +674,69 @@ export const getDiaryStats = (userId, day, startTime, endTime) => {
       })
   }
 }
+
+export const callToAgent = (lead) => {
+  if (lead && lead.armsuser && lead.armsuser.phoneNumber) {
+    Linking.openURL('tel:' + lead.armsuser.phoneNumber)
+  } else {
+    helper.errorToast(`No Phone Number`)
+  }
+}
 // ARMS-2448 end
+
+export const callNumberFromLeads = (lead, leadType) => {
+  return (dispatch, getsState) => {
+    let promise = null
+    let params = {
+      taskType: ['connect', 'follow_up'],
+      [leadType === 'Project' ? 'cmLeadId' : 'rcmLeadId']: lead.id,
+    }
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    promise = axios
+      .get(`/api/leads/tasks`, { params })
+      .then((res) => {
+        if (res && res.data) {
+          const connectTask = res.data.filter((task) => task.status !== 'completed')
+          if (connectTask.length) {
+            // connect task type priority is highest for recording feedback else followback
+            let originalConnectTask = connectTask[0]
+            if (leadType === 'Project') {
+              // deleting the original armsProjectLead obj that exists in connect task because it does not contain customer object
+              delete originalConnectTask.armsProjectLead
+            }
+
+            let finaDiaryObj = {
+              [leadType === 'Project' ? 'armsProjectLead' : 'armsLead']: lead,
+              ...originalConnectTask,
+            }
+            dispatch(setSelectedDiary(finaDiaryObj))
+            dispatch(initiateConnectFlow())
+          } else {
+            // create new connect task because previous ones are completed
+            let createDiaryPayload = {
+              subject: `${capitalizeWordsWithoutUnderscore('connect')} scheduled`,
+              taskCategory: 'leadTask',
+              taskType: 'connect',
+              status: 'pending',
+              currentSlot: true,
+              [leadType === 'Project' ? 'leadId' : 'armsLeadId']: lead.id,
+            }
+            saveOrUpdateDiaryTask(createDiaryPayload).then((diary) => {
+              if (diary && diary.data.length === 2 && diary.data[1].length) {
+                let finalLeadObj = {
+                  [leadType === 'Project' ? 'armsProjectLead' : 'armsLead']: lead,
+                }
+                dispatch(setSelectedDiary({ ...finalLeadObj, ...diary.data[1][0] }))
+                dispatch(initiateConnectFlow())
+              }
+            })
+          }
+        }
+      })
+      .catch((error) => {
+        console.log('Error: `/api/leads/tasks ', error.message)
+      })
+    return promise
+  }
+}

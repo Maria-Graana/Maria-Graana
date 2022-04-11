@@ -6,7 +6,6 @@ import styles from './style'
 import PickerComponent from '../../components/Picker/index'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
-import moment from 'moment'
 import SimpleInputText from '../../components/SimpleInputField'
 import { formatPrice } from '../../PriceFormate'
 import ErrorMessage from '../../components/ErrorMessage'
@@ -15,7 +14,6 @@ import PaymentMethods from '../../PaymentMethods'
 import StaticData from '../../StaticData'
 import helper from '../../helper'
 import TouchableInput from '../TouchableInput'
-import { Client } from '../../hoc/role'
 
 class CMFirstForm extends Component {
   constructor(props) {
@@ -38,7 +36,7 @@ class CMFirstForm extends Component {
         firstFormData.unit != null &&
         firstFormData.unit != 'no' &&
         checkLeadClosedOrNot === true) ||
-      (firstFormData.pearl != null && firstFormData.pearl != '')
+        (firstFormData.pearl != null && firstFormData.pearl != '')
         ? true
         : false
     return checkForUnitIdavail
@@ -59,6 +57,7 @@ class CMFirstForm extends Component {
 
   render() {
     const {
+      allProjects,
       handleFirstForm,
       pickerFloors,
       pickerProjects,
@@ -92,10 +91,16 @@ class CMFirstForm extends Component {
       handleClientClick,
       updatePermission,
     } = this.props
+
+
+
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
-    const { noProduct } = lead
+    const { noProduct } = lead;
+
+
+
     return (
       <View style={styles.mainFormWrap}>
         <View style={{ paddingVertical: 10 }}>
@@ -209,7 +214,7 @@ class CMFirstForm extends Component {
                   keyboardType={'numeric'}
                   onClicked={openUnitsTable}
                   onPress={true}
-                  onChangeHandle={() => {}}
+                  onChangeHandle={() => { }}
                 />
               </View>
             )}
@@ -369,6 +374,38 @@ class CMFirstForm extends Component {
               firstFormData.productId != '')
           }
         />
+
+        <Text style={styles.parkingAvaiable}>PARKING AVAILABLE </Text>
+        <View style={{ paddingVertical: 10 }}>
+
+          <PickerComponent
+            onValueChange={handleFirstForm}
+            data={StaticData.parkingAvailable}
+            name={'parkingAvailable'}
+            placeholder="Parking Available"
+            selectedItem={firstFormData.parkingAvailable}
+            enabled={updatePermission}
+          />
+          {firstFormValidate === true && !firstFormData.parkingAvailable && firstFormData.parkingAvailable === '' && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
+
+        </View>
+
+        {firstFormData.parkingAvailable === 'yes' &&
+
+          <SimpleInputText
+            name={'parkingCharges'}
+            placeholder={'Parking Charges'}
+            label={'PARKING CHARGES'}
+            value={firstFormData.parkingCharges}
+            // value={lead?.project?.parkingCharges != null && lead?.project?.parkingCharges != "" ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
+            formatValue={''}
+            editable={false}
+            fromatName={false}
+          />
+
+        }
         {checkFirstFormPayment && (
           <View>
             <PaymentTile
@@ -411,9 +448,10 @@ class CMFirstForm extends Component {
         {cnicEditable && (
           <SimpleInputText
             name={'cnic'}
-            placeholder={'Client CNIC'}
-            label={'CLIENT CNIC'}
-            value={helper.normalizeCnic(firstFormData.cnic)}
+            placeholder={'Client CNIC/NTN'}
+            label={'CLIENT CNIC/NTN'}
+            value={firstFormData.cnic}
+            maxLength={13}
             keyboardType={'numeric'}
             onChangeHandle={handleFirstForm}
             formatValue={''}
@@ -424,13 +462,13 @@ class CMFirstForm extends Component {
         {/* {cnicEditable != false && firstFormData.cnic === null && (
          <ErrorMessage errorMessage={'Required'} />
         )}
-        {cnicValidate ? (
-          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
-        ) : null} */}
+        // {cnicValidate ? (
+        //   <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        // ) : null} */}
         {firstFormData.cnic === null && firstFormValidate ? (
           <ErrorMessage errorMessage={'Required'} />
-        ) : cnicValidate && firstFormValidate ? (
-          <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
+        ) : cnicValidate ? (
+          <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />
         ) : null}
         <View
           style={{

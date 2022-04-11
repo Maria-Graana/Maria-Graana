@@ -37,6 +37,7 @@ const DateTimePicker = ({
       />
       <TouchableInput
         disabled={disabled}
+        isRow={true}
         placeholder={placeholderLabel}
         onPress={() => setVisible(true)}
         value={selectedValue}

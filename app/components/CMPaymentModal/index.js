@@ -258,8 +258,8 @@ const CMPaymentModal = ({
                   <SimpleInputText
                     name={'adjustedRefNo'}
                     fromatName={false}
-                    placeholder={'Reference # of adjusted unit'}
-                    label={'Reference # of adjusted unit'}
+                    placeholder={'Reference # of Adjusted Unit'}
+                    label={'Reference # of Adjusted Unit'}
                     value={CMPayment.adjustedRefNo != '' ? CMPayment.adjustedRefNo : ''}
                     editable={CMPayment.status !== 'pendingAccount'}
                     formatValue={''}

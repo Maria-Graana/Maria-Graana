@@ -182,6 +182,7 @@ const PaymentHelper = {
     selectedClient
   ) {
     return {
+      parkingChargesApply:firstFormData.parkingAvailable,
       unitId: unitId,
       projectId: firstFormData.project,
       floorId: firstFormData.floor,
@@ -228,6 +229,7 @@ const PaymentHelper = {
   ) {
     const { projectProduct } = oneProduct
     return {
+      parkingChargesApply:firstFormData.parkingAvailable,
       unitId: unitId,
       projectId: firstFormData.project,
       floorId: firstFormData.floor,

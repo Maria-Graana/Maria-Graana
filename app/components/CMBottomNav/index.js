@@ -217,21 +217,15 @@ class CMBottomNav extends React.Component {
     const { user } = this.props
     // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
     if (
-      Ability.canView(user.subRole, 'AssignLead') &&
       lead.status !== StaticData.Constants.lead_closed_lost &&
       lead.status !== StaticData.Constants.lead_closed_won
     ) {
       // Lead can only be assigned to someone else if it is assigned to no one or to current user
       if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
-        this.setState({ showAssignToButton: true }, () => {
           this.navigateToAssignLead(lead)
-        })
-      } else {
-        // Lead is already assigned to some other user (any other user)
-        this.setState({ showAssignToButton: false }, () => {
-          this.navigateToAssignLead(lead)
-        })
       }
+    } else {
+      helper.errorToast('Sorry you are not authorized to assign lead')
     }
   }
 
@@ -243,17 +237,6 @@ class CMBottomNav extends React.Component {
       screen: 'LeadDetail',
       purpose: 'reassign',
     })
-    // const { showAssignToButton } = this.state
-    // if (showAssignToButton === true) {
-    //   navigation.navigate('AssignLead', {
-    //     leadId: lead.id,
-    //     type: 'sale',
-    //     screen: 'LeadDetail',
-    //     purpose: 'reassign',
-    //   })
-    // } else {
-    //   helper.errorToast('Lead Already Assign')
-    // }
   }
 
   goToFormPage = (page, status, client, clientId) => {
@@ -377,6 +360,7 @@ class CMBottomNav extends React.Component {
       closedWonOptionVisible,
       checkCloseWon,
       leadData,
+      closeWonOptionVisibleFromInvest,
     } = this.props
     const {
       visible,
@@ -541,14 +525,10 @@ class CMBottomNav extends React.Component {
               ) : null}
               <Menu.Item
                 onPress={() => {
-                  if (closedLeadEdit) {
-                    this.navigateToAssignLead(lead)
+                  if (closedLeadEdit && assignPermission) {
+                    this.checkAssignedLead(lead)
                     this.openMenu(false)
                   } else helper.leadClosedToast()
-                  // if (closedLeadEdit && assignPermission) {
-                  //   this.navigateToAssignLead(lead)
-                  //   this.openMenu(false)
-                  // } else helper.leadClosedToast()
                 }}
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Re-Assign"
@@ -574,6 +554,18 @@ class CMBottomNav extends React.Component {
                       } else {
                         onHandleCloseLead(lead)
                       }
+                      this.openMenu(false)
+                    }}
+                    title="Closed Won"
+                  />
+                )}
+              {closeWonOptionVisibleFromInvest &&
+                closedWon &&
+                lead.status !== 'closed_won' &&
+                lead.status !== 'closed_lost' && (
+                  <Menu.Item
+                    onPress={() => {
+                      onHandleCloseLead(lead)
                       this.openMenu(false)
                     }}
                     title="Closed Won"

@@ -123,23 +123,29 @@ const CMPaymentModal = ({
 
           <View style={styles.moreViewContainer}>
             {/* **************************************** */}
-            {CMPayment.paymentType === 'token' && (
+            {
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
                   <PickerComponent
                     enabled={CMPayment.status !== 'pendingAccount'}
                     onValueChange={handleCommissionChange}
-                    data={StaticData.paymentTypeForToken}
-                    name={'paymentCategory'}
+                    data={
+                      CMPayment.paymentType === 'token'
+                        ? StaticData.paymentTypeForToken
+                        : CMPayment.paymentType === 'tax'
+                        ? StaticData.investmentTaxType
+                        : StaticData.investmentPaymentType
+                    }
+                    name={'paymentType'}
                     placeholder="Payment Type"
-                    selectedItem={CMPayment.paymentCategory}
+                    selectedItem={CMPayment.paymentType}
                   />
-                  {modalValidation === true && CMPayment.paymentCategory == '' && (
+                  {modalValidation === true && CMPayment.paymentType == '' && (
                     <ErrorMessage errorMessage={'Required'} />
                   )}
                 </View>
               </View>
-            )}
+            }
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
               name={'installmentAmount'}
@@ -165,7 +171,7 @@ const CMPaymentModal = ({
                   onValueChange={handleCommissionChange}
                   data={StaticData.investFullPaymentType}
                   name={'type'}
-                  placeholder="Type"
+                  placeholder="Payment Category"
                   selectedItem={CMPayment.type}
                 />
                 {modalValidation === true && CMPayment.type == '' && (
@@ -240,6 +246,27 @@ const CMPaymentModal = ({
                   />
                   {modalValidation === true &&
                     (CMPayment.assetAdjDetails == undefined || CMPayment.assetAdjDetails == '') && (
+                      <ErrorMessage errorMessage={'Required'} />
+                    )}
+                </View>
+              </View>
+            )}
+
+            {CMPayment.type === 'Inter-Mall Adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <SimpleInputText
+                    name={'adjustedRefNo'}
+                    fromatName={false}
+                    placeholder={'Reference # of adjusted unit'}
+                    label={'Reference # of adjusted unit'}
+                    value={CMPayment.adjustedRefNo != '' ? CMPayment.adjustedRefNo : ''}
+                    editable={CMPayment.status !== 'pendingAccount'}
+                    formatValue={''}
+                    onChangeHandle={handleCommissionChange}
+                  />
+                  {modalValidation === true &&
+                    (CMPayment.adjustedRefNo == undefined || CMPayment.adjustedRefNo == '') && (
                       <ErrorMessage errorMessage={'Required'} />
                     )}
                 </View>

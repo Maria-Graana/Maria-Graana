@@ -70,7 +70,7 @@ class PaymentTile extends React.Component {
         <View style={styles.tileTopWrap}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>
-              {`${data.paymentCategory} ${data.paymentCategory != 'token' ? count : ''}`}{' '}
+              {`${data.paymentCategory}`}{' '}
               <Text style={{ textTransform: 'capitalize' }}>
                 (
                 {data.type && data.type === 'asset_adjustment'
@@ -128,7 +128,7 @@ class PaymentTile extends React.Component {
                 <Text style={styles.priceDate}>
                   {moment(data.createdAt).format('DD MMM YY - h:mm a')}
                 </Text>
-                {data.status !== 'open' && tileForToken === false ? (
+                {data.status !== 'open' && tileForToken === false && data.status !== 'cleared' ? (
                   <TouchableHighlight
                     onPress={() => {
                       call(data)

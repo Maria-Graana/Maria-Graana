@@ -26,6 +26,7 @@ class CommissionTile extends Component {
       call,
       updatePermission,
       closedLeadEdit,
+      disabledCall,
     } = this.props
     var showStatus =
       data && data.status != ''
@@ -46,7 +47,7 @@ class CommissionTile extends Component {
             ? onPaymentLongPress
             : null
         }
-        disabled={commissionEdit}
+        disabled={disabledCall}
         onPress={() => {
           if (updatePermission && closedLeadEdit) {
             data.status !== StaticData.leadClearedStatus && data.status !== 'notCleared'
@@ -55,7 +56,7 @@ class CommissionTile extends Component {
           }
         }}
       >
-        <View style={[styles.tileTopWrap, { backgroundColor: commissionEdit ? '#ddd' : '#fff' }]}>
+        <View style={[styles.tileTopWrap, { backgroundColor: disabledCall ? '#ddd' : '#fff' }]}>
           <View style={styles.upperLayer}>
             <Text style={styles.paymnetHeading}>{title}</Text>
             <Text style={[styles.tileStatus, statusColor]}>{showStatus.label}</Text>
@@ -79,6 +80,7 @@ class CommissionTile extends Component {
                 }}
                 style={[styles.phoneView]}
                 underlayColor={AppStyles.colors.backgroundColor}
+                disabled={disabledCall}
               >
                 <Image
                   source={require('../../../assets/img/call.png')}

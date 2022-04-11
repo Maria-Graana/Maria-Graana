@@ -137,8 +137,10 @@ export class ScheduledTasks extends Component {
       selectedDiary,
       selectedLead,
       user,
+      route,
     } = this.props
     const { selectedDate } = this.state
+    const { isFromTimeSlot = false } = route.params
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
         dispatch(markDiaryTaskAsDone({ selectedDate, agentId: user ? user.id : null }))
@@ -226,6 +228,7 @@ export class ScheduledTasks extends Component {
         diary: selectedDiary,
         selectedDate,
         agentId: user ? user.id : null,
+        isFromTimeSlot: isFromTimeSlot,
       })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
@@ -314,11 +317,11 @@ export class ScheduledTasks extends Component {
       selectedLead,
       user,
     } = this.props
-    const { purposeTab } = route.params
+    const { purposeTab, isFromTimeSlot = false } = route.params
     const { diaries, loading, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
-        {purposeTab != 'wanted' && (
+        {purposeTab != 'wanted' && !isFromTimeSlot && (
           <Fab
             active="true"
             containerStyle={{ zIndex: 20 }}

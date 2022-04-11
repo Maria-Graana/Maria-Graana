@@ -34,8 +34,10 @@ export class Contacts extends Component {
   }
 
   goToDialer = () => {
-    const { navigation } = this.props
-    navigation.navigate('Dialer')
+    const { navigation, dispatch } = this.props
+    dispatch(setSelectedContact(null, false)).then((res) => {
+      navigation.navigate('Dialer')
+    })
   }
 
   onContactPress = (contact) => {
@@ -71,7 +73,7 @@ export class Contacts extends Component {
       contact1: selectedContact.phone2,
       contact2: selectedContact.phone3,
     })
-    navigation.replace('AddClient', {
+    navigation.navigate('AddClient', {
       title: 'ADD CLIENT INFO',
       data: body,
       isFromScreen: 'ContactRegistration',
@@ -91,15 +93,9 @@ export class Contacts extends Component {
       data = armsContacts
     }
 
-    let createPermission = getPermissionValue(
+    let createUpdatePermission = getPermissionValue(
       PermissionFeatures.CONTACTS,
-      PermissionActions.CREATE,
-      permissions
-    )
-
-    let updatePermission = getPermissionValue(
-      PermissionFeatures.CONTACTS,
-      PermissionActions.UPDATE,
+      PermissionActions.CreateUpdateContact,
       permissions
     )
 
@@ -127,13 +123,13 @@ export class Contacts extends Component {
                       this.callNumber()
                     })
                   }
-                  updatePermission={updatePermission}
+                  updatePermission={createUpdatePermission}
                   registerAsClient={(contact) => this.registerAsClient(contact)}
                 />
               )}
               keyExtractor={(item) => item.id.toString()}
             />
-            {createPermission ? (
+            {createUpdatePermission ? (
               <TouchableOpacity style={styles.keypadButton} onPress={() => this.goToDialer()}>
                 <Image source={require(`../../../assets/img/keypad.png`)} />
               </TouchableOpacity>

@@ -38,35 +38,29 @@ const MultiplePhoneOptionModal = ({
       )
       url = calledOn === 'phone' ? 'tel:' + item.number : 'whatsapp://send?phone=' + item.number
       if (url && url != 'tel:null') {
-        Linking.canOpenURL(url)
-          .then((supported) => {
-            if (!supported) {
-              helper.errorToast(`No application available to dial phone number`)
-              console.log("Can't handle url: " + url)
-            } else {
-              if (contacts) {
-                let result = helper.contacts(contactsInformation.phone, contacts)
-                if (
-                  contactsInformation.name &&
-                  contactsInformation.name !== '' &&
-                  contactsInformation.name !== ' ' &&
-                  contactsInformation.phone &&
-                  contactsInformation.phone !== ''
-                )
-                  if (!result) helper.addContact(contactsInformation, title)
-              }
-              Linking.openURL(url)
-              showMultiPhoneModal(false)
-              dispatch(
-                getDiaryFeedbacks({
-                  taskType: selectedDiary.taskType,
-                  leadType: diaryHelper.getLeadType(selectedDiary),
-                  actionType: 'Connect',
-                })
-              ).then((res) => {
-                navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
-              })
-            }
+        console.log("Can't handle url: " + url)
+        if (contacts) {
+          let result = helper.contacts(contactsInformation.phone, contacts)
+          if (
+            contactsInformation.name &&
+            contactsInformation.name !== '' &&
+            contactsInformation.name !== ' ' &&
+            contactsInformation.phone &&
+            contactsInformation.phone !== ''
+          )
+            if (!result) helper.addContact(contactsInformation, title)
+        }
+        Linking.openURL(url)
+        showMultiPhoneModal(false)
+        dispatch(
+          getDiaryFeedbacks({
+            taskType: selectedDiary.taskType,
+            leadType: diaryHelper.getLeadType(selectedDiary),
+            actionType: 'Connect',
+          })
+        )
+          .then((res) => {
+            navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
           })
           .catch((err) => console.error('An error occurred', err))
       } else {

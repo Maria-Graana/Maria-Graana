@@ -48,6 +48,7 @@ class BuyLeads extends React.Component {
   constructor(props) {
     super(props)
     const { permissions } = this.props
+    const { hasBooking = false } = this.props.route.params
     this.state = {
       language: '',
       leadsData: [],
@@ -86,6 +87,9 @@ class BuyLeads extends React.Component {
         PermissionActions.CREATE,
         permissions
       ),
+      pageType: hasBooking
+        ? '&pageType=myDeals&hasBooking=true'
+        : '&pageType=myLeads&hasBooking=false',
     }
   }
 
@@ -187,6 +191,7 @@ class BuyLeads extends React.Component {
       searchText,
       statusFilter,
       statusFilterType,
+      pageType,
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
@@ -196,37 +201,30 @@ class BuyLeads extends React.Component {
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&aira=${
-              isAiraPermission ? true : false
-            }&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=${true}`)
+          ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=buy&id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=buy&id=${searchText}&aira=${
-              isAiraPermission ? true : false
-            }&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&assignToMe=${true}`)
+          ? (query = `/api/leads?purpose[]=buy&id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&pageSize=${pageSize}&page=${page}&aira=${
-              isAiraPermission ? true : false
-            }&assignToMe=${true}`)
+          ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'shortlisting') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&aira=${
-              isAiraPermission ? true : false
-            }&assignToMe=${true}`)
+          ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&status=shortlisting&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&status=shortlisting&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&aira=${
-              isAiraPermission ? true : false
-            }&assignToMe=${true}`)
+          ? (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
+    }
+    if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
+      query = `${query}&aira=true`
     }
     axios
       .get(`${query}`)
@@ -273,6 +271,13 @@ class BuyLeads extends React.Component {
     this.clearStateValues()
     this.setState({ statusFilter: status, leadsData: [] }, () => {
       storeItem('statusFilterBuy', status)
+      this.fetchLeads()
+    })
+  }
+
+  changePageType = (value) => {
+    this.clearStateValues()
+    this.setState({ pageType: value, leadsData: [] }, () => {
       this.fetchLeads()
     })
   }
@@ -587,8 +592,10 @@ class BuyLeads extends React.Component {
       fabActions,
       createBuyRentLead,
       createProjectLead,
+      pageType,
     } = this.state
-    const { user, permissions, dispatch, navigation, isMultiPhoneModalVisible } = this.props
+    const { user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
+      this.props
     const {
       screen,
       hasBooking = false,
@@ -643,24 +650,50 @@ class BuyLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              {hasBooking ? (
+              {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
-              ) : (
-                <View style={styles.pickerMain}>
-                  <PickerComponent
-                    placeholder={'Lead Status'}
-                    data={
-                      hideCloseLostFilter
-                        ? StaticData.buyRentFilterAddTask
-                        : StaticData.buyRentFilter
-                    }
-                    customStyle={styles.pickerStyle}
-                    customIconStyle={styles.customIconStyle}
-                    onValueChange={this.changeStatus}
-                    selectedItem={statusFilter}
-                  />
-                </View>
-              )}
+              ) : ( */}
+              <View style={styles.pickerMain}>
+                <PickerComponent
+                  placeholder={'Lead Status'}
+                  data={
+                    hasBooking
+                      ? StaticData.buyRentFilterDeals
+                      : hideCloseLostFilter
+                      ? StaticData.buyRentFilterAddTask
+                      : StaticData.buyRentFilter
+                  }
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatus}
+                  selectedItem={statusFilter}
+                />
+              </View>
+              {/* )} */}
+
+              <View style={styles.iconRow}>
+                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
+              </View>
+              <View style={styles.pageTypeRow}>
+                <PickerComponent
+                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                  data={
+                    hasBooking
+                      ? getIsTerminalUser
+                        ? StaticData.filterDealsValueTerminal
+                        : StaticData.filterDealsValue
+                      : getIsTerminalUser
+                      ? StaticData.filterLeadsValueTerminal
+                      : StaticData.filterLeadsValue
+                  }
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changePageType}
+                  selectedItem={pageType}
+                  showPickerArrow={false}
+                />
+              </View>
+              <View style={styles.verticleLine} />
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}
@@ -798,6 +831,7 @@ mapStateToProps = (store) => {
     PPBuyNotification: store.Notification.PPBuyNotification,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     permissions: store.user.permissions,
+    getIsTerminalUser: store.user.getIsTerminalUser,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

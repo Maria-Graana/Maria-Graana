@@ -76,8 +76,10 @@ class AddDiary extends Component {
     }
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT TASK' })
+    } else {
+      navigation.setOptions({ title: 'ADD TASK' })
     }
-    navigation.setOptions({ title: 'ADD TASK' })
+
     this.setState({ taskValues: tasksList })
     if (route.params.selectedDate) {
       dispatch(setSlotDiaryData(route.params.selectedDate))
@@ -217,17 +219,15 @@ class AddDiary extends Component {
               })
             )
           }
-
           navigation.navigate(screenName, { cmLeadId, rcmLeadId })
         } else {
           helper.errorToast('ERROR: SOMETHING WENT WRONG')
+          this.setState({ loading: false })
         }
       })
       .catch((error) => {
         helper.errorToast('ERROR: ADDING DIARY')
         console.log('error', error.message)
-      })
-      .finally(() => {
         this.setState({ loading: false })
       })
   }
@@ -275,8 +275,6 @@ class AddDiary extends Component {
       .catch((error) => {
         helper.errorToast('ERROR: UPDATING TASK')
         console.log(error)
-      })
-      .finally(() => {
         this.setState({ loading: false })
       })
   }

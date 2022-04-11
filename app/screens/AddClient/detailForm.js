@@ -197,26 +197,28 @@ class DetailForm extends Component {
                 }}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 name={'cnic'}
-                placeholder={'CNIC *'}
+                placeholder={'CNIC/NTN *'}
               />
-              {cnicValidate && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />}
-              {checkValidation && formData.cnic === '' && <ErrorMessage errorMessage={'Required'} />}
+              {cnicValidate && <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />}
+              {checkValidation && formData.cnic === '' && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
             </View>
           ) : (
             <View style={[AppStyles.inputWrap]}>
               <TextInput
                 placeholderTextColor={'#a8a8aa'}
                 keyboardType={'number-pad'}
-                maxLength={15}
+                maxLength={13}
                 value={formData.cnic}
                 onChangeText={(text) => {
                   handleForm(text, 'cnic')
                 }}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 name={'cnic'}
-                placeholder={'CNIC'}
+                placeholder={'CNIC/NTN'}
               />
-              {cnicValidate == true && <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />}
+              {cnicValidate == true && <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />}
             </View>
           )}
         </View>

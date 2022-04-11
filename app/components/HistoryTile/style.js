@@ -7,7 +7,6 @@ export default styles = StyleSheet.create({
   mainTileView: {
     backgroundColor: '#fff',
     paddingVertical: 15,
-    position: 'relative',
     marginBottom: 15,
     elevation: 5,
     shadowOffset: { width: 5, height: 5 },
@@ -24,7 +23,6 @@ export default styles = StyleSheet.create({
   fontBold: {
     fontSize: 13,
     color: 'grey',
-    paddingLeft: 10,
   },
   meetingCon: {
     fontSize: 16,
@@ -94,20 +92,18 @@ export default styles = StyleSheet.create({
     fontSize: 15,
   },
   DayAndTime: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 30,
   },
   textWrap: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  taskType: {
-    paddingLeft: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  // taskType: {
+  //   paddingLeft: 30,
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
   reasonWrap: {
     flexDirection: 'row',
     marginTop: 8,
@@ -137,9 +133,7 @@ export default styles = StyleSheet.create({
     marginLeft: 33,
   },
   taskWrap: {
-    flexDirection: 'row',
-    width: 150,
     paddingLeft: 10,
-    alignItems: 'center',
+    paddingRight: 10,
   },
 })

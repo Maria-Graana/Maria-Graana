@@ -90,6 +90,8 @@ class BuyerSellerTile extends React.Component {
       closedLeadEdit,
       commissionNotApplicableSeller,
       commissionNotApplicableBuyer,
+      commissionBuyer,
+      commissionSeller,
     } = this.props
     let onReadOnly = this.checkReadOnlyMode()
     let disabledSwitch = this.checkSwitchVisibility() ? false : true
@@ -107,7 +109,7 @@ class BuyerSellerTile extends React.Component {
               ios_backgroundColor="#81b0ff"
               onValueChange={() => {
                 if (!this.switchToggle() && updatePermission)
-                  setComissionApplicable(!commissionNotApplicableBuyerSeller, tileType)
+                  setComissionApplicable(!commissionNotApplicableBuyer, tileType)
               }}
               value={commissionNotApplicableBuyer ? false : true}
               style={styles.switchView}
@@ -121,23 +123,21 @@ class BuyerSellerTile extends React.Component {
               ios_backgroundColor="#81b0ff"
               onValueChange={() => {
                 if (!this.switchToggle() && updatePermission)
-                  setComissionApplicable(!commissionNotApplicableBuyerSeller, tileType)
+                  setComissionApplicable(!commissionNotApplicableSeller, tileType)
               }}
               value={commissionNotApplicableSeller ? false : true}
               style={styles.switchView}
             />
           )}
         </View>
-        {tileVisibility ? (
+        {!commissionNotApplicableBuyer && tileType === 'buyer' ? (
           <View>
             <RCMBTN
               onClick={() => closeLegalDocument(tileType)}
               btnImage={null}
               btnText={'LEGAL SERVICES'}
               checkLeadClosedOrNot={false}
-              hiddenBtn={
-                tileType === 'seller' ? commissionNotApplicableSeller : commissionNotApplicableBuyer
-              }
+              hiddenBtn={tileType === 'seller' ? commissionSeller : commissionBuyer}
               addBorder={true}
             />
             {lead.commissions ? (
@@ -154,6 +154,7 @@ class BuyerSellerTile extends React.Component {
                   showAccountPhone={true}
                   updatePermission={updatePermission}
                   closedLeadEdit={closedLeadEdit}
+                  disabledCall= {tileType === 'seller' ? commissionSeller : commissionBuyer}
                 />
               ) : (
                 <View style={{ paddingTop: 10 }}>
@@ -165,11 +166,52 @@ class BuyerSellerTile extends React.Component {
                     btnImage={RoundPlus}
                     btnText={RCMBTNTitle}
                     checkLeadClosedOrNot={false}
-                    hiddenBtn={
-                      tileType === 'seller'
-                        ? commissionNotApplicableSeller
-                        : commissionNotApplicableBuyer
-                    }
+                    hiddenBtn={tileType === 'seller' ? commissionSeller : commissionBuyer}
+                    addBorder={true}
+                  />
+                </View>
+              )
+            ) : null}
+          </View>
+        ) : null}
+        {!commissionNotApplicableSeller && tileType === 'seller' ? (
+          <View>
+            <RCMBTN
+              onClick={() => closeLegalDocument(tileType)}
+              btnImage={null}
+              btnText={'LEGAL SERVICES'}
+              checkLeadClosedOrNot={false}
+              hiddenBtn={tileType === 'seller' ? commissionSeller : commissionBuyer}
+              addBorder={true}
+            />
+            {lead.commissions ? (
+              payment ? (
+                <CommissionTile
+                  data={payment}
+                  editTile={editTile}
+                  onPaymentLongPress={() => {
+                    if (updatePermission && closedLeadEdit) onPaymentLongPress(payment)
+                  }}
+                  commissionEdit={onReadOnly}
+                  title={payment ? commissionTitle : ''}
+                  call={call}
+                  showAccountPhone={true}
+                  updatePermission={updatePermission}
+                  closedLeadEdit={closedLeadEdit}
+                  disabledCall= {tileType === 'seller' ? commissionSeller : commissionBuyer}
+
+                />
+              ) : (
+                <View style={{ paddingTop: 10 }}>
+                  <RCMBTN
+                    onClick={() => {
+                      if (updatePermission && closedLeadEdit)
+                        onAddCommissionPayment(tileType, 'commission')
+                    }}
+                    btnImage={RoundPlus}
+                    btnText={RCMBTNTitle}
+                    checkLeadClosedOrNot={false}
+                    hiddenBtn={tileType === 'seller' ? commissionSeller : commissionBuyer}
                     addBorder={true}
                   />
                 </View>

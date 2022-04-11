@@ -57,7 +57,7 @@ class AssignLead extends React.Component {
       const url =
         purpose === 'reassign'
           ? `/api/role/sub-users?roleId=${user.armsUserRoleId}&addManager=true`
-          : `/api/user/agents?sharing=${true}&leadType=${leadType}`
+          : `/api/user/agents?sharing=${true}&leadType=${leadType}&all=true`
       axios
         .get(url)
         .then((res) => {
@@ -92,7 +92,7 @@ class AssignLead extends React.Component {
       .then((response) => {
         if (response.status === 200) {
           helper.successToast('LEAD ASSIGNED SUCCESSFULLY')
-          navigation.dispatch(StackActions.pop(2))
+          navigation.goBack()
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }
@@ -120,7 +120,7 @@ class AssignLead extends React.Component {
       .then((res) => {
         if (res.data) {
           helper.successToast(`Lead has successfully been referred to ${selectedName}`)
-          navigation.dispatch(StackActions.pop(2))
+          navigation.goBack()
         } else {
           helper.errorToast('SOMETHING WENT WRONG')
         }

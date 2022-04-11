@@ -11,12 +11,13 @@ import {
   createARMSContactPayload,
   createContact,
   setSelectedContact,
+  updateARMSContact,
+  updateContact,
 } from '../../actions/armsContacts'
 import moment from 'moment'
 import { getAllCountries } from 'react-native-country-picker-modal'
 import PhoneInputComponent from '../../components/PhoneCountry/PhoneInput'
 import _ from 'underscore'
-import helper from '../../helper'
 
 export class ContactRegistrationFeedback extends Component {
   constructor(props) {
@@ -59,92 +60,7 @@ export class ContactRegistrationFeedback extends Component {
   fetchCountryCode = () => {
     const { countries } = this.state
     const { selectedContact } = this.props
-    let contact1 = selectedContact.contact1 ? selectedContact.contact1.substring(1) : null
-    let contact2 = selectedContact.contact2 ? selectedContact.contact2.substring(1) : null
-    let phone = selectedContact.phone ? selectedContact.phone.substring(3) : null
-    let countryCode = null
-    let countryCode1 = null
-    let countryCode2 = null
-    let cca2Contact = null
-    let cca2Contact1 = null
-    let cca2Contact2 = null
-    let contactBool = false
-    let contact1Bool = false
-    let contact2Bool = false
-    // if (selectedContact.phoneNumbers && selectedContact.phoneNumbers.length > 0) {
-    //   for (let i = 0; i < selectedContact.phoneNumbers.length; i++) {
-    //     if (i === 0)
-    //       phone = selectedContact.phoneNumbers[i].number
-    //         ? selectedContact.phoneNumbers[i].number.substring(1)
-    //         : null
-    //     if (i === 1)
-    //       contact1 = selectedContact.phoneNumbers[i].number
-    //         ? selectedContact.phoneNumbers[i].number.substring(1)
-    //         : null
-    //     if (i === 2)
-    //       contact2 = selectedContact.phoneNumbers[i].number
-    //         ? selectedContact.phoneNumbers[i].number.substring(1)
-    //         : null
-    //   }
-    //   let result = _.map(_.where(countries), function (country) {
-    //     return { callingCode: country.callingCode, cca2: country.cca2 }
-    //   })
-    //   let newResult = []
-    //   if (result.length) {
-    //     result.map((item) => {
-    //       let callingCode = item.callingCode
-    //       if (callingCode.length) {
-    //         callingCode.map((code) => {
-    //           let obj = {
-    //             cca2: item.cca2,
-    //             callingCode: Number(code),
-    //           }
-    //           newResult.push(obj)
-    //         })
-    //       }
-    //     })
-    //   }
-    //   newResult = _.sortBy(newResult, 'callingCode').reverse()
-    //   for (let i = 0; i < newResult.length; i++) {
-    //     if (phone && phone.startsWith(newResult[i].callingCode)) {
-    //       if (!contactBool) {
-    //         if (!selectedContact.phoneNumbers[0].dialCode) {
-    //           countryCode = '+' + newResult[i].callingCode
-    //           cca2Contact = newResult[i].cca2
-    //           contactBool = true
-    //         } else {
-    //           countryCode = selectedContact.phoneNumbers[0].dialCode
-    //           cca2Contact = selectedContact.phoneNumbers[0].countryCode
-    //         }
-    //       }
-    //     }
-    //     if (contact1 && contact1.startsWith(newResult[i].callingCode)) {
-    //       if (!contact1Bool) {
-    //         if (!selectedContact.phoneNumbers[1].dialCode) {
-    //           countryCode1 = '+' + newResult[i].callingCode
-    //           cca2Contact1 = newResult[i].cca2
-    //           contact1Bool = true
-    //         } else {
-    //           countryCode1 = selectedContact.phoneNumbers[1].dialCode
-    //           cca2Contact1 = selectedContact.phoneNumbers[1].countryCode
-    //         }
-    //       }
-    //     }
-    //     if (contact2 && contact2.startsWith(newResult[i].callingCode)) {
-    //       if (!contact2Bool) {
-    //         if (!selectedContact.phoneNumbers[2].dialCode) {
-    //           countryCode2 = '+' + newResult[i].callingCode
-    //           cca2Contact2 = newResult[i].cca2
-    //           contact2Bool = true
-    //         } else {
-    //           countryCode2 = selectedContact.phoneNumbers[2].dialCode
-    //           cca2Contact2 = selectedContact.phoneNumbers[2].countryCode
-    //         }
-    //       }
-    //     }
-    //     if (contactBool && contact1Bool && contact2Bool) break
-    //   }
-    // }
+    // console.log(selectedContact)
     this.setState(
       {
         countryCode:
@@ -211,7 +127,7 @@ export class ContactRegistrationFeedback extends Component {
   }
 
   navigateToClientScreen = () => {
-    const { navigation } = this.props
+    const { navigation, route } = this.props
     const {
       formData,
       countryCode,
@@ -230,8 +146,7 @@ export class ContactRegistrationFeedback extends Component {
       callingCode1,
       callingCode2,
     })
-    delete body.contactRegistrationId
-    navigation.replace('AddClient', {
+    navigation.navigate('AddClient', {
       title: 'ADD CLIENT INFO',
       data: body,
       isFromScreen: 'ContactRegistration',
@@ -256,14 +171,16 @@ export class ContactRegistrationFeedback extends Component {
       callingCode,
       callingCode1,
       callingCode2,
+      contact1Validate,
+      contact2Validate,
     } = this.state
     const { dispatch, armsContacts, navigation } = this.props
-    if (!formData.firstName || !formData.lastName || !formData.contactNumber) {
+    if (!formData.firstName || !formData.contactNumber) {
       this.setState({
         checkValidation: true,
       })
     } else {
-      if (!phoneValidate) {
+      if (!phoneValidate && !contact1Validate && !contact2Validate) {
         if (action === 'register_as_client') {
           this.navigateToClientScreen()
         } else if (action === 'needs_further_contact' || action === 'not_interested') {
@@ -301,6 +218,21 @@ export class ContactRegistrationFeedback extends Component {
               }
             })
           }
+        } else if ('updateContact') {
+          let body = updateARMSContact({
+            ...formData,
+            countryCode,
+            countryCode1,
+            countryCode2,
+            callingCode,
+            callingCode1,
+            callingCode2,
+          })
+          updateContact(body).then((res) => {
+            if (res) {
+              navigation.replace('Contacts')
+            }
+          })
         }
       }
     }
@@ -377,7 +309,6 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.firstName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'First Name'}
-                editable={isContactExists ? false : true}
               />
             </View>
             {checkValidation === true &&
@@ -396,13 +327,12 @@ export class ContactRegistrationFeedback extends Component {
                 value={formData.lastName}
                 style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                 placeholder={'Last Name'}
-                editable={isContactExists ? false : true}
               />
             </View>
-            {checkValidation === true &&
+            {/* {checkValidation === true &&
               (formData.lastName === '' || formData.lastName === undefined) && (
                 <ErrorMessage errorMessage={'Required'} />
-              )}
+              )} */}
           </View>
 
           {/* **************************************** */}
@@ -422,7 +352,7 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contactNumber'}
                 placeholder={'Phone'}
-                editable={isContactExists ? false : true}
+                applyMaxLengthLimit={false}
               />
               {phoneValidate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
@@ -446,7 +376,7 @@ export class ContactRegistrationFeedback extends Component {
                 onChangeHandle={this.handleForm}
                 name={'contact1'}
                 placeholder={'Contact Number 2'}
-                editable={isContactExists ? false : true}
+                applyMaxLengthLimit={false}
               />
               {contact1Validate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
@@ -465,15 +395,27 @@ export class ContactRegistrationFeedback extends Component {
                   this.setCountryCode(object, 'contact2')
                 }}
                 onChangeHandle={this.handleForm}
-                editable={isContactExists ? false : true}
                 name={'contact2'}
                 placeholder={'Contact Number 3'}
+                applyMaxLengthLimit={false}
               />
               {contact2Validate == true && (
                 <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
               )}
             </View>
           </View>
+
+          {/* **************************************** */}
+
+          {isContactExists ? (
+            <View style={[AppStyles.mainInputWrap]}>
+              <TouchableButton
+                containerStyle={[AppStyles.formBtn]}
+                label={'UPDATE'}
+                onPress={() => this.performAction('updateContact')}
+              />
+            </View>
+          ) : null}
 
           {/* **************************************** */}
 

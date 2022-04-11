@@ -74,15 +74,18 @@ const PaymentMethods = {
       return (price / PaymentMethods.findUnitPrice(unit)) * 100
     }
   },
-  findFinalPrice(unit, approvedDiscountPrice, fullPaymentDiscountPrice, isPearl) {
+  
+  
+  findFinalPrice(parkingCharges, unit, approvedDiscountPrice, fullPaymentDiscountPrice, isPearl) {
     if (unit) {
+      
       approvedDiscountPrice = PaymentMethods.handleEmptyValue(approvedDiscountPrice)
       fullPaymentDiscountPrice = PaymentMethods.handleEmptyValue(fullPaymentDiscountPrice)
       let totalDiscountPrice = approvedDiscountPrice + fullPaymentDiscountPrice
       if (isPearl) {
-        return PaymentMethods.pearlCalculations(unit) - totalDiscountPrice
+        return PaymentMethods.pearlCalculations(unit) - totalDiscountPrice + parseInt(parkingCharges)
       } else {
-        return PaymentMethods.findUnitPrice(unit) - totalDiscountPrice
+        return PaymentMethods.findUnitPrice(unit) - totalDiscountPrice + parseInt(parkingCharges)
       }
     }
   },
@@ -105,6 +108,7 @@ const PaymentMethods = {
     return Math.ceil(payment * (taxAmount / 100))
   },
   findRemaningPayment(payment, finalPrice) {
+    
     finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
     let totalPayments = 0
     let remainingTax = 0

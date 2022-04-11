@@ -1,6 +1,13 @@
 /** @format */
 
 export default StaticData = {
+
+  parkingAvailable: [
+    { name: 'Yes', value: 'yes' },
+    { name: 'No', value: 'no' },
+
+  ],
+
   diaryTasks: [
     {
       name: 'Morning Meeting',
@@ -823,6 +830,14 @@ export default StaticData = {
     { value: 'bank-Transfer', name: 'Bank-Transfer' },
     { value: 'e-Gateway', name: 'E-Gateway' },
   ],
+  investmentPaymentType: [
+    { value: 'payment', name: 'Payment' },
+    { value: 'possession charges', name: 'Possession Charges' },
+    { value: 'installment', name: 'Installment' },
+    { value: 'down payment', name: 'Down Payment' },
+    { value: 'full payment', name: 'Full Payment' },
+  ],
+  investmentTaxType: [{ value: 'tax', name: 'Tax' }],
   investFullPaymentType: [
     { value: 'cash', name: 'Cash' },
     { value: 'cheque', name: 'Cheque' },
@@ -841,10 +856,7 @@ export default StaticData = {
     { value: 'pearl', name: 'Pearl' },
   ],
   onlyUnitType: [{ value: 'fullUnit', name: 'Full Unit' }],
-  paymentTypeForToken: [
-    { value: 'Token', name: 'Token' },
-    { value: 'Payment', name: 'Other Payment' },
-  ],
+  paymentTypeForToken: [{ value: 'token', name: 'Token' }],
   statusOptions: [
     { label: 'Open', value: 'open' },
     { label: 'Pending Account', value: 'pendingAccount' },
@@ -1450,22 +1462,6 @@ export default StaticData = {
       label: 'Cold',
       color: '#1688db',
     },
-    // {
-    //   label: 'Call back',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Interested to meet',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Powered off',
-    //   color: '#9a9a9a',
-    // },
-    // {
-    //   label: 'No response',
-    //   color: '#9a9a9a',
-    // },
   ],
   unitStatuses: [
     { name: 'Available', value: 'Available' },
@@ -1507,5 +1503,39 @@ export default StaticData = {
     { name: 'Time Based', value: '' },
     { name: 'Task Type', value: 'type' },
     { name: 'Classification', value: 'class' },
+  ],
+  filterLeadsValue: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: "Team's Leads", value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'Referred by Me', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'My Demand Leads', value: '&pageType=demandLeads&hasBooking=false' },
+  ],
+  filterLeadsValueProject: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: "Teams's Leads", value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'Referred by Me', value: '&pageType=referredLeads&hasBooking=false' },
+  ],
+  filterDealsValue: [
+    { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
+    { name: "Team's Deals", value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  filterDealsValueProject: [
+    { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
+    { name: "Team's Deals", value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  buyRentFilterDeals: [{ value: 'closed_won', name: 'Closed Won' }],
+
+  filterLeadsValueTerminal: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'Referred by Me', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'My Demand Leads', value: '&pageType=demandLeads&hasBooking=false' },
+  ],
+  filterDealsValueTerminal: [{ name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' }],
+  filterLeadsValueProjectTerminal: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'Reffered By Me', value: '&pageType=referredLeads&hasBooking=false' },
+  ],
+  filterDealsValueProjectTerminal: [
+    { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
   ],
 }

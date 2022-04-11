@@ -117,24 +117,53 @@ export function createARMSContactPayload(data) {
   return body
 }
 
+export function updateARMSContact(data) {
+  const {
+    id,
+    countryCode,
+    countryCode1,
+    countryCode2,
+    callingCode,
+    callingCode1,
+    callingCode2,
+    contactNumber,
+    contact1,
+    contact2,
+  } = data
+  let body = {
+    firstName: helper.capitalize(data.firstName),
+    lastName: helper.capitalize(data.lastName),
+    phone: {
+      countryCode: callingCode === '+92' ? 'PK' : countryCode,
+      phone: contactNumber ? contactNumber.replace(/\s+/g, '') : null,
+      dialCode: checkUndefined(callingCode),
+    },
+    contact1: {
+      countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
+      contact1: contact1 ? contact1.replace(/\s+/g, '') : null,
+      dialCode: checkUndefined(callingCode1),
+    },
+    contact2: {
+      countryCode: callingCode2 === '+92' ? 'PK' : countryCode2,
+      contact2: contact2 ? contact2.replace(/\s+/g, '') : null,
+      dialCode: checkUndefined(callingCode2),
+    },
+    id,
+    contactRegistrationId: id,
+  }
+  return body
+}
+
 export function setSelectedContact(contact, call = false) {
   return (dispatch, getsState) => {
     if (call) {
       let url = 'tel:' + contact.phone
       if (url && url != 'tel:null') {
-        Linking.canOpenURL(url)
-          .then((supported) => {
-            if (!supported) {
-              helper.errorToast(`No application available to dial phone number`)
-              console.log("Can't handle url: " + url)
-            } else {
-              Linking.openURL(url)
-            }
-          })
-          .catch((err) => console.error('An error occurred', err))
       } else {
         helper.errorToast(`No Phone Number`)
       }
+      // console.log("Can't handle url: " + url)
+      Linking.openURL(url)
     }
     dispatch({
       type: types.SET_SELECTED_CONTACT,
@@ -144,7 +173,7 @@ export function setSelectedContact(contact, call = false) {
   }
 }
 
-export function createContact(body, addCallPayload) {
+export function createContact(body) {
   let url = `api/contacts/create`
   let promise = axios
     .post(url, body)
@@ -153,6 +182,23 @@ export function createContact(body, addCallPayload) {
     })
     .catch((err) => {
       console.error('An error occurred while creating contact', err)
+      return null
+    })
+  return promise
+}
+
+export function updateContact(body) {
+  let url = `api/contacts/update`
+
+  let promise = axios
+    .patch(url, body)
+    .then((res) => {
+      if (res && res.data) {
+        return res.data
+      }
+    })
+    .catch((err) => {
+      console.error('An error occurred while updating contact', err)
       return null
     })
   return promise

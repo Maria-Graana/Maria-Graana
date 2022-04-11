@@ -34,7 +34,6 @@ class Client extends React.Component {
       loading: true,
       page: 1,
       pageSize: 50,
-      pageSize: 30,
       onEndReachedLoader: false,
       searchText: '',
       isSelected: false,
@@ -91,7 +90,7 @@ class Client extends React.Component {
   }
 
   fetchCustomer = () => {
-    const { customers, page, pageSize, searchText } = this.state
+    const { customers, searchText, page, pageSize } = this.state
     const { selectedClient, selectedPOC } = this.props.route.params
     let url = ''
     const clientName = searchText.replace(' ', '%20')
@@ -278,7 +277,7 @@ class Client extends React.Component {
   }
 
   render() {
-    const { customers, loading, totalCustomers, onEndReachedLoader, searchText } = this.state
+    const { customers, loading, totalCustomers, onEndReachedLoader, searchText, page } = this.state
     const { user } = this.props
     let createPermission = this.createPermission()
 
@@ -297,7 +296,13 @@ class Client extends React.Component {
           <Search
             placeholder="Search clients here"
             searchText={searchText}
-            setSearchText={(value) => this.setState({ searchText: value })}
+            setSearchText={(value) => {
+              this.setState({
+                searchText: value,
+                page: value === '' ? 1 : page,
+                pageSize: 50,
+              })
+            }}
           />
           <Fab
             active="true"
@@ -321,7 +326,11 @@ class Client extends React.Component {
                 />
               )}
               onEndReached={() => {
-                if (customers.length < totalCustomers && onEndReachedLoader === false) {
+                if (
+                  customers.length < totalCustomers &&
+                  onEndReachedLoader === false &&
+                  searchText === ''
+                ) {
                   this.setState(
                     {
                       page: this.state.page + 1,

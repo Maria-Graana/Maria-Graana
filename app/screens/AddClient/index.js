@@ -271,14 +271,14 @@ class AddClient extends Component {
   }
 
   validateCnic = (value) => {
-    if (value.length < 15 && value !== '') this.setState({ cnicValidate: true })
+    if (value.length < 7 || (value.length > 8 && value.length < 13 && value !== ''))
+      this.setState({ cnicValidate: true })
     else this.setState({ cnicValidate: false })
   }
 
   handleForm = (value, name) => {
     const { formData } = this.state
     if (name == 'cnic') {
-      value = helper.normalizeCnic(value)
       this.validateCnic(value)
     }
     if (name == 'email') this.validateEmail(value)
@@ -489,7 +489,7 @@ class AddClient extends Component {
   formSubmit = () => {
     const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
     const { route, navigation, contacts, armsContacts } = this.props
-    const { update, client, isFromDropDown, screenName, isPOC } = route.params
+    const { update, client, isFromDropDown, screenName, isPOC, isFromScreen = null } = route.params
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
     if (
       !formData.firstName ||
@@ -544,6 +544,8 @@ class AddClient extends Component {
                             ? res.data.first_name + ' ' + res.data.last_name
                             : null,
                         })
+                    : isFromScreen
+                    ? navigation.navigate('Contacts')
                     : navigation.goBack()
                 }
               }

@@ -275,7 +275,7 @@ class BookingDetailsModal extends React.Component {
                       <View>
                         <Text style={styles.smallText}>Final Price</Text>
                         <Text style={styles.largeText}>
-                          {helper.currencyConvert(this.handleEmptyValueReturnZero(finalPrice))}
+                          {helper.currencyConvert(this.handleEmptyValueReturnZero(unit.finalPrice))}
                         </Text>
                       </View>
                     </View>

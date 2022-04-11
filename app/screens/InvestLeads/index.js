@@ -50,6 +50,7 @@ class InvestLeads extends React.Component {
   constructor(props) {
     super(props)
     const { permissions } = this.props
+    const { hasBooking = false } = this.props.route.params
     this.state = {
       leadsData: [],
       purposeTab: 'invest',
@@ -89,6 +90,9 @@ class InvestLeads extends React.Component {
         PermissionActions.CREATE,
         permissions
       ),
+      pageType: hasBooking
+        ? '&pageType=myDeals&hasBooking=true'
+        : '&pageType=myLeads&hasBooking=false',
     }
   }
 
@@ -125,6 +129,13 @@ class InvestLeads extends React.Component {
     }
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.referenceGuide !== prevProps.referenceGuide) {
+      // reload page when reference guide is added
+      this.fetchLeads()
     }
   }
 
@@ -225,6 +236,7 @@ class InvestLeads extends React.Component {
       searchText,
       statusFilter,
       statusFilterType,
+      pageType,
     } = this.state
     const { hasBooking, navFrom } = this.props.route.params
     const { user } = this.props
@@ -233,26 +245,26 @@ class InvestLeads extends React.Component {
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?id=${searchText}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'in_progress') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&hasBooking=${hasBooking}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`)
+          ? (query = `/api/leads/projects?status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
     axios
@@ -303,6 +315,13 @@ class InvestLeads extends React.Component {
         this.fetchLeads()
       })
     }
+  }
+
+  changePageType = (value) => {
+    this.clearStateValues()
+    this.setState({ pageType: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
   }
 
   navigateFromMenu = (data, name) => {
@@ -430,7 +449,6 @@ class InvestLeads extends React.Component {
     const { user } = this.props
     // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
     if (
-      Ability.canView(user.subRole, 'AssignLead') &&
       lead.status !== StaticData.Constants.lead_closed_lost &&
       lead.status !== StaticData.Constants.lead_closed_won
     ) {
@@ -542,6 +560,10 @@ class InvestLeads extends React.Component {
     })
   }
 
+  openStatus = () => {
+    this.setState({ activeSortModal: !this.state.activeSortModal })
+  }
+
   render() {
     const {
       leadsData,
@@ -560,6 +582,7 @@ class InvestLeads extends React.Component {
       fabActions,
       createBuyRentLead,
       createProjectLead,
+      pageType,
     } = this.state
     const {
       user,
@@ -569,6 +592,7 @@ class InvestLeads extends React.Component {
       referenceGuide,
       navigation,
       isMultiPhoneModalVisible,
+      getIsTerminalUser,
     } = this.props
     const {
       screen,
@@ -634,6 +658,30 @@ class InvestLeads extends React.Component {
                 />
               </View>
 
+              <View style={styles.iconRow}>
+                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
+              </View>
+              <View style={styles.pageTypeRow}>
+                <PickerComponent
+                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                  data={
+                    hasBooking
+                      ? getIsTerminalUser
+                        ? StaticData.filterDealsValueProjectTerminal
+                        : StaticData.filterDealsValueProject
+                      : getIsTerminalUser
+                      ? StaticData.filterLeadsValueProjectTerminal
+                      : StaticData.filterLeadsValueProject
+                  }
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changePageType}
+                  selectedItem={pageType}
+                  showPickerArrow={false}
+                />
+              </View>
+              <View style={styles.verticleLine} />
+
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}
@@ -664,9 +712,7 @@ class InvestLeads extends React.Component {
             dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
           }
           addInvestmentGuide={(guideNo, attachments) =>
-            dispatch(addInvestmentGuide({ guideNo, attachments }, lead)).then((res) => {
-              this.fetchLeads()
-            })
+            dispatch(addInvestmentGuide({ guideNo, attachments }, lead))
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
           referenceErrorMessage={referenceGuide.referenceErrorMessage}
@@ -766,6 +812,7 @@ mapStateToProps = (store) => {
     permissions: store.user.permissions,
     referenceGuide: store.diary.referenceGuide,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
+    getIsTerminalUser: store.user.getIsTerminalUser,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

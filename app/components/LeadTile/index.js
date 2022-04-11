@@ -56,7 +56,7 @@ class LeadTile extends React.Component {
 
   setCustomerName = () => {
     const { user, data } = this.props
-    if (user.id === data.assigned_to_armsuser_id)
+    if (data.requiredProperties !== true)
       return (
         data.customer && data.customer.customerName && helper.capitalize(data.customer.customerName)
       )
@@ -211,7 +211,7 @@ class LeadTile extends React.Component {
                     </Text>
                   </View>
                 )}
-                {data && data.requiredProperties && (
+                {/* {data && data.requiredProperties && (
                   <View style={styles.sharedLead}>
                     <Text
                       style={[
@@ -227,7 +227,7 @@ class LeadTile extends React.Component {
                       Demand Lead
                     </Text>
                   </View>
-                )}
+                )} */}
                 {data && data.leadCategory ? (
                   <View style={[styles.sharedLead, screen === 'Leads' && { padding: 0 }]}>
                     <Text
@@ -317,13 +317,19 @@ class LeadTile extends React.Component {
                         />
                         <Menu.Item
                           onPress={() => {
-                            navigateToShareScreen(data), setIsMenuVisible(false, data)
+                            if (referPermission) {
+                              navigateToShareScreen(data)
+                              setIsMenuVisible(false, data)
+                            }
                           }}
                           title="Refer"
                         />
                         <Menu.Item
                           onPress={() => {
-                            checkAssignedLead(lead), setIsMenuVisible(false, data)
+                            if (assignPermission) {
+                              checkAssignedLead(lead)
+                              setIsMenuVisible(false, data)
+                            }
                           }}
                           title="Re-Assign"
                         />
@@ -461,9 +467,7 @@ class LeadTile extends React.Component {
                     style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
                     numberOfLines={1}
                   >
-                    {customerName != ''
-                      ? customerName
-                      : data.customer && data.customer.customerName}
+                    {customerName === ' ' ? '' : data.customer && data.customer.customerName}
                   </Text>
                 </View>
                 {/* ****** Location Wrap */}

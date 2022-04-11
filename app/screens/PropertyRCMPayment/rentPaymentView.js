@@ -15,7 +15,7 @@ import { formatPrice } from '../../PriceFormate'
 import styles from './styles'
 
 const RentPaymentView = (props) => {
-  MonthlyTile = () => {
+ const MonthlyTile = () => {
     return (
       <View style={styles.monthlyTile}>
         <View style={{ justifyContent: 'space-between' }}>
@@ -57,7 +57,7 @@ const RentPaymentView = (props) => {
     property.armsuser &&
     property.armsuser.armsUserRole &&
     property.armsuser.armsUserRole.subRole
-  let buyerCommission = helper.setBuyerAgent(lead, 'sellerSide', user)
+  let buyerCommission = helper.setBuyerAgent(lead, 'buyerSide', user, property)
   let sellerCommission = helper.setSellerAgent(lead, property, 'sellerSide', user)
   // if (sellerCommission === true) {
   //   if (property.origin === null) {
@@ -80,7 +80,8 @@ const RentPaymentView = (props) => {
   let showMenu = helper.showSellerTokenMenu(tokenPayment)
   return (
     <View>
-      <MonthlyTile />
+     { MonthlyTile()}
+      {/* <MonthlyTile /> */}
       <View style={{ paddingVertical: 5 }} />
       <RCMRentMonthlyModal
         isVisible={rentMonthlyToggle}
@@ -139,6 +140,7 @@ const RentPaymentView = (props) => {
         leadType={'sellRentout'}
         updatePermission={updatePermission}
         closedLeadEdit={closedLeadEdit}
+        commissionBuyer={!buyerCommission}
       />
       <BuyerSellerTile
         singleCommission={false}
@@ -160,6 +162,7 @@ const RentPaymentView = (props) => {
         leadType={'sellRentout'}
         updatePermission={updatePermission}
         closedLeadEdit={closedLeadEdit}
+        commissionSeller={!sellerCommission}
       />
     </View>
   )

@@ -71,9 +71,7 @@ class LeadTile extends React.Component {
       callNumber,
       user,
       purposeTab,
-      contacts,
       handleLongPress,
-      displayPhone,
       propertyLead,
       serverTime,
       screen,
@@ -91,6 +89,7 @@ class LeadTile extends React.Component {
       goToHistory,
       getCallHistory,
       addGuideReference = null,
+      pageType = '',
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
@@ -119,8 +118,47 @@ class LeadTile extends React.Component {
           })`
         : ''
     let leadSize = this.leadSize()
-    let showPhone = displayPhone === false || displayPhone ? displayPhone : true
+    // let showPhone = displayPhone === false || displayPhone ? displayPhone : true
     let leadStatus = this.leadStatus()
+    let referPermission = getPermissionValue(
+      lead.projectId && lead.project
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.REFER,
+      permissions
+    )
+    let assignPermission = getPermissionValue(
+      lead.projectId && lead.project
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.ASSIGN_REASSIGN,
+      permissions
+    )
+    let permissionLeadUpdate = getPermissionValue(
+      purposeTab === 'invest'
+        ? PermissionFeatures.PROJECT_LEADS
+        : PermissionFeatures.BUY_RENT_LEADS,
+      PermissionActions.UPDATE,
+      permissions
+    )
+    let showPhone = false
+    if (permissionLeadUpdate) {
+      // check permission first
+      if (pageType === '&pageType=demandLeads&hasBooking=false') {
+        // is demand lead
+        showPhone = true
+      } else {
+        // all other leads assigned to user himself
+        if (data.assigned_to_armsuser_id == user.id) {
+          showPhone = true
+        } else {
+          showPhone = false
+        }
+      }
+    } else {
+      showPhone = false
+    }
+
     return (
       <TouchableOpacity
         disabled={screen === 'Leads' ? true : false}
@@ -438,13 +476,7 @@ class LeadTile extends React.Component {
                     {`Created: ${moment(data.createdAt).format('MMM DD YYYY, hh:mm A')}`}
                   </Text>
 
-                  {getPermissionValue(
-                    purposeTab === 'invest'
-                      ? PermissionFeatures.PROJECT_LEADS
-                      : PermissionFeatures.BUY_RENT_LEADS,
-                    PermissionActions.UPDATE,
-                    permissions
-                  ) && data.assigned_to_armsuser_id == user.id ? (
+                  {showPhone ? (
                     <TouchableOpacity
                       style={styles.phoneMain}
                       onPress={() => {

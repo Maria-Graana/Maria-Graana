@@ -5,6 +5,7 @@ import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
 import { alltimeSlots, setTimeSlots } from './slotManagement'
+import { Linking } from 'react-native'
 
 export const FEEDBACK_ACTIONS = {
   ADD_MEETING: 'Add Meeting',
@@ -671,6 +672,14 @@ export const getDiaryStats = (userId, day, startTime, endTime) => {
         //console.log(endPoint)
         console.log('error', error)
       })
+  }
+}
+
+export const callToAgent = (lead) => {
+  if (lead && lead.armsuser && lead.armsuser.phoneNumber) {
+    Linking.openURL('tel:' + lead.armsuser.phoneNumber)
+  } else {
+    helper.errorToast(`No Phone Number`)
   }
 }
 // ARMS-2448 end

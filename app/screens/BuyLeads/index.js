@@ -34,7 +34,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
-import { callNumberFromLeads, setMultipleModalVisible } from '../../actions/diary'
+import { callNumberFromLeads, callToAgent, setMultipleModalVisible } from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -700,13 +700,16 @@ class BuyLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={(data) =>
-                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                        if (res !== null) {
-                          this.showMultiPhoneModal(true)
-                        }
-                      })
-                    }
+                    pageType={pageType}
+                    callNumber={(data) => {
+                      pageType === '&pageType=demandLeads&hasBooking=false'
+                        ? callToAgent(data)
+                        : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                            if (res !== null) {
+                              this.showMultiPhoneModal(true)
+                            }
+                          })
+                    }}
                     navFrom={navFrom}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
@@ -720,13 +723,15 @@ class BuyLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={(data) =>
-                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                        if (res !== null) {
-                          this.showMultiPhoneModal(true)
-                        }
-                      })
-                    }
+                    callNumber={(data) => {
+                      pageType === '&pageType=demandLeads&hasBooking=false'
+                        ? callToAgent(data)
+                        : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                            if (res !== null) {
+                              this.showMultiPhoneModal(true)
+                            }
+                          })
+                    }}
                     handleLongPress={this.handleLongPress}
                     changeLeadStatus={this.changeLeadStatus}
                     redirectToCompare={this.redirectToCompare}

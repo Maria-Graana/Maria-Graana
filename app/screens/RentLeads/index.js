@@ -27,8 +27,6 @@ import PPLeadTile from '../../components/PPLeadTile'
 import Search from '../../components/Search'
 import ShortlistedProperties from '../../components/ShortlistedProperties'
 import SortModal from '../../components/SortModal'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
-import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import config from '../../config'
@@ -36,12 +34,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
-import {
-  callNumberFromLeads,
-  initiateConnectFlow,
-  setMultipleModalVisible,
-  setSelectedDiary,
-} from '../../actions/diary'
+import { callNumberFromLeads, callToAgent, setMultipleModalVisible } from '../../actions/diary'
 import { alltimeSlots, setTimeSlots } from '../../actions/slotManagement'
 
 var BUTTONS = [
@@ -721,17 +714,20 @@ class RentLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={(data) =>
-                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                        if (res !== null) {
-                          this.showMultiPhoneModal(true)
-                        }
-                      })
-                    }
+                    callNumber={(data) => {
+                      pageType === '&pageType=demandLeads&hasBooking=false'
+                        ? callToAgent(data)
+                        : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                            if (res !== null) {
+                              this.showMultiPhoneModal(true)
+                            }
+                          })
+                    }}
                     handleLongPress={this.handleLongPress}
                     navFrom={navFrom}
                     serverTime={serverTime}
                     screenName={screen}
+                    pageType={pageType}
                   />
                 ) : (
                   <PPLeadTile
@@ -740,13 +736,14 @@ class RentLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={(data) =>
+                    callNumber={(data) => {
+                      console.log(data)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
                         if (res !== null) {
                           this.showMultiPhoneModal(true)
                         }
                       })
-                    }
+                    }}
                     handleLongPress={this.handleLongPress}
                     changeLeadStatus={this.changeLeadStatus}
                     redirectToCompare={this.redirectToCompare}

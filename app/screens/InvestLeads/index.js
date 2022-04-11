@@ -683,6 +683,7 @@ class InvestLeads extends React.Component {
                 data={item}
                 navigateTo={this.navigateTo}
                 navigateFromMenu={this.navigateFromMenu}
+                pageType={pageType}
                 callNumber={(data) => {
                   // getting complete project lead object that contains customer contacts as well
                   axios.get(`api/leads/project/byId?id=${data.id}`).then((lead) => {

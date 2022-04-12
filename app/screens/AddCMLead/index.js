@@ -153,8 +153,7 @@ class AddCMLead extends Component {
           .post(`/api/leads/project`, formData)
           .then((res) => {
             helper.successToast('Lead created successfully')
-            RootNavigation.navigateToSpecificTab('Leads', 'Invest');
-      
+            RootNavigation.navigate('Leads')
           })
           .catch((error) => {
             console.log(error)

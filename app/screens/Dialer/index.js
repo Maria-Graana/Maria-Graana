@@ -26,6 +26,7 @@ import Search from '../../components/Search'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import { getPermissionValue } from '../../hoc/Permissions'
 import PhonebookContactsTile from '../../components/PhonebookContactsTile'
+import { setContacts } from '../../actions/contacts'
 
 const layout = Dimensions.get('window')
 
@@ -48,17 +49,21 @@ class Dialer extends Component {
   componentDidMount() {
     const { dispatch } = this.props
     const { contacts } = this.props
-    let newContactsArr = contacts.map((item) => {
-      if (item.phone) {
-        return item
-      } else {
-        return {
-          ...item,
-          phone: item.phoneNumbers[0].number,
+    if (contacts) {
+      let newContactsArr = contacts.map((item) => {
+        if (item.phone) {
+          return item
+        } else {
+          return {
+            ...item,
+            phone: item.phoneNumbers[0].number,
+          }
         }
-      }
-    })
-    this.setState({ allContacts: newContactsArr })
+      })
+      this.setState({ allContacts: newContactsArr })
+    } else {
+      this.props.dispatch(setContacts())
+    }
   }
 
   onPhoneContactPress = (data) => {

@@ -98,9 +98,9 @@ class Diary extends React.Component {
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
-    this.getDiariesStats()
     this._unsubscribe = navigation.addListener('focus', () => {
       const { user, isFilterApplied, filters } = this.props
+      this.getDiariesStats()
       dispatch(setSlotDiaryData(_today))
       let dateSelected = null
       if (isFilterApplied) {
@@ -448,7 +448,7 @@ class Diary extends React.Component {
     }
   }
   checkAssignedLead = () => {
-    const { user, navigation, selectedDiary, selectedLead , permissions } = this.props
+    const { user, navigation, selectedDiary, selectedLead, permissions } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
       type = 'Investment'

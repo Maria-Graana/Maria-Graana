@@ -349,7 +349,7 @@ class PropertyPropsure extends React.Component {
     if (id) {
       let options = {
         type: '*/*',
-        copyToCacheDirectory: true,
+        copyToCacheDirectory: false,
       }
       DocumentPicker.getDocumentAsync(options)
         .then((item) => {
@@ -931,6 +931,7 @@ class PropertyPropsure extends React.Component {
     axios
       .patch(`/api/leads/project/payment?id=${body.id}`, body)
       .then((res) => {
+        
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
           ? _.filter(propsurePayment.paymentAttachments, (item) => {

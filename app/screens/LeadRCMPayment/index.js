@@ -357,7 +357,7 @@ class LeadRCMPayment extends React.Component {
   uploadDocument = (category) => {
     let options = {
       type: '*/*',
-      copyToCacheDirectory: true,
+      copyToCacheDirectory: false,
     }
     DocumentPicker.getDocumentAsync(options)
       .then((item) => {

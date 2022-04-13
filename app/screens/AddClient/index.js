@@ -547,7 +547,7 @@ class AddClient extends Component {
                     : isFromScreen
                       ? navigation.navigate('Contacts')
                       : navigation.navigate('Client', {
-                        isUnitBooking: true,                 
+                        isUnitBooking: false,                 
                       })
            
                 }

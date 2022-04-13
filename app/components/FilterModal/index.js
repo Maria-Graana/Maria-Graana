@@ -322,23 +322,27 @@ class FilterModal extends React.Component {
                 </View>
               </View>
             ) : null}
-            <View style={[AppStyles.mainInputWrap, styles.matchBtn]}>
+            <View style={[AppStyles.mainInputWrap, styles.matchBtn, { marginBottom: 15 }]}>
               <Button
                 onPress={() => {
                   submitFilter()
                 }}
-                style={[AppStyles.formBtn, styles.btn1]}
+                style={[AppStyles.formBtn]}
               >
                 <Text style={AppStyles.btnText}>MATCH</Text>
               </Button>
             </View>
-            <TouchableOpacity
-              onPress={() => {
-                this.props.resetFilter()
-              }}
-            >
-              <Text style={styles.resetText}>Reset</Text>
-            </TouchableOpacity>
+
+            <View style={[styles.matchBtn]}>
+              <Button
+                onPress={() => {
+                  this.props.resetFilter()
+                }}
+                style={[AppStyles.formBtnWithWhiteBg, styles.btn1]}
+              >
+                <Text style={AppStyles.btnTextBlue}>RESET</Text>
+              </Button>
+            </View>
           </ScrollView>
         </SafeAreaView>
       </Modal>

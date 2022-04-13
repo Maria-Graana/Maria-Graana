@@ -46,7 +46,7 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     position: 'absolute',
-    top: 10,
+    top: 5,
     right: 10,
   },
   normalText: {

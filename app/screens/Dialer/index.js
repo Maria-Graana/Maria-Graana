@@ -163,7 +163,7 @@ class Dialer extends Component {
     const { searchText, isPhoneContactExpanded } = this.state
     const { contacts, permissions } = this.props
     let data = []
-    if (contacts && searchText !== '' && data && data.length === 0) {
+    if (searchText !== '' && data && data.length === 0) {
       data = fuzzy.filter(searchText, contacts, {
         extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
       })

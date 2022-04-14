@@ -110,7 +110,6 @@ class Dialer extends Component {
 
   FirstRoute = () => {
     const { numberTxt, allContacts, isPhoneContactExpanded } = this.state
-    const { contacts } = this.props
     let data = []
     data = allContacts.filter((item) => {
       if (numberTxt !== '' && numberTxt.length >= 3) {
@@ -164,13 +163,13 @@ class Dialer extends Component {
     const { searchText, isPhoneContactExpanded } = this.state
     const { contacts, permissions } = this.props
     let data = []
-    if (searchText !== '' && data && data.length === 0) {
+    if (contacts && searchText !== '' && data && data.length === 0) {
       data = fuzzy.filter(searchText, contacts, {
         extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
       })
       data = data.map((item) => item.original)
     } else {
-      data = contacts
+      data = contacts ? contacts : []
     }
 
     let createPermission = getPermissionValue(

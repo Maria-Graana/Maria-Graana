@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Dimensions,
   ScrollView,
+  Linking,
 } from 'react-native'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -46,7 +47,7 @@ class Dialer extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { dispatch } = this.props
     const { contacts } = this.props
     if (contacts) {
@@ -62,7 +63,10 @@ class Dialer extends Component {
       })
       this.setState({ allContacts: newContactsArr })
     } else {
-      this.props.dispatch(setContacts())
+      let result = await this.props.dispatch(setContacts())
+      if (result === false) {
+        Linking.openURL('app-settings:')
+      }
     }
   }
 

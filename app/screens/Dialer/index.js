@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Dimensions,
   ScrollView,
+  Linking,
 } from 'react-native'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -46,7 +47,7 @@ class Dialer extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { dispatch } = this.props
     const { contacts } = this.props
     if (contacts) {
@@ -62,7 +63,10 @@ class Dialer extends Component {
       })
       this.setState({ allContacts: newContactsArr })
     } else {
-      this.props.dispatch(setContacts())
+      let result = await this.props.dispatch(setContacts())
+      if (result === false) {
+        Linking.openURL('app-settings:')
+      }
     }
   }
 
@@ -106,7 +110,6 @@ class Dialer extends Component {
 
   FirstRoute = () => {
     const { numberTxt, allContacts, isPhoneContactExpanded } = this.state
-    const { contacts } = this.props
     let data = []
     data = allContacts.filter((item) => {
       if (numberTxt !== '' && numberTxt.length >= 3) {
@@ -166,7 +169,7 @@ class Dialer extends Component {
       })
       data = data.map((item) => item.original)
     } else {
-      data = contacts
+      data = contacts ? contacts : []
     }
 
     let createPermission = getPermissionValue(

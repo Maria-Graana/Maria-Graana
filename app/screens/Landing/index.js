@@ -21,7 +21,7 @@ import { FAB } from 'react-native-paper'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
 import { clearDiaries } from '../../actions/diary'
-import { setSlotData } from '../../actions/slotManagement'
+import { getTimeShifts, setSlotData } from '../../actions/slotManagement'
 import moment from 'moment'
 
 const _format = 'YYYY-MM-DD'
@@ -78,6 +78,7 @@ class Landing extends React.Component {
 
   async componentDidMount() {
     const { navigation, dispatch } = this.props
+    dispatch(getTimeShifts())
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       dispatch(isTerminalUser())

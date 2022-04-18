@@ -78,10 +78,10 @@ class Landing extends React.Component {
 
   async componentDidMount() {
     const { navigation, dispatch } = this.props
+    this.props.dispatch(setContacts())
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       dispatch(isTerminalUser())
-      this.props.dispatch(setContacts())
       this.getUserStatistics()
       this.getUserStatistics2()
       this.setFabActions()

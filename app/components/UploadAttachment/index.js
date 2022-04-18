@@ -86,13 +86,14 @@ export default class UploadAttachment extends React.Component {
 
   // ************* Upload Attachment From Gallery *****************
   getAttachmentFromStorage = () => {
+
     const { formData } = this.state
     const { submitUploadedAttachment } = this.props
     var newFormData = { ...formData }
 
     let options = {
       type: '*/*',
-      copyToCacheDirectory: true,
+      copyToCacheDirectory: false,
     }
     DocumentPicker.getDocumentAsync(options)
       .then((item) => {

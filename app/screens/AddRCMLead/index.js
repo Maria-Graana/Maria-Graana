@@ -292,6 +292,7 @@ class AddRCMLead extends Component {
       description: RCMFormData.description,
       phones: RCMFormData.phones,
     }
+   
     this.setState({ loading: true }, () => {
       if (user.subRole === 'group_management') {
         let newOrg = _.find(organizations, function (item) {
@@ -303,7 +304,14 @@ class AddRCMLead extends Component {
         .post(`/api/leads`, payLoad)
         .then((res) => {
           helper.successToast('Lead created successfully')
-          RootNavigation.navigate('Leads')
+          if(payLoad.purpose=='buy')
+          {
+            RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+          }
+          else{
+            RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+          }
+          
         })
         .catch((error) => {
           console.log('error on creating lead')

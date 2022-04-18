@@ -15,11 +15,11 @@ export function setContacts() {
               type: types.SET_CONTACTS,
               payload: data,
             })
-            return result.data
+            return Promise.resolve(true)
           }
         })
       } else {
-        Linking.openURL('app-settings:')
+        return Promise.resolve(false)
       }
     })
   }

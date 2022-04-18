@@ -88,7 +88,7 @@ class AddClient extends Component {
           countryCode2: data.contact2 ? data.contact2.countryCode : defaultCountry.name,
           callingCode2: data.contact2 ? data.contact2.dialCode : defaultCountry.code,
         },
-        () => {}
+        () => { }
       )
     }
     if ('update' in route.params && route.params.update) {
@@ -433,8 +433,8 @@ class AddClient extends Component {
           checkForPlus2 == '+'
             ? formData.contact1
             : formData.contact1 != ''
-            ? newCallingCode1 + '' + formData.contact1
-            : null,
+              ? newCallingCode1 + '' + formData.contact1
+              : null,
         dialCode: newCallingCode1,
       },
       contact2: {
@@ -443,8 +443,8 @@ class AddClient extends Component {
           checkForPlus3 == '+'
             ? formData.contact2
             : formData.contact2 != ''
-            ? newCallingCode2 + '' + formData.contact2
-            : null,
+              ? newCallingCode2 + '' + formData.contact2
+              : null,
         dialCode: newCallingCode2,
       },
       familyMember: formData.familyMember,
@@ -530,23 +530,26 @@ class AddClient extends Component {
                   isFromDropDown
                     ? isPOC
                       ? navigation.navigate(screenName, {
-                          selectedPOC: res.data.id
-                            ? {
-                                ...res.data,
-                                firstName: res.data.first_name ? res.data.first_name : '',
-                                lastName: res.data.last_name ? res.data.last_name : '',
-                              }
-                            : null,
-                        })
+                        selectedPOC: res.data.id
+                          ? {
+                            ...res.data,
+                            firstName: res.data.first_name ? res.data.first_name : '',
+                            lastName: res.data.last_name ? res.data.last_name : '',
+                          }
+                          : null,
+                      })
                       : navigation.navigate(screenName, {
-                          client: res.data.id ? res.data : null,
-                          name: res.data.first_name
-                            ? res.data.first_name + ' ' + res.data.last_name
-                            : null,
-                        })
+                        client: res.data.id ? res.data : null,
+                        name: res.data.first_name
+                          ? res.data.first_name + ' ' + res.data.last_name
+                          : null,
+                      })
                     : isFromScreen
-                    ? navigation.navigate('Contacts')
-                    : navigation.goBack()
+                      ? navigation.navigate('Contacts')
+                      : navigation.navigate('Client', {
+                        isUnitBooking: false,                 
+                      })
+           
                 }
               }
             })
@@ -609,7 +612,7 @@ class AddClient extends Component {
     endPoint = `/api/contacts/delete`
     axios
       .delete(endPoint, { data: { id } })
-      .then(function (response) {})
+      .then(function (response) { })
       .catch(function (error) {
         console.log(error)
       })

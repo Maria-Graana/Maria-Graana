@@ -264,10 +264,10 @@ class LeadAttachments extends Component {
       {
         formData: formData,
         showAction: false,
-      },
-      () => {
-        this.formSubmit()
       }
+      // () => {
+      //   this.formSubmit()
+      // }
     )
   }
 
@@ -521,6 +521,7 @@ class LeadAttachments extends Component {
       .then((res) => {
         if (res.data) {
           navProperty ? this.fetchPropertyAttachement() : this.fetchAttachments()
+          this.closeModal()
         }
       })
       .catch((error) => {

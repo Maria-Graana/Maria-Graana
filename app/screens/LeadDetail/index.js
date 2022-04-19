@@ -463,7 +463,9 @@ class LeadDetail extends React.Component {
                 {!lead.projectId && leadSize}
                 {!lead.projectId && type !== 'Investment'
                   ? `${helper.capitalize(lead.subtype)} to ${type}`
-                  : `Looking to Invest in Any Project`}
+                  : lead.projectName
+                  ? `Looking to Invest in ${lead.projectName} `
+                  : `Looking to Invest in Any Project `}
                 {lead.projectId && (lead.projectType ? helper.capitalize(lead.projectType) : '-')}
               </Text>
             </View>

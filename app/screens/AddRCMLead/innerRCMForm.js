@@ -73,6 +73,7 @@ class InnerRCMForm extends Component {
       isSizeModalVisible,
       showSizeModal,
       onModalSizeDonePressed,
+      update,
     } = this.props
 
     const { leadAreas } = formData
@@ -131,6 +132,7 @@ class InnerRCMForm extends Component {
           showIconOrImage={false}
           showError={checkValidation === true && formData.customerId === ''}
           errorMessage="Required"
+          disabled={update}
         />
 
         <TouchableInput
@@ -267,7 +269,7 @@ class InnerRCMForm extends Component {
         <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={'CREATE LEAD'}
+            label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
             onPress={() => formSubmit(formData)}
             loading={loading}
             disabled={loading}

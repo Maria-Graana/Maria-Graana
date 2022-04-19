@@ -24,7 +24,6 @@ class CMLeadFrom extends Component {
       formSubmit,
       checkValidation,
       handleForm,
-      formData,
       clientName,
       selectedCity,
       handleCityClick,
@@ -36,13 +35,15 @@ class CMLeadFrom extends Component {
       showPriceModal,
       onModalPriceDonePressed,
       onModalCancelPressed,
+      CMLead,
+      update,
     } = this.props
     return (
       <View>
         <PriceSliderModal
           isVisible={isPriceModalVisible}
-          initialValue={formData.minPrice}
-          finalValue={formData.maxPrice}
+          initialValue={CMLead.minPrice}
+          finalValue={CMLead.maxPrice}
           onModalPriceDonePressed={onModalPriceDonePressed}
           onModalCancelPressed={onModalCancelPressed}
           arrayValues={StaticData.PricesProject}
@@ -52,15 +53,16 @@ class CMLeadFrom extends Component {
           placeholder="Client"
           onPress={() => handleClientClick()}
           value={clientName}
-          showError={checkValidation === true && formData.customerId === ''}
+          showError={checkValidation === true && CMLead.customerId === ''}
           errorMessage="Required"
+          disabled={update}
         />
 
         <TouchableInput
           placeholder="Select City"
           onPress={() => handleCityClick()}
           value={selectedCity ? selectedCity.name : ''}
-          showError={checkValidation === true && formData.cityId === ''}
+          showError={checkValidation === true && CMLead.cityId === ''}
           errorMessage="Required"
         />
 
@@ -71,12 +73,9 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProject}
               name={'projectId'}
-              selectedItem={formData.projectId}
+              selectedItem={CMLead.projectId}
               placeholder="Project"
             />
-            {/* {checkValidation === true && formData.projectId === '' && (
-              <ErrorMessage errorMessage={'Required'} />
-            )} */}
           </View>
         </View>
 
@@ -87,13 +86,10 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProductType}
               name={'projectType'}
-              selectedItem={formData.armsProjectTypeId}
+              selectedItem={CMLead.armsProjectTypeId}
               placeholder="Product Type"
-              enabled={formData.projectId === '' || formData.projectId === null ? false : true}
+              enabled={CMLead.projectId === '' || CMLead.projectId === null ? false : true}
             />
-            {/* {
-              checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
-            } */}
           </View>
         </View>
 
@@ -104,8 +100,8 @@ class CMLeadFrom extends Component {
               showIconOrImage={false}
               onPress={() => showPriceModal()}
               value={`${helper.convertPriceToString(
-                formData.minPrice,
-                formData.maxPrice,
+                CMLead.minPrice,
+                CMLead.maxPrice,
                 StaticData.PricesProject[StaticData.PricesProject.length - 1]
               )}`}
             />
@@ -115,7 +111,7 @@ class CMLeadFrom extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea
-            value={formData.description}
+            value={CMLead.description}
             style={[
               AppStyles.formControl,
               Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
@@ -132,8 +128,8 @@ class CMLeadFrom extends Component {
         <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={'CREATE LEAD'}
-            onPress={() => formSubmit(formData)}
+            label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
+            onPress={() => formSubmit()}
             loading={loading}
             disabled={loading}
           />
@@ -146,6 +142,7 @@ class CMLeadFrom extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    CMLead: store.cmLead.CMLead,
   }
 }
 

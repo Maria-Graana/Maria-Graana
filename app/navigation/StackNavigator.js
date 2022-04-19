@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import { Text, TouchableOpacity } from 'react-native'
 import AppStyles from '../AppStyles'
+import { Feather } from '@expo/vector-icons'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import HeaderRight from '../components/HeaderRight/index'
@@ -378,7 +379,12 @@ function MainStack() {
                 }
               }}
             >
-              <Text style={{ paddingRight: 15 }}>Edit</Text>
+              <Feather
+                style={{ marginHorizontal: 15 }}
+                name="edit"
+                size={24}
+                color={AppStyles.colors.primaryColor}
+              />
             </TouchableOpacity>
           ),
           headerTitleAlign: 'center',

@@ -179,15 +179,17 @@ class Diary extends React.Component {
       )
 
       this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 3) {
-      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
-      const end = formatDateTime(
-        array[2].armsShift.name == 'Night' ? nextDay : selectedDate,
-        array[2].armsShift.endTime
-      )
+    }
+    // else if (array[0] && array[0].armsShift && array.length == 3) {
+    //   const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+    //   const end = formatDateTime(
+    //     array[2].armsShift.name == 'Night' ? nextDay : selectedDate,
+    //     array[2].armsShift.endTime
+    //   )
 
-      this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 1) {
+    //   this.setStatsData(start, end)
+    // }
+    else if (array[0] && array[0].armsShift && array.length == 1) {
       const start = formatDateTime(selectedDate, array[0] && array[0].armsShift.startTime)
       const end = formatDateTime(
         array[0] && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,

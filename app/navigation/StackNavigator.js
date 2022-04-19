@@ -369,6 +369,10 @@ function MainStack() {
                       lead: route.params.lead ? route.params.lead : null,
                       selectedCity,
                       update: true,
+                      purpose:
+                        route.params.lead && route.params.lead.purpose
+                          ? route.params.lead.purpose
+                          : '',
                     })
                   }
                 }

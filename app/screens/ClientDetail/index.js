@@ -113,7 +113,7 @@ class ClientDetail extends React.Component {
   }
 
   render() {
-    const { user } = this.props
+    const { user, permissions } = this.props
     const { client, loading, clientPhones } = this.state
     let updatePermission = this.updatePermission()
     let belongs = this.checkClient()
@@ -171,27 +171,39 @@ class ClientDetail extends React.Component {
             </View>
           </View>
           <View style={styles.buttonInputWrap}>
-            <TouchableButton
-              containerStyle={styles.timePageBtn}
-              label="Add Project Lead"
-              borderColor="white"
-              containerBackgroundColor="#0f73ee"
-              borderWidth={1}
-              fontSize={14}
-              // disabled={disabled}
-              onPress={() => this.goToFormPage('AddCMLead', 'CM', client)}
-            />
-            <TouchableButton
-              containerStyle={styles.timePageBtn}
-              containerBackgroundColor="white"
-              textColor="#0f73ee"
-              borderColor="#0f73ee"
-              borderWidth={1}
-              label="Add Buy/Rent Lead"
-              fontSize={14}
-              // disabled={disabled}
-              onPress={() => this.goToFormPage('AddRCMLead', 'RCM', client)}
-            />
+            {getPermissionValue(
+              PermissionFeatures.PROJECT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) && (
+              <TouchableButton
+                containerStyle={styles.timePageBtn}
+                label="Add Project Lead"
+                borderColor="white"
+                containerBackgroundColor="#0f73ee"
+                borderWidth={1}
+                fontSize={14}
+                // disabled={disabled}
+                onPress={() => this.goToFormPage('AddCMLead', 'CM', client)}
+              />
+            )}
+            {getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) && (
+              <TouchableButton
+                containerStyle={styles.timePageBtn}
+                containerBackgroundColor="white"
+                textColor="#0f73ee"
+                borderColor="#0f73ee"
+                borderWidth={1}
+                label="Add Buy/Rent Lead"
+                fontSize={14}
+                // disabled={disabled}
+                onPress={() => this.goToFormPage('AddRCMLead', 'RCM', client)}
+              />
+            )}
           </View>
         </ScrollView>
       </View>

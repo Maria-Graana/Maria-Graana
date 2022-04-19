@@ -11,9 +11,8 @@ import InvestLeads from '../screens/InvestLeads/index'
 import PropertyLead from '../screens/PropertyLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 import { connect } from 'react-redux'
-import WantedLeads from '../screens/WantedLeads/index'
-
-// const { width } = Dimensions.get('window')
+import WantedLeads from '../screens/WantedLeads/index';
+import HeaderLeftLogo from './../components/HeaderLeftLogo/index';
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -28,6 +27,26 @@ const TabBarBadge = ({ count, color, screen }) => {
 function LeadsNavigator(props) {
   const { count, user, permissions, route, navigation } = props
   const { screen, screenName, navFrom, hideCloseLostFilter } = route.params
+
+  //unmount
+
+
+
+  useEffect(() => {
+
+    if (screenName == 'AddClient') {
+      navigation.setOptions({
+        headerLeft: (props) => <HeaderLeftLogo navigation={navigation}
+          leftClientScreen={'Client'}
+
+          leftBool={true} />,
+      })
+    }
+
+  }, [navigation])
+
+
+
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: 'DEALS' })
   } else if (hideCloseLostFilter) {
@@ -431,7 +450,7 @@ function LeadsNavigator(props) {
         ) : null}
         {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
         {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) &&
-        route.params.screen != 'MyDeals' ? (
+          route.params.screen != 'MyDeals' ? (
           <Tab.Screen
             name="Wanted"
             initialParams={{

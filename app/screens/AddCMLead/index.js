@@ -51,6 +51,8 @@ class AddCMLead extends Component {
   componentDidMount() {
     const { navigation } = this.props
     navigation.addListener('focus', () => {
+
+
       const { client, name, selectedCity } = this.props.route.params
       const { formData } = this.state
       let copyObject = Object.assign({}, formData)
@@ -69,6 +71,22 @@ class AddCMLead extends Component {
     const { navigation } = this.props
     navigation.setParams({ selectedCity: null, client: null, name: null })
   }
+
+  getProductType = (id) => {
+    const { getProject } = this.state
+    var getProType = _.pluck(
+      _.filter(getProject, (item) => item.value === id),
+      'productType'
+    )
+    var getPro = []
+    getProType[0].map((item) => {
+      return getPro.push({ value: item.id.toString(), name: item.name })
+    })
+    this.setState({
+      getProductType: getPro,
+    })
+  }
+
 
   setClient = () => {
     const { formData } = this.state
@@ -115,7 +133,8 @@ class AddCMLead extends Component {
     const { formData, getProductType } = this.state
     formData[name] = value
     if (name === 'projectId') {
-      this.getProductType(value)
+   
+       this.getProductType(value)
     }
     if (name === 'projectType') {
       const getProName = getProductType.find((item) => {
@@ -153,7 +172,9 @@ class AddCMLead extends Component {
           .post(`/api/leads/project`, formData)
           .then((res) => {
             helper.successToast('Lead created successfully')
-            RootNavigation.navigate('Leads')
+            RootNavigation.navigateTo('Leads', {
+              screen: 'Invest',
+            })
           })
           .catch((error) => {
             console.log(error)
@@ -169,56 +190,6 @@ class AddCMLead extends Component {
     })
   }
 
-  // onSliderValueChange = (values) => {
-  //     const { formData } = this.state;
-  //     const prices = StaticData.PricesProject;
-  //     formData.minPrice = prices[values[0]];
-  //     formData.maxPrice = prices[values[values.length - 1]];
-  //     this.setState({ formData });
-  // }
-
-  handleClientClick = () => {
-    const { navigation } = this.props
-    const { selectedClient } = this.state
-    navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddCMLead' })
-  }
-
-  handleCityClick = () => {
-    const { navigation } = this.props
-    const { selectedCity } = this.state
-    navigation.navigate('SingleSelectionPicker', {
-      screenName: 'AddCMLead',
-      mode: 'city',
-      selectedCity,
-    })
-  }
-
-  getProductType = (id) => {
-    const { getProject } = this.state
-    var getProType = _.pluck(
-      _.filter(getProject, (item) => item.value === id),
-      'productType'
-    )
-    var getPro = []
-    getProType[0].map((item) => {
-      return getPro.push({ value: item.id.toString(), name: item.name })
-    })
-    this.setState({
-      getProductType: getPro,
-    })
-  }
-
-  showPriceModal = () => {
-    this.setState({
-      isPriceModalVisible: true,
-    })
-  }
-
-  onModalCancelPressed = () => {
-    this.setState({
-      isPriceModalVisible: false,
-    })
-  }
 
   onModalPriceDonePressed = (minValue, maxValue) => {
     const { formData } = this.state
@@ -248,23 +219,19 @@ class AddCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <CMLeadFrom
+                    navigation={this.props.navigation}
                     formSubmit={this.formSubmit}
                     checkValidation={checkValidation}
                     handleForm={this.handleForm}
                     clientName={clientName}
                     selectedCity={selectedCity}
-                    handleCityClick={this.handleCityClick}
-                    handleClientClick={this.handleClientClick}
                     formData={formData}
                     getProject={getProject}
                     getProductType={getProductType}
                     loading={loading}
                     isPriceModalVisible={isPriceModalVisible}
-                    showPriceModal={() => this.showPriceModal()}
-                    onModalPriceDonePressed={(minValue, maxValue) =>
-                      this.onModalPriceDonePressed(minValue, maxValue)
-                    }
-                    onModalCancelPressed={() => this.onModalCancelPressed()}
+                  setParentState={(obj) => { this.setState(obj) }}
+
                   />
                 </View>
               </TouchableWithoutFeedback>

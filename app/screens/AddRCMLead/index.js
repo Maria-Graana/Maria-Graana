@@ -112,6 +112,7 @@ class AddRCMLead extends Component {
     copyObject.city_id = selectedCity ? selectedCity.value : null
     setTimeout(() => {
       const { selectedAreasIds } = this.props
+      console.log("as", selectedAreasIds);
       copyObject.leadAreas = selectedCity && selectedAreasIds
       this.setState({
         RCMFormData: copyObject,
@@ -194,25 +195,8 @@ class AddRCMLead extends Component {
     }
   }
 
-  handleClientClick = () => {
-    const { navigation } = this.props
-    const { selectedClient } = this.state
-    navigation.navigate('Client', {
-      isFromDropDown: true,
-      selectedClient,
-      screenName: 'AddRCMLead',
-    })
-  }
 
-  handleCityClick = () => {
-    const { navigation } = this.props
-    const { selectedCity } = this.state
-    navigation.navigate('SingleSelectionPicker', {
-      screenName: 'AddRCMLead',
-      mode: 'city',
-      selectedCity,
-    })
-  }
+
 
   selectSubtype = (type) => {
     this.setState(
@@ -292,7 +276,7 @@ class AddRCMLead extends Component {
       description: RCMFormData.description,
       phones: RCMFormData.phones,
     }
-   
+
     this.setState({ loading: true }, () => {
       if (user.subRole === 'group_management') {
         let newOrg = _.find(organizations, function (item) {
@@ -300,18 +284,25 @@ class AddRCMLead extends Component {
         })
         payLoad.org = newOrg.name.toLowerCase()
       }
+
       axios
         .post(`/api/leads`, payLoad)
         .then((res) => {
+
           helper.successToast('Lead created successfully')
-          if(payLoad.purpose=='buy')
-          {
-            RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+          if (payLoad.purpose == 'buy') {
+            RootNavigation.navigateTo('Leads', {
+              screen: 'Buy',
+            })
+
           }
-          else{
-            RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+          else {
+            RootNavigation.navigateTo('Leads', {
+              screen: 'Rent',
+            })
+
           }
-          
+
         })
         .catch((error) => {
           console.log('error on creating lead')
@@ -331,61 +322,10 @@ class AddRCMLead extends Component {
     )
   }
 
-  showBedBathModal = (modalType) => {
-    this.setState({ isBedBathModalVisible: true, modalType })
-  }
 
-  onBedBathModalDonePressed = (minValue, maxValue) => {
-    const { RCMFormData, modalType } = this.state
-    const copyObject = { ...RCMFormData }
-    switch (modalType) {
-      case 'bed':
-        copyObject.bed = minValue
-        copyObject.maxBed = maxValue
-        this.setState({ RCMFormData: copyObject })
-        break
-      case 'bath':
-        copyObject.bath = minValue
-        copyObject.maxBath = maxValue
-        this.setState({ RCMFormData: copyObject })
-      default:
-        break
-    }
-    this.setState({ isBedBathModalVisible: false })
-  }
 
-  onModalCancelPressed = () => {
-    this.setState({
-      isBedBathModalVisible: false,
-      isPriceModalVisible: false,
-      isSizeModalVisible: false,
-    })
-  }
 
-  showPriceModal = () => {
-    this.setState({ isPriceModalVisible: true })
-  }
 
-  onModalPriceDonePressed = (minValue, maxValue) => {
-    const { RCMFormData } = this.state
-    const copyObject = { ...RCMFormData }
-    copyObject.minPrice = minValue
-    copyObject.maxPrice = maxValue
-    this.setState({ RCMFormData: copyObject, isPriceModalVisible: false })
-  }
-
-  showSizeModal = () => {
-    this.setState({ isSizeModalVisible: true })
-  }
-
-  onModalSizeDonePressed = (minValue, maxValue, unit) => {
-    const { RCMFormData } = this.state
-    const copyObject = { ...RCMFormData }
-    copyObject.size = minValue
-    copyObject.maxSize = maxValue
-    copyObject.size_unit = unit
-    this.setState({ RCMFormData: copyObject, isSizeModalVisible: false })
-  }
 
   render() {
     const {
@@ -400,6 +340,7 @@ class AddRCMLead extends Component {
       priceList,
       loading,
       sizeUnitList,
+      selectedClient,
       isBedBathModalVisible,
       isPriceModalVisible,
       isSizeModalVisible,
@@ -415,11 +356,14 @@ class AddRCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <RCMLeadFrom
+                    setParentState={(obj) => { this.setState(obj) }}
+                    navigation={this.props.navigation}
                     sizeUnitList={sizeUnitList}
                     organizations={_.clone(organizations)}
-                    handleClientClick={this.handleClientClick}
+                  
                     selectedCity={selectedCity}
-                    handleCityClick={this.handleCityClick}
+                    selectedClient={selectedClient}
+                   
                     clientName={clientName}
                     formSubmit={this.RCMFormSubmit}
                     checkValidation={checkValidation}
@@ -437,21 +381,8 @@ class AddRCMLead extends Component {
                     loading={loading}
                     isBedBathModalVisible={isBedBathModalVisible}
                     modalType={modalType}
-                    showBedBathModal={(value) => this.showBedBathModal(value)}
-                    onBedBathModalDonePressed={(minValue, maxValue) =>
-                      this.onBedBathModalDonePressed(minValue, maxValue)
-                    }
-                    onModalCancelPressed={() => this.onModalCancelPressed()}
                     isPriceModalVisible={isPriceModalVisible}
-                    showPriceModal={() => this.showPriceModal()}
-                    onModalPriceDonePressed={(minValue, maxValue) =>
-                      this.onModalPriceDonePressed(minValue, maxValue)
-                    }
                     isSizeModalVisible={isSizeModalVisible}
-                    showSizeModal={() => this.showSizeModal()}
-                    onModalSizeDonePressed={(minValue, maxValue, unit) =>
-                      this.onModalSizeDonePressed(minValue, maxValue, unit)
-                    }
                   />
                 </View>
               </TouchableWithoutFeedback>

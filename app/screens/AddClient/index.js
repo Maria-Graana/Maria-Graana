@@ -4,12 +4,16 @@ import React, { Component } from 'react'
 import {
   View,
   KeyboardAvoidingView,
-  ScrollView,
-  Alert,
+
   Keyboard,
   TouchableWithoutFeedback,
-} from 'react-native'
+} from 'react-native';
+import { setSelectedAreas } from './../../actions/areas'
+import TouchableButton from '../../components/TouchableButton'
+import HideWithKeyboard from 'react-native-hide-with-keyboard';
+import * as RootNavigation from '../../navigation/RootNavigation'
 import { StyleProvider } from 'native-base'
+import { refreshAddress, refreshMailingAddress } from "./ClientHelper";
 import DetailForm from './detailForm'
 import AppStyles from '../../AppStyles'
 import getTheme from '../../../native-base-theme/components'
@@ -26,6 +30,69 @@ class AddClient extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      //invest states
+      checkValidations: false,
+      clientName: '',
+      selectedClient: null,
+      selectedCity: null,
+      getInvestProject: [],
+      getProductType: [],
+      formType: 'sale',
+      selectSubType: [],
+      getAreas: [],
+      loadings: false,
+      investFormData: {
+        customerId: '',
+        cityId: '',
+        projectId: '',
+        projectType: '',
+        armsProjectTypeId: null,
+        minPrice: StaticData.PricesProject[0],
+        maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
+        description: '',
+      },
+
+      //till
+
+      //RentLead States
+
+      organizations: [],
+      checkRentValidation: false,
+      clientName: '',
+      selectedClient: null,
+      //  selectedCity: null,
+      getProject: [],
+      formType: 'buy',
+      priceList: [],
+      sizeUnitList: [],
+      selectSubType: [],
+      loading: false,
+      isBedBathModalVisible: false,
+
+      isSizeModalVisible: false,
+      modalType: 'none',
+      RCMFormData: {
+        type: '',
+        subtype: '',
+        leadAreas: [],
+        customerId: '',
+        city_id: '',
+        size_unit: 'marla',
+        description: '',
+        org: '',
+        bed: null,
+        maxBed: null,
+        bath: null,
+        maxBath: null,
+        size: StaticData.sizeMarla[0],
+        maxSize: StaticData.sizeMarla[StaticData.sizeMarla.length - 1],
+        minPrice: 0,
+        maxPrice: 0,
+      },
+
+
+      //till
+
       checkValidation: false,
       cities: [],
       getClients: [],
@@ -36,6 +103,29 @@ class AddClient extends Component {
         lastName: '',
         email: '',
         cnic: '',
+        //added 
+        relationStatus: '',
+        relativeName: '',
+        profession: '',
+        passport: '',
+        nationality: '',
+        dob: null,
+        country: '',
+        province: "",
+        district: "",
+        city: "",
+        mCountry: "",
+        mProvince: "",
+        mDistrict: "",
+        mCity: "",
+        mAddress: "",
+        purpose: "Select Lead Type",
+
+        //need to confirm from backend
+        clientType: 'Personal Client',
+
+
+        //till
         familyMember: '',
         contactNumber: '',
         address: '',
@@ -65,7 +155,12 @@ class AddClient extends Component {
       accountsOptionFields: false,
     }
   }
+
+  //Invest Lead
+
   componentDidMount() {
+
+
     const { route, navigation } = this.props
     navigation.setParams({ title: 'ADD CLIENT INFO' })
 
@@ -97,7 +192,193 @@ class AddClient extends Component {
         this.setState({ countries }, () => this.fetchCountryCode())
       })
     }
+
+    const { user } = this.props
+    const { purpose } = this.props.route.params
+    if (purpose) {
+      this.setState({ formType: purpose }, () => {
+        this.setPriceList()
+      })
+    } else {
+      this.setPriceList()
+    }
+
+
+
+
+    navigation.addListener('focus', () => {
+      this.onScreenFocused()
+
+      if (this.state.formData.purpose == 'Invest') {
+
+        const { client, name, selectedCity } = this.props.route.params
+        const { investFormData } = this.state
+        let copyObject = Object.assign({}, investFormData)
+        if (client && name) this.setClient()
+        if (selectedCity) {
+
+          copyObject.cityId = selectedCity?.value
+          this.setState({ investFormData: copyObject, selectedCity }, () => {
+            this.clearParmas()
+          })
+        }
+      }
+    })
+    this.getAllProjects()
+    this.fetchOrganizations()
   }
+
+
+  clearParmas = () => {
+    const { navigation } = this.props
+    navigation.setParams({ selectedCity: null, client: null, name: null })
+  }
+
+  setClient = () => {
+    const { investFormData } = this.state
+    const { client, name } = this.props.route.params
+    let copyObject = Object.assign({}, investFormData)
+    let phones = []
+    if (client.customerContacts && client.customerContacts.length) {
+      client.customerContacts.map((item) => {
+        phones.push(item.phone)
+      })
+    } else {
+      if (client && client.phone) {
+        phones.push(client.phone)
+      }
+    }
+    copyObject.customerId = client.id
+    copyObject.phones = phones
+    this.setState(
+      { investFormData: _.clone(copyObject), clientName: name, selectedClient: client },
+      () => {
+        this.clearParmas()
+      }
+    )
+  }
+
+  getAllProjects = () => {
+    axios.get(`/api/project/all`).then((res) => {
+      let projectArray = []
+      res &&
+        res.data.items.map((item, index) => {
+          return projectArray.push({
+            value: item.id,
+            name: item.name,
+            productType: item.productTypes,
+          })
+        })
+      this.setState({
+        getInvestProject: projectArray,
+      })
+    })
+  }
+
+  handleInvestForm = (value, name) => {
+
+
+    const { investFormData, getProductType } = this.state
+    investFormData[name] = value
+    if (name === 'projectId') {
+      this.getProductType(value)
+    }
+    if (name === 'projectType') {
+      const getProName = getProductType.find((item) => {
+        return item.value === value
+      })
+      investFormData['armsProjectTypeId'] = value
+      investFormData['projectType'] = getProName.name
+    }
+    this.setState({ investFormData })
+  }
+
+  selectSubtype = (type) => {
+    this.setState({ selectSubType: StaticData.subType[type] })
+  }
+
+  investSubmitForm = (customerId) => {
+
+
+    const { investFormData, getInvestProject, formData, callingCode, callingCode1, callingCode2, } = this.state;
+    investFormData.customerId = customerId;
+
+    let phone1 = this.checkNum(formData.contactNumber, callingCode)
+
+
+
+    let phone2 = this.checkNum(formData.contact1, callingCode1)
+    let phone3 = this.checkNum(formData.contact2, callingCode2)
+    let Arr = [phone1.replace(/\s+/g, '')];
+    if (phone2) {
+      Arr.push(phone2.replace(/\s+/g, ''))
+    }
+    if (phone3) {
+      Arr.push(phone3.replace(/\s+/g, ''))
+    }
+
+
+    investFormData.phones = phone1 ? Arr : null,
+      console.log(investFormData)
+    if (!investFormData.customerId || !investFormData.cityId) {
+      this.setState({
+        checkValidations: true,
+      })
+    } else {
+      if (investFormData.projectId && investFormData.projectId !== '') {
+        let project = _.find(getInvestProject, function (item) {
+          return item.value === investFormData.projectId
+        })
+        investFormData.projectName = project.name
+      } else {
+        investFormData.projectId = null
+        investFormData.projectName = null
+      }
+      investFormData.noProduct = false
+
+      this.setState({ loadings: true }, () => {
+        axios
+          .post(`/api/leads/project`, investFormData)
+          .then((res) => {
+            helper.successToast('Client and Invest lead have been registered successfully.')
+            // helper.successToast('Lead created successfully')
+            RootNavigation.navigateTo('Leads', {
+              screen: 'Invest',
+              screenName:'AddClient'
+            })
+          })
+          .catch((error) => {
+            console.log(error)
+            this.setState({ loadings: false })
+          })
+      })
+    }
+  }
+
+  changeStatus = (status) => {
+    this.setState({
+      formType: status,
+    })
+  }
+
+
+  getProductType = (id) => {
+    const { getInvestProject } = this.state
+    var getProType = _.pluck(
+      _.filter(getInvestProject, (item) => item.value === id),
+      'productType'
+    )
+    var getPro = []
+    getProType[0].map((item) => {
+      return getPro.push({ value: item.id.toString(), name: item.name })
+    })
+    this.setState({
+      getProductType: getPro,
+    })
+  }
+
+  //invest till
+
 
   fetchCountryCode = () => {
     const { countries } = this.state
@@ -213,6 +494,7 @@ class AddClient extends Component {
     }
     return number
   }
+  //runs while updating
   updateFields = () => {
     const { route } = this.props
     const { client } = route.params
@@ -232,6 +514,7 @@ class AddClient extends Component {
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
 
+
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,
@@ -239,12 +522,25 @@ class AddClient extends Component {
       cnic: client.cnic ? String(client.cnic) : '',
       contactNumber: number,
       address: client.address,
-      familyMember: client.familyMember,
       contact1: number1,
       contact2: number2,
-      iBan: client.iBan,
-      bank: client.bank,
-      accountTitle: client.accountTitle,
+      country: client.country,
+      passport: client.passport,
+      province: client.province,
+      district: client.district,
+      city: client.city,
+      relationStatus: client.relationStatus,
+      relativeName: client.relativeName,
+      profession: client.profession,
+      mCountry: client.mCountry,
+      mProvince: client.mProvince,
+      mDistrict: client.mDistrict,
+      mCity: client.mCity,
+      mAddress: client.mAddress,
+      nationality: client.nationality,
+      dob: client.dob,
+      //clientType
+
     }
     this.setState({ formData })
   }
@@ -277,10 +573,21 @@ class AddClient extends Component {
   }
 
   handleForm = (value, name) => {
+
     const { formData } = this.state
     if (name == 'cnic') {
       this.validateCnic(value)
     }
+
+
+    if (name == 'country') {
+      refreshAddress(formData)
+    }
+
+    if (name == 'mCountry') {
+      refreshMailingAddress(formData)
+    }
+
     if (name == 'email') this.validateEmail(value)
     if (name === 'contactNumber') {
       this.validatePhone(value)
@@ -339,7 +646,7 @@ class AddClient extends Component {
           dialCode: callingCode,
         },
         address: formData.address,
-        secondary_address: formData.secondaryAddress,
+        secondary_address: formData.address,
         contact1: {
           countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
           contact1: phone2 ? phone2.replace(/\s+/g, '') : null,
@@ -351,6 +658,25 @@ class AddClient extends Component {
           dialCode: callingCode2,
         },
         familyMember: formData.familyMember,
+
+
+        //need to confirm about payment
+        relationStatus: formData.relationStatus,
+        relativeName: formData.relativeName,
+        profession: formData.profession,
+        passport: formData.passport,
+        province: formData.province,
+        district: formData.district,
+        city: formData.city,
+        mCountry: formData.mCountry,
+        mProvince: formData.mProvince,
+        mDistrict: formData.mDistrict,
+        mCity: formData.mCity,
+        mAddress: formData.mAddress,
+        nationality: formData.nationality,
+        dob: formData.dob,
+        //
+
         bank: formData.bank,
         accountTitle: formData.accountTitle,
         iBan: formData.iBan,
@@ -360,9 +686,11 @@ class AddClient extends Component {
       if (!body.contact2.contact2) delete body.contact2
       return body
     } else {
+
       let body = {
-        first_name: helper.capitalize(formData.firstName),
-        last_name: helper.capitalize(formData.lastName),
+        address: formData.address,
+        secondary_address: null,
+        country: formData.country,
         email: formData.email,
         cnic: formData.cnic,
         phone: {
@@ -370,8 +698,6 @@ class AddClient extends Component {
           phone: phone1 ? phone1.replace(/\s+/g, '') : null,
           dialCode: callingCode,
         },
-        address: formData.address,
-        secondary_address: formData.secondaryAddress,
         contact1: {
           countryCode: callingCode1 === '+92' ? 'PK' : countryCode1,
           contact1: phone2 ? phone2.replace(/\s+/g, '') : null,
@@ -382,10 +708,22 @@ class AddClient extends Component {
           contact2: phone3 ? phone3.replace(/\s+/g, '') : null,
           dialCode: callingCode2,
         },
-        familyMember: formData.familyMember,
-        bank: formData.bank,
-        accountTitle: formData.accountTitle,
-        iBan: formData.iBan,
+        first_name: helper.capitalize(formData.firstName),
+        last_name: helper.capitalize(formData.lastName),
+        passport: formData.passport,
+        province: formData.province,
+        district: formData.district,
+        city: formData.city,
+        relationStatus: formData.relationStatus,
+        relativeName: formData.relativeName,
+        profession: formData.profession,
+        mCountry: formData.mCountry,
+        mProvince: formData.mProvince,
+        mDistrict: formData.mDistrict,
+        mCity: formData.mCity,
+        mAddress: formData.mAddress,
+        nationality: formData.nationality,
+        dob: formData.dob,
       }
       if (!body.contact1.contact1) delete body.contact1
       if (!body.contact2.contact2) delete body.contact2
@@ -417,6 +755,25 @@ class AddClient extends Component {
       last_name: helper.capitalize(formData.lastName),
       email: formData.email,
       cnic: formData.cnic & (formData.cnic === '') ? null : formData.cnic,
+
+
+      nationality: formData.nationality,
+      dob: formData.dob,
+
+      mCountry: formData.mCountry,
+      mProvince: formData.mProvince,
+      mDistrict: formData.mDistrict,
+      mCity: formData.mCity,
+      mAddress: formData.mAddress,
+
+      province: formData.province,
+      district: formData.district,
+      city: formData.city,
+      passport: formData.passport,
+      country: formData.country,
+      relationStatus: formData.relationStatus,
+      relativeName: formData.relativeName,
+      profession: formData.profession,
       phone: {
         countryCode: newCallingCode === '+92' ? 'PK' : countryCode,
         phone:
@@ -447,10 +804,10 @@ class AddClient extends Component {
               : null,
         dialCode: newCallingCode2,
       },
-      familyMember: formData.familyMember,
-      bank: formData.bank,
+      // familyMember: formData.familyMember,
+      //bank: formData.bank,
       accountTitle: formData.accountTitle,
-      iBan: formData.iBan,
+      //iBan: formData.iBan,
       bookunit: formData.bookunit,
     }
     body.customersContacts = []
@@ -461,6 +818,8 @@ class AddClient extends Component {
       body.customersContacts.push(body.contact2)
     delete body.contact1
     delete body.contact2
+
+
     return body
   }
   checkRequiredField = () => {
@@ -487,7 +846,11 @@ class AddClient extends Component {
     return checkOptionalFields
   }
   formSubmit = () => {
-    const { formData, emailValidate, phoneValidate, cnicValidate } = this.state
+    const { formData, emailValidate, phoneValidate, cnicValidate, investFormData, RCMFormData } = this.state
+
+    const { user } = this.props
+
+
     const { route, navigation, contacts, armsContacts } = this.props
     const { update, client, isFromDropDown, screenName, isPOC, isFromScreen = null } = route.params
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
@@ -501,16 +864,43 @@ class AddClient extends Component {
         checkValidation: true,
         accountsOptionFields: this.checkRequiredField(),
       })
-    } else {
+    }
+    //validations for rent/invest leads
+
+
+    else if (!investFormData.cityId && formData.purpose == 'Invest') {
+      this.setState({
+        checkValidations: true,
+      })
+    }
+
+    else if ((
+
+      !RCMFormData.city_id ||
+      !RCMFormData.leadAreas ||
+      !RCMFormData.type ||
+      !RCMFormData.subtype
+    ) && (formData.purpose == 'Buy' || formData.purpose == 'Rent')) {
+
+      this.setState({
+        checkRentValidation: true,
+      })
+    }
+
+
+    else {
       if (emailValidate && !phoneValidate && !cnicValidate) {
         if (formData.cnic === '') formData.cnic = null
         if (!update) {
           let body = this.createPayload()
           body.name = body.first_name + ' ' + body.last_name
           this.setState({ loading: true })
+      
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
+
+              //id
               if (res.status === 200 && res.data) {
                 if (formData.contactRegistrationId) {
                   let isContactExists = armsContacts.find(
@@ -526,7 +916,8 @@ class AddClient extends Component {
                     helper.errorToast(res.data.message)
                   }
                 } else {
-                  helper.successToast(res.data.message)
+
+                  if (formData.purpose === 'Select Lead Type') { helper.successToast(res.data.message) }
                   isFromDropDown
                     ? isPOC
                       ? navigation.navigate(screenName, {
@@ -546,10 +937,11 @@ class AddClient extends Component {
                       })
                     : isFromScreen
                       ? navigation.navigate('Contacts')
-                      : navigation.navigate('Client', {
-                        isUnitBooking: false,                 
-                      })
-           
+                      : formData.purpose === 'Select Lead Type' ? navigation.navigate('Client', {
+                        isUnitBooking: false,
+                      }) : (formData.purpose == 'Buy' || formData.purpose == 'Rent') ? this.RCMFormSubmit(res.data.id) : this.investSubmitForm(res.data.id)
+
+
                 }
               }
             })
@@ -633,12 +1025,282 @@ class AddClient extends Component {
     }
   }
 
+
+
+
+
+  //rent/buyy
+
+
+
+  componentDidUpdate(prevProps, prevState) {
+    //Typical usage, don't forget to compare the props
+    if (prevState?.selectedCity && this.state?.selectedCity?.value !== prevState.selectedCity?.value) {
+      this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
+    }
+  }
+
+
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    // selected Areas should be cleared to be used anywhere else
+    dispatch(setSelectedAreas([]))
+  }
+
+
+
+  onScreenFocused = () => {
+
+
+    const { client, name, selectedCity } = this.props.route.params
+    const { RCMFormData } = this.state
+    let copyObject = Object.assign({}, RCMFormData)
+    let phones = []
+    if (client && client.customerContacts && client.customerContacts.length) {
+      client.customerContacts.map((item) => {
+        phones.push(item.phone)
+      })
+      copyObject.customerId = client.id
+      copyObject.phones = phones
+    }
+
+    copyObject.city_id = selectedCity ? selectedCity.value : null
+    setTimeout(() => {
+      const { selectedAreasIds } = this.props
+    
+      copyObject.leadAreas = selectedCity && selectedAreasIds
+      this.setState({
+        RCMFormData: copyObject,
+        selectedCity,
+        selectedClient: client,
+        clientName: name,
+      })
+    }, 500)
+  }
+
+
+  fetchOrganizations = () => {
+    axios
+      .get('/api/user/organizations?limit=2')
+      .then((res) => {
+        let organizations = []
+        res &&
+          res.data.rows.length &&
+          res.data.rows.map((item, index) => {
+            return organizations.push({ value: item.id, name: item.name })
+          })
+        this.setState({ organizations })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  setPriceList = () => {
+    const { formType, RCMFormData } = this.state
+    if (formType === 'buy') {
+      RCMFormData.minPrice = StaticData.PricesBuy[0]
+      RCMFormData.maxPrice = StaticData.PricesBuy[StaticData.PricesBuy.length - 1]
+      this.setState({ RCMFormData, priceList: StaticData.PricesBuy })
+    } else {
+      RCMFormData.minPrice = StaticData.PricesRent[0]
+      RCMFormData.maxPrice = StaticData.PricesRent[StaticData.PricesRent.length - 1]
+      this.setState({ RCMFormData, priceList: StaticData.PricesRent })
+    }
+  }
+
+  handleRCMForm = (value, name) => {
+    const { RCMFormData } = this.state
+    if (name === 'description') {
+      const copyObject = { ...RCMFormData }
+      copyObject.description = value
+      this.setState({ RCMFormData: copyObject })
+    } else {
+      const { dispatch } = this.props
+      RCMFormData[name] = value
+      if (name === 'size_unit') this.setSizeUnitList(value)
+      this.setState({ RCMFormData })
+      if (RCMFormData.type != '') {
+        this.selectSubtype(RCMFormData.type)
+      }
+    }
+  }
+
+  clearAreaOnCityChange = () => {
+    const { dispatch } = this.props
+    const { RCMFormData } = this.state
+    let copyObject = Object.assign({}, RCMFormData)
+    copyObject.leadAreas = []
+    this.setState({ RCMFormData: copyObject })
+    dispatch(setSelectedAreas([]))
+  }
+
+
+
+
+  selectSubtype = (type) => {
+    this.setState(
+      {
+        selectSubType: StaticData.subType[type],
+      },
+      () => {
+        this.setDefaultValuesForBedBath(type)
+      }
+    )
+  }
+
+  setDefaultValuesForBedBath = (type) => {
+    if (type === 'residential') {
+      const { RCMFormData } = this.state
+      const copyObject = { ...RCMFormData }
+      copyObject.bed = 0
+      copyObject.bath = 0
+      copyObject.maxBed = StaticData.bedBathRange[StaticData.bedBathRange.length - 1]
+      copyObject.maxBath = StaticData.bedBathRange[StaticData.bedBathRange.length - 1]
+      this.setState({ RCMFormData: copyObject })
+    }
+  }
+
+  RCMFormSubmit = (customerId) => {
+
+
+    const { } = this.state
+
+    const { RCMFormData, formData, callingCode, callingCode1, callingCode2 } = this.state;
+
+
+    let phone1 = this.checkNum(formData.contactNumber, callingCode)
+    let phone2 = this.checkNum(formData.contact1, callingCode1)
+    let phone3 = this.checkNum(formData.contact2, callingCode2)
+    let Arr = [phone1.replace(/\s+/g, '')];
+    if (phone2) {
+      Arr.push(phone2.replace(/\s+/g, ''))
+    }
+    if (phone3) {
+      Arr.push(phone3.replace(/\s+/g, ''))
+    }
+    RCMFormData.phones = phone1 ? Arr : null,
+
+
+      RCMFormData.customerId = customerId;
+
+    const { user } = this.props
+    if (user.subRole === 'group_management') {
+      if (
+        !RCMFormData.customerId ||
+        !RCMFormData.city_id ||
+        !RCMFormData.leadAreas ||
+        !RCMFormData.type ||
+        !RCMFormData.org ||
+        !RCMFormData.subtype
+      ) {
+        this.setState({
+          checkRentValidation: true,
+        })
+      } else this.sendPayload()
+    } else {
+
+      if (
+        !RCMFormData.customerId ||
+        !RCMFormData.city_id ||
+        !RCMFormData.leadAreas ||
+        !RCMFormData.type ||
+        !RCMFormData.subtype
+      ) {
+        this.setState({
+          checkRentValidation: true,
+        })
+      } else this.sendPayload()
+    }
+  }
+
+
+
+
+  sendPayload = () => {
+
+    const { formType, RCMFormData, formData, organizations } = this.state
+    const { user } = this.props
+    if (RCMFormData.size === '') RCMFormData.size = null
+    else RCMFormData.size = Number(RCMFormData.size)
+    let payLoad = {
+      purpose: formType,
+      type: RCMFormData.type,
+      subtype: RCMFormData.subtype,
+      bed: RCMFormData.bed,
+      bath: RCMFormData.bath,
+      maxBed: RCMFormData.maxBed,
+      maxBath: RCMFormData.maxBath,
+      size: RCMFormData.size,
+      max_size: RCMFormData.maxSize,
+      leadAreas: RCMFormData.leadAreas,
+      customerId: RCMFormData.customerId,
+      city_id: RCMFormData.city_id,
+      size_unit: RCMFormData.size_unit,
+      price: RCMFormData.maxPrice,
+      min_price: RCMFormData.minPrice,
+      description: RCMFormData.description,
+      phones: RCMFormData.phones,
+    }
+
+    this.setState({ loading: true }, () => {
+      if (user.subRole === 'group_management') {
+        let newOrg = _.find(organizations, function (item) {
+          return item.value === formData.org
+        })
+        payLoad.org = newOrg.name.toLowerCase()
+      }
+
+     
+      axios
+        .post(`/api/leads`, payLoad)
+        .then((res) => {
+
+          helper.successToast(`Client and ${payLoad.purpose} lead have been registered successfully.`)
+       
+          if (payLoad.purpose === 'buy') {
+
+            RootNavigation.navigateTo('Leads', {
+              screen: 'Buy',
+              screenName:'AddClient'
+            })
+          }
+          else {
+            RootNavigation.navigateTo('Leads', {
+              screen: 'Rent',
+              screenName:'AddClient'
+            })
+          }
+
+        })
+        .catch((error) => {
+          console.log('error on creating lead')
+          this.setState({ loading: false })
+        })
+    })
+  }
+
+  changeStatus = (status) => {
+    this.setState(
+      {
+        formType: status,
+      },
+      () => {
+        this.setPriceList()
+      }
+    )
+  }
+
+
+
   render() {
     const {
       formData,
       cities,
       getClients,
       getProject,
+
       phoneValidate,
       emailValidate,
       cnicValidate,
@@ -650,17 +1312,54 @@ class AddClient extends Component {
       contactNumberCheck,
       loading,
       accountsOptionFields,
+      selectedClient,
+
+
+      //Invest
+
+      investFormData,
+      getInvestProject,
+      checkValidations,
+      selectedCity,
+      clientName,
+      getProductType,
+      loadings,
+      isPriceModalVisible,
+
+
+      //rent/buy
+      organizations,
+      rentCities,
+      //clientName,
+      formType,
+      RCMFormData,
+      selectSubType,
+      checkRentValidation,
+      priceList,
+      rentLoading,
+      sizeUnitList,
+      isBedBathModalVisible,
+
+      isSizeModalVisible,
+      modalType,
     } = this.state
+
     const { route } = this.props
     const { update, client, screenName } = route.params
+    let btnText = update ? 'UPDATE' : 'ADD'
+
     return (
-      <View style={[AppStyles.container]}>
+      <View style={[[AppStyles.container,]]}>
         <StyleProvider style={getTheme(formTheme)}>
-          <KeyboardAvoidingView enabled>
-            <ScrollView keyboardShouldPersistTaps="always">
+          <>
+            <KeyboardAvoidingView style={{ flex: 1, }} enabled>
+              {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always"> */}
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                <View>
+                <View style={{ flex: 1 }}>
                   <DetailForm
+                    route={this.props.route}
+
+                    navigation={this.props.navigation}
                     formSubmit={this.formSubmit}
                     checkValidation={this.state.checkValidation}
                     handleForm={this.handleForm}
@@ -685,11 +1384,73 @@ class AddClient extends Component {
                     accountsOptionFields={accountsOptionFields}
                     client={client}
                     screenName={screenName}
+
+
+
+                    //Invest
+                    handleInvestForm={this.handleInvestForm}
+                    investFormData={investFormData}
+                    getInvestProject={getInvestProject}
+                    checkValidations={checkValidations}
+                    selectedCity={selectedCity}
+                    clientName={clientName}
+                    getProductType={getProductType}
+                    loadings={loadings}
+                    isPriceModalVisible={isPriceModalVisible}
+                    setParentState={(obj) => { this.setState(obj) }}
+
+
+                    //Rent/Buy
+
+
+                    sizeUnitList={sizeUnitList}
+                    organizations={_.clone(organizations)}
+
+
+                    selectedClient={selectedClient}
+
+                    // clientName={clientName}
+                    //  formSubmit={this.RCMFormSubmit}
+                    checkRentValidation={checkRentValidation}
+                    handleRCMForm={this.handleRCMForm}
+                    changeStatus={this.changeStatus}
+                    size={StaticData.oneToTen}
+                    sizeUnit={StaticData.sizeUnit}
+                    propertyType={StaticData.type}
+
+                    formType={formType}
+                    subTypeData={selectSubType}
+                    handleAreaClick={this.handleAreaClick}
+                    priceList={priceList}
+                    onSliderValueChange={(values) => this.onSliderValueChange(values)}
+                    RCMFormData={RCMFormData}
+                    rentLoading={rentLoading}
+                    isBedBathModalVisible={isBedBathModalVisible}
+                    modalType={modalType}
+
+                    isSizeModalVisible={isSizeModalVisible}
+
                   />
                 </View>
               </TouchableWithoutFeedback>
-            </ScrollView>
-          </KeyboardAvoidingView>
+              {/* </ScrollView> */}
+            </KeyboardAvoidingView>
+
+            <HideWithKeyboard>
+              <View style={[AppStyles.bottomStickyButton]} >
+                <TouchableButton
+                  containerStyle={[AppStyles.formBtn,]}
+                  label={btnText}
+                  onPress={() => {
+                    this.formSubmit(formData)
+                  }
+                  }
+                  loading={loading}
+                />
+
+              </View>
+            </HideWithKeyboard>
+          </>
         </StyleProvider>
       </View>
     )
@@ -701,6 +1462,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     contacts: store.contacts.contacts,
     armsContacts: store.armsContacts.armsContacts,
+    selectedAreasIds: store.areasReducer.selectedAreas,
   }
 }
 

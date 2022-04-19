@@ -107,6 +107,9 @@ class ClientDetail extends React.Component {
     const { client, loading, clientPhones } = this.state
     let updatePermission = this.updatePermission()
     let belongs = this.checkClient()
+
+    
+
     return !loading ? (
       <View
         style={[
@@ -135,17 +138,50 @@ class ClientDetail extends React.Component {
                 {client.cnic && helper.normalizeCnicAndNTN(client.cnic)}
               </Text>
               <Text style={styles.headingText}>Son / Daughter/ Spouse of</Text>
-              <Text style={styles.labelText}>{client.familyMember}</Text>
-              <Text style={styles.headingText}>Bank</Text>
-              <Text style={styles.labelText}>{client.bank}</Text>
-              <Text style={styles.headingText}>Account Title</Text>
-              <Text style={styles.labelText}>{client.accountTitle}</Text>
-              <Text style={styles.headingText}>IBAN</Text>
-              <Text style={styles.labelText}>{client.iBan}</Text>
+              <Text style={styles.labelText}>{client.relativeName}</Text>
+
+              <Text style={styles.headingText}>Date Of Birth</Text>
+              <Text style={styles.labelText}>{client.dob}</Text>
+              <Text style={styles.headingText}>Nationality</Text>
+              <Text style={styles.labelText}>{client.nationality}</Text>
+            
+              <Text style={styles.headingText}>Profession</Text>
+              <Text style={styles.labelText}>{client.profession}</Text>
+              <Text style={styles.headingText}>Passport</Text>
+              <Text style={styles.labelText}>{client.passport}</Text>
+            
+
+
+              {/* Mailing Address */}
+              <Text style={[styles.labelText]}>Mailing Address:</Text>
+              <Text style={styles.headingText}>Country</Text>
+              <Text style={styles.labelText}>{client.mCountry}</Text>
+              <Text style={styles.headingText}>Province</Text>
+              <Text style={styles.labelText}>{client.mProvince}</Text>
+              <Text style={styles.headingText}>District</Text>
+              <Text style={styles.labelText}>{client.mDistrict}</Text>
+              <Text style={styles.headingText}>City</Text>
+              <Text style={styles.labelText}>{client.mCity}</Text>
+              <Text style={styles.headingText}>Address</Text>
+              <Text style={styles.labelText}>{client.mAddress}</Text>
+
+
+              {/* Permanent Address */}
+
+              <Text style={[styles.labelText]}>Permanent Address:</Text>
+              <Text style={styles.headingText}>Country</Text>
+              <Text style={styles.labelText}>{client.country}</Text>
+              <Text style={styles.headingText}>Province</Text>
+              <Text style={styles.labelText}>{client.province}</Text>
+              <Text style={styles.headingText}>District</Text>
+              <Text style={styles.labelText}>{client.district}</Text>
+              <Text style={styles.headingText}>City</Text>
+              <Text style={styles.labelText}>{client.city}</Text>
               <Text style={styles.headingText}>Address</Text>
               <Text style={styles.labelText}>{client.address}</Text>
-              <Text style={styles.headingText}>Secondary Address</Text>
-              <Text style={styles.labelText}>{client.secondary_address}</Text>
+
+
+          
               <Text style={styles.headingText}>Belongs To</Text>
               <Text style={styles.labelText}>{belongs}</Text>
             </View>

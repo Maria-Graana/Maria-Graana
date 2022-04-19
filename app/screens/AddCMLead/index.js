@@ -14,12 +14,13 @@ import CMLeadFrom from './CMLeadFrom'
 import AppStyles from '../../AppStyles'
 import getTheme from '../../../native-base-theme/components'
 import formTheme from '../../../native-base-theme/variables/formTheme'
-import axios from 'axios'
 import { connect } from 'react-redux'
-import * as RootNavigation from '../../navigation/RootNavigation'
-import StaticData from '../../StaticData'
 import helper from '../../helper'
 import _ from 'underscore'
+import { addEditCMLead, getAllProjects, setDefaultCMPayload } from '../../actions/cmLead'
+import Loader from '../../components/loader'
+import axios from 'axios'
+import * as RootNavigation from '../../navigation/RootNavigation'
 
 class AddCMLead extends Component {
   constructor(props) {
@@ -29,153 +30,143 @@ class AddCMLead extends Component {
       clientName: '',
       selectedClient: null,
       selectedCity: null,
-      getProject: [],
       getProductType: [],
-      formType: 'sale',
-      selectSubType: [],
-      getAreas: [],
       loading: false,
-      formData: {
-        customerId: '',
-        cityId: '',
-        projectId: '',
-        projectType: '',
-        armsProjectTypeId: null,
-        minPrice: StaticData.PricesProject[0],
-        maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
-        description: '',
-      },
     }
   }
 
   componentDidMount() {
-    const { navigation } = this.props
-    navigation.addListener('focus', () => {
-      const { client, name, selectedCity } = this.props.route.params
-      const { formData } = this.state
-      let copyObject = Object.assign({}, formData)
-      if (client && name) this.setClient()
-      if (selectedCity) {
-        copyObject.cityId = selectedCity.value
-        this.setState({ formData: copyObject, selectedCity }, () => {
-          this.clearParmas()
-        })
-      }
-    })
-    this.getAllProjects()
+    const { dispatch, navigation, route } = this.props
+    dispatch(getAllProjects())
+    if (route.params.update) {
+      const { lead } = route.params
+      navigation.setOptions({ title: 'EDIT LEAD' })
+      if (lead && lead.project && lead.project.id) this.getProductType(lead.project.id)
+      this.setEditValues()
+    }
   }
 
-  clearParmas = () => {
-    const { navigation } = this.props
-    navigation.setParams({ selectedCity: null, client: null, name: null })
+  componentDidUpdate(prevProps, prevState) {
+    const { CMLead, route, dispatch } = this.props
+    const { selectedCity, client, name } = route.params
+    if (selectedCity && prevProps.CMLead.cityId !== selectedCity.value) {
+      this.setState({ selectedCity }, () => {
+        dispatch(addEditCMLead({ ...CMLead, cityId: selectedCity.value }))
+      })
+    }
+    if (client && prevProps.CMLead.customerId !== client.id) {
+      this.setClient()
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch } = this.props
+    dispatch(setDefaultCMPayload())
+  }
+
+  setEditValues = () => {
+    const { route, CMLead, dispatch } = this.props
+    const { lead = null, selectedCity, client, name } = route.params
+    let copyObject = Object.assign({}, CMLead)
+    copyObject.maxPrice = lead.maxPrice
+    copyObject.minPrice = lead.minPrice
+    copyObject.projectId = lead.project ? lead.project.id : ''
+    copyObject.projectType = lead.projectType ? lead.projectType : ''
+    copyObject.armsProjectTypeId = lead.productTypes ? String(lead.productTypes.id) : ''
+    copyObject.customerId = client ? client.id : null
+    copyObject.cityId = selectedCity ? selectedCity.value : null
+    copyObject.description = lead.description
+    this.setState({ selectedCity, selectedClient: client, name }, () => {
+      dispatch(addEditCMLead(copyObject))
+    })
   }
 
   setClient = () => {
-    const { formData } = this.state
-    const { client, name } = this.props.route.params
-    let copyObject = Object.assign({}, formData)
-    let phones = []
-    if (client.customerContacts && client.customerContacts.length) {
-      client.customerContacts.map((item) => {
-        phones.push(item.phone)
-      })
-    } else {
-      if (client && client.phone) {
-        phones.push(client.phone)
-      }
-    }
-    copyObject.customerId = client.id
-    copyObject.phones = phones
-    this.setState(
-      { formData: _.clone(copyObject), clientName: name, selectedClient: client },
-      () => {
-        this.clearParmas()
-      }
-    )
-  }
-
-  getAllProjects = () => {
-    axios.get(`/api/project/all`).then((res) => {
-      let projectArray = []
-      res &&
-        res.data.items.map((item, index) => {
-          return projectArray.push({
-            value: item.id,
-            name: item.name,
-            productType: item.productTypes,
-          })
+    const { CMLead, route, dispatch } = this.props
+    const { client, name } = route.params
+    if (client && name) {
+      let phones = []
+      if (client.customerContacts && client.customerContacts.length) {
+        client.customerContacts.map((item) => {
+          phones.push(item.phone)
         })
-      this.setState({
-        getProject: projectArray,
+      } else {
+        if (client && client.phone) {
+          phones.push(client.phone)
+        }
+      }
+      this.setState({ selectedClient: client, clientName: name }, () => {
+        dispatch(addEditCMLead({ ...CMLead, customerId: client ? client.id : null }))
       })
-    })
+    }
   }
 
   handleForm = (value, name) => {
-    const { formData, getProductType } = this.state
-    formData[name] = value
+    const { CMLead, dispatch } = this.props
+    const { getProductType } = this.state
+    let copyObject = { ...CMLead }
+    copyObject[name] = value
     if (name === 'projectId') {
       this.getProductType(value)
     }
+
     if (name === 'projectType') {
       const getProName = getProductType.find((item) => {
         return item.value === value
       })
-      formData['armsProjectTypeId'] = value
-      formData['projectType'] = getProName.name
+      copyObject['armsProjectTypeId'] = value
+      copyObject['projectType'] = getProName.name
     }
-    this.setState({ formData })
-  }
-
-  selectSubtype = (type) => {
-    this.setState({ selectSubType: StaticData.subType[type] })
+    dispatch(addEditCMLead(copyObject))
   }
 
   formSubmit = () => {
-    const { formData, getProject } = this.state
-    if (!formData.customerId || !formData.cityId) {
+    const { CMLead, investmentProjects, route } = this.props
+    const { update = false, lead } = route.params
+
+    if (!CMLead.customerId || !CMLead.cityId) {
       this.setState({
         checkValidation: true,
       })
     } else {
-      if (formData.projectId && formData.projectId !== '') {
-        let project = _.find(getProject, function (item) {
-          return item.value === formData.projectId
+      if (CMLead.projectId && CMLead.projectId !== '') {
+        let project = _.find(investmentProjects, function (item) {
+          return item.value === CMLead.projectId
         })
-        formData.projectName = project.name
+        CMLead.projectName = project.name
       } else {
-        formData.projectId = null
-        formData.projectName = null
+        CMLead.projectId = null
+        CMLead.projectName = null
       }
-      formData.noProduct = false
       this.setState({ loading: true }, () => {
-        axios
-          .post(`/api/leads/project`, formData)
-          .then((res) => {
-            helper.successToast('Lead created successfully')
-            RootNavigation.navigate('Leads')
-          })
-          .catch((error) => {
-            console.log(error)
-            this.setState({ loading: false })
-          })
+        if (update) {
+          // update lead
+          axios
+            .patch(`/api/leads/project/update/${lead.id}`, CMLead)
+            .then((res) => {
+              helper.successToast('Lead updated successfully')
+              RootNavigation.navigate('Leads')
+            })
+            .catch((error) => {
+              console.log(error)
+              this.setState({ loading: false })
+            })
+        } else {
+          // add lead
+          axios
+            .post(`/api/leads/project`, CMLead)
+            .then((res) => {
+              helper.successToast('Lead created successfully')
+              RootNavigation.navigate('Leads')
+            })
+            .catch((error) => {
+              console.log(error)
+              this.setState({ loading: false })
+            })
+        }
       })
     }
   }
-
-  changeStatus = (status) => {
-    this.setState({
-      formType: status,
-    })
-  }
-
-  // onSliderValueChange = (values) => {
-  //     const { formData } = this.state;
-  //     const prices = StaticData.PricesProject;
-  //     formData.minPrice = prices[values[0]];
-  //     formData.maxPrice = prices[values[values.length - 1]];
-  //     this.setState({ formData });
-  // }
 
   handleClientClick = () => {
     const { navigation } = this.props
@@ -193,10 +184,10 @@ class AddCMLead extends Component {
     })
   }
 
-  getProductType = (id) => {
-    const { getProject } = this.state
+  getProductType = async (id) => {
+    const { investmentProjects } = this.props
     var getProType = _.pluck(
-      _.filter(getProject, (item) => item.value === id),
+      _.filter(investmentProjects, (item) => item.value === id),
       'productType'
     )
     var getPro = []
@@ -206,6 +197,7 @@ class AddCMLead extends Component {
     this.setState({
       getProductType: getPro,
     })
+    return getPro
   }
 
   showPriceModal = () => {
@@ -221,17 +213,16 @@ class AddCMLead extends Component {
   }
 
   onModalPriceDonePressed = (minValue, maxValue) => {
-    const { formData } = this.state
-    const copyObject = { ...formData }
+    const { CMLead, dispatch } = this.props
+    const copyObject = { ...CMLead }
     copyObject.minPrice = minValue
     copyObject.maxPrice = maxValue
-    this.setState({ formData: copyObject, isPriceModalVisible: false })
+    this.setState({ isPriceModalVisible: false })
+    dispatch(addEditCMLead(copyObject))
   }
 
   render() {
     const {
-      formData,
-      getProject,
       checkValidation,
       selectedCity,
       clientName,
@@ -239,8 +230,11 @@ class AddCMLead extends Component {
       loading,
       isPriceModalVisible,
     } = this.state
-    const { route } = this.props
-    return (
+    const { route, investmentProjects, CMFormLoading } = this.props
+    const { update = false } = route.params
+    return CMFormLoading ? (
+      <Loader loading={CMFormLoading} />
+    ) : (
       <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
         <StyleProvider style={getTheme(formTheme)}>
           <KeyboardAvoidingView enabled>
@@ -255,10 +249,10 @@ class AddCMLead extends Component {
                     selectedCity={selectedCity}
                     handleCityClick={this.handleCityClick}
                     handleClientClick={this.handleClientClick}
-                    formData={formData}
-                    getProject={getProject}
+                    getProject={investmentProjects}
                     getProductType={getProductType}
                     loading={loading}
+                    update={update}
                     isPriceModalVisible={isPriceModalVisible}
                     showPriceModal={() => this.showPriceModal()}
                     onModalPriceDonePressed={(minValue, maxValue) =>
@@ -279,6 +273,9 @@ class AddCMLead extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    CMFormLoading: store.cmLead.CMFormLoading,
+    investmentProjects: store.cmLead.investmentProjects,
+    CMLead: store.cmLead.CMLead,
   }
 }
 

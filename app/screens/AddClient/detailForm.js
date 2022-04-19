@@ -670,21 +670,35 @@ class DetailForm extends Component {
           </ScrollView>
         }
 
-        {!update && ((!this.state.openAdditionalInfo && !this.state.addLeadRequirements) || (!this.state.openAdditionalInfo && this.state.addLeadRequirements)) && < View >
-          <TouchableInput
-            semiBold={true}
-            arrowType={this.state.addLeadRequirements}
-            placeholder="Add Lead Requirements"
-            label={'Add Lead Requirements'}
-            onPress={() => {
-              this.setState({
-                addLeadRequirements: !this.state.addLeadRequirements
-              })
-            }}
-            value={'Add Lead Requirements'}
+        {!update && ((!this.state.openAdditionalInfo && !this.state.addLeadRequirements) || (!this.state.openAdditionalInfo && this.state.addLeadRequirements)) &&
 
-          />
-        </View >}
+          < View >
+            <TouchableInput
+              semiBold={true}
+              arrowType={this.state.addLeadRequirements}
+              placeholder="Add Lead Requirements"
+              label={'Add Lead Requirements'}
+              onPress={() => {
+                this.setState({
+                  addLeadRequirements: !this.state.addLeadRequirements
+                })
+              }}
+              value={'Add Lead Requirements'}
+
+            />
+
+            {((formData.purpose == 'Invest' && checkValidations)
+              || (formData.purpose == 'Rent' && checkRentValidation) ||
+              (formData.purpose == 'Buy' && checkRentValidation))
+              ?
+              <ErrorMessage errorMessage={'Please fill out all required fields.'} />
+              : null
+
+            }
+          </View >
+
+
+        }
         {
           this.state.addLeadRequirements &&
           <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">

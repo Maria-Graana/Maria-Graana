@@ -44,31 +44,147 @@ class InnerRCMForm extends Component {
     }
   }
 
+
+
+  showPriceModal = () => {
+    this.props.setParentState({ isPriceModalVisible: true })
+  }
+
+  onModalCancelPressed = () => {
+
+    this.props.setParentState({
+      isBedBathModalVisible: false,
+      isPriceModalVisible: false,
+      isSizeModalVisible: false,
+    });
+  }
+
+  onModalSizeDonePressed = (minValue, maxValue, unit) => {
+    const { formData } = this.props
+    const copyObject = { ...formData }
+    copyObject.size = minValue
+    copyObject.maxSize = maxValue
+    copyObject.size_unit = unit
+    this.props.setParentState({
+      RCMFormData: copyObject,
+      isSizeModalVisible: false
+    })
+
+  }
+
+
+  onModalPriceDonePressed = (minValue, maxValue) => {
+    const { formData } = this.props
+    const copyObject = { ...formData }
+    copyObject.minPrice = minValue
+    copyObject.maxPrice = maxValue
+    this.props.setParentState({ RCMFormData: copyObject, isPriceModalVisible: false })
+  }
+
+  onBedBathModalDonePressed = (minValue, maxValue) => {
+    const { formData, modalType } = this.props
+    const copyObject = { ...formData }
+    switch (modalType) {
+      case 'bed':
+        copyObject.bed = minValue
+        copyObject.maxBed = maxValue
+        this.props.setParentState({
+          RCMFormData: copyObject,
+
+        })
+
+        break
+      case 'bath':
+        copyObject.bath = minValue
+        copyObject.maxBath = maxValue
+        this.props.setParentState({
+          RCMFormData: copyObject,
+
+        })
+
+      default:
+        break
+    }
+    this.props.setParentState({
+      isBedBathModalVisible: false,
+
+    })
+
+  }
+
+
+  handleAreaClick = () => {
+    const { formData } = this.props
+    const { city_id, leadAreas } = formData
+    const { navigation } = this.props
+    const isEditMode = `${leadAreas && leadAreas.length > 0 ? true : false}`
+    if (city_id !== '' && city_id !== undefined && city_id != null) {
+      navigation.navigate('AreaPickerScreen', {
+        cityId: city_id,
+        isEditMode: isEditMode,
+        screenName: this.props?.screenName ? this.props?.screenName : 'AddRCMLead',
+      })
+    } else {
+      alert('Please select city first!')
+    }
+  }
+
+
+
+  showBedBathModal = (modalType) => {
+    this.props.setParentState({ isBedBathModalVisible: true, modalType })
+  }
+
+
+
+
+  showSizeModal = () => {
+    this.props.setParentState({ isSizeModalVisible: true })
+  }
+
+
+
+  handleClientClick = () => {
+    const { navigation } = this.props
+    const { selectedClient } = this.props
+    navigation.navigate('Client', {
+      isFromDropDown: true,
+      selectedClient,
+      screenName: this.props?.screenName ? this.props?.screenName : 'AddRCMLead',
+    })
+  }
+
+  handleCityClick = () => {
+    const { navigation } = this.props
+    const { selectedCity } = this.props
+    navigation.navigate('SingleSelectionPicker', {
+      screenName: this.props?.screenName ? this.props?.screenName : 'AddRCMLead',
+      mode: 'city',
+      selectedCity,
+    })
+  }
+
   render() {
     const {
+      screenName,
       user,
       formSubmit,
       checkValidation,
       handleForm,
       formData,
-      handleCityClick,
+      selectedClient,
       selectedCity,
       propertyType,
       subTypeData,
-      handleAreaClick,
       clientName,
-      handleClientClick,
       organizations,
       loading,
+      hideClient,
       priceList,
       isBedBathModalVisible,
       modalType,
-      showBedBathModal,
-      onBedBathModalDonePressed,
-      onModalCancelPressed,
       isPriceModalVisible,
-      showPriceModal,
-      onModalPriceDonePressed,
+
       sizeUnitList,
       isSizeModalVisible,
       showSizeModal,
@@ -78,7 +194,8 @@ class InnerRCMForm extends Component {
 
     const { leadAreas } = formData
     const leadAreasLength = leadAreas ? leadAreas.length : 0
-    //console.log(formData);
+
+
     return (
       <View>
         <BedBathSliderModal
@@ -86,8 +203,8 @@ class InnerRCMForm extends Component {
           modalType={modalType}
           initialValue={this.checkBedBathInitialValue(modalType)}
           finalValue={this.checkBedBathFinalValue(modalType)}
-          onBedBathModalDonePressed={onBedBathModalDonePressed}
-          onModalCancelPressed={onModalCancelPressed}
+          onBedBathModalDonePressed={this.onBedBathModalDonePressed}
+          onModalCancelPressed={this.onModalCancelPressed}
           arrayValues={StaticData.bedBathRange}
         />
 
@@ -95,16 +212,16 @@ class InnerRCMForm extends Component {
           isVisible={isPriceModalVisible}
           initialValue={formData.minPrice}
           finalValue={formData.maxPrice}
-          onModalPriceDonePressed={onModalPriceDonePressed}
-          onModalCancelPressed={onModalCancelPressed}
+          onModalPriceDonePressed={this.onModalPriceDonePressed}
+          onModalCancelPressed={this.onModalCancelPressed}
           arrayValues={priceList}
         />
         <SizeSliderModal
           isVisible={isSizeModalVisible}
           initialValue={formData.size}
           finalValue={formData.maxSize}
-          onModalSizeDonePressed={onModalSizeDonePressed}
-          onModalCancelPressed={onModalCancelPressed}
+          onModalSizeDonePressed={this.onModalSizeDonePressed}
+          onModalCancelPressed={this.onModalCancelPressed}
           sizeUnit={formData.size_unit}
         />
 
@@ -125,30 +242,35 @@ class InnerRCMForm extends Component {
           </View>
         ) : null}
 
-        <TouchableInput
+        {!hideClient ? <TouchableInput
           placeholder="Client"
-          onPress={() => handleClientClick()}
+          onPress={() => this.handleClientClick()}
           value={clientName}
           showIconOrImage={false}
           showError={checkValidation === true && formData.customerId === ''}
           errorMessage="Required"
+
           disabled={update}
         />
+          : null
+        }
 
         <TouchableInput
           placeholder="Select City"
-          onPress={() => handleCityClick()}
+          onPress={() => this.handleCityClick()}
           showIconOrImage={false}
           value={selectedCity ? selectedCity.name : ''}
-          showError={checkValidation === true && formData.city_id === ''}
+
+
+          showError={checkValidation === true && formData.city_id === null}
           errorMessage="Required"
         />
 
         <TouchableInput
-          onPress={() => handleAreaClick()}
+          onPress={() => this.handleAreaClick()}
           value={leadAreasLength > 0 ? leadAreasLength + ' Areas Selected' : ''}
           placeholder="Select Areas"
-          showError={checkValidation === true && leadAreas && leadAreas.length === 0}
+          showError={checkValidation === true && !leadAreas && typeof leadAreas === "undefined"}
           errorMessage="Required"
         />
 
@@ -189,7 +311,7 @@ class InnerRCMForm extends Component {
             <TouchableInput
               placeholder="Size"
               showIconOrImage={false}
-              onPress={() => showSizeModal()}
+              onPress={() => this.showSizeModal()}
               value={`${helper.convertSizeToString(
                 formData.size,
                 formData.maxSize,
@@ -206,7 +328,7 @@ class InnerRCMForm extends Component {
             <TouchableInput
               placeholder="Price"
               showIconOrImage={false}
-              onPress={() => showPriceModal()}
+              onPress={() => this.showPriceModal()}
               value={`${helper.convertPriceToString(
                 formData.minPrice,
                 formData.maxPrice,
@@ -226,7 +348,7 @@ class InnerRCMForm extends Component {
                 <TouchableInput
                   placeholder="Bed"
                   showIconOrImage={false}
-                  onPress={() => showBedBathModal('bed')}
+                  onPress={() => this.showBedBathModal('bed')}
                   value={`Beds: ${helper.showBedBathRangesString(
                     formData.bed,
                     formData.maxBed,
@@ -239,7 +361,7 @@ class InnerRCMForm extends Component {
                 <TouchableInput
                   placeholder="Bath"
                   showIconOrImage={false}
-                  onPress={() => showBedBathModal('bath')}
+                  onPress={() => this.showBedBathModal('bath')}
                   value={`Baths: ${helper.showBedBathRangesString(
                     formData.bath,
                     formData.maxBath,
@@ -265,8 +387,8 @@ class InnerRCMForm extends Component {
           />
         </View>
 
-        {/* **************************************** */}
-        <View style={[AppStyles.mainInputWrap]}>
+
+        {!hideClient && <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
             label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
@@ -274,7 +396,7 @@ class InnerRCMForm extends Component {
             loading={loading}
             disabled={loading}
           />
-        </View>
+        </View>}
       </View>
     )
   }

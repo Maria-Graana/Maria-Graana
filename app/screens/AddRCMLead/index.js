@@ -237,25 +237,8 @@ class AddRCMLead extends Component {
     }
   }
 
-  handleClientClick = () => {
-    const { navigation } = this.props
-    const { selectedClient } = this.state
-    navigation.navigate('Client', {
-      isFromDropDown: true,
-      selectedClient,
-      screenName: 'AddRCMLead',
-    })
-  }
 
-  handleCityClick = () => {
-    const { navigation } = this.props
-    const { selectedCity } = this.state
-    navigation.navigate('SingleSelectionPicker', {
-      screenName: 'AddRCMLead',
-      mode: 'city',
-      selectedCity,
-    })
-  }
+
 
   selectSubtype = (type) => {
     this.setState(
@@ -390,61 +373,10 @@ class AddRCMLead extends Component {
     )
   }
 
-  showBedBathModal = (modalType) => {
-    this.setState({ isBedBathModalVisible: true, modalType })
-  }
 
-  onBedBathModalDonePressed = (minValue, maxValue) => {
-    const { RCMFormData, modalType } = this.state
-    const copyObject = { ...RCMFormData }
-    switch (modalType) {
-      case 'bed':
-        copyObject.bed = minValue
-        copyObject.maxBed = maxValue
-        this.setState({ RCMFormData: copyObject })
-        break
-      case 'bath':
-        copyObject.bath = minValue
-        copyObject.maxBath = maxValue
-        this.setState({ RCMFormData: copyObject })
-      default:
-        break
-    }
-    this.setState({ isBedBathModalVisible: false })
-  }
 
-  onModalCancelPressed = () => {
-    this.setState({
-      isBedBathModalVisible: false,
-      isPriceModalVisible: false,
-      isSizeModalVisible: false,
-    })
-  }
 
-  showPriceModal = () => {
-    this.setState({ isPriceModalVisible: true })
-  }
 
-  onModalPriceDonePressed = (minValue, maxValue) => {
-    const { RCMFormData } = this.state
-    const copyObject = { ...RCMFormData }
-    copyObject.minPrice = minValue
-    copyObject.maxPrice = maxValue
-    this.setState({ RCMFormData: copyObject, isPriceModalVisible: false })
-  }
-
-  showSizeModal = () => {
-    this.setState({ isSizeModalVisible: true })
-  }
-
-  onModalSizeDonePressed = (minValue, maxValue, unit) => {
-    const { RCMFormData } = this.state
-    const copyObject = { ...RCMFormData }
-    copyObject.size = minValue
-    copyObject.maxSize = maxValue
-    copyObject.size_unit = unit
-    this.setState({ RCMFormData: copyObject, isSizeModalVisible: false })
-  }
 
   render() {
     const {
@@ -459,6 +391,7 @@ class AddRCMLead extends Component {
       priceList,
       loading,
       sizeUnitList,
+      selectedClient,
       isBedBathModalVisible,
       isPriceModalVisible,
       isSizeModalVisible,
@@ -475,11 +408,14 @@ class AddRCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <RCMLeadFrom
+                    setParentState={(obj) => { this.setState(obj) }}
+                    navigation={this.props.navigation}
                     sizeUnitList={sizeUnitList}
                     organizations={_.clone(organizations)}
-                    handleClientClick={this.handleClientClick}
+                  
                     selectedCity={selectedCity}
-                    handleCityClick={this.handleCityClick}
+                    selectedClient={selectedClient}
+                   
                     clientName={clientName}
                     formSubmit={this.RCMFormSubmit}
                     checkValidation={checkValidation}
@@ -498,21 +434,8 @@ class AddRCMLead extends Component {
                     loading={loading}
                     isBedBathModalVisible={isBedBathModalVisible}
                     modalType={modalType}
-                    showBedBathModal={(value) => this.showBedBathModal(value)}
-                    onBedBathModalDonePressed={(minValue, maxValue) =>
-                      this.onBedBathModalDonePressed(minValue, maxValue)
-                    }
-                    onModalCancelPressed={() => this.onModalCancelPressed()}
                     isPriceModalVisible={isPriceModalVisible}
-                    showPriceModal={() => this.showPriceModal()}
-                    onModalPriceDonePressed={(minValue, maxValue) =>
-                      this.onModalPriceDonePressed(minValue, maxValue)
-                    }
                     isSizeModalVisible={isSizeModalVisible}
-                    showSizeModal={() => this.showSizeModal()}
-                    onModalSizeDonePressed={(minValue, maxValue, unit) =>
-                      this.onModalSizeDonePressed(minValue, maxValue, unit)
-                    }
                   />
                 </View>
               </TouchableWithoutFeedback>

@@ -13,28 +13,28 @@ class SingleSelectionPicker extends Component {
         super(props);
         this.state = {
             cities: [],
-            areas:[],
+            areas: [],
             loading: true,
             searchText: '',
         }
     }
 
     componentDidMount() {
-        const {route, dispatch, navigation} = this.props;
-        const {mode, cityId} = route.params;
-        if(mode === 'city'){
-            navigation.setOptions({title:'Select City'});
+        const { route, dispatch, navigation } = this.props;
+        const { mode, cityId } = route.params;
+        if (mode === 'city') {
+            navigation.setOptions({ title: 'Select City' });
             this.getCities();
         }
-        else{
-         // handle area here
-         navigation.setOptions({title:'Select Area'});
-         this.getAreas(cityId);
+        else {
+            // handle area here
+            navigation.setOptions({ title: 'Select Area' });
+            this.getAreas(cityId);
         }
     }
 
     getCities = () => {
-        const { selectedCity} = this.props.route.params;
+        const { selectedCity } = this.props.route.params;
         axios.get(`/api/cities`)
             .then((res) => {
                 let citiesArray = [];
@@ -51,23 +51,23 @@ class SingleSelectionPicker extends Component {
     }
 
     getAreas = (cityId) => {
-        const { selectedArea} = this.props.route.params;
+        const { selectedArea } = this.props.route.params;
         axios.get(`/api/areas?city_id=${cityId}&all=true&minimal=true`)
-        .then((res) => {
-            let areas = [];
-            res && res.data.items.map((item, index) => { return areas.push({ value: item.id, name: item.name }) })
-            this.setState({
-                areas,
-                loading: false,
-            }, () => {
-               // handle Selection of areas here
-                if (selectedArea) {
-                    this.checkIsAreaSelected(selectedArea);
-                }
+            .then((res) => {
+                let areas = [];
+                res && res.data.items.map((item, index) => { return areas.push({ value: item.id, name: item.name }) })
+                this.setState({
+                    areas,
+                    loading: false,
+                }, () => {
+                    // handle Selection of areas here
+                    if (selectedArea) {
+                        this.checkIsAreaSelected(selectedArea);
+                    }
+                })
+            }).catch(error => {
+                console.log(error)
             })
-        }).catch(error => {
-            console.log(error)
-        })
     }
 
     checkIsCitySelected = (selectedCity) => {
@@ -79,6 +79,7 @@ class SingleSelectionPicker extends Component {
     }
 
     checkIsAreaSelected = (selectedArea) => {
+
         const copyAreas = [...this.state.areas];
         const allAreas = copyAreas.map(area => (
             { ...area, isSelected: area.value === selectedArea.value }
@@ -90,9 +91,12 @@ class SingleSelectionPicker extends Component {
         const { navigation, route } = this.props;
         const { screenName } = route.params;
         navigation.navigate(screenName, { selectedCity: item })
+
+
     }
 
     onAreaSelected = (item) => {
+
         const { navigation, route } = this.props;
         const { screenName } = route.params;
         navigation.navigate(screenName, { selectedArea: item })
@@ -111,7 +115,7 @@ class SingleSelectionPicker extends Component {
         );
     }
 
-    renderAreaItem = ({item}) => {
+    renderAreaItem = ({ item }) => {
         return (
             <TouchableOpacity
                 style={{ backgroundColor: item.isSelected ? AppStyles.colors.backgroundColor : AppStyles.whiteColor }}
@@ -123,18 +127,18 @@ class SingleSelectionPicker extends Component {
             </TouchableOpacity>
         );
     }
- 
+
     render() {
-        const { searchText, cities,  areas, loading } = this.state;
-        const {mode} = this.props.route.params;
+        const { searchText, cities, areas, loading } = this.state;
+        const { mode } = this.props.route.params;
 
         let data = [];
         if (searchText !== '' && data.length === 0) {
-            data = fuzzy.filter(searchText, mode === 'city' ? cities : areas, { extract: (e) => e.name+ ' ' })
+            data = fuzzy.filter(searchText, mode === 'city' ? cities : areas, { extract: (e) => e.name + ' ' })
             data = data.map((item) => item.original)
         }
         else {
-            data =  mode === 'city' ? cities : areas;
+            data = mode === 'city' ? cities : areas;
         }
 
         return (
@@ -147,7 +151,7 @@ class SingleSelectionPicker extends Component {
                                 data
                             }
                             showsVerticalScrollIndicator={false}
-                            renderItem={ mode === 'city' ? this.renderCityItem : this.renderAreaItem}
+                            renderItem={mode === 'city' ? this.renderCityItem : this.renderAreaItem}
                             keyExtractor={(item, index) => String(index)}
                             scrollIndicatorInsets={{ top: 0 }}
                         />

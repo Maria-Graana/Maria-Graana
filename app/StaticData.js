@@ -1,4 +1,4 @@
-/** @format */
+
 
 export default StaticData = {
   parkingAvailable: [
@@ -1538,4 +1538,34 @@ export default StaticData = {
   filterDealsValueProjectTerminal: [
     { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
   ],
+
+
+  leadTypePickerData: [
+    { name: 'Select Lead Type', value: 'Select Lead Type' },
+    { name: 'Rent', value: 'Rent' },
+    { name: 'Buy', value: 'Buy' },
+    { name: 'Invest', value: 'Invest' },
+  ],
+
+  clientTypePickerData: [
+    { name: 'Personal Client', value: 'Personal Client' },
+    { name: 'Inbound Client', value: 'Inbound Client' },
+    { name: 'Walk-In', value: 'Walk-In' },
+    { name: 'Event', value: 'Event' },
+  ],
+  provincePickerData: [
+    { name: 'Punjab', value: 'Punjab' },
+    { name: 'Balochistan', value: 'Balochistan' },
+    { name: 'Khyber Pakhtunkhwa', value: 'Khyber Pakhtunkhwa' },
+    { name: 'Sindh', value: 'Sindh' },
+    { name: 'Islamabad Capital Territory', value: 'Islamabad Capital Territory' },
+  ],
+
+  relationStatusPickerData: [
+    { name: 'Son of', value: 'Son of' },
+    { name: 'Daughter of', value: 'Daughter of' },
+    { name: 'Wife of', value: 'Wife of' },
+  ],
+
+
 }

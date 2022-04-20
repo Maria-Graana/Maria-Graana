@@ -96,7 +96,13 @@ class AddCMLead extends Component {
         }
       }
       this.setState({ selectedClient: client, clientName: name }, () => {
-        dispatch(addEditCMLead({ ...CMLead, customerId: client ? client.id : null }))
+        dispatch(
+          addEditCMLead({
+            ...CMLead,
+            phones: phones,
+            customerId: client ? client.id : null,
+          })
+        )
       })
     }
   }
@@ -106,6 +112,7 @@ class AddCMLead extends Component {
     const { getProductType } = this.state
     let copyObject = { ...CMLead }
     copyObject[name] = value
+
     if (name === 'projectId') {
       this.getProductType(value)
     }
@@ -153,11 +160,12 @@ class AddCMLead extends Component {
             })
         } else {
           // add lead
+
           axios
             .post(`/api/leads/project`, CMLead)
             .then((res) => {
               helper.successToast('Lead created successfully')
-              RootNavigation.navigate('Leads')
+              RootNavigation.navigateToSpecificTab('Leads', 'Invest')
             })
             .catch((error) => {
               console.log(error)
@@ -166,22 +174,6 @@ class AddCMLead extends Component {
         }
       })
     }
-  }
-
-  handleClientClick = () => {
-    const { navigation } = this.props
-    const { selectedClient } = this.state
-    navigation.navigate('Client', { isFromDropDown: true, selectedClient, screenName: 'AddCMLead' })
-  }
-
-  handleCityClick = () => {
-    const { navigation } = this.props
-    const { selectedCity } = this.state
-    navigation.navigate('SingleSelectionPicker', {
-      screenName: 'AddCMLead',
-      mode: 'city',
-      selectedCity,
-    })
   }
 
   getProductType = async (id) => {
@@ -198,27 +190,6 @@ class AddCMLead extends Component {
       getProductType: getPro,
     })
     return getPro
-  }
-
-  showPriceModal = () => {
-    this.setState({
-      isPriceModalVisible: true,
-    })
-  }
-
-  onModalCancelPressed = () => {
-    this.setState({
-      isPriceModalVisible: false,
-    })
-  }
-
-  onModalPriceDonePressed = (minValue, maxValue) => {
-    const { CMLead, dispatch } = this.props
-    const copyObject = { ...CMLead }
-    copyObject.minPrice = minValue
-    copyObject.maxPrice = maxValue
-    this.setState({ isPriceModalVisible: false })
-    dispatch(addEditCMLead(copyObject))
   }
 
   render() {
@@ -242,23 +213,20 @@ class AddCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <CMLeadFrom
+                    navigation={this.props.navigation}
                     formSubmit={this.formSubmit}
                     checkValidation={checkValidation}
                     handleForm={this.handleForm}
                     clientName={clientName}
                     selectedCity={selectedCity}
-                    handleCityClick={this.handleCityClick}
-                    handleClientClick={this.handleClientClick}
                     getProject={investmentProjects}
                     getProductType={getProductType}
                     loading={loading}
                     update={update}
                     isPriceModalVisible={isPriceModalVisible}
-                    showPriceModal={() => this.showPriceModal()}
-                    onModalPriceDonePressed={(minValue, maxValue) =>
-                      this.onModalPriceDonePressed(minValue, maxValue)
-                    }
-                    onModalCancelPressed={() => this.onModalCancelPressed()}
+                    setParentState={(obj) => {
+                      this.setState(obj)
+                    }}
                   />
                 </View>
               </TouchableWithoutFeedback>

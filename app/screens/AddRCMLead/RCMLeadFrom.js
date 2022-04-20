@@ -23,7 +23,7 @@ class CMLeadFrom extends Component {
       changeStatus,
       formData,
       handleForm,
-      handleCityClick,
+      selectedClient,
       selectedCity,
       propertyType,
       subTypeData,
@@ -40,13 +40,15 @@ class CMLeadFrom extends Component {
       sizeUnitList,
       isBedBathModalVisible,
       modalType,
-      showBedBathModal,
-      onModalCancelPressed,
-      onBedBathModalDonePressed,
+
+      setParentState,
+
       isPriceModalVisible,
-      showPriceModal,
-      onModalPriceDonePressed,
+
+      
       isSizeModalVisible,
+    
+
       showSizeModal,
       onModalSizeDonePressed,
       update,
@@ -77,6 +79,7 @@ class CMLeadFrom extends Component {
         {/* *********** Main Container *********** */}
         <View style={[AppStyles.container]}>
           <InnerRCMForm
+            navigation={this.props.navigation}
             sizeUnitList={sizeUnitList}
             organizations={_.clone(organizations)}
             clientName={clientName}
@@ -85,7 +88,7 @@ class CMLeadFrom extends Component {
             update={update}
             handleForm={handleForm}
             selectedCity={selectedCity}
-            handleCityClick={handleCityClick}
+            selectedClient={selectedClient}
             propertyType={propertyType}
             subTypeData={subTypeData}
             sizeUnit={sizeUnit}
@@ -97,15 +100,9 @@ class CMLeadFrom extends Component {
             modalType={modalType}
             loading={loading}
             isBedBathModalVisible={isBedBathModalVisible}
-            onBedBathModalDonePressed={onBedBathModalDonePressed}
-            onModalCancelPressed={onModalCancelPressed}
-            showBedBathModal={showBedBathModal}
             isPriceModalVisible={isPriceModalVisible}
-            showPriceModal={showPriceModal}
-            onModalPriceDonePressed={onModalPriceDonePressed}
-            isSizeModalVisible={isSizeModalVisible}
-            onModalSizeDonePressed={onModalSizeDonePressed}
-            showSizeModal={showSizeModal}
+            isSizeModalVisible={isSizeModalVisible}     
+            setParentState={setParentState}
           />
         </View>
       </View>

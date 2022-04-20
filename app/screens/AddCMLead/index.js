@@ -36,7 +36,6 @@ class AddCMLead extends Component {
   }
 
   componentDidMount() {
-   
     const { dispatch, navigation, route } = this.props
     dispatch(getAllProjects())
     if (route.params.update) {
@@ -86,7 +85,6 @@ class AddCMLead extends Component {
     const { CMLead, route, dispatch } = this.props
     const { client, name } = route.params
     if (client && name) {
-      console.log("client", client.phone);
       let phones = []
       if (client.customerContacts && client.customerContacts.length) {
         client.customerContacts.map((item) => {
@@ -98,25 +96,24 @@ class AddCMLead extends Component {
         }
       }
       this.setState({ selectedClient: client, clientName: name }, () => {
-        dispatch(addEditCMLead({
-          ...CMLead,
-          phones: phones,
-          customerId: client ? client.id : null
-        }))
+        dispatch(
+          addEditCMLead({
+            ...CMLead,
+            phones: phones,
+            customerId: client ? client.id : null,
+          })
+        )
       })
     }
   }
 
   handleForm = (value, name) => {
-
-   
     const { CMLead, dispatch } = this.props
     const { getProductType } = this.state
     let copyObject = { ...CMLead }
-    copyObject[name] = value;
-    
+    copyObject[name] = value
+
     if (name === 'projectId') {
-    
       this.getProductType(value)
     }
 
@@ -154,7 +151,6 @@ class AddCMLead extends Component {
           axios
             .patch(`/api/leads/project/update/${lead.id}`, CMLead)
             .then((res) => {
-
               helper.successToast('Lead updated successfully')
               RootNavigation.navigate('Leads')
             })
@@ -164,11 +160,10 @@ class AddCMLead extends Component {
             })
         } else {
           // add lead
-          
+
           axios
             .post(`/api/leads/project`, CMLead)
             .then((res) => {
-              
               helper.successToast('Lead created successfully')
               RootNavigation.navigateToSpecificTab('Leads', 'Invest')
             })
@@ -180,8 +175,6 @@ class AddCMLead extends Component {
       })
     }
   }
-
- 
 
   getProductType = async (id) => {
     const { investmentProjects } = this.props
@@ -199,9 +192,6 @@ class AddCMLead extends Component {
     return getPro
   }
 
-
-
- 
   render() {
     const {
       checkValidation,
@@ -229,14 +219,14 @@ class AddCMLead extends Component {
                     handleForm={this.handleForm}
                     clientName={clientName}
                     selectedCity={selectedCity}
-
                     getProject={investmentProjects}
                     getProductType={getProductType}
                     loading={loading}
                     update={update}
                     isPriceModalVisible={isPriceModalVisible}
-                    setParentState={(obj) => { this.setState(obj) }}
-
+                    setParentState={(obj) => {
+                      this.setState(obj)
+                    }}
                   />
                 </View>
               </TouchableWithoutFeedback>

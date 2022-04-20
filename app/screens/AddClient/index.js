@@ -8,6 +8,8 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
+
+import { addEditCMLead, getAllProjects, setDefaultCMPayload } from '../../actions/cmLead'
 import { setSelectedAreas } from './../../actions/areas'
 import TouchableButton from '../../components/TouchableButton'
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
@@ -193,7 +195,7 @@ class AddClient extends Component {
       })
     }
 
-    const { user } = this.props
+    const { user, } = this.props
     const { purpose } = this.props.route.params
     if (purpose) {
       this.setState({ formType: purpose }, () => {
@@ -206,102 +208,96 @@ class AddClient extends Component {
 
 
 
+    const { dispatch, } = this.props
+    dispatch(getAllProjects())
+
+
+
     navigation.addListener('focus', () => {
       this.onScreenFocused()
 
-      if (this.state.formData.purpose == 'Invest') {
-
-        const { client, name, selectedCity } = this.props.route.params
-        const { investFormData } = this.state
-        let copyObject = Object.assign({}, investFormData)
-        if (client && name) this.setClient()
-        if (selectedCity) {
-
-          copyObject.cityId = selectedCity?.value
-          this.setState({ investFormData: copyObject, selectedCity }, () => {
-            this.clearParmas()
-          })
-        }
-      }
     })
-    this.getAllProjects()
+
     this.fetchOrganizations()
   }
 
 
-  clearParmas = () => {
-    const { navigation } = this.props
-    navigation.setParams({ selectedCity: null, client: null, name: null })
-  }
-
-  setClient = () => {
-    const { investFormData } = this.state
-    const { client, name } = this.props.route.params
-    let copyObject = Object.assign({}, investFormData)
-    let phones = []
-    if (client.customerContacts && client.customerContacts.length) {
-      client.customerContacts.map((item) => {
-        phones.push(item.phone)
-      })
-    } else {
-      if (client && client.phone) {
-        phones.push(client.phone)
-      }
-    }
-    copyObject.customerId = client.id
-    copyObject.phones = phones
-    this.setState(
-      { investFormData: _.clone(copyObject), clientName: name, selectedClient: client },
-      () => {
-        this.clearParmas()
-      }
-    )
-  }
-
-  getAllProjects = () => {
-    axios.get(`/api/project/all`).then((res) => {
-      let projectArray = []
-      res &&
-        res.data.items.map((item, index) => {
-          return projectArray.push({
-            value: item.id,
-            name: item.name,
-            productType: item.productTypes,
-          })
-        })
-      this.setState({
-        getInvestProject: projectArray,
-      })
+  setEditValues = () => {
+    const { route, CMLead, dispatch } = this.props
+    const { lead = null, selectedCity, client, name } = route.params
+    let copyObject = Object.assign({}, CMLead)
+    copyObject.maxPrice = lead.maxPrice
+    copyObject.minPrice = lead.minPrice
+    copyObject.projectId = lead.project ? lead.project.id : ''
+    copyObject.projectType = lead.projectType ? lead.projectType : ''
+    copyObject.armsProjectTypeId = lead.productTypes ? String(lead.productTypes.id) : ''
+    copyObject.customerId = client ? client.id : null
+    copyObject.cityId = selectedCity ? selectedCity.value : null
+    copyObject.description = lead.description
+    this.setState({ selectedCity, selectedClient: client, name }, () => {
+      dispatch(addEditCMLead(copyObject))
     })
   }
 
+
+
+  setClient = () => {
+    const { CMLead, route, dispatch } = this.props
+    const { client, name } = route.params
+    if (client && name) {
+      console.log("client", client.phone);
+      let phones = []
+      if (client.customerContacts && client.customerContacts.length) {
+        client.customerContacts.map((item) => {
+          phones.push(item.phone)
+        })
+      } else {
+        if (client && client.phone) {
+          phones.push(client.phone)
+        }
+      }
+      this.setState({ selectedClient: client, clientName: name }, () => {
+        dispatch(addEditCMLead({
+          ...CMLead,
+          phones: phones,
+          customerId: client ? client.id : null
+        }))
+      })
+    }
+  }
   handleInvestForm = (value, name) => {
 
 
-    const { investFormData, getProductType } = this.state
-    investFormData[name] = value
+
+    const { CMLead, dispatch } = this.props
+    const { getProductType } = this.state
+    let copyObject = { ...CMLead }
+    copyObject[name] = value;
+
     if (name === 'projectId') {
+
       this.getProductType(value)
     }
+
     if (name === 'projectType') {
       const getProName = getProductType.find((item) => {
         return item.value === value
       })
-      investFormData['armsProjectTypeId'] = value
-      investFormData['projectType'] = getProName.name
+      copyObject['armsProjectTypeId'] = value
+      copyObject['projectType'] = getProName.name
     }
-    this.setState({ investFormData })
+    dispatch(addEditCMLead(copyObject))
   }
 
-  selectSubtype = (type) => {
-    this.setState({ selectSubType: StaticData.subType[type] })
-  }
 
   investSubmitForm = (customerId) => {
+    const { formData, callingCode, callingCode1, callingCode2, } = this.state;
 
+    const { CMLead, investmentProjects, dispatch, route } = this.props
 
-    const { investFormData, getInvestProject, formData, callingCode, callingCode1, callingCode2, } = this.state;
-    investFormData.customerId = customerId;
+    const copyObject = { ...CMLead }
+    copyObject.customerId = customerId
+
 
     let phone1 = this.checkNum(formData.contactNumber, callingCode)
 
@@ -317,43 +313,51 @@ class AddClient extends Component {
       Arr.push(phone3.replace(/\s+/g, ''))
     }
 
+    copyObject.phones = phone1 ? Arr : null,
 
-    investFormData.phones = phone1 ? Arr : null,
-      console.log(investFormData)
-    if (!investFormData.customerId || !investFormData.cityId) {
+
+      dispatch(addEditCMLead(copyObject))
+    console.log("CMLead", copyObject)
+    if (!copyObject.customerId || !copyObject.cityId) {
       this.setState({
         checkValidations: true,
       })
-    } else {
-      if (investFormData.projectId && investFormData.projectId !== '') {
-        let project = _.find(getInvestProject, function (item) {
-          return item.value === investFormData.projectId
-        })
-        investFormData.projectName = project.name
-      } else {
-        investFormData.projectId = null
-        investFormData.projectName = null
-      }
-      investFormData.noProduct = false
 
-      this.setState({ loadings: true }, () => {
+    } else {
+      if (copyObject.projectId && copyObject.projectId !== '') {
+        let project = _.find(investmentProjects, function (item) {
+          return item.value === copyObject.projectId
+        })
+        copyObject.projectName = project.name
+      } else {
+        copyObject.projectId = null
+        copyObject.projectName = null
+      }
+      this.setState({ loading: true }, () => {
+
+        // add lead
         axios
-          .post(`/api/leads/project`, investFormData)
+          .post(`/api/leads/project`, copyObject)
           .then((res) => {
+
             helper.successToast('Client and Invest lead have been registered successfully.')
-            // helper.successToast('Lead created successfully')
+
             RootNavigation.navigateTo('Leads', {
               screen: 'Invest',
-              screenName:'AddClient'
+              screenName: 'AddClient'
             })
           })
           .catch((error) => {
             console.log(error)
-            this.setState({ loadings: false })
+            this.setState({ loading: false })
           })
+
       })
     }
   }
+
+
+
 
   changeStatus = (status) => {
     this.setState({
@@ -362,10 +366,10 @@ class AddClient extends Component {
   }
 
 
-  getProductType = (id) => {
-    const { getInvestProject } = this.state
+  getProductType = async (id) => {
+    const { investmentProjects } = this.props
     var getProType = _.pluck(
-      _.filter(getInvestProject, (item) => item.value === id),
+      _.filter(investmentProjects, (item) => item.value === id),
       'productType'
     )
     var getPro = []
@@ -375,7 +379,9 @@ class AddClient extends Component {
     this.setState({
       getProductType: getPro,
     })
+    return getPro
   }
+
 
   //invest till
 
@@ -851,8 +857,10 @@ class AddClient extends Component {
     const { user } = this.props
 
 
-    const { route, navigation, contacts, armsContacts } = this.props
+    const { route, navigation, contacts, armsContacts, CMLead } = this.props
     const { update, client, isFromDropDown, screenName, isPOC, isFromScreen = null } = route.params
+
+
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
     if (
       !formData.firstName ||
@@ -868,7 +876,7 @@ class AddClient extends Component {
     //validations for rent/invest leads
 
 
-    else if (!investFormData.cityId && formData.purpose == 'Invest') {
+    else if (!CMLead.cityId && formData.purpose == 'Invest') {
       this.setState({
         checkValidations: true,
       })
@@ -895,11 +903,11 @@ class AddClient extends Component {
           let body = this.createPayload()
           body.name = body.first_name + ' ' + body.last_name
           this.setState({ loading: true })
-      
+          console.log("client", body);
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
-
+              console.log("res", res)
               //id
               if (res.status === 200 && res.data) {
                 if (formData.contactRegistrationId) {
@@ -964,7 +972,8 @@ class AddClient extends Component {
                 helper.successToast('CLIENT UPDATED')
                 body.name = body.first_name + ' ' + body.last_name
                 //this.call(body)
-                navigation.goBack()
+                navigation.navigate('ClientDetail')
+               // navigation.goBack()
               }
             })
             .catch((error) => {
@@ -1038,6 +1047,20 @@ class AddClient extends Component {
     if (prevState?.selectedCity && this.state?.selectedCity?.value !== prevState.selectedCity?.value) {
       this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
     }
+
+
+    if (this.state.formData.purpose == 'Invest') {
+      const { CMLead, route, dispatch } = this.props
+      const { selectedCity, client, name } = route.params
+      if (selectedCity && prevProps.CMLead.cityId !== selectedCity.value) {
+        this.setState({ selectedCity }, () => {
+          dispatch(addEditCMLead({ ...CMLead, cityId: selectedCity.value }))
+        })
+      }
+      if (client && prevProps.CMLead.customerId !== client.id) {
+        this.setClient()
+      }
+    }
   }
 
 
@@ -1046,6 +1069,8 @@ class AddClient extends Component {
     const { dispatch } = this.props
     // selected Areas should be cleared to be used anywhere else
     dispatch(setSelectedAreas([]))
+
+    dispatch(setDefaultCMPayload())
   }
 
 
@@ -1068,7 +1093,7 @@ class AddClient extends Component {
     copyObject.city_id = selectedCity ? selectedCity.value : null
     setTimeout(() => {
       const { selectedAreasIds } = this.props
-    
+
       copyObject.leadAreas = selectedCity && selectedAreasIds
       this.setState({
         RCMFormData: copyObject,
@@ -1252,24 +1277,24 @@ class AddClient extends Component {
         payLoad.org = newOrg.name.toLowerCase()
       }
 
-     
+      //   console.log("rentPayload", payLoad);
       axios
         .post(`/api/leads`, payLoad)
         .then((res) => {
 
           helper.successToast(`Client and ${payLoad.purpose} lead have been registered successfully.`)
-       
+
           if (payLoad.purpose === 'buy') {
 
             RootNavigation.navigateTo('Leads', {
               screen: 'Buy',
-              screenName:'AddClient'
+              screenName: 'AddClient'
             })
           }
           else {
             RootNavigation.navigateTo('Leads', {
               screen: 'Rent',
-              screenName:'AddClient'
+              screenName: 'AddClient'
             })
           }
 
@@ -1346,6 +1371,7 @@ class AddClient extends Component {
 
     const { route } = this.props
     const { update, client, screenName } = route.params
+    const { investmentProjects, CMFormLoading } = this.props
     let btnText = update ? 'UPDATE' : 'ADD'
 
     return (
@@ -1366,7 +1392,7 @@ class AddClient extends Component {
                     formData={formData}
                     cities={cities}
                     getClients={getClients}
-                    getProject={getProject}
+                    //getProject={getProject}
                     update={update}
                     phoneValidate={phoneValidate}
                     emailValidate={emailValidate}
@@ -1390,7 +1416,7 @@ class AddClient extends Component {
                     //Invest
                     handleInvestForm={this.handleInvestForm}
                     investFormData={investFormData}
-                    getInvestProject={getInvestProject}
+
                     checkValidations={checkValidations}
                     selectedCity={selectedCity}
                     clientName={clientName}
@@ -1398,6 +1424,20 @@ class AddClient extends Component {
                     loadings={loadings}
                     isPriceModalVisible={isPriceModalVisible}
                     setParentState={(obj) => { this.setState(obj) }}
+
+
+
+                    // formSubmit={this.formSubmit}
+
+                    //handleForm={this.handleForm}
+
+
+
+                    getProject={investmentProjects}
+
+
+                    // update={update}
+
 
 
                     //Rent/Buy
@@ -1463,6 +1503,11 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     armsContacts: store.armsContacts.armsContacts,
     selectedAreasIds: store.areasReducer.selectedAreas,
+
+    //invest
+    CMFormLoading: store.cmLead.CMFormLoading,
+    investmentProjects: store.cmLead.investmentProjects,
+    CMLead: store.cmLead.CMLead,
   }
 }
 

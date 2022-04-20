@@ -69,7 +69,7 @@ class DetailForm extends Component {
       //InvestProps
       handleInvestForm,
       investFormData,
-      getInvestProject,
+      getProject,
       checkValidations,
       selectedCity,
       clientName,
@@ -734,9 +734,11 @@ class DetailForm extends Component {
                 checkValidation={checkValidations}
                 handleForm={handleInvestForm}
                 clientName={clientName}
+
+                
                 selectedCity={selectedCity}
                 formData={investFormData}
-                getProject={getInvestProject}
+                getProject={getProject}
                 getProductType={getProductType}
                 loading={loadings}
                 isPriceModalVisible={isPriceModalVisible}

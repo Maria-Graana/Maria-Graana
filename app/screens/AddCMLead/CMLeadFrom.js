@@ -107,7 +107,7 @@ class CMLeadFrom extends Component {
           placeholder="Select City"
           onPress={() => this.handleCityClick()}
           value={selectedCity ? selectedCity.name : ''}
-          showError={checkValidation === true && CMLead.cityId === ''}
+          showError={checkValidation === true && (CMLead.cityId === '' || CMLead.cityId === null)}
           errorMessage="Required"
         />
 
@@ -173,7 +173,7 @@ class CMLeadFrom extends Component {
           <View style={[AppStyles.mainInputWrap]}>
             <TouchableButton
               containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-              label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
+              label={update ? 'UPDATE' : 'CREATE'}
               onPress={() => formSubmit()}
               loading={loading}
               disabled={loading}

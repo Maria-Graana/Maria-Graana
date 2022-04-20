@@ -115,10 +115,10 @@ class AddRCMLead extends Component {
     let copyObject = Object.assign({}, RCMFormData)
     copyObject.maxPrice = lead.price ? lead.price : 0
     copyObject.minPrice = lead.min_price ? lead.min_price : 0
-    copyObject.bed = lead.bed ? lead.bed : null
-    copyObject.maxBed = lead.maxBed ? lead.maxBed : null
-    copyObject.bath = lead.bath ? lead.bath : null
-    copyObject.maxBath = lead.maxBath ? lead.maxBath : null
+    copyObject.bed = lead.bed ? lead.bed : 0
+    copyObject.maxBed = lead.maxBed ? lead.maxBed : 0
+    copyObject.bath = lead.bath ? lead.bath : 0
+    copyObject.maxBath = lead.maxBath ? lead.maxBath : 0
     copyObject.size = lead.size ? lead.size : StaticData.sizeMarla[0]
     copyObject.size_unit = lead.size_unit ? lead.size_unit : 'marla'
     copyObject.maxSize = lead.max_size

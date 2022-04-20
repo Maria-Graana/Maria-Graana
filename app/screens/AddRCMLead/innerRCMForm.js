@@ -44,19 +44,16 @@ class InnerRCMForm extends Component {
     }
   }
 
-
-
   showPriceModal = () => {
     this.props.setParentState({ isPriceModalVisible: true })
   }
 
   onModalCancelPressed = () => {
-
     this.props.setParentState({
       isBedBathModalVisible: false,
       isPriceModalVisible: false,
       isSizeModalVisible: false,
-    });
+    })
   }
 
   onModalSizeDonePressed = (minValue, maxValue, unit) => {
@@ -67,11 +64,9 @@ class InnerRCMForm extends Component {
     copyObject.size_unit = unit
     this.props.setParentState({
       RCMFormData: copyObject,
-      isSizeModalVisible: false
+      isSizeModalVisible: false,
     })
-
   }
-
 
   onModalPriceDonePressed = (minValue, maxValue) => {
     const { formData } = this.props
@@ -90,7 +85,6 @@ class InnerRCMForm extends Component {
         copyObject.maxBed = maxValue
         this.props.setParentState({
           RCMFormData: copyObject,
-
         })
 
         break
@@ -99,7 +93,6 @@ class InnerRCMForm extends Component {
         copyObject.maxBath = maxValue
         this.props.setParentState({
           RCMFormData: copyObject,
-
         })
 
       default:
@@ -107,11 +100,8 @@ class InnerRCMForm extends Component {
     }
     this.props.setParentState({
       isBedBathModalVisible: false,
-
     })
-
   }
-
 
   handleAreaClick = () => {
     const { formData } = this.props
@@ -129,20 +119,13 @@ class InnerRCMForm extends Component {
     }
   }
 
-
-
   showBedBathModal = (modalType) => {
     this.props.setParentState({ isBedBathModalVisible: true, modalType })
   }
 
-
-
-
   showSizeModal = () => {
     this.props.setParentState({ isSizeModalVisible: true })
   }
-
-
 
   handleClientClick = () => {
     const { navigation } = this.props
@@ -195,7 +178,6 @@ class InnerRCMForm extends Component {
     const { leadAreas } = formData
     const leadAreasLength = leadAreas ? leadAreas.length : 0
 
-
     return (
       <View>
         <BedBathSliderModal
@@ -242,26 +224,23 @@ class InnerRCMForm extends Component {
           </View>
         ) : null}
 
-        {!hideClient ? <TouchableInput
-          placeholder="Client"
-          onPress={() => this.handleClientClick()}
-          value={clientName}
-          showIconOrImage={false}
-          showError={checkValidation === true && formData.customerId === ''}
-          errorMessage="Required"
-
-          disabled={update}
-        />
-          : null
-        }
+        {!hideClient ? (
+          <TouchableInput
+            placeholder="Client"
+            onPress={() => this.handleClientClick()}
+            value={clientName}
+            showIconOrImage={false}
+            showError={checkValidation === true && formData.customerId === ''}
+            errorMessage="Required"
+            disabled={update}
+          />
+        ) : null}
 
         <TouchableInput
           placeholder="Select City"
           onPress={() => this.handleCityClick()}
           showIconOrImage={false}
           value={selectedCity ? selectedCity.name : ''}
-
-
           showError={checkValidation === true && formData.city_id === null}
           errorMessage="Required"
         />
@@ -270,7 +249,7 @@ class InnerRCMForm extends Component {
           onPress={() => this.handleAreaClick()}
           value={leadAreasLength > 0 ? leadAreasLength + ' Areas Selected' : ''}
           placeholder="Select Areas"
-          showError={checkValidation === true && !leadAreas && typeof leadAreas === "undefined"}
+          showError={checkValidation === true && !leadAreas && typeof leadAreas === 'undefined'}
           errorMessage="Required"
         />
 
@@ -387,16 +366,17 @@ class InnerRCMForm extends Component {
           />
         </View>
 
-
-        {!hideClient && <View style={[AppStyles.mainInputWrap]}>
-          <TouchableButton
-            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
-            onPress={() => formSubmit(formData)}
-            loading={loading}
-            disabled={loading}
-          />
-        </View>}
+        {!hideClient && (
+          <View style={[AppStyles.mainInputWrap]}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+              label={update ? 'UPDATE' : 'CREATE'}
+              onPress={() => formSubmit(formData)}
+              loading={loading}
+              disabled={loading}
+            />
+          </View>
+        )}
       </View>
     )
   }

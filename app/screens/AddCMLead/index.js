@@ -147,6 +147,7 @@ class AddCMLead extends Component {
         CMLead.projectId = null
         CMLead.projectName = null
       }
+      console.log(CMLead)
       this.setState({ loading: true }, () => {
         if (update) {
           // update lead

@@ -565,20 +565,22 @@ export const markDiaryTaskAsDone = (data) => {
       overdue = false,
       leadId = null,
       leadType = null,
+      comment = null,
     } = data
     let endPoint = ``
     endPoint = `/api/diary/update?id=${selectedDiary.id}`
-    axios
-      .patch(endPoint, {
-        status: 'completed',
-      })
-      .then(function (response) {
-        if (response.status == 200) {
-          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
-          helper.successToast(`Task completed`)
-          helper.deleteLocalNotification(response.data.id)
-        }
-      })
+    let body = {
+      status: 'completed',
+      comments: comment,
+      response: comment,
+    }
+    axios.patch(endPoint, body).then(function (response) {
+      if (response.status == 200) {
+        dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
+        helper.successToast(`Task completed`)
+        helper.deleteLocalNotification(response.data.id)
+      }
+    })
   }
 }
 

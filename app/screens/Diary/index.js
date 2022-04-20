@@ -65,6 +65,7 @@ import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import diaryHelper from './diaryHelper'
 import HistoryModal from '../../components/HistoryModal'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import NonLeadTaskModal from '../../components/NonLeadTaskModal'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -89,6 +90,7 @@ class Diary extends React.Component {
       isDelete: false,
       activityHistoryData: [],
       isActivityHistoryModalVisible: false,
+      nonLeadModalVisible: false,
     }
   }
   componentDidMount() {
@@ -285,7 +287,7 @@ class Diary extends React.Component {
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+        this.setState({ nonLeadModalVisible: true })
       } else {
         dispatch(
           setConnectFeedback({
@@ -554,6 +556,7 @@ class Diary extends React.Component {
       isSortModalVisible,
       isActivityHistoryModalVisible,
       activityHistoryData,
+      nonLeadModalVisible,
     } = this.state
     const {
       overdueCount,
@@ -593,6 +596,14 @@ class Diary extends React.Component {
             <Ionicons name="md-add" color="#ffffff" />
           </Fab>
         ) : null}
+
+        <NonLeadTaskModal
+          isVisible={nonLeadModalVisible}
+          showHideModal={(value) => this.setState({ nonLeadModalVisible: value })}
+          markTaskasDone={(comment) =>
+            dispatch(markDiaryTaskAsDone({ selectedDate, agentId, comment }))
+          }
+        />
 
         <AddLeadCategoryModal
           visible={showClassificationModal}

@@ -142,43 +142,39 @@ export class ScheduledTasks extends Component {
     const { selectedDate } = this.state
     const { isFromTimeSlot = false } = route.params
     if (action === 'mark_as_done') {
-      if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId: user ? user.id : null }))
-      } else {
-        dispatch(
-          setConnectFeedback({
-            ...connectFeedback,
-            id: selectedDiary.id,
-          })
-        ).then((res) => {
-          if (selectedDiary.taskType === 'meeting') {
-            // check if reference number exists for meeting task when marking task as done, show modal if not
-            // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-            // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
-            // reference number exists for the selected lead, so directly marking it as done
-            dispatch(
-              getDiaryFeedbacks({
-                taskType: selectedDiary.taskType,
-                leadType: diaryHelper.getLeadType(selectedDiary),
-                actionType: 'Done',
-              })
-            ).then((res) => {
-              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-            })
-          } else {
-            // for all other cases
-            dispatch(
-              getDiaryFeedbacks({
-                taskType: selectedDiary.taskType,
-                leadType: diaryHelper.getLeadType(selectedDiary),
-                actionType: 'Done',
-              })
-            ).then((res) => {
-              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-            })
-          }
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
         })
-      }
+      ).then((res) => {
+        if (selectedDiary.taskType === 'meeting') {
+          // check if reference number exists for meeting task when marking task as done, show modal if not
+          // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
+          // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+          // reference number exists for the selected lead, so directly marking it as done
+          dispatch(
+            getDiaryFeedbacks({
+              taskType: selectedDiary.taskType,
+              leadType: diaryHelper.getLeadType(selectedDiary),
+              actionType: 'Done',
+            })
+          ).then((res) => {
+            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+          })
+        } else {
+          // for all other cases
+          dispatch(
+            getDiaryFeedbacks({
+              taskType: selectedDiary.taskType,
+              leadType: diaryHelper.getLeadType(selectedDiary),
+              actionType: 'Done',
+            })
+          ).then((res) => {
+            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+          })
+        }
+      })
     } else if (action === 'cancel_viewing') {
       dispatch(
         setConnectFeedback({

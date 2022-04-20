@@ -63,6 +63,7 @@ import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 import Dialer from '../screens/Dialer'
 import ContactRegistrationFeedback from '../screens/ContactRegistrationFeedback'
 import PropertyList from '../screens/PropertyList'
+import lead from '../reducers/lead'
 
 const Stack = createStackNavigator()
 
@@ -285,7 +286,9 @@ function MainStack() {
         component={Client}
         options={({ navigation, route }) => ({
           title: 'CLIENTS',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'}  leftBool={true} />,
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          ),
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
@@ -330,63 +333,64 @@ function MainStack() {
             route.params && route.params.isFromLeadWorkflow
               ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
               : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerRight: (props) => (
-            <TouchableOpacity
-              onPress={() => {
-                if (route && route.params && route.params.type) {
-                  let selectedCity = null
-                  if (route.params.lead && route.params.lead.city) {
-                    selectedCity = {
-                      ...route.params.lead.city,
-                      value: route.params.lead.city.id,
+          headerRight: (props) =>
+            route && route.params?.lead && route.params.lead.status === 'open' ? (
+              <TouchableOpacity
+                onPress={() => {
+                  if (route && route.params && route.params.type) {
+                    let selectedCity = null
+                    if (route.params.lead && route.params.lead.city) {
+                      selectedCity = {
+                        ...route.params.lead.city,
+                        value: route.params.lead.city.id,
+                      }
+                    }
+                    if (route.params && route.params.type === 'Investment') {
+                      navigation.navigate('AddCMLead', {
+                        pageName: 'CM',
+                        client:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer
+                            : null,
+                        name:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer.customerName
+                            : null,
+                        lead: route.params.lead ? route.params.lead : null,
+                        selectedCity,
+                        update: true,
+                      })
+                    } else {
+                      navigation.navigate('AddRCMLead', {
+                        pageName: 'RCM',
+                        client:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer
+                            : null,
+                        name:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer.customerName
+                            : null,
+                        lead: route.params.lead ? route.params.lead : null,
+                        selectedCity,
+                        update: true,
+                        purpose:
+                          route.params.lead && route.params.lead.purpose
+                            ? route.params.lead.purpose
+                            : '',
+                      })
                     }
                   }
-                  if (route.params && route.params.type === 'Investment') {
-                    navigation.navigate('AddCMLead', {
-                      pageName: 'CM',
-                      client:
-                        route.params.lead && route.params.lead.customer
-                          ? route.params.lead.customer
-                          : null,
-                      name:
-                        route.params.lead && route.params.lead.customer
-                          ? route.params.lead.customer.customerName
-                          : null,
-                      lead: route.params.lead ? route.params.lead : null,
-                      selectedCity,
-                      update: true,
-                    })
-                  } else {
-                    navigation.navigate('AddRCMLead', {
-                      pageName: 'RCM',
-                      client:
-                        route.params.lead && route.params.lead.customer
-                          ? route.params.lead.customer
-                          : null,
-                      name:
-                        route.params.lead && route.params.lead.customer
-                          ? route.params.lead.customer.customerName
-                          : null,
-                      lead: route.params.lead ? route.params.lead : null,
-                      selectedCity,
-                      update: true,
-                      purpose:
-                        route.params.lead && route.params.lead.purpose
-                          ? route.params.lead.purpose
-                          : '',
-                    })
-                  }
-                }
-              }}
-            >
-              <Feather
-                style={{ marginHorizontal: 15 }}
-                name="edit"
-                size={24}
-                color={AppStyles.colors.primaryColor}
-              />
-            </TouchableOpacity>
-          ),
+                }}
+              >
+                <Feather
+                  style={{ marginHorizontal: 15 }}
+                  name="edit"
+                  size={24}
+                  color={AppStyles.colors.primaryColor}
+                />
+              </TouchableOpacity>
+            ) : null,
           headerTitleAlign: 'center',
         })}
       />

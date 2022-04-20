@@ -69,13 +69,15 @@ class AddCMLead extends Component {
     const { lead = null, selectedCity, client, name } = route.params
     let copyObject = Object.assign({}, CMLead)
     copyObject.maxPrice = lead.maxPrice
-    copyObject.minPrice = lead.minPrice
+      ? lead.maxPrice
+      : StaticData.PricesProject[StaticData.PricesProject.length - 1]
+    copyObject.minPrice = lead.minPrice ? lead.maxPrice : StaticData.PricesProject[0]
     copyObject.projectId = lead.project ? lead.project.id : ''
     copyObject.projectType = lead.projectType ? lead.projectType : ''
     copyObject.armsProjectTypeId = lead.productTypes ? String(lead.productTypes.id) : ''
     copyObject.customerId = client ? client.id : null
     copyObject.cityId = selectedCity ? selectedCity.value : null
-    copyObject.description = lead.description
+    copyObject.description = lead.description ? lead.description : ''
     this.setState({ selectedCity, selectedClient: client, name }, () => {
       dispatch(addEditCMLead(copyObject))
     })

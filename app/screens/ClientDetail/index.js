@@ -12,6 +12,7 @@ import axios from 'axios'
 import Loader from '../../components/loader'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import TouchableButton from '../../components/TouchableButton'
 
 class ClientDetail extends React.Component {
   constructor(props) {
@@ -38,6 +39,15 @@ class ClientDetail extends React.Component {
     copyClient.firstName = client.first_name // have to add additional keys in case of lead bcs it doesnot exist when coming from lead detail screen
     copyClient.lastName = client.last_name // The format is different in api's so adding keys to adjust and display
     this.props.navigation.navigate('AddClient', { client: copyClient, update: true })
+  }
+
+  goToFormPage = (page, status, client) => {
+    const { navigation } = this.props
+    navigation.navigate(page, {
+      pageName: status,
+      client,
+      name: client && client.first_name + ' ' + client.last_name,
+    })
   }
 
   fetchCustomer = () => {
@@ -103,7 +113,7 @@ class ClientDetail extends React.Component {
   }
 
   render() {
-    const { user } = this.props
+    const { user, permissions } = this.props
     const { client, loading, clientPhones } = this.state
     let updatePermission = this.updatePermission()
     let belongs = this.checkClient()
@@ -195,6 +205,41 @@ class ClientDetail extends React.Component {
                 color={AppStyles.colors.primaryColor}
               />
             </View>
+          </View>
+          <View style={styles.buttonInputWrap}>
+            {getPermissionValue(
+              PermissionFeatures.PROJECT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) && (
+              <TouchableButton
+                containerStyle={styles.timePageBtn}
+                label="Add Project Lead"
+                borderColor="white"
+                containerBackgroundColor="#0f73ee"
+                borderWidth={1}
+                fontSize={14}
+                // disabled={disabled}
+                onPress={() => this.goToFormPage('AddCMLead', 'CM', client)}
+              />
+            )}
+            {getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) && (
+              <TouchableButton
+                containerStyle={styles.timePageBtn}
+                containerBackgroundColor="white"
+                textColor="#0f73ee"
+                borderColor="#0f73ee"
+                borderWidth={1}
+                label="Add Buy/Rent Lead"
+                fontSize={14}
+                // disabled={disabled}
+                onPress={() => this.goToFormPage('AddRCMLead', 'RCM', client)}
+              />
+            )}
           </View>
         </ScrollView>
       </View>

@@ -171,18 +171,25 @@ class Diary extends React.Component {
   dayEndStat = (selectedDate, nextDay, array) => {
     if (array[0] && array[0].armsShift && array.length == 2) {
       const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
-      const end = formatDateTime(nextDay, array[1].armsShift.endTime)
-
-      this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 3) {
-      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
       const end = formatDateTime(
-        array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
-        array[2].armsShift.endTime
+        array[0] && (array[1].armsShift.name == 'Evening' || array[1].armsShift.name == 'Night')
+          ? nextDay
+          : selectedDate,
+        array[1].armsShift.endTime
       )
 
       this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 1) {
+    }
+    // else if (array[0] && array[0].armsShift && array.length == 3) {
+    //   const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+    //   const end = formatDateTime(
+    //     array[2].armsShift.name == 'Night' ? nextDay : selectedDate,
+    //     array[2].armsShift.endTime
+    //   )
+
+    //   this.setStatsData(start, end)
+    // }
+    else if (array[0] && array[0].armsShift && array.length == 1) {
       const start = formatDateTime(selectedDate, array[0] && array[0].armsShift.startTime)
       const end = formatDateTime(
         array[0] && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,

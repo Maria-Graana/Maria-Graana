@@ -187,7 +187,9 @@ class InnerRCMForm extends Component {
 
       sizeUnitList,
       isSizeModalVisible,
-
+      showSizeModal,
+      onModalSizeDonePressed,
+      update,
     } = this.props
 
     const { leadAreas } = formData
@@ -247,15 +249,19 @@ class InnerRCMForm extends Component {
           showIconOrImage={false}
           showError={checkValidation === true && formData.customerId === ''}
           errorMessage="Required"
-        /> : null
+
+          disabled={update}
+        />
+          : null
         }
+
         <TouchableInput
           placeholder="Select City"
           onPress={() => this.handleCityClick()}
           showIconOrImage={false}
           value={selectedCity ? selectedCity.name : ''}
 
-          
+
           showError={checkValidation === true && formData.city_id === null}
           errorMessage="Required"
         />
@@ -264,7 +270,7 @@ class InnerRCMForm extends Component {
           onPress={() => this.handleAreaClick()}
           value={leadAreasLength > 0 ? leadAreasLength + ' Areas Selected' : ''}
           placeholder="Select Areas"
-          showError={checkValidation === true && !leadAreas  && typeof leadAreas === "undefined"}
+          showError={checkValidation === true && !leadAreas && typeof leadAreas === "undefined"}
           errorMessage="Required"
         />
 
@@ -385,7 +391,7 @@ class InnerRCMForm extends Component {
         {!hideClient && <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={'CREATE LEAD'}
+            label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
             onPress={() => formSubmit(formData)}
             loading={loading}
             disabled={loading}

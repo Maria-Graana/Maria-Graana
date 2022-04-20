@@ -49,6 +49,9 @@ class CMLeadFrom extends Component {
       isSizeModalVisible,
     
 
+      showSizeModal,
+      onModalSizeDonePressed,
+      update,
     } = this.props
     const checkBuy = formType === 'buy'
     const checkRent = formType === 'rent'
@@ -82,6 +85,7 @@ class CMLeadFrom extends Component {
             clientName={clientName}
             handleClientClick={handleClientClick}
             formData={formData}
+            update={update}
             handleForm={handleForm}
             selectedCity={selectedCity}
             selectedClient={selectedClient}

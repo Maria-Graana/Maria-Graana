@@ -97,7 +97,7 @@ class CMSecondForm extends React.Component {
             </View>
           </View>
 
-          <View style={{ backgroundColor: '#fff', marginHorizontal: 10 }}>
+          {/* <View style={{ backgroundColor: '#fff', marginHorizontal: 10 }}>
             <CMBTN
               onClick={() => {
                 if (updatePermission) addPaymentModalToggle(true, 'payment')
@@ -114,7 +114,7 @@ class CMSecondForm extends React.Component {
               btnText={'ADD TAX'}
               checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
-          </View>
+          </View> */}
 
           <View style={{ flexDirection: 'row' }}>
             <View style={{ width: '49%', marginRight: 7 }}>

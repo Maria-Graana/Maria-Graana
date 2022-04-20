@@ -3,6 +3,7 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Textarea } from 'native-base'
+import { addEditCMLead, getAllProjects, setDefaultCMPayload } from '../../actions/cmLead'
 import PickerComponent from '../../components/Picker/index'
 import styles from './style'
 import AppStyles from '../../AppStyles'
@@ -44,23 +45,25 @@ class CMLeadFrom extends Component {
     this.props.setParentState({ isPriceModalVisible: true });
   }
   onModalPriceDonePressed = (minValue, maxValue) => {
-
-    const { formData } = this.props
-    const copyObject = { ...formData }
+    //need review
+    const { CMLead, dispatch } = this.props
+    const copyObject = { ...CMLead }
     copyObject.minPrice = minValue
     copyObject.maxPrice = maxValue
 
     if (this.props?.screenName === 'AddClient') {
+
+      dispatch(addEditCMLead(copyObject))
       this.props.setParentState({
-        investFormData: copyObject,
+        // investFormData: copyObject,
         isPriceModalVisible: false
       })
 
     }
     else {
-
+      dispatch(addEditCMLead(copyObject))
       this.props.setParentState({
-        formData: copyObject,
+        //formData: copyObject,
         isPriceModalVisible: false
       })
     }
@@ -73,24 +76,28 @@ class CMLeadFrom extends Component {
       formSubmit,
       checkValidation,
       handleForm,
-      formData,
       clientName,
       selectedCity,
       getProject,
       getProductType,
       loading,
       isPriceModalVisible,
-
+      CMLead,
+      update,
     } = this.props
 
     return (
       <View>
         <PriceSliderModal
           isVisible={isPriceModalVisible}
-          initialValue={formData?.minPrice}
-          finalValue={formData?.maxPrice}
+
           onModalPriceDonePressed={this.onModalPriceDonePressed}
           onModalCancelPressed={this.onModalCancelPressed}
+
+          initialValue={CMLead.minPrice}
+
+          finalValue={CMLead.maxPrice}
+
           arrayValues={StaticData.PricesProject}
         />
 
@@ -99,15 +106,17 @@ class CMLeadFrom extends Component {
           placeholder="Client"
           onPress={() => this.handleClientClick()}
           value={clientName}
-          showError={checkValidation === true && formData?.customerId === ''}
+          showError={checkValidation === true && CMLead.customerId === ''}
           errorMessage="Required"
-        />}
+          disabled={update}
+        />
+        }
 
         <TouchableInput
           placeholder="Select City"
           onPress={() => this.handleCityClick()}
           value={selectedCity ? selectedCity.name : ''}
-          showError={checkValidation === true && formData?.cityId === ''}
+          showError={checkValidation === true && CMLead.cityId === ''}
           errorMessage="Required"
         />
 
@@ -118,12 +127,9 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProject}
               name={'projectId'}
-              selectedItem={formData?.projectId}
+              selectedItem={CMLead.projectId}
               placeholder="Project"
             />
-            {/* {checkValidation === true && formData.projectId === '' && (
-              <ErrorMessage errorMessage={'Required'} />
-            )} */}
           </View>
         </View>
 
@@ -134,13 +140,10 @@ class CMLeadFrom extends Component {
               onValueChange={handleForm}
               data={getProductType}
               name={'projectType'}
-              selectedItem={formData?.armsProjectTypeId}
+              selectedItem={CMLead.armsProjectTypeId}
               placeholder="Product Type"
-              enabled={formData?.projectId === '' || formData?.projectId === null ? false : true}
+              enabled={CMLead.projectId === '' || CMLead.projectId === null ? false : true}
             />
-            {/* {
-              checkValidation === true && formData.projectType === '' && <ErrorMessage errorMessage={'Required'} />
-            } */}
           </View>
         </View>
 
@@ -151,8 +154,8 @@ class CMLeadFrom extends Component {
               showIconOrImage={false}
               onPress={() => this.showPriceModal()}
               value={`${helper.convertPriceToString(
-                formData?.minPrice,
-                formData?.maxPrice,
+                CMLead.minPrice,
+                CMLead.maxPrice,
                 StaticData.PricesProject[StaticData.PricesProject.length - 1]
               )}`}
             />
@@ -162,7 +165,7 @@ class CMLeadFrom extends Component {
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
           <Textarea
-            value={formData?.description}
+            value={CMLead.description}
             style={[
               AppStyles.formControl,
               Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
@@ -179,8 +182,8 @@ class CMLeadFrom extends Component {
         {!hideClient && <View style={[AppStyles.mainInputWrap]}>
           <TouchableButton
             containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={'CREATE LEAD'}
-            onPress={() => formSubmit(formData)}
+            label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
+            onPress={() => formSubmit()}
             loading={loading}
             disabled={loading}
           />
@@ -193,6 +196,7 @@ class CMLeadFrom extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    CMLead: store.cmLead.CMLead,
   }
 }
 

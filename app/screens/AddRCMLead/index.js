@@ -62,16 +62,14 @@ class AddRCMLead extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    //Typical usage, don't forget to compare the props
-    if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
-      this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
-    }
-  }
-
   componentDidMount() {
-    const { user, navigation } = this.props
-    const { purpose } = this.props.route.params
+    const { user, navigation, route } = this.props
+    const { purpose, update = false, lead } = route.params
+
+    if (update) {
+      navigation.setOptions({ title: 'EDIT LEAD' })
+      this.setEditValues()
+    }
     if (purpose) {
       this.setState({ formType: purpose }, () => {
         this.setPriceList()
@@ -79,10 +77,6 @@ class AddRCMLead extends Component {
     } else {
       this.setPriceList()
     }
-    navigation.addListener('focus', () => {
-      this.onScreenFocused()
-    })
-    //this.setSizeUnitList('marla')
     this.fetchOrganizations()
   }
 
@@ -92,14 +86,66 @@ class AddRCMLead extends Component {
     dispatch(setSelectedAreas([]))
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const { CMLead, route, dispatch, selectedAreasIds } = this.props
+    const { selectedCity, client } = route.params
+    if (selectedCity && prevState.RCMFormData.city_id !== selectedCity.value) {
+      this.setState({
+        selectedCity,
+        RCMFormData: { ...this.state.RCMFormData, city_id: selectedCity.value },
+      })
+    }
+    if (client && prevState.RCMFormData.customerId !== client.id) {
+      this.setClient()
+    }
+    //Typical usage, don't forget to compare the props
+    if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
+      this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
+    }
+
+    if (prevProps.selectedAreasIds !== selectedAreasIds) {
+      this.setState({ RCMFormData: { ...this.state.RCMFormData, leadAreas: selectedAreasIds } })
+    }
+  }
+
+  setEditValues = () => {
+    const { route } = this.props
+    const { RCMFormData } = this.state
+    const { lead = null, selectedCity, client, name } = route.params
+    let copyObject = Object.assign({}, RCMFormData)
+    copyObject.maxPrice = lead.price
+    copyObject.minPrice = lead.min_price
+    copyObject.bed = lead.bed
+    copyObject.maxBed = lead.maxBed
+    copyObject.bath = lead.bath
+    copyObject.maxBath = lead.maxBath
+    copyObject.size = lead.size
+    copyObject.size_unit = lead.size_unit
+    copyObject.maxSize = lead.max_size
+    copyObject.type = lead.type
+    copyObject.subtype = lead.subtype
+    copyObject.customerId = client ? client.id : null
+    copyObject.city_id = selectedCity ? selectedCity.value : null
+    copyObject.leadAreas = lead.armsLeadAreas ? lead.armsLeadAreas : []
+    copyObject.description = lead.description
+    copyObject.org =
+      lead.customer && lead.customer.organizationId ? lead.customer.organizationId : null
+    this.setState({ selectedCity, selectedClient: client, name, RCMFormData: copyObject }, () => {
+      if (copyObject.type != '') {
+        this.selectSubtype(copyObject.type)
+      }
+    })
+  }
+
   clearParmas = () => {
     const { navigation } = this.props
     navigation.setParams({ selectedCity: null, client: null, name: null })
   }
 
-  onScreenFocused = () => {
-    const { client, name, selectedCity } = this.props.route.params
+  setClient = () => {
+    const { CMLead, route, dispatch } = this.props
     const { RCMFormData } = this.state
+    const { client, name, selectedCity } = route.params
     let copyObject = Object.assign({}, RCMFormData)
     let phones = []
     if (client && client.customerContacts && client.customerContacts.length) {
@@ -109,11 +155,7 @@ class AddRCMLead extends Component {
       copyObject.customerId = client.id
       copyObject.phones = phones
     }
-    copyObject.city_id = selectedCity ? selectedCity.value : null
     setTimeout(() => {
-      const { selectedAreasIds } = this.props
-      console.log("as", selectedAreasIds);
-      copyObject.leadAreas = selectedCity && selectedAreasIds
       this.setState({
         RCMFormData: copyObject,
         selectedCity,
@@ -253,8 +295,9 @@ class AddRCMLead extends Component {
   }
 
   sendPayload = () => {
-    const { formType, RCMFormData, formData, organizations } = this.state
-    const { user } = this.props
+    const { formType, RCMFormData, organizations } = this.state
+    const { user, route } = this.props
+    const { update = false, lead } = route.params
     if (RCMFormData.size === '') RCMFormData.size = null
     else RCMFormData.size = Number(RCMFormData.size)
     let payLoad = {
@@ -280,34 +323,42 @@ class AddRCMLead extends Component {
     this.setState({ loading: true }, () => {
       if (user.subRole === 'group_management') {
         let newOrg = _.find(organizations, function (item) {
-          return item.value === formData.org
+          return item.value === RCMFormData.org
         })
         payLoad.org = newOrg.name.toLowerCase()
       }
 
-      axios
-        .post(`/api/leads`, payLoad)
-        .then((res) => {
-
-          helper.successToast('Lead created successfully')
-          if (payLoad.purpose == 'buy') {
-            RootNavigation.navigateTo('Leads', {
-              screen: 'Buy',
-            })
-
-          }
-          else {
-            RootNavigation.navigateTo('Leads', {
-              screen: 'Rent',
-            })
-
-          }
-
-        })
-        .catch((error) => {
-          console.log('error on creating lead')
-          this.setState({ loading: false })
-        })
+      if (update) {
+        axios
+          .patch(`/api/leads/update/${lead.id}`, payLoad)
+          .then((res) => {
+            helper.successToast('Lead updated successfully')
+            if (payLoad.purpose == 'buy') {
+              RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+            } else {
+              RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+            }
+          })
+          .catch((error) => {
+            console.log('error on updating lead', error)
+            this.setState({ loading: false })
+          })
+      } else {
+        axios
+          .post(`/api/leads`, payLoad)
+          .then((res) => {
+            helper.successToast('Lead created successfully')
+            if (payLoad.purpose == 'buy') {
+              RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+            } else {
+              RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+            }
+          })
+          .catch((error) => {
+            console.log('error on creating lead', error)
+            this.setState({ loading: false })
+          })
+      }
     })
   }
 
@@ -347,6 +398,7 @@ class AddRCMLead extends Component {
       modalType,
     } = this.state
     const { route } = this.props
+    const { update = false } = route.params
 
     return (
       <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
@@ -373,6 +425,7 @@ class AddRCMLead extends Component {
                     sizeUnit={StaticData.sizeUnit}
                     propertyType={StaticData.type}
                     formData={RCMFormData}
+                    update={update}
                     formType={formType}
                     subTypeData={selectSubType}
                     handleAreaClick={this.handleAreaClick}

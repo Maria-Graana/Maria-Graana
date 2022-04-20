@@ -1,11 +1,9 @@
 
 
 export default StaticData = {
-
   parkingAvailable: [
     { name: 'Yes', value: 'yes' },
     { name: 'No', value: 'no' },
-
   ],
 
   diaryTasks: [
@@ -130,6 +128,7 @@ export default StaticData = {
     { value: 'sqyd', name: 'Yd²' },
     { value: 'kanal', name: 'Kanal' },
     { value: 'marla', name: 'Marla' },
+    { value: 'acre', name: 'Acre' },
   ],
   purpose: [
     { value: 'sale', name: 'Sale' },
@@ -734,6 +733,7 @@ export default StaticData = {
   bedBathRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1000],
   sizeMarla: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30, 40, 50, 10000000],
   sizeKanal: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 30, 40, 50, 100, 10000000],
+  sizeAcre: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10000000],
   sizeSqft: [
     0, 1, 100, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 10000000,
   ],

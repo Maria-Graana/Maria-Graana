@@ -113,21 +113,23 @@ class AddRCMLead extends Component {
     const { RCMFormData } = this.state
     const { lead = null, selectedCity, client, name } = route.params
     let copyObject = Object.assign({}, RCMFormData)
-    copyObject.maxPrice = lead.price
-    copyObject.minPrice = lead.min_price
-    copyObject.bed = lead.bed
-    copyObject.maxBed = lead.maxBed
-    copyObject.bath = lead.bath
-    copyObject.maxBath = lead.maxBath
-    copyObject.size = lead.size
-    copyObject.size_unit = lead.size_unit
+    copyObject.maxPrice = lead.price ? lead.price : 0
+    copyObject.minPrice = lead.min_price ? lead.min_price : 0
+    copyObject.bed = lead.bed ? lead.bed : null
+    copyObject.maxBed = lead.maxBed ? lead.maxBed : null
+    copyObject.bath = lead.bath ? lead.bath : null
+    copyObject.maxBath = lead.maxBath ? lead.maxBath : null
+    copyObject.size = lead.size ? lead.size : StaticData.sizeMarla[0]
+    copyObject.size_unit = lead.size_unit ? lead.size_unit : 'marla'
     copyObject.maxSize = lead.max_size
-    copyObject.type = lead.type
-    copyObject.subtype = lead.subtype
+      ? lead.max_size
+      : StaticData.sizeMarla[StaticData.sizeMarla.length - 1]
+    copyObject.type = lead.type ? lead.type : ''
+    copyObject.subtype = lead.subtype ? lead.subType : ''
     copyObject.customerId = client ? client.id : null
     copyObject.city_id = selectedCity ? selectedCity.value : null
     copyObject.leadAreas = lead.armsLeadAreas ? lead.armsLeadAreas : []
-    copyObject.description = lead.description
+    copyObject.description = lead.description ? lead.description : ''
     copyObject.org =
       lead.customer && lead.customer.organizationId ? lead.customer.organizationId : null
     this.setState({ selectedCity, selectedClient: client, name, RCMFormData: copyObject }, () => {
@@ -236,9 +238,6 @@ class AddRCMLead extends Component {
       alert('Please select city first!')
     }
   }
-
-
-
 
   selectSubtype = (type) => {
     this.setState(
@@ -373,11 +372,6 @@ class AddRCMLead extends Component {
     )
   }
 
-
-
-
-
-
   render() {
     const {
       organizations,
@@ -408,14 +402,14 @@ class AddRCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <RCMLeadFrom
-                    setParentState={(obj) => { this.setState(obj) }}
+                    setParentState={(obj) => {
+                      this.setState(obj)
+                    }}
                     navigation={this.props.navigation}
                     sizeUnitList={sizeUnitList}
                     organizations={_.clone(organizations)}
-                  
                     selectedCity={selectedCity}
                     selectedClient={selectedClient}
-                   
                     clientName={clientName}
                     formSubmit={this.RCMFormSubmit}
                     checkValidation={checkValidation}

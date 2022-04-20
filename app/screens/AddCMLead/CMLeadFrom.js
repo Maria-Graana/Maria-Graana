@@ -20,7 +20,7 @@ class CMLeadFrom extends Component {
     super(props)
   }
   onModalCancelPressed = () => {
-    this.props.setParentState({ isPriceModalVisible: false });
+    this.props.setParentState({ isPriceModalVisible: false })
   }
 
   handleCityClick = () => {
@@ -41,8 +41,7 @@ class CMLeadFrom extends Component {
   }
 
   showPriceModal = () => {
-
-    this.props.setParentState({ isPriceModalVisible: true });
+    this.props.setParentState({ isPriceModalVisible: true })
   }
   onModalPriceDonePressed = (minValue, maxValue) => {
     //need review
@@ -52,22 +51,18 @@ class CMLeadFrom extends Component {
     copyObject.maxPrice = maxValue
 
     if (this.props?.screenName === 'AddClient') {
-
       dispatch(addEditCMLead(copyObject))
       this.props.setParentState({
         // investFormData: copyObject,
-        isPriceModalVisible: false
+        isPriceModalVisible: false,
       })
-
-    }
-    else {
+    } else {
       dispatch(addEditCMLead(copyObject))
       this.props.setParentState({
         //formData: copyObject,
-        isPriceModalVisible: false
+        isPriceModalVisible: false,
       })
     }
-
   }
 
   render() {
@@ -90,27 +85,23 @@ class CMLeadFrom extends Component {
       <View>
         <PriceSliderModal
           isVisible={isPriceModalVisible}
-
           onModalPriceDonePressed={this.onModalPriceDonePressed}
           onModalCancelPressed={this.onModalCancelPressed}
-
-          initialValue={CMLead.minPrice}
-
-          finalValue={CMLead.maxPrice}
-
+          initialValue={CMLead?.minPrice}
+          finalValue={CMLead?.maxPrice}
           arrayValues={StaticData.PricesProject}
         />
 
-
-        {!hideClient && <TouchableInput
-          placeholder="Client"
-          onPress={() => this.handleClientClick()}
-          value={clientName}
-          showError={checkValidation === true && CMLead.customerId === ''}
-          errorMessage="Required"
-          disabled={update}
-        />
-        }
+        {!hideClient && (
+          <TouchableInput
+            placeholder="Client"
+            onPress={() => this.handleClientClick()}
+            value={clientName}
+            showError={checkValidation === true && CMLead.customerId === ''}
+            errorMessage="Required"
+            disabled={update}
+          />
+        )}
 
         <TouchableInput
           placeholder="Select City"
@@ -178,16 +169,17 @@ class CMLeadFrom extends Component {
           />
         </View>
 
-
-        {!hideClient && <View style={[AppStyles.mainInputWrap]}>
-          <TouchableButton
-            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
-            onPress={() => formSubmit()}
-            loading={loading}
-            disabled={loading}
-          />
-        </View>}
+        {!hideClient && (
+          <View style={[AppStyles.mainInputWrap]}>
+            <TouchableButton
+              containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+              label={update ? 'EDIT LEAD' : 'CREATE LEAD'}
+              onPress={() => formSubmit()}
+              loading={loading}
+              disabled={loading}
+            />
+          </View>
+        )}
       </View>
     )
   }

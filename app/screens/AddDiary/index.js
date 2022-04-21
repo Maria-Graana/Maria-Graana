@@ -190,7 +190,6 @@ class AddDiary extends Component {
   addDiary = (data) => {
     const { route, navigation, dispatch } = this.props
 
-    console.log("hj", data)
     const { screenName = 'Diary', cmLeadId, rcmLeadId, property } = route.params
     let diary = this.generatePayload(data)
     let query = property ? `/api/leads/viewing` : `/api/leads/task`

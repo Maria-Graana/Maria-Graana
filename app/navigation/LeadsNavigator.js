@@ -1,16 +1,15 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React, { useEffect } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
-import { getPermissionValue } from '../hoc/Permissions'
-import { PermissionFeatures, PermissionActions } from '../hoc/PermissionsTypes'
+import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
+import { getPermissionValue } from '../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../hoc/PermissionsTypes'
 import BuyLeads from '../screens/BuyLeads/index'
 import InvestLeads from '../screens/InvestLeads/index'
-import PropertyLead from '../screens/PropertyLeads/index'
 import RentLeads from '../screens/RentLeads/index'
-import { connect } from 'react-redux'
 import WantedLeads from '../screens/WantedLeads/index'
 
 // const { width } = Dimensions.get('window')
@@ -27,8 +26,7 @@ const TabBarBadge = ({ count, color, screen }) => {
 
 function LeadsNavigator(props) {
   const { count, user, permissions, route, navigation } = props
-  const { screen, screenName, navFrom, hideCloseLostFilter } = route.params
-  console.log("PARAMSSSS" , route.params)
+  const { screen, navFrom, hideCloseLostFilter } = route.params
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: 'DEALS' })
   } else if (hideCloseLostFilter) {

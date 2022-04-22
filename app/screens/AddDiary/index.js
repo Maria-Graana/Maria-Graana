@@ -23,6 +23,7 @@ import {
 import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import { StackActions } from '@react-navigation/native'
 
 const _today = moment(new Date()).format('YYYY-MM-DD')
 
@@ -39,8 +40,10 @@ class AddDiary extends Component {
 
   componentDidMount() {
     const { route, navigation, dispatch, user, permissions } = this.props
-    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
-    if (
+    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead, navFrom } = route.params
+    if (navFrom) {
+      tasksList = StaticData.diaryTasksMeetingWithClient
+    } else if (
       getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.UPDATE, permissions) &&
       getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.UPDATE, permissions)
     ) {
@@ -289,13 +292,15 @@ class AddDiary extends Component {
 
   goToLeads = (data) => {
     const { navigation } = this.props
-    navigation.navigate('Leads', {
-      screen: 'Leads',
-      screenName: 'AddDiary',
-      navFrom: data.taskType,
-      hasBooking: false,
-      hideCloseLostFilter: true,
-    })
+    navigation.dispatch(
+      StackActions.push('Leads', {
+        screen: 'Leads',
+        screenName: 'AddDiary',
+        navFrom: data.taskType,
+        hasBooking: false,
+        hideCloseLostFilter: true,
+      })
+    )
   }
 
   goToLeadProperties = () => {

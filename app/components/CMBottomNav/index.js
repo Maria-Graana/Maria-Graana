@@ -421,7 +421,7 @@ class CMBottomNav extends React.Component {
                 style={styles.bottomNavImg}
                 source={require('../../../assets/img/black/bookUnit.png')}
               />
-              <Text style={styles.bottomNavBtnText}>BookUnit</Text>
+              <Text style={styles.followText}>Book Unit</Text>
             </View>
           </TouchableOpacity>
         ) : screenName === 'BuyRentDetailScreen' ? (
@@ -431,10 +431,10 @@ class CMBottomNav extends React.Component {
           >
             <View style={{ alignItems: 'center' }}>
               <Image
-                style={styles.bottomNavImg}
+                style={[styles.bottomNavImg, { width: 22, height: 25 }]}
                 source={require('../../../assets/img/black/workflow.png')}
               />
-              <Text style={styles.bottomNavBtnText}>WorkFlow</Text>
+              <Text style={styles.followText}>WorkFlow</Text>
             </View>
           </TouchableOpacity>
         ) : (
@@ -444,7 +444,7 @@ class CMBottomNav extends React.Component {
                 style={styles.bottomNavImg}
                 source={require('../../../assets/img/black/details.png')}
               />
-              <Text style={styles.bottomNavBtnText}>Details</Text>
+              <Text style={styles.followText}>Details</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -460,7 +460,7 @@ class CMBottomNav extends React.Component {
                 style={styles.bottomNavImg}
                 source={require('../../../assets/img/black/meeting.png')}
               />
-              <Text style={styles.followText}>Meeting</Text>
+              <Text style={styles.followText}>+ Meeting</Text>
             </View>
           </TouchableOpacity>
         ) : screenName === 'BuyRentDetailScreen' ? null : (
@@ -598,7 +598,7 @@ class CMBottomNav extends React.Component {
                 )}
                 <Text
                   style={[
-                    styles.bottomNavBtnText,
+                    styles.followText,
                     visible === true && { color: '#348ceb' },
                     screenName === 'BuyRentDetailScreen' && { left: 25 },
                   ]}

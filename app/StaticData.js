@@ -96,6 +96,12 @@ export default StaticData = {
       value: 'meeting',
     },
   ],
+  diaryTasksMeetingWithClient: [
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
+    },
+  ],
   diaryTasksCM: [
     {
       name: 'Meeting',

@@ -7,7 +7,7 @@ import {
 
 export default AppStyles = {
   container: {
-  flex: 1,
+    flex: 1,
     backgroundColor: '#e7ecf0',
     paddingHorizontal: wp('2%'),
   },
@@ -15,9 +15,9 @@ export default AppStyles = {
 
   container2: {
     //  flex: 1,
-      backgroundColor: '#e7ecf0',
-      paddingHorizontal: wp('2%'),
-    },
+    backgroundColor: '#e7ecf0',
+    paddingHorizontal: wp('2%'),
+  },
   containerWithoutPadding: {
     flex: 1,
     backgroundColor: '#fff',
@@ -43,6 +43,12 @@ export default AppStyles = {
   headingText: {
     fontFamily: 'Poppins_regular',
 
+    fontSize: 14
+  },
+
+  boldHeadingText: {
+    // fontFamily: 'Poppins_regular',
+    fontWeight: 'bold',
     fontSize: 14
   },
   fonts: {
@@ -225,7 +231,7 @@ export default AppStyles = {
 
 
   bottomStickyButton: {
-  marginBottom:30,
+    marginBottom: 30,
 
     marginTop: 10,
   },

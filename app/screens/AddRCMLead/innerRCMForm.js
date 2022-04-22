@@ -239,13 +239,14 @@ class InnerRCMForm extends Component {
         <TouchableInput
           placeholder="Select City"
           onPress={() => this.handleCityClick()}
-          showIconOrImage={false}
+          showIconOrImage={true}
           value={selectedCity ? selectedCity.name : ''}
           showError={checkValidation === true && formData.city_id === null}
           errorMessage="Required"
         />
 
         <TouchableInput
+          showIconOrImage={true}
           onPress={() => this.handleAreaClick()}
           value={leadAreasLength > 0 ? leadAreasLength + ' Areas Selected' : ''}
           placeholder="Select Areas"

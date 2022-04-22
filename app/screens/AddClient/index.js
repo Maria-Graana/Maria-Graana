@@ -9,13 +9,14 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 
+
 import { addEditCMLead, getAllProjects, setDefaultCMPayload } from '../../actions/cmLead'
 import { setSelectedAreas } from './../../actions/areas'
 import TouchableButton from '../../components/TouchableButton'
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import * as RootNavigation from '../../navigation/RootNavigation'
 import { StyleProvider } from 'native-base'
-import { refreshAddress, refreshMailingAddress } from "./ClientHelper";
+import { refreshAddress, refreshMailingAddress ,capitalizeFirstLetter} from "./ClientHelper";
 import DetailForm from './detailForm'
 import AppStyles from '../../AppStyles'
 import getTheme from '../../../native-base-theme/components'
@@ -1277,12 +1278,12 @@ class AddClient extends Component {
         payLoad.org = newOrg.name.toLowerCase()
       }
 
-      //   console.log("rentPayload", payLoad);
+
       axios
         .post(`/api/leads`, payLoad)
         .then((res) => {
 
-          helper.successToast(`Client and ${payLoad.purpose} lead have been registered successfully.`)
+          helper.successToast(`Client and ${capitalizeFirstLetter(payLoad.purpose)} lead have been registered successfully.`)
 
           if (payLoad.purpose === 'buy') {
 

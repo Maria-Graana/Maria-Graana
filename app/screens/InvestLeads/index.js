@@ -325,7 +325,7 @@ class InvestLeads extends React.Component {
   }
 
   navigateFromMenu = (data, name) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
     this.props.dispatch(setlead(data))
     this.props.navigation.navigate(name, {
       lead: data,
@@ -333,6 +333,8 @@ class InvestLeads extends React.Component {
       screen: 'InvestLeads',
       cmLeadId: data.id,
       screenName: screen,
+      navFrom: navFrom,
+      showBottomNav: true,
     })
     this.setIsMenuVisible(false, data)
   }
@@ -389,9 +391,9 @@ class InvestLeads extends React.Component {
   }
   navigateTo = (data) => {
     const { screen, navFrom } = this.props.route.params
+    console.log('params', this.props.route.params)
     const { navigation, route } = this.props
     const unitData = route.params.unitData
-
     if (navFrom) {
       this.props.dispatch(setlead(data))
       navigation.navigate('AddDiary', {
@@ -402,10 +404,14 @@ class InvestLeads extends React.Component {
       this.props.dispatch(setlead(data))
       let page = ''
       if (data.readAt === null) {
+        console.log("HELLLLLLLLl")
+
         this.props.navigation.navigate('LeadDetail', {
           lead: data,
           purposeTab: 'invest',
           screenName: screen,
+          navFrom: navFrom,
+          showBottomNav: true,
         })
       } else {
         if (
@@ -415,14 +421,28 @@ class InvestLeads extends React.Component {
           data.status === 'closed_lost'
         ) {
           page = 'Payments'
+
+          navigation.navigate('CMLeadTabs', {
+            screen: unitData ? 'Payments' : page,
+            params: { lead: data, unitData: unitData, screenName: screen },
+          })
+        } else if (data.status === 'open' || data.status === 'in_progress') {
+          console.log("HELLL")
+          this.props.navigation.navigate('LeadDetail', {
+            lead: data,
+            purposeTab: 'invest',
+            screenName: screen,
+            navFrom: navFrom,
+            showBottomNav: true,
+          })
         } else {
           page = 'Meetings'
-        }
 
-        navigation.navigate('CMLeadTabs', {
-          screen: unitData ? 'Payments' : page,
-          params: { lead: data, unitData: unitData, screenName: screen },
-        })
+          navigation.navigate('CMLeadTabs', {
+            screen: unitData ? 'Payments' : page,
+            params: { lead: data, unitData: unitData, screenName: screen },
+          })
+        }
       }
     }
   }
@@ -728,6 +748,7 @@ class InvestLeads extends React.Component {
                 user={user}
                 data={item}
                 navigateTo={this.navigateTo}
+                navigateToDetailScreen={this.navigateToDetailScreen}
                 navigateFromMenu={this.navigateFromMenu}
                 pageType={pageType}
                 callNumber={(data) => {

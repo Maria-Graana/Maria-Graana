@@ -285,54 +285,59 @@ class RentLeads extends React.Component {
         rcmLeadId: data.id,
       })
     } else {
-      let page = ''
-      if (this.props.route.params?.screen === 'MyDeals') {
-        this.props.navigation.navigate('LeadDetail', {
-          lead: data,
-          purposeTab: 'rent',
-          screenName: screen,
-        })
-      } else if (data.readAt === null) {
-        this.props.navigation.navigate('LeadDetail', {
-          lead: data,
-          purposeTab: 'rent',
-          screenName: screen,
-        })
-      } else {
-        if (data.status === 'open') {
-          page = 'Match'
-        }
-        if (data.status === 'viewing') {
-          page = 'Viewing'
-        }
-        if (data.status === 'offer') {
-          page = 'Offer'
-        }
-        if (data.status === 'propsure') {
-          page = 'Propsure'
-        }
-        if (data.status === 'payment') {
-          page = 'Payment'
-        }
-        if (
-          data.status === 'payment' ||
-          data.status === 'closed_won' ||
-          data.status === 'closed_lost'
-        ) {
-          page = 'Payment'
-        }
-        if (data && data.requiredProperties) {
-          this.props.navigation.navigate('PropertyTabs', {
-            screen: page,
-            params: { lead: data },
-          })
-        } else {
-          this.props.navigation.navigate('RCMLeadTabs', {
-            screen: page,
-            params: { lead: data },
-          })
-        }
-      }
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'rent',
+        screenName: screen,
+      })
+      // let page = ''
+      // if (this.props.route.params?.screen === 'MyDeals') {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'rent',
+      //     screenName: screen,
+      //   })
+      // } else if (data.readAt === null) {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'rent',
+      //     screenName: screen,
+      //   })
+      // } else {
+      //   if (data.status === 'open') {
+      //     page = 'Match'
+      //   }
+      //   if (data.status === 'viewing') {
+      //     page = 'Viewing'
+      //   }
+      //   if (data.status === 'offer') {
+      //     page = 'Offer'
+      //   }
+      //   if (data.status === 'propsure') {
+      //     page = 'Propsure'
+      //   }
+      //   if (data.status === 'payment') {
+      //     page = 'Payment'
+      //   }
+      //   if (
+      //     data.status === 'payment' ||
+      //     data.status === 'closed_won' ||
+      //     data.status === 'closed_lost'
+      //   ) {
+      //     page = 'Payment'
+      //   }
+      //   if (data && data.requiredProperties) {
+      //     this.props.navigation.navigate('PropertyTabs', {
+      //       screen: page,
+      //       params: { lead: data },
+      //     })
+      //   } else {
+      //     this.props.navigation.navigate('RCMLeadTabs', {
+      //       screen: page,
+      //       params: { lead: data },
+      //     })
+      //   }
+      // }
     }
   }
 
@@ -606,7 +611,7 @@ class RentLeads extends React.Component {
       createProjectLead,
       pageType,
     } = this.state
-    const { user, navigation, permissions, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } =
+    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } =
       this.props
     const {
       screen,

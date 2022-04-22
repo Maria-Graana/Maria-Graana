@@ -28,6 +28,7 @@ const TabBarBadge = ({ count, color, screen }) => {
 function LeadsNavigator(props) {
   const { count, user, permissions, route, navigation } = props
   const { screen, screenName, navFrom, hideCloseLostFilter } = route.params
+  console.log("PARAMSSSS" , route.params)
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: 'DEALS' })
   } else if (hideCloseLostFilter) {

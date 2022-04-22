@@ -62,17 +62,20 @@ const TouchableInput = ({
                 {(semiBold && arrowType) ?
 
                   <Ionicons
-                    style={styles.iconStyle}
+                    style={styles.arrowIcon}
                     name="chevron-up-outline"
                     size={26}
                     color={AppStyles.colors.subTextColor}
                   /> :
+               
                   <Ionicons
-                    style={styles.iconStyle}
+                    style={styles.arrowIcon}
                     name="chevron-down-outline"
                     size={26}
                     color={AppStyles.colors.subTextColor}
-                  />}
+                  />
+                  
+                  }
               </>
               : (
                 <Image
@@ -100,9 +103,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
+
+  arrowIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 8,
+    zIndex: 2,
+  },
   iconStyle: {
 
-    // paddingRight: 20,
+   // paddingRight: 20,
   },
   semi: {
 

@@ -62,16 +62,14 @@ class AddRCMLead extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    //Typical usage, don't forget to compare the props
-    if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
-      this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
-    }
-  }
-
   componentDidMount() {
-    const { user, navigation } = this.props
-    const { purpose } = this.props.route.params
+    const { user, navigation, route } = this.props
+    const { purpose, update = false, lead } = route.params
+
+    if (update) {
+      navigation.setOptions({ title: 'EDIT LEAD' })
+      this.setEditValues()
+    }
     if (purpose) {
       this.setState({ formType: purpose }, () => {
         this.setPriceList()
@@ -79,10 +77,6 @@ class AddRCMLead extends Component {
     } else {
       this.setPriceList()
     }
-    navigation.addListener('focus', () => {
-      this.onScreenFocused()
-    })
-    //this.setSizeUnitList('marla')
     this.fetchOrganizations()
   }
 
@@ -92,14 +86,68 @@ class AddRCMLead extends Component {
     dispatch(setSelectedAreas([]))
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const { CMLead, route, dispatch, selectedAreasIds } = this.props
+    const { selectedCity, client } = route.params
+    if (selectedCity && prevState.RCMFormData.city_id !== selectedCity.value) {
+      this.setState({
+        selectedCity,
+        RCMFormData: { ...this.state.RCMFormData, city_id: selectedCity.value },
+      })
+    }
+    if (client && prevState.RCMFormData.customerId !== client.id) {
+      this.setClient()
+    }
+    //Typical usage, don't forget to compare the props
+    if (prevState.selectedCity && this.state.selectedCity.value !== prevState.selectedCity.value) {
+      this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
+    }
+
+    if (prevProps.selectedAreasIds !== selectedAreasIds) {
+      this.setState({ RCMFormData: { ...this.state.RCMFormData, leadAreas: selectedAreasIds } })
+    }
+  }
+
+  setEditValues = () => {
+    const { route } = this.props
+    const { RCMFormData } = this.state
+    const { lead = null, selectedCity, client, name } = route.params
+    let copyObject = Object.assign({}, RCMFormData)
+    copyObject.maxPrice = lead.price ? lead.price : 0
+    copyObject.minPrice = lead.min_price ? lead.min_price : 0
+    copyObject.bed = lead.bed ? lead.bed : 0
+    copyObject.maxBed = lead.maxBed ? lead.maxBed : 0
+    copyObject.bath = lead.bath ? lead.bath : 0
+    copyObject.maxBath = lead.maxBath ? lead.maxBath : 0
+    copyObject.size = lead.size ? lead.size : StaticData.sizeMarla[0]
+    copyObject.size_unit = lead.size_unit ? lead.size_unit : 'marla'
+    copyObject.maxSize = lead.max_size
+      ? lead.max_size
+      : StaticData.sizeMarla[StaticData.sizeMarla.length - 1]
+    copyObject.type = lead.type ? lead.type : ''
+    copyObject.subtype = lead.subtype ? lead.subType : ''
+    copyObject.customerId = client ? client.id : null
+    copyObject.city_id = selectedCity ? selectedCity.value : null
+    copyObject.leadAreas = lead.armsLeadAreas ? lead.armsLeadAreas : []
+    copyObject.description = lead.description ? lead.description : ''
+    copyObject.org =
+      lead.customer && lead.customer.organizationId ? lead.customer.organizationId : null
+    this.setState({ selectedCity, selectedClient: client, name, RCMFormData: copyObject }, () => {
+      if (copyObject.type != '') {
+        this.selectSubtype(copyObject.type)
+      }
+    })
+  }
+
   clearParmas = () => {
     const { navigation } = this.props
     navigation.setParams({ selectedCity: null, client: null, name: null })
   }
 
-  onScreenFocused = () => {
-    const { client, name, selectedCity } = this.props.route.params
+  setClient = () => {
+    const { CMLead, route, dispatch } = this.props
     const { RCMFormData } = this.state
+    const { client, name, selectedCity } = route.params
     let copyObject = Object.assign({}, RCMFormData)
     let phones = []
     if (client && client.customerContacts && client.customerContacts.length) {
@@ -109,10 +157,7 @@ class AddRCMLead extends Component {
       copyObject.customerId = client.id
       copyObject.phones = phones
     }
-    copyObject.city_id = selectedCity ? selectedCity.value : null
     setTimeout(() => {
-      const { selectedAreasIds } = this.props
-      copyObject.leadAreas = selectedCity && selectedAreasIds
       this.setState({
         RCMFormData: copyObject,
         selectedCity,
@@ -194,26 +239,6 @@ class AddRCMLead extends Component {
     }
   }
 
-  handleClientClick = () => {
-    const { navigation } = this.props
-    const { selectedClient } = this.state
-    navigation.navigate('Client', {
-      isFromDropDown: true,
-      selectedClient,
-      screenName: 'AddRCMLead',
-    })
-  }
-
-  handleCityClick = () => {
-    const { navigation } = this.props
-    const { selectedCity } = this.state
-    navigation.navigate('SingleSelectionPicker', {
-      screenName: 'AddRCMLead',
-      mode: 'city',
-      selectedCity,
-    })
-  }
-
   selectSubtype = (type) => {
     this.setState(
       {
@@ -269,8 +294,9 @@ class AddRCMLead extends Component {
   }
 
   sendPayload = () => {
-    const { formType, RCMFormData, formData, organizations } = this.state
-    const { user } = this.props
+    const { formType, RCMFormData, organizations } = this.state
+    const { user, route } = this.props
+    const { update = false, lead } = route.params
     if (RCMFormData.size === '') RCMFormData.size = null
     else RCMFormData.size = Number(RCMFormData.size)
     let payLoad = {
@@ -292,31 +318,46 @@ class AddRCMLead extends Component {
       description: RCMFormData.description,
       phones: RCMFormData.phones,
     }
-   
+
     this.setState({ loading: true }, () => {
       if (user.subRole === 'group_management') {
         let newOrg = _.find(organizations, function (item) {
-          return item.value === formData.org
+          return item.value === RCMFormData.org
         })
         payLoad.org = newOrg.name.toLowerCase()
       }
-      axios
-        .post(`/api/leads`, payLoad)
-        .then((res) => {
-          helper.successToast('Lead created successfully')
-          if(payLoad.purpose=='buy')
-          {
-            RootNavigation.navigateToSpecificTab('Leads', 'Buy')
-          }
-          else{
-            RootNavigation.navigateToSpecificTab('Leads', 'Rent')
-          }
-          
-        })
-        .catch((error) => {
-          console.log('error on creating lead')
-          this.setState({ loading: false })
-        })
+
+      if (update) {
+        axios
+          .patch(`/api/leads/update/${lead.id}`, payLoad)
+          .then((res) => {
+            helper.successToast('Lead updated successfully')
+            if (payLoad.purpose == 'buy') {
+              RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+            } else {
+              RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+            }
+          })
+          .catch((error) => {
+            console.log('error on updating lead', error)
+            this.setState({ loading: false })
+          })
+      } else {
+        axios
+          .post(`/api/leads`, payLoad)
+          .then((res) => {
+            helper.successToast('Lead created successfully')
+            if (payLoad.purpose == 'buy') {
+              RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+            } else {
+              RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+            }
+          })
+          .catch((error) => {
+            console.log('error on creating lead', error)
+            this.setState({ loading: false })
+          })
+      }
     })
   }
 
@@ -329,62 +370,6 @@ class AddRCMLead extends Component {
         this.setPriceList()
       }
     )
-  }
-
-  showBedBathModal = (modalType) => {
-    this.setState({ isBedBathModalVisible: true, modalType })
-  }
-
-  onBedBathModalDonePressed = (minValue, maxValue) => {
-    const { RCMFormData, modalType } = this.state
-    const copyObject = { ...RCMFormData }
-    switch (modalType) {
-      case 'bed':
-        copyObject.bed = minValue
-        copyObject.maxBed = maxValue
-        this.setState({ RCMFormData: copyObject })
-        break
-      case 'bath':
-        copyObject.bath = minValue
-        copyObject.maxBath = maxValue
-        this.setState({ RCMFormData: copyObject })
-      default:
-        break
-    }
-    this.setState({ isBedBathModalVisible: false })
-  }
-
-  onModalCancelPressed = () => {
-    this.setState({
-      isBedBathModalVisible: false,
-      isPriceModalVisible: false,
-      isSizeModalVisible: false,
-    })
-  }
-
-  showPriceModal = () => {
-    this.setState({ isPriceModalVisible: true })
-  }
-
-  onModalPriceDonePressed = (minValue, maxValue) => {
-    const { RCMFormData } = this.state
-    const copyObject = { ...RCMFormData }
-    copyObject.minPrice = minValue
-    copyObject.maxPrice = maxValue
-    this.setState({ RCMFormData: copyObject, isPriceModalVisible: false })
-  }
-
-  showSizeModal = () => {
-    this.setState({ isSizeModalVisible: true })
-  }
-
-  onModalSizeDonePressed = (minValue, maxValue, unit) => {
-    const { RCMFormData } = this.state
-    const copyObject = { ...RCMFormData }
-    copyObject.size = minValue
-    copyObject.maxSize = maxValue
-    copyObject.size_unit = unit
-    this.setState({ RCMFormData: copyObject, isSizeModalVisible: false })
   }
 
   render() {
@@ -400,12 +385,14 @@ class AddRCMLead extends Component {
       priceList,
       loading,
       sizeUnitList,
+      selectedClient,
       isBedBathModalVisible,
       isPriceModalVisible,
       isSizeModalVisible,
       modalType,
     } = this.state
     const { route } = this.props
+    const { update = false } = route.params
 
     return (
       <View style={[route.params.pageName === 'CM' && AppStyles.container]}>
@@ -415,11 +402,14 @@ class AddRCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <RCMLeadFrom
+                    setParentState={(obj) => {
+                      this.setState(obj)
+                    }}
+                    navigation={this.props.navigation}
                     sizeUnitList={sizeUnitList}
                     organizations={_.clone(organizations)}
-                    handleClientClick={this.handleClientClick}
                     selectedCity={selectedCity}
-                    handleCityClick={this.handleCityClick}
+                    selectedClient={selectedClient}
                     clientName={clientName}
                     formSubmit={this.RCMFormSubmit}
                     checkValidation={checkValidation}
@@ -429,6 +419,7 @@ class AddRCMLead extends Component {
                     sizeUnit={StaticData.sizeUnit}
                     propertyType={StaticData.type}
                     formData={RCMFormData}
+                    update={update}
                     formType={formType}
                     subTypeData={selectSubType}
                     handleAreaClick={this.handleAreaClick}
@@ -437,21 +428,8 @@ class AddRCMLead extends Component {
                     loading={loading}
                     isBedBathModalVisible={isBedBathModalVisible}
                     modalType={modalType}
-                    showBedBathModal={(value) => this.showBedBathModal(value)}
-                    onBedBathModalDonePressed={(minValue, maxValue) =>
-                      this.onBedBathModalDonePressed(minValue, maxValue)
-                    }
-                    onModalCancelPressed={() => this.onModalCancelPressed()}
                     isPriceModalVisible={isPriceModalVisible}
-                    showPriceModal={() => this.showPriceModal()}
-                    onModalPriceDonePressed={(minValue, maxValue) =>
-                      this.onModalPriceDonePressed(minValue, maxValue)
-                    }
                     isSizeModalVisible={isSizeModalVisible}
-                    showSizeModal={() => this.showSizeModal()}
-                    onModalSizeDonePressed={(minValue, maxValue, unit) =>
-                      this.onModalSizeDonePressed(minValue, maxValue, unit)
-                    }
                   />
                 </View>
               </TouchableWithoutFeedback>

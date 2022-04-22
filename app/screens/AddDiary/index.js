@@ -11,6 +11,7 @@ import helper from '../../helper'
 import AppStyles from '../../AppStyles'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
+import DiaryHelper from './../Diary/diaryHelper'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
 import {
@@ -96,6 +97,7 @@ class AddDiary extends Component {
   }
 
   formSubmit = (data) => {
+
     const { slotsData } = this.props
     if (slotsData === null || !data.taskType) {
       this.setState({
@@ -190,6 +192,7 @@ class AddDiary extends Component {
 
   addDiary = (data) => {
     const { route, navigation, dispatch } = this.props
+
     const { screenName = 'Diary', cmLeadId, rcmLeadId, property } = route.params
     let diary = this.generatePayload(data)
     let query = property ? `/api/leads/viewing` : `/api/leads/task`
@@ -197,15 +200,42 @@ class AddDiary extends Component {
       .post(query, diary)
       .then((res) => {
         if (res.status === 200) {
+
           helper.successToast('TASK ADDED SUCCESSFULLY!')
-          let start = new Date(res.data.start)
-          let end = new Date(res.data.end)
-          let data = {
-            id: res.data.id,
-            title: res.data.subject,
-            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+
+          let notificationData;
+
+          for (let i in res.data[1]) {
+            notificationData = res.data[1][i]
           }
-          TimerNotification(data, start)
+
+
+
+          let start = new Date(notificationData.start)
+          let end = new Date(notificationData.end)
+
+          let notificationPayload;
+          if (notificationData.taskCategory == 'leadTask') {
+            notificationPayload = {
+              clientName: data?.selectedLead?.customer?.customerName,
+              id: notificationData.id,
+              title: DiaryHelper.showTaskType(
+                notificationData?.taskType
+              ),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+
+          else {
+            notificationPayload = {
+              id: notificationData.id,
+              title:  DiaryHelper.showTaskType(
+                notificationData.taskType
+              ),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+          TimerNotification(notificationPayload, start)
           if (screenName === 'Diary') {
             dispatch(
               getDiaryTasks({
@@ -348,7 +378,7 @@ class AddDiary extends Component {
                 lead={lead}
                 property={property}
                 navigation={navigation}
-                // performTaskActions={(type) => this.performTaskActions(type)}
+              // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>
           </>

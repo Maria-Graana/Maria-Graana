@@ -19,7 +19,7 @@ import slotManagement from './slotManagement' // ARMS-2180
 import diary from './diary'
 import armsContacts from './armsContacts'
 import drawer from './drawer'
-
+import cmLead from './cmLead'
 
 export default combineReducers({
   lead,
@@ -39,5 +39,6 @@ export default combineReducers({
   slotManagement, // ARMS-2180
   diary,
   armsContacts,
-  drawer
+  drawer,
+  cmLead,
 })

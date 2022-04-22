@@ -64,6 +64,7 @@
     "react-native-datepicker": "^1.7.2",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-global-props": "^1.1.5",
+    "react-native-hide-with-keyboard": "^1.2.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-maps": "0.28.0",

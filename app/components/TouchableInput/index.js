@@ -8,12 +8,14 @@ import AppStyles from '../../AppStyles'
 import ErrorMessage from '../ErrorMessage'
 
 const TouchableInput = ({
+  semiBold = false,
   width = null,
   onPress,
   placeholder,
   value,
   showError,
   errorMessage,
+  arrowType = false,
   showDropDownIcon = true,
   iconSource = '',
   showIconOrImage = true,
@@ -22,6 +24,7 @@ const TouchableInput = ({
   iconMarginHorizontal = 6,
   isRow = false,
 }) => {
+
   return (
     <View>
       <TouchableOpacity disabled={disabled} onPress={onPress}>
@@ -40,6 +43,8 @@ const TouchableInput = ({
           <Text
             style={[
               AppStyles.formFontSettings,
+              semiBold ? styles.semi : styles.iconStyle,
+
               !isRow && isFromDateFilter === false && AppStyles.inputPadLeft,
               isRow && styles.rightPad,
               {
@@ -49,24 +54,39 @@ const TouchableInput = ({
           >
             {isEmpty(value) ? placeholder : value}
           </Text>
+
+
           {showIconOrImage && !isFromDateFilter ? (
-            showDropDownIcon ? (
-              <Ionicons
-                style={styles.iconStyle}
-                name="chevron-down-outline"
-                size={26}
-                color={AppStyles.colors.subTextColor}
-              />
-            ) : (
-              <Image
-                style={{
-                  width: isRow ? 20 : 26,
-                  height: isRow ? 20 : 26,
-                  marginHorizontal: iconMarginHorizontal,
-                }}
-                source={iconSource}
-              />
-            )
+            showDropDownIcon ?
+              <>
+                {(semiBold && arrowType) ?
+
+                  <Ionicons
+                    style={styles.arrowIcon}
+                    name="chevron-up-outline"
+                    size={26}
+                    color={AppStyles.colors.subTextColor}
+                  /> :
+               
+                  <Ionicons
+                    style={styles.arrowIcon}
+                    name="chevron-down-outline"
+                    size={26}
+                    color={AppStyles.colors.subTextColor}
+                  />
+                  
+                  }
+              </>
+              : (
+                <Image
+                  style={{
+                    width: isRow ? 20 : 26,
+                    height: isRow ? 20 : 26,
+                    marginHorizontal: iconMarginHorizontal,
+                  }}
+                  source={iconSource}
+                />
+              )
           ) : null}
         </View>
       </TouchableOpacity>
@@ -83,8 +103,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
+
+  arrowIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 8,
+    zIndex: 2,
+  },
   iconStyle: {
-    // paddingRight: 20,
+
+   // paddingRight: 20,
+  },
+  semi: {
+
+    fontFamily: 'OpenSans_semi_bold'
   },
   isRow: {
     borderRadius: 4,

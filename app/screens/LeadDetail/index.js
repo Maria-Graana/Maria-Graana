@@ -703,7 +703,9 @@ class LeadDetail extends React.Component {
                 {!lead.projectId && leadSize}
                 {!lead.projectId && type !== 'Investment'
                   ? `${helper.capitalize(lead.subtype)} to ${type}`
-                  : `Looking to Invest in Any Project`}
+                  : lead.projectName
+                  ? `Looking to Invest in ${lead.projectName} `
+                  : `Looking to Invest in Any Project `}
                 {lead.projectId && (lead.projectType ? helper.capitalize(lead.projectType) : '-')}
               </Text>
             </View>
@@ -780,70 +782,16 @@ class LeadDetail extends React.Component {
               </View>
             ) : null}
 
-            <View style={styles.cardItemGrey}>
-              <View style={styles.mainDesView}>
-                <View style={styles.viewOne}>
-                  <Text style={styles.headingText}>Description </Text>
-                  {editDes === true ? (
-                    <View>
-                      <TextInput
-                        placeholderTextColor={'#a8a8aa'}
-                        style={styles.inputDes}
-                        placeholder={`Edit Description`}
-                        value={description}
-                        onChangeText={(text) => {
-                          this.handleDes(text)
-                        }}
-                      />
-                      <TouchableOpacity
-                        onPress={() => this.submitDes()}
-                        style={styles.roundButtonViewTwo}
-                        activeOpacity={0.6}
-                      >
-                        <Text style={{ textAlign: 'center', color: '#fff' }}>Submit</Text>
-                      </TouchableOpacity>
-                    </View>
-                  ) : (
-                    <Text style={[styles.labelText, { color: AppStyles.colors.textColor }]}>
-                      {lead.description && lead.description !== ''
-                        ? lead.description.replace(regex, '')
-                        : null}
-                    </Text>
-                  )}
-                </View>
-                {helper.checkAssignedSharedStatusANDReadOnly(user, lead) ? (
-                  <View style={styles.viewTwo}>
-                    {editDes === true ? (
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.editDescription(false)
-                        }}
-                        style={styles.editDesBtn}
-                        activeOpacity={0.6}
-                      >
-                        <Image
-                          source={require('../../../assets/img/times.png')}
-                          style={styles.editImg}
-                        />
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.editDescription(true)
-                        }}
-                        style={styles.editDesBtn}
-                        activeOpacity={0.6}
-                      >
-                        <Image
-                          source={require('../../../assets/img/edit.png')}
-                          style={styles.editImg}
-                        />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ) : null}
+            {lead.description ? (
+              <View style={styles.cardItemGrey}>
+                <Text style={styles.headingText}>Description</Text>
+                <Text style={[styles.labelText, { color: AppStyles.colors.textColor }]}>
+                  {lead.description && lead.description !== ''
+                    ? lead.description.replace(regex, '')
+                    : null}
+                </Text>
               </View>
-            </View>
+            ) : null}
           </View>
 
           <View style={styles.cardContainer}>

@@ -65,6 +65,7 @@ import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import diaryHelper from './diaryHelper'
 import HistoryModal from '../../components/HistoryModal'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import NonLeadTaskModal from '../../components/NonLeadTaskModal'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -89,6 +90,7 @@ class Diary extends React.Component {
       isDelete: false,
       activityHistoryData: [],
       isActivityHistoryModalVisible: false,
+      nonLeadModalVisible: false,
     }
   }
   componentDidMount() {
@@ -171,18 +173,25 @@ class Diary extends React.Component {
   dayEndStat = (selectedDate, nextDay, array) => {
     if (array[0] && array[0].armsShift && array.length == 2) {
       const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
-      const end = formatDateTime(nextDay, array[1].armsShift.endTime)
-
-      this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 3) {
-      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
       const end = formatDateTime(
-        array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
-        array[2].armsShift.endTime
+        array[0] && (array[1].armsShift.name == 'Evening' || array[1].armsShift.name == 'Night')
+          ? nextDay
+          : selectedDate,
+        array[1].armsShift.endTime
       )
 
       this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 1) {
+    }
+    // else if (array[0] && array[0].armsShift && array.length == 3) {
+    //   const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+    //   const end = formatDateTime(
+    //     array[2].armsShift.name == 'Night' ? nextDay : selectedDate,
+    //     array[2].armsShift.endTime
+    //   )
+
+    //   this.setStatsData(start, end)
+    // }
+    else if (array[0] && array[0].armsShift && array.length == 1) {
       const start = formatDateTime(selectedDate, array[0] && array[0].armsShift.startTime)
       const end = formatDateTime(
         array[0] && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
@@ -278,7 +287,7 @@ class Diary extends React.Component {
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+        this.setState({ nonLeadModalVisible: true })
       } else {
         dispatch(
           setConnectFeedback({
@@ -547,6 +556,7 @@ class Diary extends React.Component {
       isSortModalVisible,
       isActivityHistoryModalVisible,
       activityHistoryData,
+      nonLeadModalVisible,
     } = this.state
     const {
       overdueCount,
@@ -586,6 +596,14 @@ class Diary extends React.Component {
             <Ionicons name="md-add" color="#ffffff" />
           </Fab>
         ) : null}
+
+        <NonLeadTaskModal
+          isVisible={nonLeadModalVisible}
+          showHideModal={(value) => this.setState({ nonLeadModalVisible: value })}
+          markTaskasDone={(comment) =>
+            dispatch(markDiaryTaskAsDone({ selectedDate, agentId, comment }))
+          }
+        />
 
         <AddLeadCategoryModal
           visible={showClassificationModal}

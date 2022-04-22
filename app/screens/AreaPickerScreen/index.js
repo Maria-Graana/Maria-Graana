@@ -35,7 +35,9 @@ class AreaPickerScreen extends React.Component {
         }
       
         if (route.params.isEditMode) {
+           
             this.areaIds = [...selectedAreaIds];
+            
             this.setState({ selectedAreaIds: this.areaIds });
         }
 
@@ -44,6 +46,7 @@ class AreaPickerScreen extends React.Component {
     componentWillUnmount() {
         const { dispatch } = this.props;
         const { selectedAreaIds } = this.state;
+    
         // Set Areas selected and update redux store
         dispatch(setSelectedAreas(selectedAreaIds))
         dispatch(clearAreas());

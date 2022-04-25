@@ -1,18 +1,18 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React, { useEffect } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
-import { getPermissionValue } from '../hoc/Permissions'
-import { PermissionFeatures, PermissionActions } from '../hoc/PermissionsTypes'
+import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
+import { getPermissionValue } from '../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../hoc/PermissionsTypes'
 import BuyLeads from '../screens/BuyLeads/index'
 import InvestLeads from '../screens/InvestLeads/index'
-import PropertyLead from '../screens/PropertyLeads/index'
 import RentLeads from '../screens/RentLeads/index'
-import { connect } from 'react-redux'
-import WantedLeads from '../screens/WantedLeads/index';
-import HeaderLeftLogo from './../components/HeaderLeftLogo/index';
+
+// const { width } = Dimensions.get('window')
+
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -44,8 +44,6 @@ function LeadsNavigator(props) {
     }
 
   }, [navigation])
-
-
 
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: 'DEALS' })

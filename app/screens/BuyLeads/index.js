@@ -294,47 +294,52 @@ class BuyLeads extends React.Component {
         rcmLeadId: data.id,
       })
     } else {
-      let page = ''
-      if (this.props.route.params?.screen === 'MyDeals') {
-        this.props.navigation.navigate('LeadDetail', {
-          lead: data,
-          purposeTab: 'sale',
-          screenName: screen,
-        })
-      } else if (data.readAt === null) {
-        this.props.navigation.navigate('LeadDetail', {
-          lead: data,
-          purposeTab: 'sale',
-          screenName: screen,
-        })
-      } else {
-        if (data.status == 'open') {
-          page = 'Match'
-        }
-        if (data.status === 'viewing') {
-          page = 'Viewing'
-        }
-        if (data.status === 'offer') {
-          page = 'Offer'
-        }
-        if (data.status === 'propsure') {
-          page = 'Propsure'
-        }
-        if (data.status === 'payment') {
-          page = 'Payment'
-        }
-        if (
-          data.status === 'payment' ||
-          data.status === 'closed_won' ||
-          data.status === 'closed_lost'
-        ) {
-          page = 'Payment'
-        }
-        this.props.navigation.navigate('RCMLeadTabs', {
-          screen: page,
-          params: { lead: data },
-        })
-      }
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
+      })
+      // let page = ''
+      // if (this.props.route.params?.screen === 'MyDeals') {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'sale',
+      //     screenName: screen,
+      //   })
+      // } else if (data.readAt === null) {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'sale',
+      //     screenName: screen,
+      //   })
+      // } else {
+      //   if (data.status == 'open') {
+      //     page = 'Match'
+      //   }
+      //   if (data.status === 'viewing') {
+      //     page = 'Viewing'
+      //   }
+      //   if (data.status === 'offer') {
+      //     page = 'Offer'
+      //   }
+      //   if (data.status === 'propsure') {
+      //     page = 'Propsure'
+      //   }
+      //   if (data.status === 'payment') {
+      //     page = 'Payment'
+      //   }
+      //   if (
+      //     data.status === 'payment' ||
+      //     data.status === 'closed_won' ||
+      //     data.status === 'closed_lost'
+      //   ) {
+      //     page = 'Payment'
+      //   }
+      //   this.props.navigation.navigate('RCMLeadTabs', {
+      //     screen: page,
+      //     params: { lead: data },
+      //   })
+      // }
     }
   }
 

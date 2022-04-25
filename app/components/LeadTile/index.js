@@ -161,7 +161,7 @@ class LeadTile extends React.Component {
 
     return (
       <TouchableOpacity
-        disabled={screen === 'Leads' ? true : false}
+        // disabled={screen === 'Leads' ? true : false}
         onLongPress={() => {
           if (
             (!user.organization && user.armsUserRole.groupManger) ||
@@ -170,11 +170,12 @@ class LeadTile extends React.Component {
             handleLongPress(data)
         }}
         onPress={() => {
-          if (
-            (!user.organization && user.armsUserRole.groupManger) ||
-            (user.organization && !user.organization.isPP)
-          )
-            navigateTo(data)
+          // if (
+          //   (!user.organization && user.armsUserRole.groupManger) ||
+          //   (user.organization && !user.organization.isPP)
+          // ) {
+          navigateTo(data)
+          // }
         }}
       >
         <View
@@ -185,7 +186,7 @@ class LeadTile extends React.Component {
           ]}
         >
           <View style={[styles.rightContentView]}>
-            <View style={[styles.topIcons, screen === 'Leads' && { top: 12, right: 40 }]}>
+            <View style={[styles.topIcons, screen === 'Leads' && { top: 12, right: 10 }]}>
               <View style={styles.extraStatus}>
                 <Text
                   style={[changeStatusColor, AppStyles.mrFive, styles.viewStyle]}
@@ -194,6 +195,7 @@ class LeadTile extends React.Component {
                   {/* Disabled Sentry in development  Sentry in */}
                   {wanted ? data.armsStatus.toUpperCase() : leadStatus && leadStatus.toUpperCase()}
                 </Text>
+
                 {data.shared_with_armsuser_id && (
                   <View style={styles.sharedLead}>
                     <Text
@@ -283,7 +285,7 @@ class LeadTile extends React.Component {
 
                   {/* 3 dots menu */}
                   <View style={{ position: 'absolute', right: -55 }}>
-                    {screen === 'Leads' && !wanted ? (
+                    {/* {screen === 'Leads' && !wanted ? (
                       <Menu
                         visible={isMenuVisible && data.id === lead.id}
                         onDismiss={() => setIsMenuVisible(false, data)}
@@ -345,7 +347,7 @@ class LeadTile extends React.Component {
 
                         <Menu.Item onPress={() => {}} title="Delete" disabled />
                       </Menu>
-                    ) : null}
+                    ) : null} */}
                     {screen === 'Leads' && wanted ? (
                       <Menu
                         visible={isMenuVisible && data.id === lead.id}

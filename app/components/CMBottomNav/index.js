@@ -222,7 +222,7 @@ class CMBottomNav extends React.Component {
     ) {
       // Lead can only be assigned to someone else if it is assigned to no one or to current user
       if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
-          this.navigateToAssignLead(lead)
+        this.navigateToAssignLead(lead)
       }
     } else {
       helper.errorToast('Sorry you are not authorized to assign lead')
@@ -361,6 +361,13 @@ class CMBottomNav extends React.Component {
       checkCloseWon,
       leadData,
       closeWonOptionVisibleFromInvest,
+      navigateToBookUnit,
+      navigateFromMenu,
+      addGuideReference = null,
+      guideReference,
+      navigateToOpenWorkFlow,
+      goToFeedBack,
+      goToAddEditDiaryScreen,
     } = this.props
     const {
       visible,
@@ -407,45 +414,105 @@ class CMBottomNav extends React.Component {
 
     return (
       <View style={styles.bottomNavMain}>
-        <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
-          <View style={{ alignItems: 'center' }}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/black/details.png')}
-            />
-            <Text style={styles.bottomNavBtnText}>Details</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          // disabled={closedLeadEdit ? false : true}
-          style={styles.followBtn}
-          onPress={() => {
-            if (closedLeadEdit && readPermission) goToFollowUp()
-          }}
-        >
-          <View style={styles.align}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/black/tasks.png')}
-            />
-            <Text style={styles.followText}>Tasks</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={closedLeadEdit ? false : true}
-          style={styles.followBtn}
-          onPress={() => {
-            if (closedLeadEdit && readPermission) goToHistory()
-          }}
-        >
-          <View style={styles.align}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/black/activity.png')}
-            />
-            <Text style={styles.followText}>Activity</Text>
-          </View>
-        </TouchableOpacity>
+        {screenName === 'InvestDetailScreen' ? (
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateToBookUnit()}>
+            <View style={{ alignItems: 'center' }}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/bookUnit.png')}
+              />
+              <Text style={styles.followText}>Book Unit</Text>
+            </View>
+          </TouchableOpacity>
+        ) : screenName === 'BuyRentDetailScreen' ? (
+          <TouchableOpacity
+            style={[styles.bottomNavBtn, { width: '33.4%' }]}
+            onPress={() => navigateToOpenWorkFlow(lead)}
+          >
+            <View style={{ alignItems: 'center' }}>
+              <Image
+                style={[styles.bottomNavImg, { width: 22, height: 25 }]}
+                source={require('../../../assets/img/black/workflow.png')}
+              />
+              <Text style={styles.followText}>WorkFlow</Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
+            <View style={{ alignItems: 'center' }}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/details.png')}
+              />
+              <Text style={styles.followText}>Details</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        {screenName === 'InvestDetailScreen' ? (
+          <TouchableOpacity
+            style={styles.followBtn}
+            onPress={() => {
+              goToAddEditDiaryScreen()
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/meeting.png')}
+              />
+              <Text style={styles.followText}>+ Meeting</Text>
+            </View>
+          </TouchableOpacity>
+        ) : screenName === 'BuyRentDetailScreen' ? null : (
+          <TouchableOpacity
+            style={styles.followBtn}
+            onPress={() => {
+              if (closedLeadEdit && readPermission) goToFollowUp()
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/tasks.png')}
+              />
+              <Text style={styles.followText}>Tasks</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        {screenName === 'InvestDetailScreen' ? (
+          <TouchableOpacity
+            disabled={closedLeadEdit ? false : true}
+            style={styles.followBtn}
+            onPress={() => {
+              goToFeedBack()
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/feedback.png')}
+              />
+              <Text style={styles.followText}>Feedback</Text>
+            </View>
+          </TouchableOpacity>
+        ) : screenName === 'BuyRentDetailScreen' ? null : (
+          <TouchableOpacity
+            disabled={closedLeadEdit ? false : true}
+            style={styles.followBtn}
+            onPress={() => {
+              if (closedLeadEdit && readPermission) goToHistory()
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/activity.png')}
+              />
+              <Text style={styles.followText}>Activity</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
         {screenName === 'MyDeals' || leadType === 'CM' ? (
           <TouchableOpacity
             disabled={helper.getAiraPermission(permissions) ? true : closedLeadEdit ? false : true}
@@ -462,6 +529,25 @@ class CMBottomNav extends React.Component {
                 source={require('../../../assets/img/attachBottom.png')}
               />
               <Text style={styles.followText}>Files</Text>
+            </View>
+          </TouchableOpacity>
+        ) : screenName === 'InvestDetailScreen' || screenName === 'BuyRentDetailScreen' ? (
+          <TouchableOpacity
+            style={
+              screenName === 'BuyRentDetailScreen'
+                ? [styles.rejectBtn, { width: '33.3%' }]
+                : styles.rejectBtn
+            }
+            onPress={() => {
+              navigateFromMenu('ScheduledTasks')
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/black/SCA.png')}
+              />
+              <Text style={styles.followText}>Tasks</Text>
             </View>
           </TouchableOpacity>
         ) : (
@@ -495,16 +581,28 @@ class CMBottomNav extends React.Component {
               >
                 {visible === true ? (
                   <Image
-                    style={styles.bottomNavImg}
+                    style={[
+                      styles.bottomNavImg,
+                      screenName === 'BuyRentDetailScreen' && { left: 25 },
+                    ]}
                     source={require('../../../assets/img/Blue/menu.png')}
                   />
                 ) : (
                   <Image
-                    style={styles.bottomNavImg}
+                    style={[
+                      styles.bottomNavImg,
+                      screenName === 'BuyRentDetailScreen' && { left: 25 },
+                    ]}
                     source={require('../../../assets/img/black/menu.png')}
                   />
                 )}
-                <Text style={[styles.bottomNavBtnText, visible === true && { color: '#348ceb' }]}>
+                <Text
+                  style={[
+                    styles.followText,
+                    visible === true && { color: '#348ceb' },
+                    screenName === 'BuyRentDetailScreen' && { left: 25 },
+                  ]}
+                >
                   Menu
                 </Text>
               </TouchableOpacity>
@@ -543,6 +641,28 @@ class CMBottomNav extends React.Component {
                 // icon={require('../../../assets/img/callIcon.png')}
                 title="Refer Lead"
               />
+              {screenName === 'InvestDetailScreen' && !guideReference && (
+                <Menu.Item
+                  onPress={() => {
+                    addGuideReference()
+                    this.openMenu(false)
+                  }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Reference Guide #"
+                />
+              )}
+              {(screenName === 'InvestDetailScreen' || screenName === 'BuyRentDetailScreen') && (
+                <Menu.Item
+                  onPress={() => {
+                    // if (closedLeadEdit && referPermission) {
+                    //   this.navigateToShareScreen(lead)
+                    //   this.openMenu(false)
+                    // } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Close as Lost"
+                />
+              )}
               {closedWonOptionVisible &&
                 leadData.status !== 'closed_won' &&
                 leadData.status !== 'closed_lost' && (

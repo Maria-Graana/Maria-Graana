@@ -4,7 +4,7 @@ import axios from 'axios'
 import moment from 'moment'
 import { Button } from 'native-base'
 import React from 'react'
-import { Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, Text, TextInput, TouchableOpacity, View, Linking } from 'react-native'
 import { connect } from 'react-redux'
 import { goBack, setlead } from '../../actions/lead'
 import AppStyles from '../../AppStyles'
@@ -14,12 +14,25 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
+import CMBottomNav from '../../components/CMBottomNav'
+import {
+  addInvestmentGuide,
+  callNumberFromLeads,
+  setReferenceGuideData,
+  setConnectFeedback,
+  getDiaryFeedbacks,
+  clearDiaries,
+} from '../../actions/diary'
+import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import HistoryModal from '../../components/HistoryModal'
+import diaryHelper from '../../screens/Diary/diaryHelper'
 
 const _format = 'YYYY-MM-DD'
 
 class LeadDetail extends React.Component {
   constructor(props) {
     super(props)
+    const { user, lead, permissions } = this.props
     this.state = {
       type: '',
       lead: [],
@@ -30,6 +43,7 @@ class LeadDetail extends React.Component {
       description: '',
       mainButtonText: `Let’s Earn`,
       fromScreen: null,
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
     }
   }
 
@@ -43,7 +57,12 @@ class LeadDetail extends React.Component {
       this.purposeTab()
     })
   }
-
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.referenceGuide !== prevProps.referenceGuide) {
+      // reload page when reference guide is added
+      this.purposeTab()
+    }
+  }
   purposeTab = () => {
     const { route } = this.props
     const { purposeTab } = route.params
@@ -396,12 +415,233 @@ class LeadDetail extends React.Component {
     if (helper.checkAssignedSharedWithoutMsg(user, lead)) return '---'
     else return customerName === '' ? lead.customer && lead.customer.customerName : customerName
   }
+  navigateToBookUnit = () => {
+    const { screen, navFrom, lead, screenName } = this.props.route.params
+    const { navigation, route } = this.props
+    const unitData = route.params.unitData
+
+    if (navFrom) {
+      this.props.dispatch(setlead(lead))
+      navigation.navigate('AddDiary', {
+        lead: lead,
+        cmLeadId: lead.id,
+      })
+    } else {
+      this.props.dispatch(setlead(lead))
+      let page = ''
+      if (lead.readAt === null) {
+        this.props.navigation.navigate('LeadDetail', {
+          lead: lead,
+          purposeTab: 'invest',
+          screenName: screenName,
+        })
+      } else {
+        if (
+          lead.status === 'token' ||
+          lead.status === 'payment' ||
+          lead.status === 'closed_won' ||
+          lead.status === 'closed_lost'
+        ) {
+          page = 'Payments'
+        } else {
+          page = 'Meetings'
+        }
+
+        navigation.navigate('CMLeadTabs', {
+          screen: unitData ? 'Payments' : page,
+          params: { lead: lead, unitData: unitData, screenName: screenName },
+        })
+      }
+    }
+  }
+  navigateFromMenu = (name) => {
+    const { screen, lead } = this.props.route.params
+    this.props.dispatch(setlead(lead))
+    this.props.navigation.navigate(name, {
+      lead: lead,
+      purposeTab: 'invest',
+      screen: 'InvestLeads',
+      cmLeadId: lead.id,
+      screenName: screen,
+    })
+  }
+  // navigateToOpenWorkFlow = (data) => {
+  //   const { screen, navFrom } = this.props.route.params
+  //   const { navigation } = this.props
+
+  //   this.props.dispatch(setlead(data))
+
+  //   if (navFrom) {
+  //     navigation.navigate('AddDiary', {
+  //       lead: data,
+  //       rcmLeadId: data.id,
+  //     })
+  //   } else {
+  //     let page = ''
+  //     if (this.props.route.params?.screen === 'MyDeals') {
+  //       this.props.navigation.navigate('LeadDetail', {
+  //         lead: data,
+  //         purposeTab: 'sale',
+  //         screenName: screen,
+  //       })
+  //     } else if (data.readAt === null) {
+  //       this.props.navigation.navigate('LeadDetail', {
+  //         lead: data,
+  //         purposeTab: 'sale',
+  //         screenName: screen,
+  //       })
+  //     } else {
+  //       if (data.status == 'open') {
+  //         page = 'Match'
+  //       }
+  //       if (data.status === 'viewing') {
+  //         page = 'Viewing'
+  //       }
+  //       if (data.status === 'offer') {
+  //         page = 'Offer'
+  //       }
+  //       if (data.status === 'propsure') {
+  //         page = 'Propsure'
+  //       }
+  //       if (data.status === 'payment') {
+  //         page = 'Payment'
+  //       }
+  //       if (
+  //         data.status === 'payment' ||
+  //         data.status === 'closed_won' ||
+  //         data.status === 'closed_lost'
+  //       ) {
+  //         page = 'Payment'
+  //       }
+  //       this.props.navigation.navigate('RCMLeadTabs', {
+  //         screen: page,
+  //         params: { lead: data },
+  //       })
+  //     }
+  //   }
+  // }
+  navigateToOpenWorkFlow = (data) => {
+    const { screen, navFrom } = this.props.route.params
+    const { navigation } = this.props
+
+    this.props.dispatch(setlead(data))
+
+    if (navFrom) {
+      navigation.navigate('AddDiary', {
+        lead: data,
+        rcmLeadId: data.id,
+      })
+    } else {
+      let page = ''
+      // if (this.props.route.params?.screen === 'MyDeals') {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'rent',
+      //     screenName: screen,
+      //   })
+      // }
+      //  else if (data.readAt === null) {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'rent',
+      //     screenName: screen,
+      //   })
+      // }
+      if (data.status === 'open') {
+        page = 'Match'
+      }
+      if (data.status === 'viewing') {
+        page = 'Viewing'
+      }
+      if (data.status === 'offer') {
+        page = 'Offer'
+      }
+      if (data.status === 'propsure') {
+        page = 'Propsure'
+      }
+      if (data.status === 'payment') {
+        page = 'Payment'
+      }
+      if (
+        data.status === 'payment' ||
+        data.status === 'closed_won' ||
+        data.status === 'closed_lost'
+      ) {
+        page = 'Payment'
+      }
+      if (data && data.requiredProperties) {
+        this.props.navigation.navigate('PropertyTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      } else {
+        this.props.navigation.navigate('RCMLeadTabs', {
+          screen: page,
+          params: { lead: data },
+        })
+      }
+    }
+  }
+  callOnSelectedNumber = (calledOn, title = 'ARMS') => {
+    const { lead, selectedDiary, connectFeedback, contacts, dispatch } = this.props
+    let url = null
+    if (selectedDiary) {
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          calledNumber: lead.number,
+          calledOn,
+          id: selectedDiary.id,
+        })
+      )
+      url =
+        calledOn === 'phone'
+          ? 'tel:' + lead.customer.phone
+          : 'whatsapp://send?phone=' + lead.customer.phone
+      if (url && url != 'tel:null') {
+        console.log("Can't handle url: " + url)
+        if (contacts) {
+          let result = helper.contacts(lead.customer.phone, contacts)
+          if (
+            // contactsInformation.name &&
+            // contactsInformation.name !== '' &&
+            // contactsInformation.name !== ' ' &&
+            lead.customer.phone &&
+            lead.customer.phone !== ''
+          )
+            if (!result) helper.addContact(lead.custome, title)
+        }
+        Linking.openURL(url)
+        dispatch(
+          getDiaryFeedbacks({
+            taskType: selectedDiary.taskType,
+            leadType: diaryHelper.getLeadType(selectedDiary),
+            actionType: 'Connect',
+          })
+        )
+          .then((res) => {
+            this.props.navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
+          })
+          .catch((err) => console.error('An error occurred', err))
+      } else {
+        helper.errorToast(`No Phone Number`)
+      }
+    }
+  }
+  goToAddEditDiaryScreen = (update, data = null) => {
+    const { navigation, dispatch } = this.props
+    const { selectedDate } = this.state
+    // dispatch(clearDiaries())
+    // if (data) {
+    //   dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
+    // }
+    navigation.navigate('AddDiary', { update, data, selectedDate, navFrom: 'meeting' })
+  }
 
   render() {
-    let { type, lead, mainButtonText, fromScreen, loading, editDes, description } = this.state
-    const { user, route } = this.props
-    const { purposeTab } = route.params
-    const { screen } = route.params
+    let { type, loading, editDes, description, closedLeadEdit, callModal, meetings } = this.state
+    const { user, route, referenceGuide, dispatch, lead } = this.props
+    const { purposeTab, showBottomNav = false } = route.params
     const { screenName } = route.params
     let projectName = lead.project ? helper.capitalize(lead.project.name) : lead.projectName
     const leadSource = this.checkLeadSource()
@@ -689,6 +929,60 @@ class LeadDetail extends React.Component {
             </Button>
           </View>
         )} */}
+        <ReferenceGuideModal
+          isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
+          hideReferenceGuideModal={() =>
+            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
+          }
+          addInvestmentGuide={(guideNo, attachments) =>
+            dispatch(addInvestmentGuide({ guideNo, attachments }, lead))
+          }
+          referenceGuideLoading={referenceGuide.referenceGuideLoading}
+          referenceErrorMessage={referenceGuide.referenceErrorMessage}
+        />
+        {showBottomNav && (
+          <View style={AppStyles.mainCMBottomNav}>
+            <CMBottomNav
+              navigateToBookUnit={this.navigateToBookUnit}
+              navigateFromMenu={this.navigateFromMenu}
+              addGuideReference={() =>
+                dispatch(
+                  setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true })
+                )
+              }
+              closedLeadEdit={closedLeadEdit}
+              navigation={this.props.navigation}
+              screenName={'InvestDetailScreen'}
+              guideReference={lead && lead.guideReference}
+              goToFeedBack={() => {
+                const { lead } = this.props
+                // getting complete project lead object that contains customer contacts as well
+                axios.get(`api/leads/project/byId?id=${lead.id}`).then((lead) => {
+                  dispatch(callNumberFromLeads(lead.data, 'Project')).then((res) => {
+                    if (res !== null) {
+                      this.callOnSelectedNumber('phone')
+                    }
+                  })
+                })
+              }}
+              goToAddEditDiaryScreen={this.goToAddEditDiaryScreen}
+            />
+          </View>
+        )}
+        {(purposeTab === 'sale' || purposeTab === 'rent') &&
+          screenName === 'Leads' &&
+          lead.status !== 'closed_lost' && (
+            <View style={AppStyles.mainCMBottomNav}>
+              <CMBottomNav
+                navigateFromMenu={this.navigateFromMenu}
+                navigation={this.props.navigation}
+                guideReference={lead && lead.guideReference}
+                screenName={'BuyRentDetailScreen'}
+                closedLeadEdit={closedLeadEdit}
+                navigateToOpenWorkFlow={this.navigateToOpenWorkFlow}
+              />
+            </View>
+          )}
       </View>
     ) : (
       <Loader loading={loading} />
@@ -699,6 +993,13 @@ class LeadDetail extends React.Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    referenceGuide: store.diary.referenceGuide,
+    lead: store.lead.lead,
+    permissions: store.user.permissions,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
+    selectedDiary: store.diary.selectedDiary,
+    connectFeedback: store.diary.connectFeedback,
+    contacts: store.contacts.contacts,
   }
 }
 

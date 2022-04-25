@@ -21,6 +21,25 @@ class AndroidNotifications extends React.Component {
     this.registerForPushNotificationsAsync()
   }
 
+  async allowsNotificationsAsync() {
+    const settings = await Notifications.getPermissionsAsync();
+    return (
+      settings.granted || settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+    );
+  }
+
+
+  async requestPermissionsAsync() {
+    return await Notifications.requestPermissionsAsync({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+        allowAnnouncements: true,
+      },
+    });
+  }
+
   registerForPushNotificationsAsync = async () => {
     const { user } = this.props
     if (Constants.isDevice) {
@@ -31,8 +50,27 @@ class AndroidNotifications extends React.Component {
         finalStatus = status
       }
       if (finalStatus !== 'granted') {
-        Alert.alert('Failed to get push token for push notification!')
-        return
+
+        if (Platform.OS === 'ios') {
+
+          const checkPermissions = await this.allowsNotificationsAsync();
+
+          if (!checkPermissions) {
+
+            const reqResponse = await this.requestPermissionsAsync()
+            console.log("responsee", reqResponse)
+            if(reqResponse.status=='denied')
+            {
+              Alert.alert('Please allow push notifications. ')
+            }
+          }
+        }
+        else {
+
+
+          Alert.alert('Failed to get push token for push notification!')
+          return
+        }
       }
       // let fcmPushToken = await Notifications.getDevicePushTokenAsync({ gcmSenderId: '372529293613' })
       let expoPushToken = (await Notifications.getExpoPushTokenAsync()).data

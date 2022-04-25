@@ -47,7 +47,27 @@ const askNotification = async (body, date) => {
       finalStatus = status
     }
     if (finalStatus !== 'granted') {
-      return
+
+      if (Platform.OS === 'ios') {
+
+        const checkPermissions = await this.allowsNotificationsAsync();
+
+        if (!checkPermissions) {
+
+          const reqResponse = await this.requestPermissionsAsync()
+          console.log("responsee", reqResponse)
+          if(reqResponse.status=='denied')
+          {
+            Alert.alert('Please allow push notifications. ')
+          }
+        }
+      }
+      else {
+
+
+        Alert.alert('Failed to get push token for push notification!')
+        return
+      }
     }
     submitNotification(body, date)
   } else {

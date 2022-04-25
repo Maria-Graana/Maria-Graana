@@ -414,7 +414,7 @@ class DetailForm extends Component {
                 handleForm={(value, name) => handleForm(value, name)}
               />
 
-              <Text style={[AppStyles.boldHeadingText]}>Mailing Address</Text>
+              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }]}>Mailing Address</Text>
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -506,7 +506,7 @@ class DetailForm extends Component {
                   value={formData.mAddress}
                 />
               </View>
-              <Text style={AppStyles.boldHeadingText}>Permanent Address</Text>
+              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }]}>Permanent Address</Text>
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
 
@@ -654,7 +654,8 @@ class DetailForm extends Component {
                   value={formData.address}
                 />
               </View>
-              <Text style={AppStyles.boldHeadingText}>Client Type</Text>
+              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }
+              ]}>Client Type</Text>
 
               < View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>

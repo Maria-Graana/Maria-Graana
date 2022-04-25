@@ -267,6 +267,7 @@ export class ScheduledTasks extends Component {
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
+  
     navigation.navigate('AddDiary', {
       update,
       data,
@@ -274,6 +275,7 @@ export class ScheduledTasks extends Component {
       cmLeadId: cmLeadId,
       rcmLeadId: rcmLeadId,
       screenName: 'ScheduledTasks',
+      customerName:lead?.customer?.customerName,
       lead: lead && helper.getAiraPermission(permissions) ? lead : null,
     })
   }

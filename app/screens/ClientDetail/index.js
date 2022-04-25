@@ -13,10 +13,12 @@ import Loader from '../../components/loader'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import TouchableButton from '../../components/TouchableButton'
+import { FAB } from 'react-native-paper'
 
 class ClientDetail extends React.Component {
   constructor(props) {
     super(props)
+    const { permissions } = this.props
     this.state = {
       client: {},
       loading: true,
@@ -24,6 +26,18 @@ class ClientDetail extends React.Component {
         contact2: null,
         contact3: null,
       },
+      open: false,
+      fabActions: [],
+      createBuyRentLead: getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
+      createProjectLead: getPermissionValue(
+        PermissionFeatures.PROJECT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ),
     }
   }
 
@@ -80,7 +94,9 @@ class ClientDetail extends React.Component {
                   clientPhones.contact3 = item.phone
               })
             }
-            this.setState({ client: res.data, loading: false, clientPhones })
+            this.setState({ client: res.data, loading: false, clientPhones }, () =>
+              this.setFabActions()
+            )
           })
           .catch((error) => {
             console.log(`URL: ${url}`)
@@ -112,14 +128,43 @@ class ClientDetail extends React.Component {
     return getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.UPDATE, permissions)
   }
 
+  setFabActions = () => {
+    const { createBuyRentLead, createProjectLead, client } = this.state
+    let fabActions = []
+    if (createBuyRentLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Add Buy/Rent Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', client),
+      })
+    }
+    if (createProjectLead) {
+      fabActions.push({
+        icon: 'plus',
+        label: 'Add Project Lead',
+        color: AppStyles.colors.primaryColor,
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', client),
+      })
+    }
+    this.setState({
+      fabActions: fabActions,
+    })
+  }
+
   render() {
     const { user, permissions } = this.props
-    const { client, loading, clientPhones } = this.state
+    const {
+      client,
+      loading,
+      clientPhones,
+      open,
+      fabActions,
+      createProjectLead,
+      createBuyRentLead,
+    } = this.state
     let updatePermission = this.updatePermission()
     let belongs = this.checkClient()
-
-
-
     return !loading ? (
       <View
         style={[
@@ -149,19 +194,16 @@ class ClientDetail extends React.Component {
               </Text>
               <Text style={styles.headingText}>Son / Daughter/ Spouse of</Text>
               <Text style={styles.labelText}>{client.relativeName}</Text>
-
               <Text style={styles.headingText}>Date Of Birth</Text>
-              <Text style={styles.labelText}>{client?.dob ? helper.formatDate(client.dob) : ''}</Text>
+              <Text style={styles.labelText}>
+                {client?.dob ? helper.formatDate(client.dob) : ''}
+              </Text>
               <Text style={styles.headingText}>Nationality</Text>
               <Text style={styles.labelText}>{client.nationality}</Text>
-
               <Text style={styles.headingText}>Profession</Text>
               <Text style={styles.labelText}>{client.profession}</Text>
               <Text style={styles.headingText}>Passport</Text>
               <Text style={styles.labelText}>{client.passport}</Text>
-
-
-
               {/* Mailing Address */}
               <Text style={[styles.labelText]}>Mailing Address:</Text>
               <Text style={styles.headingText}>Country</Text>
@@ -174,10 +216,7 @@ class ClientDetail extends React.Component {
               <Text style={styles.labelText}>{client.mCity}</Text>
               <Text style={styles.headingText}>Address</Text>
               <Text style={styles.labelText}>{client.mAddress}</Text>
-
-
               {/* Permanent Address */}
-
               <Text style={[styles.labelText]}>Permanent Address:</Text>
               <Text style={styles.headingText}>Country</Text>
               <Text style={styles.labelText}>{client.country}</Text>
@@ -189,9 +228,6 @@ class ClientDetail extends React.Component {
               <Text style={styles.labelText}>{client.city}</Text>
               <Text style={styles.headingText}>Address</Text>
               <Text style={styles.labelText}>{client.address}</Text>
-
-
-
               <Text style={styles.headingText}>Belongs To</Text>
               <Text style={styles.labelText}>{belongs}</Text>
             </View>
@@ -206,7 +242,7 @@ class ClientDetail extends React.Component {
               />
             </View>
           </View>
-          <View style={styles.buttonInputWrap}>
+          {/* <View style={styles.buttonInputWrap}>
             {getPermissionValue(
               PermissionFeatures.PROJECT_LEADS,
               PermissionActions.CREATE,
@@ -240,8 +276,19 @@ class ClientDetail extends React.Component {
                   onPress={() => this.goToFormPage('AddRCMLead', 'RCM', client)}
                 />
               )}
-          </View>
+          </View> */}
         </ScrollView>
+        {createProjectLead || createBuyRentLead ? (
+          <FAB.Group
+            open={open}
+            icon="plus"
+            style={{ marginBottom: 16 }}
+            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
+            color={AppStyles.bgcWhite.backgroundColor}
+            actions={fabActions}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
+        ) : null}
       </View>
     ) : (
       <Loader loading={loading} />

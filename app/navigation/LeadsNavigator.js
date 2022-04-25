@@ -1,8 +1,8 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React ,{useEffect} from 'react'
+import { StyleSheet, Text, View  } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
 import { getPermissionValue } from '../hoc/Permissions'

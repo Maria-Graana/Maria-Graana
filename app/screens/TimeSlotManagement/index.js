@@ -300,6 +300,7 @@ function TimeSlotManagement(props) {
         : selectedDate,
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
+    
 
     setSlotsData(mySlotData)
     setSlots(myslots)

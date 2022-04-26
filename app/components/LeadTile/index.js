@@ -93,29 +93,28 @@ class LeadTile extends React.Component {
     } = this.props
     var changeColor =
       data.assigned_to_armsuser_id == user.id ||
-      data.shared_with_armsuser_id == user.id ||
-      (data && data.requiredProperties)
+        data.shared_with_armsuser_id == user.id ||
+        (data && data.requiredProperties)
         ? styles.blueColor
         : AppStyles.darkColor
     var changeStatusColor =
       data.assigned_to_armsuser_id == user.id ||
-      data.shared_with_armsuser_id == user.id ||
-      (data && data.requiredProperties)
+        data.shared_with_armsuser_id == user.id ||
+        (data && data.requiredProperties)
         ? styles.tokenLabel
         : styles.tokenLabelDark
     var descriptionColor =
       data.assigned_to_armsuser_id == user.id ||
-      data.shared_with_armsuser_id == user.id ||
-      propertyLead
+        data.shared_with_armsuser_id == user.id ||
+        propertyLead
         ? styles.desBlue
         : styles.desDark
     let projectName = data.project ? helper.capitalize(data.project.name) : data.projectName
     let customerName = this.setCustomerName()
     let areasLength =
       !data.projectId && data.armsLeadAreas && data.armsLeadAreas.length > 1
-        ? ` (+${Number(data.armsLeadAreas.length) - 1} ${
-            data.armsLeadAreas.length > 2 ? 'areas' : 'area'
-          })`
+        ? ` (+${Number(data.armsLeadAreas.length) - 1} ${data.armsLeadAreas.length > 2 ? 'areas' : 'area'
+        })`
         : ''
     let leadSize = this.leadSize()
     // let showPhone = displayPhone === false || displayPhone ? displayPhone : true
@@ -454,9 +453,9 @@ class LeadTile extends React.Component {
                       numberOfLines={1}
                     >
                       {!data.projectId &&
-                      data.armsLeadAreas &&
-                      data.armsLeadAreas.length > 0 &&
-                      data.armsLeadAreas[0].area
+                        data.armsLeadAreas &&
+                        data.armsLeadAreas.length > 0 &&
+                        data.armsLeadAreas[0].area
                         ? data.armsLeadAreas[0].area.name + `${areasLength}` + ' - '
                         : ''}
                       {!data.projectId && data.city && data.city.name}
@@ -464,27 +463,31 @@ class LeadTile extends React.Component {
                   )}
                 </View>
                 {/* ****** Location Wrap */}
-                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text
-                    style={[styles.normalText, AppStyles.darkColor, AppStyles.mrTen]}
-                    numberOfLines={1}
-                  >
-                    {customerName === ' ' ? '' : data.customer && data.customer.customerName}
-                  </Text>
-                </View>
-                {/* ****** Location Wrap */}
-                <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
-                  <Text
-                    style={[styles.normalText, styles.lightColor, AppStyles.mrTen]}
-                    numberOfLines={1}
-                  >
-                    {data.id ? `ID: ${data.id}, ` : ''}{' '}
-                    {`Created: ${moment(data.createdAt).format('MMM DD YYYY, hh:mm A')}`}
-                  </Text>
+                <View style={[styles.contentMultiMain, AppStyles.mbFive,]}>
+                  <View >
+                    <Text
+                      style={[styles.normalText, AppStyles.mbFive, AppStyles.darkColor, AppStyles.mrTen]}
+                      numberOfLines={1}
+                    >
+                      {customerName === ' ' ? '' : data.customer && data.customer.customerName}
+                    </Text>
 
+                    <Text
+                      style={[styles.normalText, AppStyles.mbFive, styles.lightColor, AppStyles.mrTen]}
+                      numberOfLines={1}
+                    >
+                      {data.id ? `ID: ${data.id}, ` : ''}{' '}
+                      {`Created: ${moment(data.createdAt).format('MMM DD YYYY, hh:mm A')}`}
+                    </Text>
+                  </View>
                   {showPhone ? (
                     <TouchableOpacity
-                      style={styles.phoneMain}
+                      style={[styles.phoneMain,
+
+                      styles.phoneMains,
+                      ]
+
+                      }
                       onPress={() => {
                         callNumber(data)
                       }}
@@ -492,14 +495,20 @@ class LeadTile extends React.Component {
                       <Image
                         style={[
                           styles.fireIcon,
-                          AppStyles.mlFive,
-                          { alignSelf: purposeTab === 'invest' ? 'flex-end' : 'center' },
+                         
+                           { alignSelf: 'flex-end'},
+                            //purposeTab === 'invest' ? 'flex-end' : 'center' 
                         ]}
                         source={phone}
                       />
                     </TouchableOpacity>
                   ) : null}
                 </View>
+
+                {/* <View style={[styles.contentMultiMain, AppStyles.mbFive]}>
+
+                 
+                </View> */}
               </View>
             </View>
           </View>

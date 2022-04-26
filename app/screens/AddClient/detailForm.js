@@ -116,9 +116,9 @@ class DetailForm extends Component {
 
 
     const { count, permissions } = this.props
-  
 
- 
+
+
     return (
 
       <View style={{ flex: 1 }} >
@@ -421,7 +421,10 @@ class DetailForm extends Component {
                 handleForm={(value, name) => handleForm(value, name)}
               />
 
-              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }]}>Mailing Address</Text>
+              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
+                color: AppStyles.colors.textColor,
+                fontFamily: 'OpenSans_semi_bold'
+              },]}>Mailing Address</Text>
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -513,7 +516,10 @@ class DetailForm extends Component {
                   value={formData.mAddress}
                 />
               </View>
-              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }]}>Permanent Address</Text>
+              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
+                color: AppStyles.colors.textColor,
+                fontFamily: 'OpenSans_semi_bold'
+              },]}>Permanent Address</Text>
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
 
@@ -661,8 +667,10 @@ class DetailForm extends Component {
                   value={formData.address}
                 />
               </View>
-              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }
-              ]}>Client Type</Text>
+              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
+                color: AppStyles.colors.textColor,
+                fontFamily: 'OpenSans_semi_bold'
+              },]}>Client Type</Text>
 
               < View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -762,18 +770,35 @@ class DetailForm extends Component {
                     }}
                     data={
                       StaticData.leadTypePickerData.filter(function (el) {
-                        if (!getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)) {
-                          return el.name != "Invest";
-                        }
-                        else if (!getPermissionValue(
+                   
+                        if (!getPermissionValue(
                           PermissionFeatures.BUY_RENT_LEADS,
                           PermissionActions.CREATE,
                           permissions
+                        ) && !getPermissionValue(
+                          PermissionFeatures.PROJECT_LEADS,
+                          PermissionActions.CREATE,
+                          permissions
                         )) {
-                          return el.name != "Rent" && el.name != "Buy";
-                        }
-                        else return el
 
+                          return el.name != "Rent" && el.name != "Buy" && el.name != "Invest";
+                        }
+
+                        else {
+                          if (!getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)) {
+                            return el.name != "Invest";
+                          }
+                          else if (!getPermissionValue(
+                            PermissionFeatures.BUY_RENT_LEADS,
+                            PermissionActions.CREATE,
+                            permissions
+                          )) {
+                            return el.name != "Rent" && el.name != "Buy";
+                          }
+
+
+                          else return el
+                        }
                       })
                     }
                     name={'purpose'}

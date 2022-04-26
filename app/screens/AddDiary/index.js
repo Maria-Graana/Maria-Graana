@@ -139,7 +139,10 @@ class AddDiary extends Component {
       delete payload.endTime
       delete payload.hour
       return payload
-    } else {
+    }
+  
+
+    else {
       // add payload contain these keys below
 
       payload = Object.assign({}, data)
@@ -182,6 +185,7 @@ class AddDiary extends Component {
   }
 
   createDiary = (diary) => {
+
     const { route, dispatch } = this.props
     if (route.params.update) {
       this.updateDiary(diary)
@@ -191,15 +195,19 @@ class AddDiary extends Component {
   }
 
   addDiary = (data) => {
-    const { route, navigation, dispatch } = this.props
 
-    const { screenName = 'Diary', cmLeadId, rcmLeadId, property } = route.params
+    const { route, navigation, dispatch } = this.props
+   
+    const { screenName = 'Diary', cmLeadId, rcmLeadId, property, customerName = null } = route.params
+
     let diary = this.generatePayload(data)
+
     let query = property ? `/api/leads/viewing` : `/api/leads/task`
     axios
       .post(query, diary)
       .then((res) => {
-        if (res.status === 200) {
+
+        if (res?.status === 200) {
 
           helper.successToast('TASK ADDED SUCCESSFULLY!')
 
@@ -209,15 +217,15 @@ class AddDiary extends Component {
             notificationData = res.data[1][i]
           }
 
-
-
+         
           let start = new Date(notificationData.start)
           let end = new Date(notificationData.end)
 
           let notificationPayload;
           if (notificationData.taskCategory == 'leadTask') {
+
             notificationPayload = {
-              clientName: data?.selectedLead?.customer?.customerName,
+              clientName: screenName == 'ScheduledTasks' ? customerName : data?.selectedLead?.customer?.customerName,
               id: notificationData.id,
               title: DiaryHelper.showTaskType(
                 notificationData?.taskType
@@ -229,12 +237,13 @@ class AddDiary extends Component {
           else {
             notificationPayload = {
               id: notificationData.id,
-              title:  DiaryHelper.showTaskType(
+              title: DiaryHelper.showTaskType(
                 notificationData.taskType
               ),
               body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
           }
+         
           TimerNotification(notificationPayload, start)
           if (screenName === 'Diary') {
             dispatch(
@@ -266,6 +275,8 @@ class AddDiary extends Component {
   }
 
   updateDiary = (data) => {
+
+
     let diary = this.generatePayload(data)
     const { dispatch, navigation, route } = this.props
     const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
@@ -273,14 +284,47 @@ class AddDiary extends Component {
       .patch(`/api/diary/update?id=${diary.id}`, diary)
       .then((res) => {
         helper.successToast('TASK UPDATED SUCCESSFULLY!')
+
+
         let start = new Date(res.data.start)
         let end = new Date(res.data.end)
-        let data = {
+        let newData = {
           id: res.data.id,
           title: res.data.subject,
           body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
         }
-        helper.deleteAndUpdateNotification(data, start, res.data.id)
+
+
+        let notificationPayload;
+        if (res?.data?.taskCategory == 'leadTask') {
+
+
+          notificationPayload = {
+            clientName: data?.selectedLead?.customer?.customerName,
+            id: res?.data?.id,
+            title: DiaryHelper.showTaskType(
+              res?.data?.taskType
+            ),
+            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+          }
+        }
+
+        else {
+          notificationPayload = {
+            id: res?.data?.id,
+            title: DiaryHelper.showTaskType(
+              res?.data?.taskType
+            ),
+            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+          }
+        }
+
+
+        helper.deleteAndUpdateNotification(notificationPayload, start, res.data.id)
+
+
+
+
         if (screenName === 'Diary') {
           dispatch(
             getDiaryTasks({

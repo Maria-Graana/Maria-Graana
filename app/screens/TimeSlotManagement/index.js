@@ -5,6 +5,8 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
 import styles from './style'
+
+import TimerNotification from '../../LocalNotifications'
 import TouchableButton from '../../components/TouchableButton'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
@@ -86,8 +88,8 @@ function TimeSlotManagement(props) {
       navigation.setOptions({
         title:
           taskType === 'morning_meeting' ||
-          taskType === 'meeting_with_pp' ||
-          taskType === 'daily_update'
+            taskType === 'meeting_with_pp' ||
+            taskType === 'daily_update'
             ? 'Book Time Slot'
             : `Select Slot for ${diaryHelper.showTaskType(taskType)} Task`,
       })
@@ -301,6 +303,7 @@ function TimeSlotManagement(props) {
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
+
     setSlotsData(mySlotData)
     setSlots(myslots)
     setIsSelected(myisSelected)
@@ -370,9 +373,46 @@ function TimeSlotManagement(props) {
       copyData.start = startTime
       copyData.end = endTime
       copyData.slots = tempSlot
+      delete copyData.selectedLead
       saveOrUpdateDiaryTask(copyData).then((response) => {
         if (response) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')
+
+          let notificationData;
+
+          for (let i in response.data[1]) {
+            notificationData = response.data[1][i]
+          }
+
+
+          let start = new Date(notificationData.start)
+          let end = new Date(notificationData.end)
+
+          let notificationPayload;
+          if (notificationData.taskCategory == 'leadTask') {
+          
+            notificationPayload = {
+              clientName: `${data.selectedLead.customer.first_name} ${data.selectedLead.customer.last_name}`,
+              id: notificationData.id,
+              title: diaryHelper.showTaskType(
+                notificationData?.taskType
+              ),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+
+          else {
+            notificationPayload = {
+              id: notificationData.id,
+              title: diaryHelper.showTaskType(
+                notificationData.taskType
+              ),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+          
+          TimerNotification(notificationPayload, start)
+
           navigation.goBack()
         } else {
           helper.errorToast('SOMETHING WENT WRONG!')
@@ -386,6 +426,8 @@ function TimeSlotManagement(props) {
       copyData.start = startTime
       copyData.end = endTime
       copyData.slots = tempSlot
+
+
 
       // let copy2Data = Object.assign({}, copyData)
       // delete copy2Data.leadId
@@ -954,63 +996,63 @@ function TimeSlotManagement(props) {
             >
               {data
                 ? rotateArray.map((o, i) => {
-                    return (
-                      <View style={styles.viewMinCol} key={i}>
-                        {o.map((e, i) => {
-                          return (
-                            <TouchableOpacity
-                              activeOpacity={0.1}
-                              onPress={() => showDetailNew(e)}
-                              key={i}
-                            >
-                              <View
-                                style={[
-                                  styles.hourRow,
-                                  {
-                                    backgroundColor: isSelected.includes(e.id)
-                                      ? setSelectedColor()
-                                      : setColor(e) == 'dailyupdate'
+                  return (
+                    <View style={styles.viewMinCol} key={i}>
+                      {o.map((e, i) => {
+                        return (
+                          <TouchableOpacity
+                            activeOpacity={0.1}
+                            onPress={() => showDetailNew(e)}
+                            key={i}
+                          >
+                            <View
+                              style={[
+                                styles.hourRow,
+                                {
+                                  backgroundColor: isSelected.includes(e.id)
+                                    ? setSelectedColor()
+                                    : setColor(e) == 'dailyupdate'
                                       ? '#dcf0ff'
                                       : setColor(e) == 'morningmeeting'
-                                      ? '#dcf0ff'
-                                      : setColor(e) == 'connect'
-                                      ? '#deecd7'
-                                      : setColor(e) == 'meeting'
-                                      ? '#99c5fa'
-                                      : setColor(e) == 'reassign'
-                                      ? '#99c5fa'
-                                      : setColor(e) == 're-assign'
-                                      ? '#99c5fa'
-                                      : setColor(e) == 'viewing'
-                                      ? '#99c5fa'
-                                      : setColor(e) == 'meetingwithpp'
-                                      ? '#dcf0ff'
-                                      : setColor(e) == 'followup'
-                                      ? '#fff1c5'
-                                      : setColor(e) == 'closed'
-                                      ? '#e6e6e6'
-                                      : setShift(e) == true
-                                      ? '#ffffff'
-                                      : '#f1f1f1',
+                                        ? '#dcf0ff'
+                                        : setColor(e) == 'connect'
+                                          ? '#deecd7'
+                                          : setColor(e) == 'meeting'
+                                            ? '#99c5fa'
+                                            : setColor(e) == 'reassign'
+                                              ? '#99c5fa'
+                                              : setColor(e) == 're-assign'
+                                                ? '#99c5fa'
+                                                : setColor(e) == 'viewing'
+                                                  ? '#99c5fa'
+                                                  : setColor(e) == 'meetingwithpp'
+                                                    ? '#dcf0ff'
+                                                    : setColor(e) == 'followup'
+                                                      ? '#fff1c5'
+                                                      : setColor(e) == 'closed'
+                                                        ? '#e6e6e6'
+                                                        : setShift(e) == true
+                                                          ? '#ffffff'
+                                                          : '#f1f1f1',
 
-                                    borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
-                                    borderWidth: isSelected.includes(e.id) ? 1.6 : 0.6,
-                                  },
-                                ]}
-                                key={i}
-                              >
-                                {typeof setColor(e) == 'number' && (
-                                  <View style={styles.taskLengthView} key={i}>
-                                    <Text style={{ color: 'black' }}>{`+${setColor(e)}`}</Text>
-                                  </View>
-                                )}
-                              </View>
-                            </TouchableOpacity>
-                          )
-                        })}
-                      </View>
-                    )
-                  })
+                                  borderColor: isSelected.includes(e.id) ? 'black' : 'grey',
+                                  borderWidth: isSelected.includes(e.id) ? 1.6 : 0.6,
+                                },
+                              ]}
+                              key={i}
+                            >
+                              {typeof setColor(e) == 'number' && (
+                                <View style={styles.taskLengthView} key={i}>
+                                  <Text style={{ color: 'black' }}>{`+${setColor(e)}`}</Text>
+                                </View>
+                              )}
+                            </View>
+                          </TouchableOpacity>
+                        )
+                      })}
+                    </View>
+                  )
+                })
                 : null}
             </ScrollView>
           </View>

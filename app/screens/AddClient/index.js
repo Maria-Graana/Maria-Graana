@@ -245,7 +245,7 @@ class AddClient extends Component {
     const { CMLead, route, dispatch } = this.props
     const { client, name } = route.params
     if (client && name) {
-      console.log("client", client.phone);
+      
       let phones = []
       if (client.customerContacts && client.customerContacts.length) {
         client.customerContacts.map((item) => {
@@ -317,7 +317,7 @@ class AddClient extends Component {
 
 
       dispatch(addEditCMLead(copyObject))
-    console.log("CMLead", copyObject)
+
     if (!copyObject.customerId || !copyObject.cityId) {
       this.setState({
         checkValidations: true,
@@ -903,11 +903,11 @@ class AddClient extends Component {
           let body = this.createPayload()
           body.name = body.first_name + ' ' + body.last_name
           this.setState({ loading: true })
-          console.log("client", body);
+          
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
-              console.log("res", res)
+              console.log("res", res.data)
               //id
               if (res.status === 200 && res.data) {
                 if (formData.contactRegistrationId) {
@@ -919,9 +919,13 @@ class AddClient extends Component {
                   }
                 }
                 if (res.data.message !== 'CLIENT CREATED') {
+                
                   // Error Messages
                   if (res.data.message === 'Client already exists') {
                     helper.errorToast(res.data.message)
+                  }
+                  else{
+                    helper.errorToast(res?.data?.message)
                   }
                 } else {
 

@@ -770,18 +770,34 @@ class DetailForm extends Component {
                     }}
                     data={
                       StaticData.leadTypePickerData.filter(function (el) {
-                        if (!getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)) {
-                          return el.name != "Invest";
-                        }
-                        else if (!getPermissionValue(
+                        if (!getPermissionValue(
+                          PermissionFeatures.BUY_RENT_LEADS,
+                          PermissionActions.CREATE,
+                          permissions
+                        ) && !getPermissionValue(
                           PermissionFeatures.BUY_RENT_LEADS,
                           PermissionActions.CREATE,
                           permissions
                         )) {
-                          return el.name != "Rent" && el.name != "Buy";
-                        }
-                        else return el
 
+                          return el.name != "Rent" && el.name != "Buy" && el.name != "Invest";
+                        }
+
+                        else {
+                          if (!getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)) {
+                            return el.name != "Invest";
+                          }
+                          else if (!getPermissionValue(
+                            PermissionFeatures.BUY_RENT_LEADS,
+                            PermissionActions.CREATE,
+                            permissions
+                          )) {
+                            return el.name != "Rent" && el.name != "Buy";
+                          }
+
+
+                          else return el
+                        }
                       })
                     }
                     name={'purpose'}

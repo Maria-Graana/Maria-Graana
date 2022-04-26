@@ -770,12 +770,13 @@ class DetailForm extends Component {
                     }}
                     data={
                       StaticData.leadTypePickerData.filter(function (el) {
+                   
                         if (!getPermissionValue(
                           PermissionFeatures.BUY_RENT_LEADS,
                           PermissionActions.CREATE,
                           permissions
                         ) && !getPermissionValue(
-                          PermissionFeatures.BUY_RENT_LEADS,
+                          PermissionFeatures.PROJECT_LEADS,
                           PermissionActions.CREATE,
                           permissions
                         )) {

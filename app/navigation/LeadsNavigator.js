@@ -9,6 +9,7 @@ import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import { getPermissionValue } from '../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../hoc/PermissionsTypes'
 import BuyLeads from '../screens/BuyLeads/index'
+import WantedLeads from "./../screens/WantedLeads/index";
 import InvestLeads from '../screens/InvestLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 

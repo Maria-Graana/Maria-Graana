@@ -12,6 +12,8 @@ import ErrorMessage from '../../components/ErrorMessage'
 import _ from 'underscore'
 import PhoneInputComponent from '../../components/PhoneCountry/PhoneInput'
 
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import styles from './style'
 import TouchableInput from '../../components/TouchableInput'
 import PickerComponent from '../../components/Picker/index'
@@ -21,7 +23,7 @@ import helper from '../../helper';
 import CountriesPicker from "./../../components/CountriesPicker";
 class DetailForm extends Component {
 
-  //const[openAdditionalInfo, setoOenAdditionalInfo] =useState(false);
+
   constructor(props) {
     super(props)
     this.state = {
@@ -111,6 +113,11 @@ class DetailForm extends Component {
 
 
     const { route } = this.props
+
+
+    const { count, permissions } = this.props
+
+
 
     return (
 
@@ -414,7 +421,10 @@ class DetailForm extends Component {
                 handleForm={(value, name) => handleForm(value, name)}
               />
 
-              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }]}>Mailing Address</Text>
+              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
+                color: AppStyles.colors.textColor,
+                fontFamily: 'OpenSans_semi_bold'
+              },]}>Mailing Address</Text>
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -506,7 +516,10 @@ class DetailForm extends Component {
                   value={formData.mAddress}
                 />
               </View>
-              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }]}>Permanent Address</Text>
+              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
+                color: AppStyles.colors.textColor,
+                fontFamily: 'OpenSans_semi_bold'
+              },]}>Permanent Address</Text>
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
 
@@ -654,8 +667,10 @@ class DetailForm extends Component {
                   value={formData.address}
                 />
               </View>
-              <Text style={[AppStyles.formFontSettings, { fontFamily: 'OpenSans_semi_bold' }
-              ]}>Client Type</Text>
+              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
+                color: AppStyles.colors.textColor,
+                fontFamily: 'OpenSans_semi_bold'
+              },]}>Client Type</Text>
 
               < View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -753,7 +768,39 @@ class DetailForm extends Component {
 
                       }
                     }}
-                    data={StaticData.leadTypePickerData}
+                    data={
+                      StaticData.leadTypePickerData.filter(function (el) {
+                   
+                        if (!getPermissionValue(
+                          PermissionFeatures.BUY_RENT_LEADS,
+                          PermissionActions.CREATE,
+                          permissions
+                        ) && !getPermissionValue(
+                          PermissionFeatures.PROJECT_LEADS,
+                          PermissionActions.CREATE,
+                          permissions
+                        )) {
+
+                          return el.name != "Rent" && el.name != "Buy" && el.name != "Invest";
+                        }
+
+                        else {
+                          if (!getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)) {
+                            return el.name != "Invest";
+                          }
+                          else if (!getPermissionValue(
+                            PermissionFeatures.BUY_RENT_LEADS,
+                            PermissionActions.CREATE,
+                            permissions
+                          )) {
+                            return el.name != "Rent" && el.name != "Buy";
+                          }
+
+
+                          else return el
+                        }
+                      })
+                    }
                     name={'purpose'}
                     placeholder="Select lead Type"
                     selectedItem={formData.purpose}
@@ -835,6 +882,7 @@ class DetailForm extends Component {
 mapStateToProps = (store) => {
   return {
     user: store.user.user,
+    permissions: store.user.permissions,
   }
 }
 

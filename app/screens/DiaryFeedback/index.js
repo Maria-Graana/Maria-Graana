@@ -209,6 +209,7 @@ class DiaryFeedback extends Component {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
           if (res) {
             let copyObj = { ...this.props.connectFeedback }
+            copyObj.selectedLead = selectedLead
             copyObj.status = 'pending'
             copyObj.reasonId = copyObj.feedbackId
             copyObj.reasonTag = copyObj.tag

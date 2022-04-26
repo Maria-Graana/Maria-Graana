@@ -55,7 +55,7 @@ const askNotification = async (body, date) => {
         if (!checkPermissions) {
 
           const reqResponse = await this.requestPermissionsAsync()
-          console.log("responsee", reqResponse)
+        
           if(reqResponse.status=='denied')
           {
             Alert.alert('Please allow push notifications. ')
@@ -76,6 +76,7 @@ const askNotification = async (body, date) => {
 }
 
 const TimerNotification = (body, date) => {
+ 
   askNotification(body, date)
 }
 

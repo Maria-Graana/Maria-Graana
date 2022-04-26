@@ -9,7 +9,6 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 
-
 import { addEditCMLead, getAllProjects, setDefaultCMPayload } from '../../actions/cmLead'
 import { setSelectedAreas } from './../../actions/areas'
 import TouchableButton from '../../components/TouchableButton'
@@ -1373,6 +1372,7 @@ class AddClient extends Component {
     const { route } = this.props
     const { update, client, screenName } = route.params
     const { investmentProjects, CMFormLoading } = this.props
+
     let btnText = update ? 'UPDATE' : 'ADD'
 
     return (
@@ -1509,6 +1509,7 @@ mapStateToProps = (store) => {
     CMFormLoading: store.cmLead.CMFormLoading,
     investmentProjects: store.cmLead.investmentProjects,
     CMLead: store.cmLead.CMLead,
+  
   }
 }
 

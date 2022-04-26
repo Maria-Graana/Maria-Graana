@@ -26,7 +26,7 @@ const PaymentHelper = {
       approvedDiscountPrice: 0,
       finalPrice: 0,
       fullPaymentDiscountPrice: 0,
-      nitName: '',
+      unitName: '',
       projectName: '',
       floorName: '',
     }
@@ -45,7 +45,6 @@ const PaymentHelper = {
       copyFirstForm['clientName'] = firstForm.clientName
       copyFirstForm['parkingAvailable'] = firstForm.parkingAvailable
       copyFirstForm['parkingCharges'] = firstForm.parkingCharges
-      
     }
     if (value === 'unitType') {
       copyFirstForm['project'] = firstForm.project
@@ -182,7 +181,7 @@ const PaymentHelper = {
     selectedClient
   ) {
     return {
-      parkingChargesApply:firstFormData.parkingAvailable,
+      parkingChargesApply: firstFormData.parkingAvailable,
       unitId: unitId,
       projectId: firstFormData.project,
       floorId: firstFormData.floor,
@@ -229,7 +228,7 @@ const PaymentHelper = {
   ) {
     const { projectProduct } = oneProduct
     return {
-      parkingChargesApply:firstFormData.parkingAvailable,
+      parkingChargesApply: firstFormData.parkingAvailable,
       unitId: unitId,
       projectId: firstFormData.project,
       floorId: firstFormData.floor,
@@ -317,6 +316,7 @@ const PaymentHelper = {
     }
   },
   setInstallmentFrequency(oneProduct) {
+    // console.log(oneProduct)
     if (oneProduct) {
       if (oneProduct && oneProduct.projectProduct) {
         let { installmentFrequency } = oneProduct.projectProduct
@@ -366,14 +366,7 @@ const PaymentHelper = {
       }
     }
   },
-  firstFormValidation(
-    lead,
-    firstFormData,
-    cnicValidate,
-    leftPearlSqft,
-    unitPearlDetailsData,
-    checkFirstFormPayment
-  ) {
+  firstFormValidation(lead, firstFormData, cnicValidate, leftPearlSqft, unitPearlDetailsData) {
     const { noProduct } = lead
     if (!noProduct) {
       if (firstFormData.pearl != null) {
@@ -384,7 +377,6 @@ const PaymentHelper = {
             firstFormData.cnic != '' &&
             cnicValidate === false &&
             firstFormData.paymentPlan === 'full_payment' &&
-            checkFirstFormPayment &&
             firstFormData.productId) ||
           (firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
             firstFormData.pearl >= 50 &&
@@ -392,7 +384,6 @@ const PaymentHelper = {
             firstFormData.cnic != '' &&
             cnicValidate === false &&
             firstFormData.paymentPlan != 'no' &&
-            checkFirstFormPayment &&
             firstFormData.productId &&
             firstFormData.installmentFrequency &&
             firstFormData.paymentPlanDuration)
@@ -420,19 +411,16 @@ const PaymentHelper = {
             firstFormData.floor != null &&
             firstFormData.unit != null &&
             firstFormData.paymentPlan != 'no' &&
-            checkFirstFormPayment &&
             firstFormData.type != '' &&
             firstFormData.cnic != null &&
             firstFormData.cnic != '' &&
             cnicValidate === false &&
             firstFormData.productId &&
-            firstFormData.installmentFrequency &&
-            firstFormData.paymentPlanDuration) ||
+            firstFormData.installmentFrequency) ||
           (firstFormData.project != null &&
             firstFormData.floor != null &&
             firstFormData.unit != null &&
             firstFormData.paymentPlan === 'full_payment' &&
-            checkFirstFormPayment &&
             firstFormData.type != '' &&
             firstFormData.cnic != null &&
             firstFormData.cnic != '' &&
@@ -458,8 +446,7 @@ const PaymentHelper = {
           firstFormData.cnic != null &&
           firstFormData.cnic != '' &&
           cnicValidate === false &&
-          firstFormData.paymentPlan != 'no' &&
-          checkFirstFormPayment
+          firstFormData.paymentPlan != 'no'
         ) {
           if (leftPearlSqft < 50 && leftPearlSqft > 0) {
             return {
@@ -484,7 +471,6 @@ const PaymentHelper = {
           firstFormData.floor != null &&
           firstFormData.unit != null &&
           firstFormData.paymentPlan != 'no' &&
-          checkFirstFormPayment &&
           firstFormData.type != '' &&
           firstFormData.cnic != null &&
           firstFormData.cnic != '' &&

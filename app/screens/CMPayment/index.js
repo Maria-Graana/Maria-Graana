@@ -27,8 +27,6 @@ import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import HistoryModal from '../../components/HistoryModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import ProductDetailsModal from '../../components/ProductDetailsModal'
 import helper from '../../helper'
@@ -86,20 +84,20 @@ class CMPayment extends Component {
       meetings: [],
       pickerUnits: [],
       firstFormData: {
-
         parkingAvailable:
           lead.project && lead.project.parkingAvailable ? lead.project.parkingAvailable : 'no',
-        parkingCharges: lead.project && lead.project.parkingCharges ? lead.project.parkingCharges : null,
+        parkingCharges:
+          lead.project && lead.project.parkingCharges ? lead.project.parkingCharges : null,
         customerId: lead.customerId != null ? lead.customerId : '',
         clientName: lead.customer.customerName != null ? lead.customer.customerName : '',
         project:
           route.params?.unitData != null
             ? route.params?.unitData.projectId
             : lead.paidProject != null
-              ? lead.paidProject.id
-              : lead.project
-                ? lead.project.id
-                : '',
+            ? lead.paidProject.id
+            : lead.project
+            ? lead.project.id
+            : '',
         floor: route.params?.unitData != null ? route.params?.unitData.floorId : '',
         unitType: route.params?.unitData != null ? 'fullUnit' : null,
         pearl: route.params?.unitData != null ? null : '',
@@ -107,8 +105,8 @@ class CMPayment extends Component {
           route.params?.unitData != null
             ? route.params?.unitData.id
             : lead.unit != null
-              ? lead.unit.id
-              : '',
+            ? lead.unit.id
+            : '',
         unitPrice: route.params?.unitData != null ? route.params?.unitData.unit_price : 0,
         cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
         paymentPlan: 'no',
@@ -162,7 +160,6 @@ class CMPayment extends Component {
       selectedReason: '',
       leadCloseToggle: false,
       progressValue: 0,
-      checkFirstFormToken: false,
       officeLocations: [],
       assignToAccountsLoading: false,
       active: false,
@@ -176,7 +173,6 @@ class CMPayment extends Component {
       productDetailModal: false,
       oneProductData: {},
       showInstallmentFields: false,
-      paymentPlanDuration: [],
       installmentFrequency: [],
       comment: null,
       showSchedule: false,
@@ -356,7 +352,10 @@ class CMPayment extends Component {
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, lead.unit.finalPrice)
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
+      payment,
+      lead.unit.finalPrice
+    )
     let outStandingTax = PaymentMethods.findRemainingTax(payment, remainingTax)
     this.setState({
       remainingPayment: remainingPayment,
@@ -584,9 +583,6 @@ class CMPayment extends Component {
         paymentCategory: paymentType,
       })
     )
-    this.setState({
-      checkFirstFormToken: secondForm ? false : true,
-    })
   }
 
   showHideDeletePayment = (val) => {
@@ -770,7 +766,6 @@ class CMPayment extends Component {
       addPaymentLoading: false,
       editable: false,
       totalReportPrice: 0,
-      checkFirstFormToken: false,
       assignToAccountsLoading: false,
     })
   }
@@ -819,8 +814,8 @@ class CMPayment extends Component {
       payment && payment.officeLocationId
         ? payment.officeLocationId
         : user && user.officeLocation
-          ? user.officeLocation.id
-          : null
+        ? user.officeLocation.id
+        : null
     if (officeLocations[0] && officeLocations.length === 1) {
       locationId = officeLocations[0].value
     }
@@ -987,18 +982,6 @@ class CMPayment extends Component {
 
   addCMPayment = (body) => {
     const { CMPayment, user, lead, dispatch, addInstrument } = this.props
-    if (CMPayment.paymentType === 'token') {
-      dispatch(
-        setCMPayment({
-          ...CMPayment,
-          visible: false,
-          paymentCategory: CMPayment.paymentType,
-        })
-      )
-      dispatch(setInstrumentInformation({ ...addInstrument, id: body.instrumentId }))
-      this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
-      return
-    }
 
     body.paymentCategory = CMPayment.paymentType
     body.officeLocationId = this.setDefaultOfficeLocation()
@@ -1030,13 +1013,6 @@ class CMPayment extends Component {
 
   updateCMPayment = (body) => {
     const { CMPayment, lead, dispatch } = this.props
-    if (CMPayment.paymentType === 'token' && CMPayment.firstForm) {
-      dispatch(
-        setCMPayment({ ...CMPayment, visible: false, paymentCategory: CMPayment.paymentType })
-      )
-      this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
-      return
-    }
     body.paymentCategory = CMPayment.paymentType
     axios
       .patch(`/api/leads/project/payment?id=${body.id}`, body)
@@ -1044,8 +1020,8 @@ class CMPayment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = CMPayment.paymentAttachments
           ? _.filter(CMPayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1165,17 +1141,6 @@ class CMPayment extends Component {
       })
   }
 
-  editTokenPayment = () => {
-    const { CMPayment, dispatch, addInstrument } = this.props
-    dispatch(setCMPayment({ ...CMPayment, visible: true }))
-    dispatch(
-      setInstrumentInformation({
-        ...addInstrument,
-        editable: addInstrument && addInstrument.id ? false : true,
-      })
-    )
-  }
-
   assignToAccounts = () => {
     Alert.alert(
       'Assign to Accounts',
@@ -1241,46 +1206,6 @@ class CMPayment extends Component {
     )
   }
 
-  callAgain = () => {
-    const { lead, contacts } = this.props
-    if (lead && lead.customer) {
-      let selectedClientContacts = helper.createContactPayload(lead.customer)
-      this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
-        if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-          //  multiple numbers to select
-          this.showMultiPhoneModal(true)
-        } else {
-          helper.callNumber(selectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
-      })
-    }
-  }
-
-  setNewActionModal = (value) => {
-    this.setState({ newActionModal: value })
-  }
-
-  showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
-  }
-
-  handlePhoneSelectDone = (phone) => {
-    const { contacts } = this.props
-    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          helper.callNumber(copySelectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
-      )
-    }
-  }
-
   handleFirstForm = (value, name) => {
     const {
       firstFormData,
@@ -1293,8 +1218,6 @@ class CMPayment extends Component {
       oneProductData,
       projectProducts,
       showInstallmentFields,
-      paymentPlanDuration,
-      installmentFrequency,
       pickerProjects,
     } = this.state
     const { lead } = this.props
@@ -1307,30 +1230,27 @@ class CMPayment extends Component {
     let copyPearlUnitPrice = pearlUnitPrice
     let oneProduct = oneProductData
     let newShowInstallmentFields = showInstallmentFields
-    let newPaymentPlanDuration = paymentPlanDuration
-    let newInstallmentFrequency = installmentFrequency
 
     if (name === 'parkingAvailable') {
-
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
       newData['parkingAvailable'] = value
 
-      newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
+      newData['parkingCharges'] =
+        parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
+          ? parkingObj?.parkingCharges
+          : 0
     }
 
-    const { allProjects } = this.state
-    const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
-
-    newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
-
     if (name === 'project') {
-
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, value)
-      
-      newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
-       newData['parkingAvailable'] = (parkingObj.parkingAvailable).toLowerCase()
+
+      newData['parkingCharges'] =
+        parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
+          ? parkingObj?.parkingCharges
+          : 0
+      newData['parkingAvailable'] = parkingObj.parkingAvailable.toLowerCase()
       this.changeProject(value)
       // }
       this.getFloors(value)
@@ -1394,6 +1314,7 @@ class CMPayment extends Component {
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
     newData[name] = value
     if (name === 'productId') {
+      // set default values for product here
       oneProduct = _.find(projectProducts, (item) => {
         return item.projectProductId === value
       })
@@ -1406,20 +1327,16 @@ class CMPayment extends Component {
         oneProduct
       )
       newShowInstallmentFields = PaymentHelper.setProductPaymentPlan(oneProduct)
-      newPaymentPlanDuration = PaymentHelper.setPaymentPlanDuration(oneProduct)
-      newInstallmentFrequency = PaymentHelper.setInstallmentFrequency(oneProduct)
-      if (newPaymentPlanDuration && newPaymentPlanDuration.length === 1)
-        newData.paymentPlanDuration = newPaymentPlanDuration[0].value
-      if (newInstallmentFrequency && newInstallmentFrequency.length === 1)
-        newData.installmentFrequency = newInstallmentFrequency[0].value
       newData.paymentPlan = oneProduct.projectProduct.paymentPlan
     }
-    if (oneUnit) {
 
+    if (oneUnit) {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       newData['finalPrice'] = Math.ceil(
         PaymentMethods.findFinalPrice(
-          newData['parkingAvailable'] === 'yes' && newData['parkingCharges'] != "" && newData['parkingCharges'] != null
+          newData['parkingAvailable'] === 'yes' &&
+            newData['parkingCharges'] != '' &&
+            newData['parkingCharges'] != null
             ? newData['parkingCharges']
             : 0,
           oneUnit,
@@ -1436,26 +1353,23 @@ class CMPayment extends Component {
       pearlUnit: copyPearlUnit,
       oneProductData: oneProduct,
       showInstallmentFields: newShowInstallmentFields,
-      installmentFrequency: newInstallmentFrequency,
-      paymentPlanDuration: newPaymentPlanDuration,
       toggleUnitsTable: false,
     })
   }
 
-
-
   getParkingDetails = (allProjects, value) => {
-    let parkingObj;
-    allProjects.map(project => {
+    let parkingObj
+    allProjects.map((project) => {
       if (project.id == value) {
-        parkingObj = { parkingAvailable: project.parkingAvailable, parkingCharges: project.parkingCharges };
+        parkingObj = {
+          parkingAvailable: project.parkingAvailable,
+          parkingCharges: project.parkingCharges,
+        }
         return parkingObj
       }
-    }
-    );
+    })
     return parkingObj
   }
-
 
   pearlCalculations = (oneFloor, value) => {
     let totalSqft = oneFloor.pearlArea
@@ -1608,28 +1522,29 @@ class CMPayment extends Component {
     const { firstFormData, oneProductData, isPrimary, selectedClient } = this.state
     let body = noProduct
       ? PaymentHelper.generateApiPayload(
-        firstFormData,
-        lead,
-        unitId,
-        CMPayment,
-        addInstrument,
-        isPrimary,
-        selectedClient
-      )
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          addInstrument,
+          isPrimary,
+          selectedClient
+        )
       : PaymentHelper.generateProductApiPayload(
-        firstFormData,
-        lead,
-        unitId,
-        CMPayment,
-        oneProductData,
-        addInstrument,
-        isPrimary,
-        selectedClient
-      )
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          oneProductData,
+          addInstrument,
+          isPrimary,
+          selectedClient
+        )
+    console.log(body)
     let leadId = []
     body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
-  
+
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })
       .then((res) => {
@@ -1691,93 +1606,9 @@ class CMPayment extends Component {
     this.setState({ selectedReason: value })
   }
 
-  onHandleCloseLead = () => {
-    const { lead, navigation } = this.props
-    let body = {
-      reasons: 'payment_done',
-    }
-    var leadId = []
-    leadId.push(lead.id)
-    axios
-      .patch(`/api/leads/project`, body, { params: { id: leadId } })
-      .then((res) => {
-        this.setState({ isVisible: false }, () => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-      })
-      .catch((error) => {
-        console.log('/api/leads/project - Error', error)
-        helper.errorToast('Closed lead API failed!!')
-      })
-  }
-
   handleOfficeLocation = (value) => {
     const { CMPayment, dispatch } = this.props
     dispatch(setCMPayment({ ...CMPayment, officeLocationId: value }))
-  }
-
-  // ************ Function for Reject modal ************
-
-  goToRejectForm = () => {
-    const { statusfeedbackModalVisible } = this.state
-    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: !statusfeedbackModalVisible })
-  }
-
-  rejectLead = (body) => {
-    const { navigation, lead } = this.props
-    var leadId = []
-    leadId.push(lead.id)
-    axios
-      .patch(`/api/leads/project`, body, { params: { id: leadId } })
-      .then((res) => {
-        helper.successToast(`Lead Closed`)
-        navigation.navigate('Leads')
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  showStatusFeedbackModal = (value, modalMode) => {
-    this.setState({ statusfeedbackModalVisible: value, modalMode })
-  }
-
-  //  ************ Function for open modal ************
-  openModalInMeetingMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  //  ************ Function for open Follow up modal ************
-  // openModalInFollowupMode = (value) => {
-  //   this.setState({
-  //     active: !this.state.active,
-  //     isFollowUpMode: true,
-  //     comment: value,
-  //   })
-  // }
-  openModalInFollowupMode = (value) => {
-    const { navigation, lead } = this.props
-
-    navigation.navigate('ScheduledTasks', {
-      lead,
-      cmLeadId: lead ? lead.id : null,
-    })
-    // this.setState({
-    //   active: !this.state.active,
-    //   isFollowUpMode: true,
-    //   comment: value,
-    // })
   }
 
   //  ************ SCHEDULE OF PAYMENT WORKFLOW **************
@@ -2037,7 +1868,6 @@ class CMPayment extends Component {
       leadCloseToggle,
       leftPearlSqft,
       progressValue,
-      checkFirstFormToken,
       assignToAccountsLoading,
       officeLocations,
       active,
@@ -2050,7 +1880,6 @@ class CMPayment extends Component {
       productDetailModal,
       oneProductData,
       showInstallmentFields,
-      paymentPlanDuration,
       installmentFrequency,
       comment,
       showSchedule,
@@ -2186,7 +2015,6 @@ class CMPayment extends Component {
             addPaymentLoading={addPaymentLoading}
             lead={lead}
             paymentNotZero={buyerNotZero}
-            checkFirstFormToken={checkFirstFormToken}
             assignToAccounts={() => this.assignToAccounts()}
             officeLocations={officeLocations}
             handleOfficeLocationChange={this.handleOfficeLocation}
@@ -2230,20 +2058,23 @@ class CMPayment extends Component {
                     addPaymentModalToggle={this.addPaymentModalToggle}
                     checkFirstFormPayment={checkFirstFormPayment}
                     currencyConvert={PaymentHelper.currencyConvert}
-                    editTokenPayment={this.editTokenPayment}
                     cnicEditable={cnicEditable}
                     leftPearlSqft={leftPearlSqft}
                     projectProducts={projectProducts}
                     productsPickerData={productsPickerData}
                     openProductDetailsModal={this.openProductDetailsModal}
                     showInstallmentFields={showInstallmentFields}
-                    paymentPlanDuration={paymentPlanDuration}
                     installmentFrequency={installmentFrequency}
                     lead={lead}
                     openUnitsTable={this.openUnitsTable}
                     checkValidation={checkValidation}
                     handleClientClick={this.handleClientClick}
                     updatePermission={updatePermission}
+                    oneProduct={
+                      oneProductData && oneProductData.projectProduct
+                        ? oneProductData.projectProduct
+                        : null
+                    }
                   />
                 )}
                 {secondForm && (
@@ -2267,46 +2098,12 @@ class CMPayment extends Component {
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <SubmitFeedbackOptionsModal
-            showModal={newActionModal}
-            setShowModal={(value) => this.setNewActionModal(value)}
-            performMeeting={() => this.openModalInMeetingMode()}
-            performFollowUp={this.openModalInFollowupMode}
-            performReject={this.goToRejectForm}
-            call={this.callAgain}
-            modalMode={modalMode}
-            leadType={'CM'}
-          />
-
-          <StatusFeedbackModal
-            visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
-            commentsList={
-              modalMode === 'call'
-                ? StaticData.commentsFeedbackCall
-                : modalMode === 'meeting'
-                  ? StaticData.commentsFeedbackMeeting
-                  : StaticData.leadClosedCommentsFeedback
-            }
-            modalMode={modalMode}
-            rejectLead={(body) => this.rejectLead(body)}
-            setNewActionModal={(value) => this.setNewActionModal(value)}
-            leadType={'CM'}
-          />
           <HistoryModal
             getCallHistory={this.getCallHistory}
             navigation={navigation}
             data={meetings}
             closePopup={this.goToHistory}
             openPopup={callModal}
-          />
-
-          <MeetingFollowupModal
-            closeModal={() => this.closeMeetingFollowupModal()}
-            active={active}
-            isFollowUpMode={isFollowUpMode}
-            lead={lead}
-            leadType={'CM'}
           />
 
           <View style={AppStyles.mainCMBottomNav}>

@@ -232,15 +232,15 @@ function ProjectLeadsNavigator(props) {
       {getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions) ? (
         <Tab.Screen
           name="Invest"
-          options={{
-            tabBarIcon: (props) => (
-              <TabBarBadge
-                color={props.focused ? 'red' : '#ddd'}
-                // count={count.projectLeads}
-                screen={screen}
-              />
-            ),
-          }}
+          // options={{
+          //   tabBarIcon: (props) => (
+          //     <TabBarBadge
+          //       color={props.focused ? 'red' : '#ddd'}
+          //       count={count.projectLeads}
+          //       screen={screen}
+          //     />
+          //   ),
+          // }}
           initialParams={{
             screen: props.route.params?.screen,
             hasBooking: props.route.params?.hasBooking,

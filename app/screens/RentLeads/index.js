@@ -611,8 +611,7 @@ class RentLeads extends React.Component {
       createProjectLead,
       pageType,
     } = this.state
-    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } =
-      this.props
+    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } = this.props
     const {
       screen,
       hasBooking = false,

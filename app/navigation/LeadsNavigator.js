@@ -9,7 +9,7 @@ import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import { getPermissionValue } from '../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../hoc/PermissionsTypes'
 import BuyLeads from '../screens/BuyLeads/index'
-import WantedLeads from "./../screens/WantedLeads/index";
+import WantedLeads from './../screens/WantedLeads/index'
 import InvestLeads from '../screens/InvestLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 
@@ -403,15 +403,15 @@ function LeadsNavigator(props) {
         ) ? (
           <Tab.Screen
             name="Rent"
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  // count={count.rentLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.rentLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
@@ -430,15 +430,15 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
             }}
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  // count={count.buyLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.buyLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             component={BuyLeads}
           />
         ) : null}
@@ -451,15 +451,15 @@ function LeadsNavigator(props) {
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
             }}
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  // count={count.wantedLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.wantedLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             component={WantedLeads}
           />
         ) : null}

@@ -51,6 +51,7 @@ import TeamTargets from '../screens/TeamTargets'
 import CMLeadTabs from './CMTabNavigator'
 import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
+import ProjectLead from './ProjectLeadsNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
@@ -241,6 +242,20 @@ function MainStack() {
           headerTitleAlign: 'center',
         })}
       />
+
+      <Stack.Screen
+        name="ProjectLeads"
+        component={ProjectLead}
+        options={({ navigation, route }) => ({
+          title: 'LEADS',
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          ),
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
       <Stack.Screen
         name="AddDiary"
         component={AddDiary}

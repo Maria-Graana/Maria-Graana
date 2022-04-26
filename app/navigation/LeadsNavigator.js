@@ -1,8 +1,8 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React ,{useEffect} from 'react'
-import { StyleSheet, Text, View  } from 'react-native'
+import React, { useEffect } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
 import { getPermissionValue } from '../hoc/Permissions'
@@ -12,7 +12,6 @@ import InvestLeads from '../screens/InvestLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 
 // const { width } = Dimensions.get('window')
-
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -30,19 +29,14 @@ function LeadsNavigator(props) {
 
   //unmount
 
-
-
   useEffect(() => {
-
     if (screenName == 'AddClient') {
       navigation.setOptions({
-        headerLeft: (props) => <HeaderLeftLogo navigation={navigation}
-          leftClientScreen={'Client'}
-
-          leftBool={true} />,
+        headerLeft: (props) => (
+          <HeaderLeftLogo navigation={navigation} leftClientScreen={'Client'} leftBool={true} />
+        ),
       })
     }
-
   }, [navigation])
 
   if (screen == 'MyDeals') {
@@ -411,7 +405,7 @@ function LeadsNavigator(props) {
               tabBarIcon: (props) => (
                 <TabBarBadge
                   color={props.focused ? 'red' : '#ddd'}
-                  count={count.rentLeads}
+                  // count={count.rentLeads}
                   screen={screen}
                 />
               ),
@@ -438,7 +432,7 @@ function LeadsNavigator(props) {
               tabBarIcon: (props) => (
                 <TabBarBadge
                   color={props.focused ? 'red' : '#ddd'}
-                  count={count.buyLeads}
+                  // count={count.buyLeads}
                   screen={screen}
                 />
               ),
@@ -448,7 +442,7 @@ function LeadsNavigator(props) {
         ) : null}
         {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
         {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) &&
-          route.params.screen != 'MyDeals' ? (
+        route.params.screen != 'MyDeals' ? (
           <Tab.Screen
             name="Wanted"
             initialParams={{
@@ -459,7 +453,7 @@ function LeadsNavigator(props) {
               tabBarIcon: (props) => (
                 <TabBarBadge
                   color={props.focused ? 'red' : '#ddd'}
-                  count={count.wantedLeads}
+                  // count={count.wantedLeads}
                   screen={screen}
                 />
               ),
@@ -467,7 +461,7 @@ function LeadsNavigator(props) {
             component={WantedLeads}
           />
         ) : null}
-        {getPermissionValue(
+        {/* {getPermissionValue(
           PermissionFeatures.PROJECT_LEADS,
           PermissionActions.READ,
           permissions
@@ -489,7 +483,7 @@ function LeadsNavigator(props) {
             }}
             component={InvestLeads}
           />
-        ) : null}
+        ) : null} */}
       </Tab.Navigator>
     )
   }

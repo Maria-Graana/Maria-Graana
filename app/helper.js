@@ -20,8 +20,10 @@ import Ability from './hoc/Ability'
 import TimerNotification from './LocalNotifications'
 import { formatPrice } from './PriceFormate'
 import StaticData from './StaticData'
-import LeadIcon from '../assets/img/leads.png'
-import DealIcon from '../assets/img/deals.png'
+import LeadIcon from '../assets/icons/BuyRentLeads.png'
+import DealIcon from '../assets/icons/RentDeals.png'
+import ProjectDealIcon from '../assets/icons/ProjectDeals.png'
+import ProjectLeadIcon from '../assets/icons/ProjectLeads.png'
 import ProjectInventoryIcon from '../assets/img/project-inventory.png'
 import { getPermissionValue } from './hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from './hoc/PermissionsTypes'
@@ -241,6 +243,10 @@ const helper = {
           return DashboardImg
         case 'MyDeals':
           return DealIcon
+        case 'ProjectDeals':
+          return ProjectDealIcon
+        case 'ProjectLeads':
+          return ProjectLeadIcon
         case 'ProjectInventory':
           return ProjectInventoryIcon
         case 'Contacts':

@@ -51,6 +51,7 @@ class RentLeads extends React.Component {
     const { permissions } = this.props
     const { hasBooking = false } = this.props.route.params
     this.state = {
+      phoneModelDataLoader: false,
       leadsData: [],
       statusFilter: '',
       open: false,
@@ -589,6 +590,7 @@ class RentLeads extends React.Component {
     })
   }
 
+
   render() {
     const {
       leadsData,
@@ -610,6 +612,7 @@ class RentLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
+      phoneModelDataLoader
     } = this.state
     const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } =
       this.props
@@ -680,8 +683,8 @@ class RentLeads extends React.Component {
                     hasBooking
                       ? StaticData.buyRentFilterDeals
                       : hideCloseLostFilter
-                      ? StaticData.buyRentFilterAddTask
-                      : StaticData.buyRentFilter
+                        ? StaticData.buyRentFilterAddTask
+                        : StaticData.buyRentFilter
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -704,8 +707,8 @@ class RentLeads extends React.Component {
                         ? StaticData.filterDealsValueTerminal
                         : StaticData.filterDealsValue
                       : getIsTerminalUser
-                      ? StaticData.filterLeadsValueTerminal
-                      : StaticData.filterLeadsValue
+                        ? StaticData.filterLeadsValueTerminal
+                        : StaticData.filterLeadsValue
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -747,7 +750,7 @@ class RentLeads extends React.Component {
               <View>
                 {/* {console.log(user)} */}
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                (user.organization && !user.organization.isPP) ? (
+                  (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
@@ -757,11 +760,15 @@ class RentLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                            if (res !== null) {
-                              this.showMultiPhoneModal(true)
-                            }
-                          })
+                        :
+                     this.setState({ phoneModelDataLoader: true })
+                      this.showMultiPhoneModal(true)
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.setState({ phoneModelDataLoader: false })
+
+                        }
+                      })
                     }}
                     handleLongPress={this.handleLongPress}
                     navFrom={navFrom}
@@ -826,6 +833,7 @@ class RentLeads extends React.Component {
         ) : null}
 
         <MultiplePhoneOptionModal
+          modelDataLoading={phoneModelDataLoader}
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}

@@ -294,6 +294,7 @@ class LeadViewing extends React.Component {
     copyObj.customerId = customerId
     copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
     copyObj.propertyId = property && property.id ? property.id : null
+    copyObj.customer=lead.customer
     navigation.navigate('TimeSlotManagement', {
       data: copyObj,
       taskType: 'viewing',
@@ -332,6 +333,7 @@ class LeadViewing extends React.Component {
     copyObj.customerId = customerId
     copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
     copyObj.propertyId = property && property.id ? property.id : null
+    copyObj.customer=lead.customer
     navigation.navigate('TimeSlotManagement', {
       data: copyObj,
       taskType: 'viewing',

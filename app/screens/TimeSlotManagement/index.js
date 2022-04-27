@@ -98,7 +98,7 @@ function TimeSlotManagement(props) {
 
   useEffect(() => {
     const { dispatch, route } = props
-    //console.log(route.params)
+
 
     dispatch(setSlotDiaryData(selectedDate))
 
@@ -323,11 +323,49 @@ function TimeSlotManagement(props) {
 
   const createViewing = (body) => {
     const { navigation } = props
+
+    let copyData = {
+      ...body
+    };
+
+    delete copyData.customer
+
+
     axios
-      .post(`/api/leads/viewing`, body)
+      .post(`/api/leads/viewing`, copyData)
       .then((res) => {
         if (res) {
+
           helper.successToast('TASK ADDED SUCCESSFULLY!')
+
+          let start = new Date(body.start)
+          let end = new Date(body.end)
+
+          let notificationPayload;
+          if (body.taskCategory == 'leadTask') {
+
+            notificationPayload = {
+              clientName: body?.customer?.customerName,
+              id: body.userId,
+              title: diaryHelper.showTaskType(
+                body?.taskType
+              ),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+
+          else {
+            notificationPayload = {
+              id: body.userId,
+              title: diaryHelper.showTaskType(
+                body.taskType
+              ),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+
+          TimerNotification(notificationPayload, start)
+
           navigation.goBack()
         } else {
           helper.errorToast('SOMETHING WENT WRONG!')
@@ -410,6 +448,7 @@ function TimeSlotManagement(props) {
         }
       })
     } else if (data && isBookViewing) {
+
       let copyData = Object.assign({}, data)
       copyData.date = startTime
       copyData.time = startTime

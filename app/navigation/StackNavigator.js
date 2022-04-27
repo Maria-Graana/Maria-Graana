@@ -8,6 +8,7 @@ import { Feather } from '@expo/vector-icons'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import HeaderRight from '../components/HeaderRight/index'
+import DropdownHeader from '../components/HeaderRight/DropdownHeader'
 import HeaderTitle from '../components/HeaderTitle/index'
 import WhiteLogo from '../components/WhiteLogo/index'
 import WhiteMenu from '../components/WhiteMenu/index'
@@ -234,12 +235,17 @@ function MainStack() {
         name="Leads"
         component={Lead}
         options={({ navigation, route }) => ({
-          title: 'LEADS',
+          //  headerShown:false,
+          // title: 'LEADS',
+          title: '',
           headerLeft: (props) => (
             <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
           ),
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
-          headerTitleAlign: 'center',
+          headerRight: (props) => <DropdownHeader
+            changePageType={()=>{}}
+            hasBooking={true} pageType={''} navigation={navigation} />,
+          //headerTitleAlign: 'center',
+          headerTitleAlign: 'left',
         })}
       />
 
@@ -697,3 +703,4 @@ function MainStack() {
 }
 
 export default MainStack
+

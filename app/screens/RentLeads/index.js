@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
+
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
@@ -44,6 +45,8 @@ var BUTTONS = [
   'Cancel',
 ]
 var CANCEL_INDEX = 3
+
+
 
 class RentLeads extends React.Component {
   constructor(props) {
@@ -89,14 +92,22 @@ class RentLeads extends React.Component {
     }
   }
 
+
+
+
   componentDidMount() {
-    const { dispatch } = this.props
+    const { dispatch, navigation } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()
       this.setFabActions()
     })
+
+
+   
+
+
   }
 
   componentWillUnmount() {
@@ -108,8 +119,15 @@ class RentLeads extends React.Component {
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
+    // if (this.state.pageType !== prevState.pageType) {
+    //   alert("hii")
+    // }
+
+
   }
 
+
+ 
   getServerTime = () => {
     axios
       .get(`/api/user/serverTime?fullTime=true`)
@@ -623,6 +641,8 @@ class RentLeads extends React.Component {
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
+
+    
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {user.organization && user.organization.isPP && (
           <AndroidNotifications navigation={navigation} />
@@ -679,8 +699,8 @@ class RentLeads extends React.Component {
                     hasBooking
                       ? StaticData.buyRentFilterDeals
                       : hideCloseLostFilter
-                      ? StaticData.buyRentFilterAddTask
-                      : StaticData.buyRentFilter
+                        ? StaticData.buyRentFilterAddTask
+                        : StaticData.buyRentFilter
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -703,8 +723,8 @@ class RentLeads extends React.Component {
                         ? StaticData.filterDealsValueTerminal
                         : StaticData.filterDealsValue
                       : getIsTerminalUser
-                      ? StaticData.filterLeadsValueTerminal
-                      : StaticData.filterLeadsValue
+                        ? StaticData.filterLeadsValueTerminal
+                        : StaticData.filterLeadsValue
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -746,7 +766,7 @@ class RentLeads extends React.Component {
               <View>
                 {/* {console.log(user)} */}
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                (user.organization && !user.organization.isPP) ? (
+                  (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
@@ -757,10 +777,10 @@ class RentLeads extends React.Component {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
                         : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                            if (res !== null) {
-                              this.showMultiPhoneModal(true)
-                            }
-                          })
+                          if (res !== null) {
+                            this.showMultiPhoneModal(true)
+                          }
+                        })
                     }}
                     handleLongPress={this.handleLongPress}
                     navFrom={navFrom}
@@ -838,6 +858,7 @@ class RentLeads extends React.Component {
           sort={sort}
         />
       </View>
+     
     )
   }
 }

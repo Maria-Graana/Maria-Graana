@@ -6,6 +6,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
+import DropdownHeader from '../components/HeaderRight/DropdownHeader'
 import { getPermissionValue } from '../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../hoc/PermissionsTypes'
 import BuyLeads from '../screens/BuyLeads/index'
@@ -13,7 +14,6 @@ import WantedLeads from './../screens/WantedLeads/index'
 import InvestLeads from '../screens/InvestLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 
-// const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -31,7 +31,33 @@ function LeadsNavigator(props) {
 
   //unmount
 
+
   useEffect(() => {
+
+    console.log("screen", screen)
+    if (screen == 'Leads') {
+
+      navigation.setOptions({
+        headerRight: (props) => (
+          <DropdownHeader     changePageType={()=>{}}  hasBooking={false} pageType={''} navigation={navigation} />
+
+        ),
+      })
+
+    }
+
+
+    if (screen == 'Deals') {
+
+      navigation.setOptions({
+        headerRight: (props) => (
+          <DropdownHeader hasBooking={true} pageType={''} navigation={navigation} />
+
+        ),
+      })
+
+    }
+
     if (screenName == 'AddClient') {
       navigation.setOptions({
         headerLeft: (props) => (
@@ -42,7 +68,7 @@ function LeadsNavigator(props) {
   }, [navigation])
 
   if (screen == 'MyDeals') {
-    navigation.setOptions({ title: 'DEALS' })
+    navigation.setOptions({ title: '' })
   } else if (hideCloseLostFilter) {
     navigation.setOptions({ title: 'SELECT LEAD' })
   }
@@ -275,11 +301,15 @@ function LeadsNavigator(props) {
       </Tab.Navigator>
     )
   } else {
+
+
+
     return user.subRole === 'business_centre_manager' ||
       user.subRole === 'business_centre_agent' ||
       user.subRole === 'call_centre_manager' ||
       user.subRole === 'call_centre_warrior' ||
       user.subRole === 'call_centre_agent' ? (
+
       <Tab.Navigator
         tabBarOptions={{
           scrollEnabled: false,
@@ -373,97 +403,100 @@ function LeadsNavigator(props) {
         ) : null}
         {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
       </Tab.Navigator>
+
     ) : (
-      <Tab.Navigator
-        tabBarOptions={{
-          scrollEnabled: false,
-          labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
-          activeTintColor: AppStyles.colors.primaryColor,
-          inactiveTintColor: AppStyles.colors.subTextColor,
-          showIcon: true,
-          iconStyle: { margin: -5 },
-          // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
-          tabStyle: {
-            paddingLeft: 0,
-            paddingRight: 0,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-          indicatorStyle: {
-            borderBottomColor: '#ffffff',
-            borderBottomWidth: 2,
-          },
-        }}
-      >
-        {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
-          permissions
-        ) ? (
-          <Tab.Screen
-            name="Rent"
-            // options={{
-            //   tabBarIcon: (props) => (
-            //     <TabBarBadge
-            //       color={props.focused ? 'red' : '#ddd'}
-            //       count={count.rentLeads}
-            //       screen={screen}
-            //     />
-            //   ),
-            // }}
-            initialParams={{
-              screen: props.route.params?.screen,
-              hasBooking: props.route.params?.hasBooking,
-            }}
-            component={RentLeads}
-          />
-        ) : null}
-        {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
-          permissions
-        ) ? (
-          <Tab.Screen
-            name="Buy"
-            initialParams={{
-              screen: props.route.params?.screen,
-              hasBooking: props.route.params?.hasBooking,
-            }}
-            // options={{
-            //   tabBarIcon: (props) => (
-            //     <TabBarBadge
-            //       color={props.focused ? 'red' : '#ddd'}
-            //       count={count.buyLeads}
-            //       screen={screen}
-            //     />
-            //   ),
-            // }}
-            component={BuyLeads}
-          />
-        ) : null}
-        {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
-        {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) &&
-        route.params.screen != 'MyDeals' ? (
-          <Tab.Screen
-            name="Wanted"
-            initialParams={{
-              screen: props.route.params?.screen,
-              hasBooking: props.route.params?.hasBooking,
-            }}
-            // options={{
-            //   tabBarIcon: (props) => (
-            //     <TabBarBadge
-            //       color={props.focused ? 'red' : '#ddd'}
-            //       count={count.wantedLeads}
-            //       screen={screen}
-            //     />
-            //   ),
-            // }}
-            component={WantedLeads}
-          />
-        ) : null}
-        {/* {getPermissionValue(
+      <>
+
+        <Tab.Navigator
+          tabBarOptions={{
+            scrollEnabled: false,
+            labelStyle: { fontSize: 12, fontFamily: AppStyles.fonts.semiBoldFont },
+            activeTintColor: AppStyles.colors.primaryColor,
+            inactiveTintColor: AppStyles.colors.subTextColor,
+            showIcon: true,
+            iconStyle: { margin: -5 },
+            // tabStyle: { width: width / 3, paddingLeft: 0, paddingRight: 0 },
+            tabStyle: {
+              paddingLeft: 0,
+              paddingRight: 0,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+            indicatorStyle: {
+              borderBottomColor: '#ffffff',
+              borderBottomWidth: 2,
+            },
+          }}
+        >
+          {getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
+            <Tab.Screen
+              name="Rent"
+              // options={{
+              //   tabBarIcon: (props) => (
+              //     <TabBarBadge
+              //       color={props.focused ? 'red' : '#ddd'}
+              //       count={count.rentLeads}
+              //       screen={screen}
+              //     />
+              //   ),
+              // }}
+              initialParams={{
+                screen: props.route.params?.screen,
+                hasBooking: props.route.params?.hasBooking,
+              }}
+              component={RentLeads}
+            />
+          ) : null}
+          {getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
+            <Tab.Screen
+              name="Buy"
+              initialParams={{
+                screen: props.route.params?.screen,
+                hasBooking: props.route.params?.hasBooking,
+              }}
+              // options={{
+              //   tabBarIcon: (props) => (
+              //     <TabBarBadge
+              //       color={props.focused ? 'red' : '#ddd'}
+              //       count={count.buyLeads}
+              //       screen={screen}
+              //     />
+              //   ),
+              // }}
+              component={BuyLeads}
+            />
+          ) : null}
+          {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
+          {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) &&
+            route.params.screen != 'MyDeals' ? (
+            <Tab.Screen
+              name="Wanted"
+              initialParams={{
+                screen: props.route.params?.screen,
+                hasBooking: props.route.params?.hasBooking,
+              }}
+              // options={{
+              //   tabBarIcon: (props) => (
+              //     <TabBarBadge
+              //       color={props.focused ? 'red' : '#ddd'}
+              //       count={count.wantedLeads}
+              //       screen={screen}
+              //     />
+              //   ),
+              // }}
+              component={WantedLeads}
+            />
+          ) : null}
+          {/* {getPermissionValue(
           PermissionFeatures.PROJECT_LEADS,
           PermissionActions.READ,
           permissions
@@ -486,7 +519,8 @@ function LeadsNavigator(props) {
             component={InvestLeads}
           />
         ) : null} */}
-      </Tab.Navigator>
+        </Tab.Navigator>
+      </>
     )
   }
 }
@@ -516,3 +550,4 @@ mapStateToProps = (store) => {
 }
 
 export default connect(mapStateToProps)(LeadsNavigator)
+

@@ -140,7 +140,7 @@ class AddDiary extends Component {
       delete payload.hour
       return payload
     }
-  
+
 
     else {
       // add payload contain these keys below
@@ -197,7 +197,7 @@ class AddDiary extends Component {
   addDiary = (data) => {
 
     const { route, navigation, dispatch } = this.props
-   
+
     const { screenName = 'Diary', cmLeadId, rcmLeadId, property, customerName = null } = route.params
 
     let diary = this.generatePayload(data)
@@ -216,35 +216,60 @@ class AddDiary extends Component {
           for (let i in res.data[1]) {
             notificationData = res.data[1][i]
           }
+       
 
-         
+
           let start = new Date(notificationData.start)
           let end = new Date(notificationData.end)
 
           let notificationPayload;
-          if (notificationData.taskCategory == 'leadTask') {
+
+          if (diary.taskType == 'viewing') {
+            start = new Date(diary.start)
+             end = new Date(diary.end)
+  
 
             notificationPayload = {
               clientName: screenName == 'ScheduledTasks' ? customerName : data?.selectedLead?.customer?.customerName,
-              id: notificationData.id,
+              id: diary.userId,
               title: DiaryHelper.showTaskType(
-                notificationData?.taskType
+                diary?.taskType
               ),
               body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
+
+            TimerNotification(notificationPayload, start)
+            
+
+          }
+          else {
+            if (notificationData.taskCategory == 'leadTask') {
+
+              notificationPayload = {
+                clientName: screenName == 'ScheduledTasks' ? customerName : data?.selectedLead?.customer?.customerName,
+                id: notificationData.id,
+                title: DiaryHelper.showTaskType(
+                  notificationData?.taskType
+                ),
+                body: moment( new Date(notificationData.start)).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+              }
+
+              TimerNotification(notificationPayload, start)
+            }
+
+            else {
+              notificationPayload = {
+                id: notificationData.id,
+                title: DiaryHelper.showTaskType(
+                  notificationData.taskType
+                ),
+                body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+              }
+            }
+            TimerNotification(notificationPayload, start)
           }
 
-          else {
-            notificationPayload = {
-              id: notificationData.id,
-              title: DiaryHelper.showTaskType(
-                notificationData.taskType
-              ),
-              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
-            }
-          }
          
-          TimerNotification(notificationPayload, start)
           if (screenName === 'Diary') {
             dispatch(
               getDiaryTasks({

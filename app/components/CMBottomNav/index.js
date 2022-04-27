@@ -654,10 +654,10 @@ class CMBottomNav extends React.Component {
               {(screenName === 'InvestDetailScreen' || screenName === 'BuyRentDetailScreen') && (
                 <Menu.Item
                   onPress={() => {
-                    // if (closedLeadEdit && referPermission) {
-                    //   this.navigateToShareScreen(lead)
-                    //   this.openMenu(false)
-                    // } else helper.leadClosedToast()
+                    this.props.navigation.navigate('DiaryFeedback', {
+                      actionType: 'Connect',
+                    })
+                    this.openMenu(false)
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}
                   title="Close as Lost"

@@ -94,7 +94,7 @@ const MultiplePhoneOptionModal = ({
 
         { !contactsInformation?.payload  ? <ActivityIndicator style={{
            alignSelf: 'center', marginBottom: 20 
-        }} color="black" size="large" /> :
+        }} color={AppStyles.colors.primaryColor} size="large" /> :
           <FlatList
             data={contactsInformation ? contactsInformation.payload : []}
             keyExtractor={(item, index) => String(index)}

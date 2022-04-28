@@ -371,7 +371,8 @@ class CMBottomNav extends React.Component {
       goToAddEditDiaryScreen,
       selectedDiary,
       dispatch,
-      navigateToAddDiary
+      navigateToAddDiary,
+      requiredProperties,
     } = this.props
     const {
       visible,
@@ -644,26 +645,31 @@ class CMBottomNav extends React.Component {
                   title="Add Property"
                 />
               ) : null}
-              <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit && assignPermission) {
-                    this.checkAssignedLead(lead)
-                    this.openMenu(false)
-                  } else helper.leadClosedToast()
-                }}
-                // icon={require('../../../assets/img/callIcon.png')}
-                title="Re-Assign"
-              />
-              <Menu.Item
-                onPress={() => {
-                  if (closedLeadEdit && referPermission) {
-                    this.navigateToShareScreen(lead)
-                    this.openMenu(false)
-                  } else helper.leadClosedToast()
-                }}
-                // icon={require('../../../assets/img/callIcon.png')}
-                title="Refer Lead"
-              />
+              {!requiredProperties && (
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit && assignPermission) {
+                      this.checkAssignedLead(lead)
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Re-Assign"
+                />
+              )}
+              {!requiredProperties && (
+                <Menu.Item
+                  onPress={() => {
+                    if (closedLeadEdit && referPermission) {
+                      this.navigateToShareScreen(lead)
+                      this.openMenu(false)
+                    } else helper.leadClosedToast()
+                  }}
+                  // icon={require('../../../assets/img/callIcon.png')}
+                  title="Refer Lead"
+                />
+              )}
+
               {screenName === 'InvestDetailScreen' && !guideReference && (
                 <Menu.Item
                   onPress={() => {

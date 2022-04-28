@@ -616,7 +616,6 @@ class LeadDetail extends React.Component {
     let assignedByName = this.getAssignedByName(lead)
     let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
     let setCustomerName = this.setCustomerName()
-
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -625,7 +624,9 @@ class LeadDetail extends React.Component {
               <View style={styles.rowContainer}>
                 <View>
                   <Text style={styles.headingText}>Client Name </Text>
-                  {screenName === 'diary' ? (
+                  {route.params.lead.requiredProperties ? (
+                    <Text style={styles.labelText}>---</Text>
+                  ) : screenName === 'diary' ? (
                     <Text style={styles.labelText}>
                       {setCustomerName === 'undefined'
                         ? setCustomerName
@@ -643,6 +644,7 @@ class LeadDetail extends React.Component {
                     onPress={() => this.goToClientsDetail()}
                     style={styles.roundButtonView}
                     activeOpacity={0.6}
+                    disabled={route.params.lead.requiredProperties}
                   >
                     <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
                   </TouchableOpacity>
@@ -920,6 +922,7 @@ class LeadDetail extends React.Component {
                 })
               }}
               goToAddEditDiaryScreen={this.goToAddEditDiaryScreen}
+              requiredProperties={route.params.lead.requiredProperties}
             />
           </View>
         )}
@@ -935,6 +938,7 @@ class LeadDetail extends React.Component {
                 screenName={'BuyRentDetailScreen'}
                 closedLeadEdit={closedLeadEdit}
                 navigateToOpenWorkFlow={this.navigateToOpenWorkFlow}
+                requiredProperties={route.params.lead.requiredProperties}
               />
             </View>
           )}

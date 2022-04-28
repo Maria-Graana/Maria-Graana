@@ -3,6 +3,8 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
+import DropdownHeader from '../components/HeaderRight/DropdownHeader'
+import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
 import { getPermissionValue } from '../hoc/Permissions'
@@ -30,6 +32,37 @@ function ProjectLeadsNavigator(props) {
   //unmount
 
   useEffect(() => {
+
+
+
+    if (screen == 'ProjectLeads') {
+
+      navigation.setOptions({
+        headerRight: (props) => (
+          <DropdownHeader 
+          leadType={'ProjectLeads'}
+          hasBooking={false} pageType={''} navigation={navigation} />
+
+        ),
+      })
+
+    }
+
+
+    if (screen == 'ProjectDeals') {
+
+
+      navigation.setOptions({
+        headerRight: (props) => (
+          <DropdownHeader
+          leadType={'ProjectLeads'}
+          hasBooking={true} pageType={''} navigation={navigation} />
+
+        ),
+      })
+
+    }
+
     if (screenName == 'AddClient') {
       navigation.setOptions({
         headerLeft: (props) => (
@@ -37,12 +70,14 @@ function ProjectLeadsNavigator(props) {
         ),
       })
     }
+
+ 
   }, [navigation])
 
   if (screen == 'ProjectDeals') {
-    navigation.setOptions({ title: 'DEALS' })
+    navigation.setOptions({ title: '' })
   } else if (hideCloseLostFilter) {
-    navigation.setOptions({ title: 'SELECT LEAD' })
+    navigation.setOptions({ title: '' })
   }
 
   return user.subRole === 'business_centre_manager' ||

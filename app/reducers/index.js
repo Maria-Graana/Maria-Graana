@@ -20,6 +20,7 @@ import diary from './diary'
 import armsContacts from './armsContacts'
 import drawer from './drawer'
 import cmLead from './cmLead'
+import leadsDropdown from './leadsDropdown'
 
 export default combineReducers({
   lead,
@@ -41,4 +42,5 @@ export default combineReducers({
   armsContacts,
   drawer,
   cmLead,
+  leadsDropdown
 })

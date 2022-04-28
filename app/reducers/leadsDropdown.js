@@ -2,10 +2,10 @@ import * as types from '../types';
 import { combineReducers } from 'redux';
 
 
-const drawerMenuOptions = (state = false, action) => {
-  
+const leadsDropdown = (state = false, action) => {
+
     switch (action.type) {
-        case types.SET_DRAWER_INTERNAL_MENU:
+        case types.COUNTER_CHANGE:
             return action.payload
             default:
                 return state
@@ -13,5 +13,5 @@ const drawerMenuOptions = (state = false, action) => {
 }
 
 export default combineReducers({
-    drawerMenuOptions
+    leadsDropdown
 })

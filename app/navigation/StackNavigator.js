@@ -242,9 +242,9 @@ function MainStack() {
             <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
           ),
           headerRight: (props) => <DropdownHeader
-            changePageType={()=>{}}
-            hasBooking={true} pageType={''} navigation={navigation} />,
-          //headerTitleAlign: 'center',
+          leadType={false}
+            hasBooking={true} navigation={navigation} />,
+
           headerTitleAlign: 'left',
         })}
       />
@@ -253,12 +253,19 @@ function MainStack() {
         name="ProjectLeads"
         component={ProjectLead}
         options={({ navigation, route }) => ({
-          title: 'LEADS',
+          //  title: 'LEADS',
+          title: '',
           headerLeft: (props) => (
             <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
           ),
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
-          headerTitleAlign: 'center',
+
+          headerRight: (props) => <DropdownHeader
+
+            hasBooking={true}
+            leadType={'ProjectLeads'}
+            navigation={navigation} />,
+
+          headerTitleAlign: 'left',
         })}
       />
 

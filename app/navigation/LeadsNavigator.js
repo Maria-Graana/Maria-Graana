@@ -15,6 +15,8 @@ import InvestLeads from '../screens/InvestLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 
 
+import PickerComponent from './../components/Picker/index'
+
 const Tab = createMaterialTopTabNavigator()
 
 const TabBarBadge = ({ count, color, screen }) => {
@@ -34,12 +36,13 @@ function LeadsNavigator(props) {
 
   useEffect(() => {
 
-    console.log("screen", screen)
     if (screen == 'Leads') {
 
       navigation.setOptions({
         headerRight: (props) => (
-          <DropdownHeader     changePageType={()=>{}}  hasBooking={false} pageType={''} navigation={navigation} />
+          <DropdownHeader
+            leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
+            hasBooking={false} pageType={''} navigation={navigation} />
 
         ),
       })
@@ -47,11 +50,16 @@ function LeadsNavigator(props) {
     }
 
 
-    if (screen == 'Deals') {
+
+
+    if (screen == 'MyDeals') {
+
 
       navigation.setOptions({
         headerRight: (props) => (
-          <DropdownHeader hasBooking={true} pageType={''} navigation={navigation} />
+          <DropdownHeader
+            leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
+            hasBooking={true} pageType={''} navigation={navigation} />
 
         ),
       })
@@ -70,7 +78,7 @@ function LeadsNavigator(props) {
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: '' })
   } else if (hideCloseLostFilter) {
-    navigation.setOptions({ title: 'SELECT LEAD' })
+    navigation.setOptions({ title: '' })
   }
   if (navFrom == 'meeting') {
     return (

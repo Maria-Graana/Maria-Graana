@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
+import { setLeadsDropdown } from '../../actions/leadsDropdown'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -94,6 +95,7 @@ class BuyLeads extends React.Component {
   }
 
   componentDidMount() {
+    const { hasBooking = false } = this.props.route.params
     const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       const { PPBuyNotification } = this.props
@@ -105,6 +107,11 @@ class BuyLeads extends React.Component {
       this.onFocus()
       this.setFabActions()
     })
+
+
+    dispatch(setLeadsDropdown(hasBooking
+      ? '&pageType=myDeals&hasBooking=true'
+      : '&pageType=myLeads&hasBooking=false'))
   }
 
   componentWillUnmount() {
@@ -115,6 +122,10 @@ class BuyLeads extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
+    if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
+
+      this.changePageType(this.props.leadsDropdown)
     }
   }
 
@@ -599,7 +610,7 @@ class BuyLeads extends React.Component {
       createProjectLead,
       pageType,
     } = this.state
-    const { user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
+    const {leadsDropdown, user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
       this.props
     const {
       screen,
@@ -612,7 +623,7 @@ class BuyLeads extends React.Component {
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
-      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
+      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 ,}]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           <ShortlistedProperties
@@ -654,7 +665,7 @@ class BuyLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+            <View style={[styles.filterRow, { paddingHorizontal: 15 , justifyContent:'space-between'}]}>
               {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
               ) : ( */}
@@ -665,8 +676,8 @@ class BuyLeads extends React.Component {
                     hasBooking
                       ? StaticData.buyRentFilterDeals
                       : hideCloseLostFilter
-                      ? StaticData.buyRentFilterAddTask
-                      : StaticData.buyRentFilter
+                        ? StaticData.buyRentFilterAddTask
+                        : StaticData.buyRentFilter
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -676,7 +687,7 @@ class BuyLeads extends React.Component {
               </View>
               {/* )} */}
 
-              <View style={styles.iconRow}>
+              {/* <View style={styles.iconRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
               </View>
               <View style={styles.pageTypeRow}>
@@ -688,8 +699,8 @@ class BuyLeads extends React.Component {
                         ? StaticData.filterDealsValueTerminal
                         : StaticData.filterDealsValue
                       : getIsTerminalUser
-                      ? StaticData.filterLeadsValueTerminal
-                      : StaticData.filterLeadsValue
+                        ? StaticData.filterLeadsValueTerminal
+                        : StaticData.filterLeadsValue
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -698,7 +709,7 @@ class BuyLeads extends React.Component {
                   showPickerArrow={false}
                 />
               </View>
-              <View style={styles.verticleLine} />
+              <View style={styles.verticleLine} /> */}
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}
@@ -730,7 +741,7 @@ class BuyLeads extends React.Component {
             renderItem={({ item }) => (
               <View>
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                (user.organization && !user.organization.isPP) ? (
+                  (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
@@ -743,10 +754,10 @@ class BuyLeads extends React.Component {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
                         : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                            if (res !== null) {
-                              this.showMultiPhoneModal(true)
-                            }
-                          })
+                          if (res !== null) {
+                            this.showMultiPhoneModal(true)
+                          }
+                        })
                     }}
                     navFrom={navFrom}
                     handleLongPress={this.handleLongPress}
@@ -765,10 +776,10 @@ class BuyLeads extends React.Component {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
                         : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                            if (res !== null) {
-                              this.showMultiPhoneModal(true)
-                            }
-                          })
+                          if (res !== null) {
+                            this.showMultiPhoneModal(true)
+                          }
+                        })
                     }}
                     handleLongPress={this.handleLongPress}
                     changeLeadStatus={this.changeLeadStatus}
@@ -837,6 +848,7 @@ mapStateToProps = (store) => {
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     permissions: store.user.permissions,
     getIsTerminalUser: store.user.getIsTerminalUser,
+    leadsDropdown: store.leadsDropdown.leadsDropdown,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

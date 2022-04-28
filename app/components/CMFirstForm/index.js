@@ -328,7 +328,11 @@ class CMFirstForm extends Component {
                   : false
               }
             />
+            {firstFormValidate === true && !firstFormData.downPayment && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
             {firstFormData.downPaymentPercentage !== '' &&
+              firstFormValidate === false &&
               (Number(firstFormData.downPaymentPercentage) > oneProduct.downPaymentMax ||
                 Number(firstFormData.downPaymentPercentage) < oneProduct.downPaymentMin) && (
                 <ErrorMessage errorMessage={'Invalid Input'} />
@@ -351,7 +355,12 @@ class CMFirstForm extends Component {
               }
             />
 
+            {firstFormValidate === true && !firstFormData.noOfInstallment && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+
             {firstFormData.noOfInstallment !== '' &&
+              firstFormValidate === false &&
               (Number(firstFormData.noOfInstallment) > oneProduct.noInstallmentsMax ||
                 Number(firstFormData.noOfInstallment) < oneProduct.noInstallmentsMin) && (
                 <ErrorMessage errorMessage={'Invalid Input'} />
@@ -379,6 +388,7 @@ class CMFirstForm extends Component {
               <ErrorMessage errorMessage={'Required'} />
             )}
             {firstFormData.installmentFrequency !== '' &&
+              firstFormValidate === false &&
               (Number(firstFormData.installmentFrequency) > oneProduct.installmentFrequencyMax ||
                 Number(firstFormData.installmentFrequency) <
                   oneProduct.installmentFrequencyMin) && (
@@ -429,7 +439,12 @@ class CMFirstForm extends Component {
               }
             />
 
+            {firstFormValidate === true && !firstFormData.possessionCharges && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+
             {firstFormData.possessionChargesPercentage !== '' &&
+              firstFormValidate === false &&
               (Number(firstFormData.possessionChargesPercentage) >
                 oneProduct.possessionChargestMax ||
                 Number(firstFormData.possessionChargesPercentage) <

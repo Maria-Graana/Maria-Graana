@@ -1578,6 +1578,7 @@ class CMPayment extends Component {
 
   submitFirstForm = () => {
     const { lead, user } = this.props
+    const { firstFormData, pearlUnitPrice, unitPearlDetailsData } = this.state
 
     this.setState({
       firstScreenConfirmLoading: true,

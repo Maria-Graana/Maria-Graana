@@ -44,6 +44,7 @@ const PaymentHelper = {
       copyFirstForm['clientName'] = firstForm.clientName
       copyFirstForm['parkingAvailable'] = firstForm.parkingAvailable
       copyFirstForm['parkingCharges'] = firstForm.parkingCharges
+      copyFirstForm['projectSiteId'] = firstForm.projectSiteId
     }
     if (value === 'floor') {
       copyFirstForm['project'] = firstForm.project
@@ -292,6 +293,7 @@ const PaymentHelper = {
       noInstallmentsMin: projectProduct.noInstallmentsMin,
       possessionChargesMax: projectProduct.possessionChargesMax,
       possessionChargesMin: projectProduct.possessionChargesMin,
+      projectSiteId: firstFormData.projectSiteId ? firstFormData.projectSiteId : null,
     }
   },
   normalizeProjectProducts(products) {
@@ -375,6 +377,7 @@ const PaymentHelper = {
             firstFormData.pearl >= 50 &&
             firstFormData.cnic != null &&
             firstFormData.cnic != '' &&
+            firstFormData.projectSiteId != null &&
             cnicValidate === false &&
             firstFormData.paymentPlan === 'full_payment' &&
             firstFormData.productId) ||
@@ -383,6 +386,7 @@ const PaymentHelper = {
             firstFormData.cnic != null &&
             firstFormData.cnic != '' &&
             cnicValidate === false &&
+            firstFormData.projectSiteId != null &&
             firstFormData.paymentPlan != 'no' &&
             firstFormData.productId &&
             firstFormData.noOfInstallment &&
@@ -417,6 +421,7 @@ const PaymentHelper = {
             firstFormData.type != '' &&
             firstFormData.cnic != null &&
             firstFormData.cnic != '' &&
+            firstFormData.projectSiteId != null &&
             cnicValidate === false &&
             firstFormData.productId &&
             firstFormData.noOfInstallment &&
@@ -426,6 +431,7 @@ const PaymentHelper = {
           (firstFormData.project != null &&
             firstFormData.floor != null &&
             firstFormData.unit != null &&
+            firstFormData.projectSiteId != null &&
             firstFormData.paymentPlan === 'full_payment' &&
             firstFormData.type != '' &&
             firstFormData.cnic != null &&
@@ -451,6 +457,7 @@ const PaymentHelper = {
           firstFormData.pearl >= 50 &&
           firstFormData.cnic != null &&
           firstFormData.cnic != '' &&
+          firstFormData.projectSiteId != null &&
           cnicValidate === false &&
           firstFormData.paymentPlan != 'no'
         ) {
@@ -477,6 +484,7 @@ const PaymentHelper = {
           firstFormData.floor != null &&
           firstFormData.unit != null &&
           firstFormData.paymentPlan != 'no' &&
+          firstFormData.projectSiteId != null &&
           firstFormData.type != '' &&
           firstFormData.cnic != null &&
           firstFormData.cnic != '' &&
@@ -519,27 +527,44 @@ const PaymentHelper = {
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice,
-      possessionChargesPercentage: projectProduct.possessionCharges,
-      downPaymentPercentage: projectProduct.downPayment,
-      noOfInstallment:
-        firstFormData.paymentPlan === 'installments'
-          ? PaymentMethods.calculateNoOfInstallments(oneProductData, firstFormData)
-          : null,
-      productId: firstFormData.productId,
-      installmentFrequency: firstFormData.installmentFrequency
-        ? firstFormData.installmentFrequency
-        : null,
+
+      installmentFrequency: Number(firstFormData.installmentFrequency),
       paymentPlan: firstFormData.paymentPlan,
+      downPayment:
+        firstFormData.paymentPlan === 'installments' ? Number(firstFormData.downPayment) : null,
+      noOfInstallment:
+        firstFormData.paymentPlan === 'installments' ? Number(firstFormData.noOfInstallment) : null,
+      paymentPlanDuration: firstFormData.paymentPlanDuration
+        ? Number(firstFormData.paymentPlanDuration)
+        : null,
       remainingPayment:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
-      paymentPlanDuration: firstFormData.paymentPlanDuration
-        ? Number(firstFormData.paymentPlanDuration)
-        : null,
+      instrumentId: instrument.id,
+      isPrimary,
+      possessionCharges:
+        firstFormData.paymentPlan === 'installments'
+          ? Number(firstFormData.possessionCharges)
+          : null,
+      possessionChargesPercentage: projectProduct.possessionChargesPercentage,
+      downPaymentPercentage: projectProduct.downPaymentPercentage,
+      productId: firstFormData.productId,
+      remainingPayment:
+        firstFormData.finalPrice === null || firstFormData.finalPrice === ''
+          ? null
+          : firstFormData.finalPrice - CMPayment.installmentAmount,
       unitStatus: 'Hold',
       installmentAmount: CMPayment.installmentAmount,
       purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
+      downPaymentMax: projectProduct.downPaymentMax,
+      downPaymentMin: projectProduct.downPaymentMin,
+      installmentFrequencyMax: Number(projectProduct.installmentFrequencyMax),
+      installmentFrequencyMin: Number(projectProduct.installmentFrequencyMin),
+      noInstallmentsMax: projectProduct.noInstallmentsMax,
+      noInstallmentsMin: projectProduct.noInstallmentsMin,
+      possessionChargesMax: projectProduct.possessionChargesMax,
+      possessionChargesMin: projectProduct.possessionChargesMin,
     }
     return body
   },

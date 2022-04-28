@@ -89,12 +89,30 @@ class CMFirstForm extends Component {
       handleClientClick,
       updatePermission,
       oneProduct,
+      siteData,
     } = this.props
 
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
     const { noProduct } = lead
+
+    let obj1 = {}
+    obj1 = siteData
+    siteData &&
+      Object.values(obj1).forEach((key, index) => {
+        if (key.siteName === null) {
+          delete obj1[index]
+        }
+      })
+    const AllSiteRender =
+      obj1 &&
+      obj1.map((item) => {
+        return {
+          name: item.siteName,
+          value: item.id,
+        }
+      })
 
     return (
       <View style={styles.mainFormWrap}>
@@ -563,17 +581,25 @@ class CMFirstForm extends Component {
             fromatName={false}
           />
         )}
-        {/* {cnicEditable != false && firstFormData.cnic === null && (
-         <ErrorMessage errorMessage={'Required'} />
-        )}
-        // {cnicValidate ? (
-        //   <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
-        // ) : null} */}
         {firstFormData.cnic === null && firstFormValidate ? (
           <ErrorMessage errorMessage={'Required'} />
         ) : cnicValidate ? (
           <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />
         ) : null}
+
+        <View style={{ paddingVertical: 10 }}>
+          <PickerComponent
+            onValueChange={handleFirstForm}
+            data={AllSiteRender}
+            name={'projectSiteId'}
+            placeholder="Deal Site"
+            selectedItem={firstFormData.projectSiteId}
+            enabled={updatePermission}
+          />
+          {firstFormValidate === true && !firstFormData.projectSiteId && (
+            <ErrorMessage errorMessage={'Required'} />
+          )}
+        </View>
         <View
           style={{
             flexDirection: 'row',

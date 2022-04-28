@@ -126,6 +126,7 @@ class CMPayment extends Component {
         unitName: route.params?.unitData != null ? route.params?.unitData.name : '',
         projectName: route.params?.unitData != null ? route.params?.unitData.project.name : '',
         floorName: route.params?.unitData != null ? route.params?.unitData.floor.name : '',
+        projectSiteId: null,
       },
       unitPearlDetailsData: route.params?.unitData != null ? route.params?.unitData.floor : {},
       oneUnitData: route.params?.unitData != null ? route.params?.unitData : {},
@@ -202,6 +203,7 @@ class CMPayment extends Component {
       endYear: 2050,
       selectedYear: date.getFullYear(),
       selectedMonth: date.getMonth() + 1,
+      siteData: [],
     }
   }
 
@@ -1254,13 +1256,20 @@ class CMPayment extends Component {
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, value)
 
+      axios
+        .get(`/api/leads/getProjectSites?projectId=${value}`)
+        .then((res) => {
+          this.setState({ siteData: res.data })
+        })
+        .catch((err) => console.log(err))
+
       newData['parkingCharges'] =
         parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
           ? parkingObj?.parkingCharges
           : 0
       newData['parkingAvailable'] = parkingObj.parkingAvailable.toLowerCase()
+      newData['projectSiteId'] = null
       this.changeProject(value)
-      // }
       this.getFloors(value)
       newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
       copyPearlUnit = false
@@ -1786,7 +1795,6 @@ class CMPayment extends Component {
       }
       let leadId = []
       leadId.push(lead.id)
-      console.log(body)
       axios
         .post(`/api/leads/diplaySchedule?leadId=${lead.id}`, body)
         .then((res) => {
@@ -1999,6 +2007,7 @@ class CMPayment extends Component {
       setLeadDetail,
       selectedMonth,
       selectedYear,
+      siteData,
     } = this.state
     const { lead, navigation, contacts, route, CMPayment, dispatch } = this.props
     const { screenName } = this.props.route.params
@@ -2167,6 +2176,7 @@ class CMPayment extends Component {
                     checkValidation={checkValidation}
                     handleClientClick={this.handleClientClick}
                     updatePermission={updatePermission}
+                    siteData={siteData}
                     oneProduct={
                       oneProductData && oneProductData.projectProduct
                         ? oneProductData.projectProduct

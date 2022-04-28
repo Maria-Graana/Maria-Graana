@@ -297,13 +297,24 @@ class CMFirstForm extends Component {
               value={firstFormData.downPaymentPercentage}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}
+              editable={
+                updatePermission && oneProduct.downPaymentMin !== oneProduct.downPaymentMax
+                  ? true
+                  : false
+              }
               formatValue={''}
               fromatName={false}
             />
+
+            {firstFormData.downPaymentPercentage !== '' &&
+              (Number(firstFormData.downPaymentPercentage) > oneProduct.downPaymentMax ||
+                Number(firstFormData.downPaymentPercentage) < oneProduct.downPaymentMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
             {/* **************************************** */}
 
             <SimpleInputText
-              name={'downpayment'}
+              name={'downPayment'}
               placeholder={'Down Payment'}
               label={`Down Payment`}
               value={firstFormData.downPayment}
@@ -311,19 +322,40 @@ class CMFirstForm extends Component {
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              editable={
+                updatePermission && oneProduct.downPaymentMin !== oneProduct.downPaymentMax
+                  ? true
+                  : false
+              }
             />
+            {firstFormData.downPaymentPercentage !== '' &&
+              (Number(firstFormData.downPaymentPercentage) > oneProduct.downPaymentMax ||
+                Number(firstFormData.downPaymentPercentage) < oneProduct.downPaymentMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
             {/* **************************************** */}
 
             <SimpleInputText
-              name={'numberOfInstallments'}
+              name={'noOfInstallment'}
               placeholder={'Number of Installments'}
               label={`Number of Installments (Range ${oneProduct.noInstallmentsMin}-${oneProduct.noInstallmentsMax}) `}
-              value={firstFormData.downPayment}
+              value={firstFormData.noOfInstallment}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              editable={
+                updatePermission && oneProduct.noInstallmentsMin !== oneProduct.noInstallmentsMax
+                  ? true
+                  : false
+              }
             />
+
+            {firstFormData.noOfInstallment !== '' &&
+              (Number(firstFormData.noOfInstallment) > oneProduct.noInstallmentsMax ||
+                Number(firstFormData.noOfInstallment) < oneProduct.noInstallmentsMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
 
             {/* **************************************** */}
 
@@ -362,7 +394,21 @@ class CMFirstForm extends Component {
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              editable={
+                updatePermission &&
+                oneProduct.possessionChargesMin !== oneProduct.possessionChargesMax
+                  ? true
+                  : false
+              }
             />
+
+            {firstFormData.possessionChargesPercentage !== '' &&
+              (Number(firstFormData.possessionChargesPercentage) >
+                oneProduct.possessionChargesMax ||
+                Number(firstFormData.possessionChargesPercentage) <
+                  oneProduct.possessionChargesMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
 
             {/* **************************************** */}
 
@@ -375,7 +421,21 @@ class CMFirstForm extends Component {
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              editable={
+                updatePermission &&
+                oneProduct.possessionChargesMin !== oneProduct.possessionChargesMax
+                  ? true
+                  : false
+              }
             />
+
+            {firstFormData.possessionChargesPercentage !== '' &&
+              (Number(firstFormData.possessionChargesPercentage) >
+                oneProduct.possessionChargestMax ||
+                Number(firstFormData.possessionChargesPercentage) <
+                  oneProduct.possessionChargesMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
           </View>
         ) : null}
 

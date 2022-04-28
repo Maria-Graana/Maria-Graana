@@ -116,8 +116,13 @@ class CMPayment extends Component {
         fullPaymentDiscountPrice: 0,
         pearlName: 'New Pearl',
         productId: null,
-        installmentFrequency: null,
-        paymentPlanDuration: null,
+        installmentFrequency: '',
+        possessionCharges: 0,
+        downPayment: 0,
+        possessionChargesPercentage: '',
+        downPaymentPercentage: '',
+        siteData: null,
+        noOfInstallment: '',
         unitName: route.params?.unitData != null ? route.params?.unitData.name : '',
         projectName: route.params?.unitData != null ? route.params?.unitData.project.name : '',
         floorName: route.params?.unitData != null ? route.params?.unitData.floor.name : '',
@@ -1230,6 +1235,9 @@ class CMPayment extends Component {
     let copyPearlUnitPrice = pearlUnitPrice
     let oneProduct = oneProductData
     let newShowInstallmentFields = showInstallmentFields
+    let discountedAmount = null
+    let downPaymentValue = null
+    let possessionChargesValue = null
 
     if (name === 'parkingAvailable') {
       const { allProjects } = this.state
@@ -1318,43 +1326,119 @@ class CMPayment extends Component {
       oneProduct = _.find(projectProducts, (item) => {
         return item.projectProductId === value
       })
+
+      discountedAmount = PaymentMethods.findProductDiscountAmount(oneUnit, oneProduct)
+
       newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(
         oneProduct.projectProduct.discount
       )
+
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      newData['approvedDiscountPrice'] = PaymentMethods.findProductDiscountAmount(
-        oneUnit,
-        oneProduct
+      newData['approvedDiscountPrice'] = discountedAmount
+
+      if (oneUnit) {
+        if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+        newData['finalPrice'] = Math.ceil(
+          PaymentMethods.findFinalPrice(
+            newData['parkingAvailable'] === 'yes' &&
+              newData['parkingCharges'] != '' &&
+              newData['parkingCharges'] != null
+              ? newData['parkingCharges']
+              : 0,
+            oneUnit,
+            newData['approvedDiscountPrice'],
+            newData['fullPaymentDiscountPrice'],
+            copyPearlUnit ? true : false
+          )
+        )
+      }
+
+      newData['noOfInstallment'] = PaymentHelper.handleEmptyValue(
+        oneProduct.projectProduct.noInstallmentsMin
+      )
+      newData['installmentFrequency'] = PaymentHelper.handleEmptyValue(
+        oneProduct.projectProduct.installmentFrequencyMin
+      )
+
+      downPaymentValue = PaymentMethods.calculateDownPayment(
+        { ...oneProduct.projectProduct, downPayment: oneProduct.projectProduct.downPaymentMin },
+        newData.finalPrice, // final price including discount
+        0
+      )
+
+      newData['downPayment'] = downPaymentValue
+
+      newData['downPaymentPercentage'] = PaymentHelper.handleEmptyValue(
+        oneProduct.projectProduct.downPaymentMin
+      )
+
+      newData['possessionCharges'] = PaymentMethods.calculatePossessionCharges(
+        {
+          ...oneProduct.projectProduct,
+          possessionCharges: oneProduct.projectProduct.possessionChargesMin,
+        },
+        newData.finalPrice, // final price including discount
+        0
+      )
+      newData['possessionChargesPercentage'] = PaymentHelper.handleEmptyValue(
+        oneProduct.projectProduct.possessionChargesMin
       )
       newShowInstallmentFields = PaymentHelper.setProductPaymentPlan(oneProduct)
       newData.paymentPlan = oneProduct.projectProduct.paymentPlan
     }
 
-    if (oneUnit) {
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      newData['finalPrice'] = Math.ceil(
-        PaymentMethods.findFinalPrice(
-          newData['parkingAvailable'] === 'yes' &&
-            newData['parkingCharges'] != '' &&
-            newData['parkingCharges'] != null
-            ? newData['parkingCharges']
-            : 0,
-          oneUnit,
-          newData['approvedDiscountPrice'],
-          newData['fullPaymentDiscountPrice'],
-          copyPearlUnit ? true : false
-        )
+    if (name === 'downPaymentPercentage') {
+      downPaymentValue = PaymentMethods.calculateDownPayment(
+        { ...oneProductData.projectProduct, downPayment: value },
+        newData.finalPrice, // final price including discount
+        0
+      )
+      newData['downPayment'] = downPaymentValue
+      newData['downPaymentPercentage'] = value
+    }
+
+    if (name === 'downPayment') {
+      newData['downPayment'] = value
+      newData['downPaymentPercentage'] = PaymentMethods.calculateDownPaymentPercentage(
+        newData.finalPrice, // final price including discount
+        value,
+        0
       )
     }
-    this.setState({
-      firstFormData: { ...newData },
-      unitPearlDetailsData: { ...oneFloor },
-      oneUnitData: copyPearlUnit ? { ...oneFloor } : { ...oneUnit },
-      pearlUnit: copyPearlUnit,
-      oneProductData: oneProduct,
-      showInstallmentFields: newShowInstallmentFields,
-      toggleUnitsTable: false,
-    })
+
+    if (name === 'possessionChargesPercentage') {
+      possessionChargesValue = PaymentMethods.calculatePossessionCharges(
+        { ...oneProductData.projectProduct, possessionCharges: value },
+        newData.finalPrice, // final price including discount
+        0
+      )
+      newData['possessionCharges'] = possessionChargesValue
+      newData['possessionChargesPercentage'] = value
+    }
+
+    if (name === 'possessionCharges') {
+      newData['possessionCharges'] = value
+      newData['possessionChargesPercentage'] = PaymentMethods.calculatePossessionChargesPercentage(
+        newData.finalPrice, // final price including discount
+        value,
+        0
+      )
+    }
+
+    this.setState(
+      {
+        firstFormData: { ...newData },
+        unitPearlDetailsData: { ...oneFloor },
+        oneUnitData: copyPearlUnit ? { ...oneFloor } : { ...oneUnit },
+        pearlUnit: copyPearlUnit,
+        oneProductData: oneProduct,
+        showInstallmentFields: newShowInstallmentFields,
+        toggleUnitsTable: false,
+      },
+      () => {
+        //console.log('firstForm', this.state.firstFormData)
+      }
+    )
   }
 
   getParkingDetails = (allProjects, value) => {
@@ -1438,6 +1522,17 @@ class CMPayment extends Component {
     } = this.state
     const { lead } = this.props
     const { noProduct } = lead
+    if (
+      firstFormData.possessionChargesPercentage &&
+      firstFormData.downPaymentPercentage &&
+      Number(firstFormData.possessionChargesPercentage) +
+        Number(firstFormData.downPaymentPercentage) >
+        100
+    ) {
+      alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
+      return
+    }
+
     if (!noProduct && firstFormData.paymentPlan === 'no') firstFormData.paymentPlan = null
     const validationValues = PaymentHelper.firstFormValidation(
       lead,
@@ -1483,7 +1578,7 @@ class CMPayment extends Component {
 
   submitFirstForm = () => {
     const { lead, user } = this.props
-    const { firstFormData, pearlUnitPrice, unitPearlDetailsData } = this.state
+
     this.setState({
       firstScreenConfirmLoading: true,
     })
@@ -1540,7 +1635,6 @@ class CMPayment extends Component {
           isPrimary,
           selectedClient
         )
-    console.log(body)
     let leadId = []
     body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
@@ -1613,7 +1707,17 @@ class CMPayment extends Component {
 
   //  ************ SCHEDULE OF PAYMENT WORKFLOW **************
   toggleSchedulePayment = () => {
-    const { showSchedule } = this.state
+    const { showSchedule, firstFormData } = this.state
+    if (
+      firstFormData.possessionChargesPercentage &&
+      firstFormData.downPaymentPercentage &&
+      Number(firstFormData.possessionChargesPercentage) +
+        Number(firstFormData.downPaymentPercentage) >
+        100
+    ) {
+      alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
+      return
+    }
     if (!showSchedule) this.fetchScheduleData()
     this.setState({
       showSchedule: !showSchedule,
@@ -1667,6 +1771,7 @@ class CMPayment extends Component {
           firstFormData.unit === null || firstFormData.unit === '' || firstFormData.unit === 'no'
             ? null
             : firstFormData.unit
+
         body = PaymentHelper.generateProductApiPayload(
           firstFormData,
           lead,
@@ -1677,26 +1782,17 @@ class CMPayment extends Component {
           isPrimary,
           selectedClient
         )
-        downPayment = PaymentMethods.calculateDownPayment(
-          oneProductData,
-          firstFormData.finalPrice,
-          CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
-        )
-        possessionCharges = PaymentMethods.calculatePossessionCharges(
-          oneProductData,
-          firstFormData.finalPrice,
-          CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
-        )
       }
       let leadId = []
       leadId.push(lead.id)
+      console.log(body)
       axios
         .post(`/api/leads/diplaySchedule?leadId=${lead.id}`, body)
         .then((res) => {
           this.setState({
             SchedulePaymentData: helper.addID(res.data),
-            downPayment: downPayment,
-            possessionCharges: possessionCharges,
+            downPayment: firstFormData.downPayment,
+            possessionCharges: firstFormData.possessionCharges,
           })
         })
         .catch((error) => {

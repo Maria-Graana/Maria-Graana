@@ -29,6 +29,12 @@ const PaymentHelper = {
       unitName: '',
       projectName: '',
       floorName: '',
+      installmentFrequency: '',
+      possessionCharges: 0,
+      possessionChargesPercentage: '',
+      downPayment: 0,
+      downPaymentPercenatage: '',
+      noOfInstallment: '',
     }
   },
   refreshFirstFormData(firstForm, value, lead) {
@@ -244,7 +250,7 @@ const PaymentHelper = {
         firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
           ? null
           : firstFormData.approvedDiscountPrice,
-      unitStatus: CMPayment.paymentCategory === 'token' ? 'Token' : 'Sold',
+      unitStatus: 'Hold',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
@@ -258,20 +264,12 @@ const PaymentHelper = {
       customerId: lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       productId: firstFormData.productId,
-      installmentFrequency: firstFormData.installmentFrequency,
+      installmentFrequency: Number(firstFormData.installmentFrequency),
       paymentPlan: firstFormData.paymentPlan,
       downPayment:
-        firstFormData.paymentPlan === 'installments'
-          ? PaymentMethods.calculateDownPayment(
-              oneProduct,
-              firstFormData.finalPrice,
-              CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
-            )
-          : null,
+        firstFormData.paymentPlan === 'installments' ? Number(firstFormData.downPayment) : null,
       noOfInstallment:
-        firstFormData.paymentPlan === 'installments'
-          ? PaymentMethods.calculateNoOfInstallments(oneProduct, firstFormData)
-          : null,
+        firstFormData.paymentPlan === 'installments' ? Number(firstFormData.noOfInstallment) : null,
       paymentPlanDuration: firstFormData.paymentPlanDuration
         ? Number(firstFormData.paymentPlanDuration)
         : null,
@@ -283,15 +281,17 @@ const PaymentHelper = {
       isPrimary,
       possessionCharges:
         firstFormData.paymentPlan === 'installments'
-          ? PaymentMethods.calculatePossessionCharges(
-              oneProduct,
-              firstFormData.finalPrice,
-              CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
-            )
+          ? Number(firstFormData.possessionCharges)
           : null,
-      possessionChargesPercentage: projectProduct.possessionCharges,
-      downPaymentPercentage: projectProduct.downPayment,
       purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
+      downPaymentMax: projectProduct.downPaymentMax,
+      downPaymentMin: projectProduct.downPaymentMin,
+      installmentFrequencyMax: Number(projectProduct.installmentFrequencyMax),
+      installmentFrequencyMin: Number(projectProduct.installmentFrequencyMin),
+      noInstallmentsMax: projectProduct.noInstallmentsMax,
+      noInstallmentsMin: projectProduct.noInstallmentsMin,
+      possessionChargesMax: projectProduct.possessionChargesMax,
+      possessionChargesMin: projectProduct.possessionChargesMin,
     }
   },
   normalizeProjectProducts(products) {
@@ -531,7 +531,7 @@ const PaymentHelper = {
       paymentPlanDuration: firstFormData.paymentPlanDuration
         ? Number(firstFormData.paymentPlanDuration)
         : null,
-      unitStatus: CMPayment.paymentCategory === 'token' ? 'Token' : 'Sold',
+      unitStatus: 'Hold',
       installmentAmount: CMPayment.installmentAmount,
       purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
     }

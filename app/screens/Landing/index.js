@@ -34,8 +34,20 @@ class Landing extends React.Component {
       tiles: [],
       tileNames: [
         {
+          tile: 'Clients',
+          actions: 'CLIENTS',
+        },
+        {
           tile: 'Diary',
           actions: 'DIARY',
+        },
+        {
+          tile: 'Project Leads',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'Project Deals',
+          actions: 'PROJECT_LEADS',
         },
         {
           tile: 'Leads',
@@ -44,10 +56,6 @@ class Landing extends React.Component {
         {
           tile: 'My Deals',
           actions: 'PROJECT_LEADS',
-        },
-        {
-          tile: 'Clients',
-          actions: 'CLIENTS',
         },
         {
           tile: 'Properties',
@@ -221,8 +229,8 @@ class Landing extends React.Component {
           getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions)
         ) {
           if (label === 'Team Diary') label = "Team's Diary"
-          if (tile === 'Leads') label = 'Leads'
-          if (tile === 'MyDeals') label = 'Deals'
+          if (tile === 'Leads') label = 'Buy/Rent Leads'
+          if (tile === 'MyDeals') label = 'Buy/Rent Deals'
           let oneTile = {
             id: counter,
             label: label,
@@ -258,8 +266,8 @@ class Landing extends React.Component {
           if (label === 'Project Inventory') label = 'Inventory'
           if (label === 'InventoryTabs') label = 'Properties'
           if (label === 'Team Diary') label = "Team's Diary"
-          if (tile === 'Leads') label = 'Leads'
-          if (tile === 'MyDeals') label = 'Deals'
+          if (tile === 'Leads') label = 'Buy/Rent Leads'
+          if (tile === 'MyDeals') label = 'Buy/Rent Deals'
           let oneTile = {
             id: counter,
             label: label,
@@ -295,6 +303,16 @@ class Landing extends React.Component {
       navigation.navigate('Leads', {
         screen: screenName,
         hasBooking: true,
+      })
+    } else if (screenName === 'ProjectDeals') {
+      navigation.navigate('ProjectLeads', {
+        screen: screenName,
+        hasBooking: true,
+      })
+    } else if (screenName === 'ProjectLeads') {
+      navigation.navigate('ProjectLeads', {
+        screen: screenName,
+        hasBooking: false,
       })
     } else if (screenName === 'ProjectInventory') {
       navigation.navigate('AvailableInventory', {
@@ -434,7 +452,7 @@ class Landing extends React.Component {
                 navigateFunction={this.navigateFunction}
                 pagePath={item.item.pagePath}
                 screenName={item.item.screenName}
-                badges={item.item.badges} // temporarily hiding count for diary
+                // badges={item.item.badges} // temporarily hiding count for diary
                 label={item.item.label}
                 imagePath={item.item.buttonImg}
               />

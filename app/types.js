@@ -1,5 +1,7 @@
 /** @format */
 
+//Header dropdown
+export const COUNTER_CHANGE = 'COUNTER_CHANGE'
 export const SET_LEAD = 'SET_LEAD'
 export const SET_SALE = 'SET_SALE'
 export const REMOVE_LEAD = 'REMOVE_LEAD'
@@ -97,3 +99,7 @@ export const ADD_EDIT_CM_LEAD = 'ADD_EDIT_CM_LEAD'
 export const GET_ALL_INVESTMENT_PROJECTS = 'GET_ALL_INVESTMENT_PROJECTS'
 export const SET_CM_LEAD_LOADER = 'SET_CM_LEAD_LOADER'
 export const SET_DEFAULT_CM_PAYLOAD = 'SET_DEFAULT_CM_PAYLOAD'
+
+
+
+

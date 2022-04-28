@@ -8,6 +8,7 @@ import { Feather } from '@expo/vector-icons'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import HeaderRight from '../components/HeaderRight/index'
+import DropdownHeader from '../components/HeaderRight/DropdownHeader'
 import HeaderTitle from '../components/HeaderTitle/index'
 import WhiteLogo from '../components/WhiteLogo/index'
 import WhiteMenu from '../components/WhiteMenu/index'
@@ -51,6 +52,7 @@ import TeamTargets from '../screens/TeamTargets'
 import CMLeadTabs from './CMTabNavigator'
 import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
+import ProjectLead from './ProjectLeadsNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
@@ -233,14 +235,40 @@ function MainStack() {
         name="Leads"
         component={Lead}
         options={({ navigation, route }) => ({
-          title: 'LEADS',
+          //  headerShown:false,
+          // title: 'LEADS',
+          title: '',
           headerLeft: (props) => (
             <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
           ),
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
-          headerTitleAlign: 'center',
+          headerRight: (props) => <DropdownHeader
+          leadType={false}
+            hasBooking={true} navigation={navigation} />,
+
+          headerTitleAlign: 'left',
         })}
       />
+
+      <Stack.Screen
+        name="ProjectLeads"
+        component={ProjectLead}
+        options={({ navigation, route }) => ({
+          //  title: 'LEADS',
+          title: '',
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          ),
+
+          headerRight: (props) => <DropdownHeader
+
+            hasBooking={true}
+            leadType={'ProjectLeads'}
+            navigation={navigation} />,
+
+          headerTitleAlign: 'left',
+        })}
+      />
+
       <Stack.Screen
         name="AddDiary"
         component={AddDiary}
@@ -682,3 +710,4 @@ function MainStack() {
 }
 
 export default MainStack
+

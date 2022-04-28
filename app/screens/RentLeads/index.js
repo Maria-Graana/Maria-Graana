@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
+import { setLeadsDropdown } from '../../actions/leadsDropdown'
+
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
@@ -44,6 +46,8 @@ var BUTTONS = [
   'Cancel',
 ]
 var CANCEL_INDEX = 3
+
+
 
 class RentLeads extends React.Component {
   constructor(props) {
@@ -90,14 +94,23 @@ class RentLeads extends React.Component {
     }
   }
 
+
+
+
   componentDidMount() {
-    const { dispatch } = this.props
+
+    const { hasBooking = false } = this.props.route.params
+    const { dispatch, navigation } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()
       this.setFabActions()
     })
+
+    dispatch(setLeadsDropdown(hasBooking
+      ? '&pageType=myDeals&hasBooking=true'
+      : '&pageType=myLeads&hasBooking=false'))
   }
 
   componentWillUnmount() {
@@ -109,7 +122,14 @@ class RentLeads extends React.Component {
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
+    if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
+
+      this.changePageType(this.props.leadsDropdown)
+    }
+
   }
+
+
 
   getServerTime = () => {
     axios
@@ -614,8 +634,7 @@ class RentLeads extends React.Component {
       pageType,
       phoneModelDataLoader
     } = this.state
-    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } =
-      this.props
+    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser, leadsDropdown } = this.props
     const {
       screen,
       hasBooking = false,
@@ -626,7 +645,11 @@ class RentLeads extends React.Component {
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
+
+
     return (
+
+
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {user.organization && user.organization.isPP && (
           <AndroidNotifications navigation={navigation} />
@@ -672,7 +695,7 @@ class RentLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+            <View style={[styles.filterRow, { paddingHorizontal: 15, justifyContent:'space-between' }]}>
               {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
               ) : ( */}
@@ -694,11 +717,11 @@ class RentLeads extends React.Component {
               </View>
               {/* )} */}
 
-              <View style={styles.iconRow}>
+          {/*      <View style={styles.iconRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
               </View>
 
-              <View style={styles.pageTypeRow}>
+             <View style={styles.pageTypeRow}>
                 <PickerComponent
                   placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
                   data={
@@ -716,8 +739,8 @@ class RentLeads extends React.Component {
                   selectedItem={pageType}
                   showPickerArrow={false}
                 />
-              </View>
-              <View style={styles.verticleLine} />
+              </View> */}
+              {/* <View style={styles.verticleLine} /> */}
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
                   style={styles.sortBtn}
@@ -847,18 +870,25 @@ class RentLeads extends React.Component {
           sort={sort}
         />
       </View>
+
     )
   }
 }
 
 mapStateToProps = (store) => {
+
+
   return {
+
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
     getIsTerminalUser: store.user.getIsTerminalUser,
+
+    leadsDropdown: store.leadsDropdown.leadsDropdown,
+
   }
 }
 export default connect(mapStateToProps)(RentLeads)

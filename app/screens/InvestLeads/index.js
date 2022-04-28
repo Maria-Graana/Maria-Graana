@@ -5,6 +5,7 @@ import axios from 'axios'
 import { ActionSheet } from 'native-base'
 import React from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
+import { setLeadsDropdown } from '../../actions/leadsDropdown'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import SortImg from '../../../assets/img/sort.png'
@@ -100,6 +101,14 @@ class InvestLeads extends React.Component {
   componentDidMount() {
     const { dispatch, route } = this.props
     const { client } = route.params
+    const { hasBooking = false } = this.props.route.params
+
+    dispatch(setLeadsDropdown(hasBooking
+      ?  '&pageType=myDeals&hasBooking=true'
+      :  '&pageType=myLeads&hasBooking=false'))
+
+   
+
 
     if (client) {
       this.fetchAddedLeads(client)
@@ -131,9 +140,16 @@ class InvestLeads extends React.Component {
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
+ 
   }
 
   componentDidUpdate(prevProps, prevState) {
+
+    if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
+     
+
+      this.changePageType(this.props.leadsDropdown)
+    }
     if (this.props.referenceGuide !== prevProps.referenceGuide) {
       // reload page when reference guide is added
       this.fetchLeads()
@@ -709,7 +725,7 @@ class InvestLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+            <View style={[styles.filterRow, { paddingHorizontal: 15 , justifyContent:'space-between'}]}>
               <View style={styles.pickerMain}>
                 <PickerComponent
                   placeholder={'Lead Status'}
@@ -727,7 +743,7 @@ class InvestLeads extends React.Component {
                 />
               </View>
 
-              <View style={styles.iconRow}>
+              {/* <View style={styles.iconRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
               </View>
               <View style={styles.pageTypeRow}>
@@ -749,7 +765,7 @@ class InvestLeads extends React.Component {
                   showPickerArrow={false}
                 />
               </View>
-              <View style={styles.verticleLine} />
+              <View style={styles.verticleLine} /> */}
 
               <View style={styles.stylesMainSort}>
                 <TouchableOpacity
@@ -842,6 +858,7 @@ class InvestLeads extends React.Component {
 }
 
 mapStateToProps = (store) => {
+
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,
@@ -850,6 +867,7 @@ mapStateToProps = (store) => {
     referenceGuide: store.diary.referenceGuide,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     getIsTerminalUser: store.user.getIsTerminalUser,
+    leadsDropdown: store.leadsDropdown.leadsDropdown,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

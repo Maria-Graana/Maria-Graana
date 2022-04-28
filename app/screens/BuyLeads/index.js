@@ -51,6 +51,7 @@ class BuyLeads extends React.Component {
     const { permissions } = this.props
     const { hasBooking = false } = this.props.route.params
     this.state = {
+      phoneModelDataLoader: false,
       language: '',
       leadsData: [],
       statusFilter: '',
@@ -609,6 +610,7 @@ class BuyLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
+      phoneModelDataLoader
     } = this.state
     const {leadsDropdown, user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
       this.props
@@ -753,11 +755,13 @@ class BuyLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                          if (res !== null) {
-                            this.showMultiPhoneModal(true)
-                          }
-                        })
+                        : this.setState({ phoneModelDataLoader: true })
+                      this.showMultiPhoneModal(true)
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.setState({ phoneModelDataLoader: false })
+                        }
+                      })
                     }}
                     navFrom={navFrom}
                     handleLongPress={this.handleLongPress}
@@ -775,11 +779,14 @@ class BuyLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                          if (res !== null) {
-                            this.showMultiPhoneModal(true)
-                          }
-                        })
+                        : 
+                        this.setState({ phoneModelDataLoader: true })
+                      this.showMultiPhoneModal(true)
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.setState({ phoneModelDataLoader: false })
+                        }
+                      })
                     }}
                     handleLongPress={this.handleLongPress}
                     changeLeadStatus={this.changeLeadStatus}
@@ -822,6 +829,7 @@ class BuyLeads extends React.Component {
           />
         ) : null}
         <MultiplePhoneOptionModal
+          modelDataLoading={phoneModelDataLoader}
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}

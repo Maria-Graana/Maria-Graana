@@ -1,4 +1,4 @@
-
+/** @format */
 
 export default StaticData = {
   parkingAvailable: [
@@ -417,8 +417,8 @@ export default StaticData = {
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
     { value: 'in_progress', name: 'In-progress' },
-    { value: 'token', name: 'Token' },
-    { value: 'payment', name: 'Payment' },
+    // { value: 'token', name: 'Token' },
+    // { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
   investmentFilterLeadsAddTask: [
@@ -1545,7 +1545,6 @@ export default StaticData = {
     { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
   ],
 
-
   leadTypePickerData: [
     { name: 'Select Lead Type', value: 'Select Lead Type' },
     { name: 'Rent', value: 'Rent' },
@@ -1572,6 +1571,4 @@ export default StaticData = {
     { name: 'Daughter of', value: 'Daughter of' },
     { name: 'Wife of', value: 'Wife of' },
   ],
-
-
 }

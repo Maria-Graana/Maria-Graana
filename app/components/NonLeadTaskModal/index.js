@@ -13,9 +13,9 @@ import { AntDesign } from '@expo/vector-icons'
 const NonLeadTaskModal = ({ isVisible, showHideModal, markTaskasDone }) => {
   const [comment, setComment] = useState(null)
   const markTaskasDoneAndClear = () => {
-    markTaskasDone(comment)
-    setComment(null)
     showHideModal(false)
+    setComment(null)
+    markTaskasDone(comment)
   }
   return (
     <Modal

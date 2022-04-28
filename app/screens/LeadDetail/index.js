@@ -454,10 +454,18 @@ class LeadDetail extends React.Component {
       }
     }
   }
-  navigateFromMenu = (name) => {
+  navigateFromMenu = () => {
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
+    })
+  }
+  navigateToAddDiary = () => {
     const { screen, lead } = this.props.route.params
     this.props.dispatch(setlead(lead))
-    this.props.navigation.navigate(name, {
+    this.props.navigation.navigate('ScheduledTasks', {
       lead: lead,
       purposeTab: 'invest',
       screen: 'InvestLeads',
@@ -465,61 +473,6 @@ class LeadDetail extends React.Component {
       screenName: screen,
     })
   }
-  // navigateToOpenWorkFlow = (data) => {
-  //   const { screen, navFrom } = this.props.route.params
-  //   const { navigation } = this.props
-
-  //   this.props.dispatch(setlead(data))
-
-  //   if (navFrom) {
-  //     navigation.navigate('AddDiary', {
-  //       lead: data,
-  //       rcmLeadId: data.id,
-  //     })
-  //   } else {
-  //     let page = ''
-  //     if (this.props.route.params?.screen === 'MyDeals') {
-  //       this.props.navigation.navigate('LeadDetail', {
-  //         lead: data,
-  //         purposeTab: 'sale',
-  //         screenName: screen,
-  //       })
-  //     } else if (data.readAt === null) {
-  //       this.props.navigation.navigate('LeadDetail', {
-  //         lead: data,
-  //         purposeTab: 'sale',
-  //         screenName: screen,
-  //       })
-  //     } else {
-  //       if (data.status == 'open') {
-  //         page = 'Match'
-  //       }
-  //       if (data.status === 'viewing') {
-  //         page = 'Viewing'
-  //       }
-  //       if (data.status === 'offer') {
-  //         page = 'Offer'
-  //       }
-  //       if (data.status === 'propsure') {
-  //         page = 'Propsure'
-  //       }
-  //       if (data.status === 'payment') {
-  //         page = 'Payment'
-  //       }
-  //       if (
-  //         data.status === 'payment' ||
-  //         data.status === 'closed_won' ||
-  //         data.status === 'closed_lost'
-  //       ) {
-  //         page = 'Payment'
-  //       }
-  //       this.props.navigation.navigate('RCMLeadTabs', {
-  //         screen: page,
-  //         params: { lead: data },
-  //       })
-  //     }
-  //   }
-  // }
   navigateToOpenWorkFlow = (data) => {
     const { screen, navFrom } = this.props.route.params
     const { navigation } = this.props
@@ -663,7 +616,6 @@ class LeadDetail extends React.Component {
     let assignedByName = this.getAssignedByName(lead)
     let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
     let setCustomerName = this.setCustomerName()
-
     return !loading ? (
       <View style={[AppStyles.container, styles.container]}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -672,7 +624,9 @@ class LeadDetail extends React.Component {
               <View style={styles.rowContainer}>
                 <View>
                   <Text style={styles.headingText}>Client Name </Text>
-                  {screenName === 'diary' ? (
+                  {route.params.lead.requiredProperties ? (
+                    <Text style={styles.labelText}>---</Text>
+                  ) : screenName === 'diary' ? (
                     <Text style={styles.labelText}>
                       {setCustomerName === 'undefined'
                         ? setCustomerName
@@ -690,6 +644,7 @@ class LeadDetail extends React.Component {
                     onPress={() => this.goToClientsDetail()}
                     style={styles.roundButtonView}
                     activeOpacity={0.6}
+                    disabled={route.params.lead.requiredProperties}
                   >
                     <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
                   </TouchableOpacity>
@@ -945,6 +900,7 @@ class LeadDetail extends React.Component {
             <CMBottomNav
               navigateToBookUnit={this.navigateToBookUnit}
               navigateFromMenu={this.navigateFromMenu}
+              navigateToAddDiary={this.navigateToAddDiary}
               addGuideReference={() =>
                 dispatch(
                   setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true })
@@ -966,6 +922,7 @@ class LeadDetail extends React.Component {
                 })
               }}
               goToAddEditDiaryScreen={this.goToAddEditDiaryScreen}
+              requiredProperties={route.params.lead.requiredProperties}
             />
           </View>
         )}
@@ -975,11 +932,13 @@ class LeadDetail extends React.Component {
             <View style={AppStyles.mainCMBottomNav}>
               <CMBottomNav
                 navigateFromMenu={this.navigateFromMenu}
+                navigateToAddDiary={this.navigateToAddDiary}
                 navigation={this.props.navigation}
                 guideReference={lead && lead.guideReference}
                 screenName={'BuyRentDetailScreen'}
                 closedLeadEdit={closedLeadEdit}
                 navigateToOpenWorkFlow={this.navigateToOpenWorkFlow}
+                requiredProperties={route.params.lead.requiredProperties}
               />
             </View>
           )}

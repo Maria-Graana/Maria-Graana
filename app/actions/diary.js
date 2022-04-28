@@ -574,13 +574,14 @@ export const markDiaryTaskAsDone = (data) => {
       comments: comment,
       response: comment,
     }
-    axios.patch(endPoint, body).then(function (response) {
+    let promise = axios.patch(endPoint, body).then(function (response) {
       if (response.status == 200) {
         dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
         helper.successToast(`Task completed`)
         helper.deleteLocalNotification(response.data.id)
       }
     })
+    return promise
   }
 }
 

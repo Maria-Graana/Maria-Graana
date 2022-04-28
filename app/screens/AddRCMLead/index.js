@@ -112,6 +112,7 @@ class AddRCMLead extends Component {
     const { route } = this.props
     const { RCMFormData } = this.state
     const { lead = null, selectedCity, client, name } = route.params
+    const regex = /(<([^>]+)>)/gi
     let copyObject = Object.assign({}, RCMFormData)
     copyObject.maxPrice = lead.price ? lead.price : 0
     copyObject.minPrice = lead.min_price ? lead.min_price : 0
@@ -129,7 +130,8 @@ class AddRCMLead extends Component {
     copyObject.customerId = client ? client.id : null
     copyObject.city_id = selectedCity ? selectedCity.value : null
     copyObject.leadAreas = lead.armsLeadAreas ? lead.armsLeadAreas : []
-    copyObject.description = lead.description ? lead.description : ''
+    copyObject.description = lead.description ? lead.description.replace(regex, '') : ''
+    copyObject.subtype = lead.subtype ? lead.subtype : ''
     copyObject.org =
       lead.customer && lead.customer.organizationId ? lead.customer.organizationId : null
     this.setState({ selectedCity, selectedClient: client, name, RCMFormData: copyObject }, () => {

@@ -126,7 +126,7 @@ class Dialer extends Component {
     })
     return (
       <View style={AppStyles.containerWithoutPadding}>
-        <ScrollView style={{ height: heightPercentageToDP('45%') }}>
+        <ScrollView style={{ height: heightPercentageToDP('40%') }}>
           {data &&
             data.map((item) => (
               <PhonebookContactsTile
@@ -145,7 +145,7 @@ class Dialer extends Component {
         <View
           style={{
             paddingVertical: 10,
-            height: '55%',
+            height: '60%',
           }}
         >
           <Text style={styles.inputStyle}>{this.state.numberTxt}</Text>

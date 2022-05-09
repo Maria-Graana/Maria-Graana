@@ -71,7 +71,7 @@ class AddCMLead extends Component {
     copyObject.maxPrice = lead.maxPrice
       ? lead.maxPrice
       : StaticData.PricesProject[StaticData.PricesProject.length - 1]
-    copyObject.minPrice = lead.minPrice ? lead.maxPrice : StaticData.PricesProject[0]
+    copyObject.minPrice = lead.minPrice ? lead.minPrice : StaticData.PricesProject[0]
     copyObject.projectId = lead.project ? lead.project.id : ''
     copyObject.projectType = lead.projectType ? lead.projectType : ''
     copyObject.armsProjectTypeId = lead.productTypes ? String(lead.productTypes.id) : ''
@@ -169,7 +169,6 @@ class AddCMLead extends Component {
             .then((res) => {
               helper.successToast('Lead created successfully')
               RootNavigation.navigate('ProjectLeads')
-
             })
             .catch((error) => {
               console.log(error)

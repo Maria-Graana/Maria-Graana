@@ -99,15 +99,16 @@ class InvestLeads extends React.Component {
   }
 
   componentDidMount() {
+
     const { dispatch, route } = this.props
     const { client } = route.params
     const { hasBooking = false } = this.props.route.params
 
     dispatch(setLeadsDropdown(hasBooking
-      ?  '&pageType=myDeals&hasBooking=true'
-      :  '&pageType=myLeads&hasBooking=false'))
+      ? '&pageType=myDeals&hasBooking=true'
+      : '&pageType=myLeads&hasBooking=false'))
 
-   
+
 
 
     if (client) {
@@ -121,6 +122,9 @@ class InvestLeads extends React.Component {
       })
     }
   }
+
+
+
 
   componentWillUnmount() {
     this.clearStateValues()
@@ -140,13 +144,13 @@ class InvestLeads extends React.Component {
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
- 
+
   }
 
   componentDidUpdate(prevProps, prevState) {
 
     if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
-     
+
 
       this.changePageType(this.props.leadsDropdown)
     }
@@ -725,7 +729,10 @@ class InvestLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 , justifyContent:'space-between'}]}>
+            <View style={[styles.filterRow, {
+              //paddingHorizontal: 15,
+              justifyContent: 'space-between',
+            }]}>
               <View style={styles.pickerMain}>
                 <PickerComponent
                   placeholder={'Lead Status'}
@@ -767,7 +774,7 @@ class InvestLeads extends React.Component {
               </View>
               <View style={styles.verticleLine} /> */}
 
-              <View style={styles.stylesMainSort}>
+              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
                   style={styles.sortBtn}
                   onPress={() => {
@@ -827,7 +834,7 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
+        {(createProjectLead || createBuyRentLead) && (screen === 'Leads' || screen === 'ProjectLeads') && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

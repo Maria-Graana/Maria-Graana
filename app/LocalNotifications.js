@@ -9,8 +9,8 @@ const submitNotification = (body, date) => {
   Keyboard.dismiss()
   const trigger = convertTimeZone(date)
   let localNotification = {
-    title: ` ${body.title} ${body.clientName ? "with " + body.clientName : ''}`,
-    body: body.body,
+    title:` ${body.title} ${body.clientName ? "with " + body.clientName : ''}`,
+    body: ` Time: ${body.body}`,
     data: {
       type: 'local',
       date: date,

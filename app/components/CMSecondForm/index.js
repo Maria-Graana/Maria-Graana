@@ -75,7 +75,7 @@ class CMSecondForm extends React.Component {
                     <Text style={{ padding: 10 }}>Loading...</Text>
                   ) : payment && payment.length > 0 ? (
                     payment.map((item, index) => {
-                      return (
+                      return item && item.installmentAmount ? (
                         <PaymentTile
                           onPaymentLongPress={() => onPaymentLongPress(item)}
                           tileForToken={false}
@@ -87,7 +87,7 @@ class CMSecondForm extends React.Component {
                           checkLeadClosedOrNot={checkLeadClosedOrNot}
                           call={call}
                         />
-                      )
+                      ) : null
                     })
                   ) : (
                     <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>

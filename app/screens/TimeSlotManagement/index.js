@@ -99,7 +99,6 @@ function TimeSlotManagement(props) {
   useEffect(() => {
     const { dispatch, route } = props
 
-
     dispatch(setSlotDiaryData(selectedDate))
 
     if (props.slotData) {
@@ -325,41 +324,32 @@ function TimeSlotManagement(props) {
     const { navigation } = props
 
     let copyData = {
-      ...body
-    };
+      ...body,
+    }
 
     delete copyData.customer
-
 
     axios
       .post(`/api/leads/viewing`, copyData)
       .then((res) => {
         if (res) {
-
           helper.successToast('TASK ADDED SUCCESSFULLY!')
 
           let start = new Date(body.start)
           let end = new Date(body.end)
 
-          let notificationPayload;
+          let notificationPayload
           if (body.taskCategory == 'leadTask') {
-
             notificationPayload = {
               clientName: body?.customer?.customerName,
               id: body.userId,
-              title: diaryHelper.showTaskType(
-                body?.taskType
-              ),
+              title: diaryHelper.showTaskType(body?.taskType),
               body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
-          }
-
-          else {
+          } else {
             notificationPayload = {
               id: body.userId,
-              title: diaryHelper.showTaskType(
-                body.taskType
-              ),
+              title: diaryHelper.showTaskType(body.taskType),
               body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
           }
@@ -448,7 +438,6 @@ function TimeSlotManagement(props) {
         }
       })
     } else if (data && isBookViewing) {
-
       let copyData = Object.assign({}, data)
       copyData.date = startTime
       copyData.time = startTime
@@ -964,7 +953,7 @@ function TimeSlotManagement(props) {
         setSlotsData([])
         setSlots([])
         setIsSelected([])
-        helper.errorToast(`Start Time should be lesser than End Time`)
+        helper.errorToast(`Start Time should be less than End Time`)
       }
     }
   }

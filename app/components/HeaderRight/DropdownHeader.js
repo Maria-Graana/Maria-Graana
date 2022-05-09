@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import helper from '../../helper'
 import Loader from '../loader'
 
-import PickerComponent from '../../components/Picker/index'
+import PickerComponent from '../../components/Picker/select'
 
 import StaticData from '../../StaticData'
 
@@ -28,7 +28,7 @@ class DropdownHeader extends React.Component {
     render() {
         const { navigation, leadType, leadsDropdown, changePageType, pageType, hasBooking, isInternetConnected, updateLoader, dispatch,
             getIsTerminalUser } = this.props
-       
+
         return (
 
             <View style={{ flexDirection: 'row', flex: 1 }}>
@@ -46,8 +46,11 @@ class DropdownHeader extends React.Component {
                 <View style={{ margin: 5 }}>
                     {isInternetConnected && updateLoader ? <Loader size={'small'} loading={true} /> : null}
                 </View>
-                <View style={{ flexDirection: 'row', width: 270, justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ width: 160, justifyContent: 'center', alignSelf: 'center', marginRight: 20 }}>
+                <View style={{ flexDirection: 'row', width: 275, 
+                justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ 
+                        //width: 175, 
+                        justifyContent: 'center', alignSelf: 'center', marginRight: 20 }}>
 
 
                         {leadType == 'ProjectLeads' ?
@@ -135,7 +138,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
     },
     pickerStyle: {
-        height: 40,
+        height: 44,
     },
 })
 

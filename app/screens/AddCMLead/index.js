@@ -154,7 +154,8 @@ class AddCMLead extends Component {
             .patch(`/api/leads/project/update/${lead.id}`, CMLead)
             .then((res) => {
               helper.successToast('Lead updated successfully')
-              RootNavigation.navigate('Leads')
+
+              RootNavigation.navigate('ProjectLeads')
             })
             .catch((error) => {
               console.log(error)
@@ -167,7 +168,8 @@ class AddCMLead extends Component {
             .post(`/api/leads/project`, CMLead)
             .then((res) => {
               helper.successToast('Lead created successfully')
-              RootNavigation.navigateToSpecificTab('Leads', 'Invest')
+              RootNavigation.navigate('ProjectLeads')
+
             })
             .catch((error) => {
               console.log(error)

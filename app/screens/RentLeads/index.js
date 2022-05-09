@@ -695,7 +695,10 @@ class RentLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15, justifyContent:'space-between' }]}>
+            <View style={[styles.filterRow, {
+              //paddingHorizontal: 15, 
+              justifyContent: 'space-between'
+            }]}>
               {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
               ) : ( */}
@@ -717,7 +720,7 @@ class RentLeads extends React.Component {
               </View>
               {/* )} */}
 
-          {/*      <View style={styles.iconRow}>
+              {/*      <View style={styles.iconRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
               </View>
 
@@ -741,7 +744,7 @@ class RentLeads extends React.Component {
                 />
               </View> */}
               {/* <View style={styles.verticleLine} /> */}
-              <View style={styles.stylesMainSort}>
+              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
                   style={styles.sortBtn}
                   onPress={() => {
@@ -784,7 +787,7 @@ class RentLeads extends React.Component {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
                         :
-                     this.setState({ phoneModelDataLoader: true })
+                        this.setState({ phoneModelDataLoader: true })
                       this.showMultiPhoneModal(true)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
                         if (res !== null) {

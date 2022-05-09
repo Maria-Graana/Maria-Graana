@@ -204,8 +204,8 @@ const PaymentHelper = {
         firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
           ? null
           : firstFormData.approvedDiscountPrice,
-      unitStatus:
-        CMPayment.paymentType === 'token' ? CMPayment.paymentCategory : firstFormData.paymentPlan,
+      unitStatus: 'hold',
+      reason: 'pending_token',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
@@ -221,6 +221,14 @@ const PaymentHelper = {
       instrumentId: instrument.id,
       isPrimary,
       purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
+      possessionChargesPercentage:
+        firstFormData.paymentPlan === 'installments'
+          ? Number(firstFormData.possessionChargesPercentage)
+          : null,
+      downPaymentPercentage:
+        firstFormData.paymentPlan === 'installments'
+          ? Number(firstFormData.downPaymentPercentage)
+          : null,
     }
   },
   generateProductApiPayload(
@@ -251,7 +259,7 @@ const PaymentHelper = {
         firstFormData.approvedDiscountPrice === null || firstFormData.approvedDiscountPrice === ''
           ? null
           : firstFormData.approvedDiscountPrice,
-      unitStatus: 'Hold',
+      unitStatus: 'hold',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
@@ -270,7 +278,7 @@ const PaymentHelper = {
       downPayment:
         firstFormData.paymentPlan === 'installments' ? Number(firstFormData.downPayment) : null,
       noOfInstallment:
-        firstFormData.paymentPlan === 'installments' ? Number(firstFormData.noOfInstallment) : null,
+        firstFormData.paymentPlan === 'installments' ? firstFormData.noOfInstallment : null,
       paymentPlanDuration: firstFormData.paymentPlanDuration
         ? Number(firstFormData.paymentPlanDuration)
         : null,
@@ -285,15 +293,14 @@ const PaymentHelper = {
           ? Number(firstFormData.possessionCharges)
           : null,
       purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
-      downPaymentMax: projectProduct.downPaymentMax,
-      downPaymentMin: projectProduct.downPaymentMin,
-      installmentFrequencyMax: Number(projectProduct.installmentFrequencyMax),
-      installmentFrequencyMin: Number(projectProduct.installmentFrequencyMin),
-      noInstallmentsMax: projectProduct.noInstallmentsMax,
-      noInstallmentsMin: projectProduct.noInstallmentsMin,
-      possessionChargesMax: projectProduct.possessionChargesMax,
-      possessionChargesMin: projectProduct.possessionChargesMin,
-      projectSiteId: firstFormData.projectSiteId ? firstFormData.projectSiteId : null,
+      possessionChargesPercentage:
+        firstFormData.paymentPlan === 'installments'
+          ? Number(firstFormData.possessionChargesPercentage)
+          : null,
+      downPaymentPercentage:
+        firstFormData.paymentPlan === 'installments'
+          ? Number(firstFormData.downPaymentPercentage)
+          : null,
     }
   },
   normalizeProjectProducts(products) {
@@ -554,7 +561,8 @@ const PaymentHelper = {
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
-      unitStatus: 'Hold',
+      unitStatus: 'hold',
+      reason: 'pending_token',
       installmentAmount: CMPayment.installmentAmount,
       purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
       downPaymentMax: projectProduct.downPaymentMax,

@@ -322,13 +322,27 @@ class CMPayment extends Component {
   // **************** Fetch API's Calls Start *******************
   fetchLead = async (functionCallingFor) => {
     const { lead } = this.props
-    const { payment, unit } = lead
-    const { cmProgressBar } = StaticData
     const { secondForm, firstForm } = this.state
     axios
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
-        let responseData = res.data
+        let responseData = { ...res.data }
+        let bookingFormsData =
+          responseData.bookingForms.length > 0 ? responseData.bookingForms[0] : null
+        if (bookingFormsData) {
+          let { unit } = responseData
+          unit['finalPrice'] = bookingFormsData.finalPrice
+          unit['type'] = bookingFormsData.projectType
+          unit['discount_amount'] = bookingFormsData.discountedAmount
+          unit['discounted_price'] = bookingFormsData.discountedPrice
+          responseData.unit.category_charges =
+            bookingFormsData.unitCategoryCharges === null ? 0 : bookingFormsData.unitCategoryCharges
+          responseData.unit.pricePerSqFt = bookingFormsData.unitRatePerSqrFt
+          responseData.unit.area = bookingFormsData.unitArea
+          responseData.unit.unit_price = bookingFormsData.price
+          responseData.unit.bookingStatus = bookingFormsData.unitStatus
+          responseData.unit.finalPrice = bookingFormsData.finalPrice
+        }
         if (!responseData.paidProject) responseData.paidProject = responseData.project
         this.props.dispatch(setlead(responseData))
         this.fetchProducts(responseData)

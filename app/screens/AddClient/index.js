@@ -545,7 +545,7 @@ class AddClient extends Component {
       mAddress: client.mAddress,
       nationality: client.nationality,
       dob: client.dob,
-      clientSource: client.clientSource,
+      clientSource:  client.clientSource == null ? 'Personal Client' : client.clientSource,
 
     }
     this.setState({ formData })

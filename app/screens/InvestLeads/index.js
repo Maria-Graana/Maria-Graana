@@ -759,8 +759,8 @@ class InvestLeads extends React.Component {
                   selectedItem={pageType}
                   showPickerArrow={false}
                 />
-              </View>
-              <View style={styles.verticleLine} /> */}
+              </View>*/}
+              <View style={styles.verticleLine} /> 
 
               <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity

@@ -112,10 +112,10 @@ class ClientDetail extends React.Component {
 
     if (!client.originalOwner) {
       if (client.assigned_to_armsuser_id && client.assigned_to_armsuser_id === user.id)
-        return 'Personal Client'
+        return client.clientSource == null ? 'Personal Client' : client.clientSource
       else return client.assigned_to_organization ? client.assigned_to_organization : ''
     } else {
-      if (client.originalOwner.id === user.id) return 'Personal Client'
+      if (client.originalOwner.id === user.id) client.clientSource == null ? 'Personal Client' : client.clientSource 
       else {
         if (client.originalOwner.organization) return client.originalOwner.organization.name
         else return client.originalOwner.firstName + ' ' + client.originalOwner.lastName

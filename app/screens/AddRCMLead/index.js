@@ -109,9 +109,13 @@ class AddRCMLead extends Component {
   }
 
   setEditValues = () => {
-    const { route } = this.props
+    const { route, dispatch } = this.props
     const { RCMFormData } = this.state
     const { lead = null, selectedCity, client, name } = route.params
+    let areasId =
+      lead.armsLeadAreas && lead.armsLeadAreas.length > 0
+        ? _.pluck(lead.armsLeadAreas, 'area_id')
+        : []
     const regex = /(<([^>]+)>)/gi
     let copyObject = Object.assign({}, RCMFormData)
     copyObject.maxPrice = lead.price ? lead.price : 0
@@ -129,11 +133,12 @@ class AddRCMLead extends Component {
     copyObject.subtype = lead.subtype ? lead.subType : ''
     copyObject.customerId = client ? client.id : null
     copyObject.city_id = selectedCity ? selectedCity.value : null
-    copyObject.leadAreas = lead.armsLeadAreas ? lead.armsLeadAreas : []
+    copyObject.leadAreas = areasId
     copyObject.description = lead.description ? lead.description.replace(regex, '') : ''
     copyObject.subtype = lead.subtype ? lead.subtype : ''
     copyObject.org =
       lead.customer && lead.customer.organizationId ? lead.customer.organizationId : null
+    dispatch(setSelectedAreas(areasId))
     this.setState({ selectedCity, selectedClient: client, name, RCMFormData: copyObject }, () => {
       if (copyObject.type != '') {
         this.selectSubtype(copyObject.type)

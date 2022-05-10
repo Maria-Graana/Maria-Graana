@@ -15,7 +15,7 @@ import TouchableButton from '../../components/TouchableButton'
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import * as RootNavigation from '../../navigation/RootNavigation'
 import { StyleProvider } from 'native-base'
-import { refreshAddress, refreshMailingAddress ,capitalizeFirstLetter} from "./ClientHelper";
+import { refreshAddress, refreshMailingAddress, capitalizeFirstLetter } from "./ClientHelper";
 import DetailForm from './detailForm'
 import AppStyles from '../../AppStyles'
 import getTheme from '../../../native-base-theme/components'
@@ -124,7 +124,7 @@ class AddClient extends Component {
         purpose: "Select Lead Type",
 
         //need to confirm from backend
-        clientType: 'Personal Client',
+        clientSource: 'Personal Client',
 
 
         //till
@@ -245,7 +245,7 @@ class AddClient extends Component {
     const { CMLead, route, dispatch } = this.props
     const { client, name } = route.params
     if (client && name) {
-      
+
       let phones = []
       if (client.customerContacts && client.customerContacts.length) {
         client.customerContacts.map((item) => {
@@ -545,7 +545,7 @@ class AddClient extends Component {
       mAddress: client.mAddress,
       nationality: client.nationality,
       dob: client.dob,
-      //clientType
+      clientSource: 'Personal Client',
 
     }
     this.setState({ formData })
@@ -903,7 +903,7 @@ class AddClient extends Component {
           let body = this.createPayload()
           body.name = body.first_name + ' ' + body.last_name
           this.setState({ loading: true })
-          
+
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
@@ -919,12 +919,12 @@ class AddClient extends Component {
                   }
                 }
                 if (res.data.message !== 'CLIENT CREATED') {
-                
+
                   // Error Messages
                   if (res.data.message === 'Client already exists') {
                     helper.errorToast(res.data.message)
                   }
-                  else{
+                  else {
                     helper.errorToast(res?.data?.message)
                   }
                 } else {
@@ -977,7 +977,7 @@ class AddClient extends Component {
                 body.name = body.first_name + ' ' + body.last_name
                 //this.call(body)
                 navigation.navigate('ClientDetail')
-               // navigation.goBack()
+                // navigation.goBack()
               }
             })
             .catch((error) => {
@@ -1513,7 +1513,7 @@ mapStateToProps = (store) => {
     CMFormLoading: store.cmLead.CMFormLoading,
     investmentProjects: store.cmLead.investmentProjects,
     CMLead: store.cmLead.CMLead,
-  
+
   }
 }
 

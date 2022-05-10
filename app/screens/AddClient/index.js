@@ -545,7 +545,7 @@ class AddClient extends Component {
       mAddress: client.mAddress,
       nationality: client.nationality,
       dob: client.dob,
-      clientSource: 'Personal Client',
+      clientSource: client.clientSource,
 
     }
     this.setState({ formData })
@@ -699,6 +699,7 @@ class AddClient extends Component {
         country: formData.country,
         email: formData.email,
         cnic: formData.cnic,
+        clientSource:formData.clientSource,
         phone: {
           countryCode: callingCode === '+92' ? 'PK' : countryCode,
           phone: phone1 ? phone1.replace(/\s+/g, '') : null,
@@ -762,7 +763,7 @@ class AddClient extends Component {
       email: formData.email,
       cnic: formData.cnic & (formData.cnic === '') ? null : formData.cnic,
 
-
+      clientSource: formData.clientSource,
       nationality: formData.nationality,
       dob: formData.dob,
 
@@ -907,9 +908,9 @@ class AddClient extends Component {
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
-              console.log("res", res.data)
+            
               //id
-              if (res.status === 200 && res.data) {
+              if (res?.status === 200 && res?.data) {
                 if (formData.contactRegistrationId) {
                   let isContactExists = armsContacts.find(
                     (item) => item.id === formData.contactRegistrationId
@@ -918,10 +919,10 @@ class AddClient extends Component {
                     this.deleteARMSContact(formData.contactRegistrationId)
                   }
                 }
-                if (res.data.message !== 'CLIENT CREATED') {
+                if (res?.data?.message !== 'CLIENT CREATED') {
 
                   // Error Messages
-                  if (res.data.message === 'Client already exists') {
+                  if (res?.data?.message === 'Client already exists') {
                     helper.errorToast(res.data.message)
                   }
                   else {

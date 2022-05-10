@@ -53,14 +53,17 @@ import {
 } from '../../actions/addInstrument'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
-var BUTTONS = [//'Assign to Accounts',
- 'Delete', 'Cancel']
+var BUTTONS = [
+  //'Assign to Accounts',
+  'Delete',
+  'Cancel',
+]
 var CANCEL_INDEX = 1
 
 class LeadPropsure extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       loading: true,
       open: false,
@@ -79,7 +82,7 @@ class LeadPropsure extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
       callModal: false,
       meetings: [],
       menuShow: false,
@@ -254,16 +257,13 @@ class LeadPropsure extends React.Component {
               assignToAccountsLoading: false,
               documentModalVisible: false,
             })
-          }
-          else {
+          } else {
             this.setState({
-
               matchData: matches,
               progressValue: rcmProgressBar[lead.status],
               assignToAccountsLoading: false,
               documentModalVisible: false,
             })
-
           }
         })
         .catch((error) => {
@@ -278,7 +278,6 @@ class LeadPropsure extends React.Component {
           })
         })
     })
-
   }
 
   fetchLead = (lead) => {
@@ -296,7 +295,7 @@ class LeadPropsure extends React.Component {
       })
   }
 
-  displayChecks = () => { }
+  displayChecks = () => {}
 
   ownProperty = (property) => {
     const { user } = this.props
@@ -313,20 +312,25 @@ class LeadPropsure extends React.Component {
   }
 
   showDocumentModal = (propsureReports, property) => {
-    const { lead, user, dispatch, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, dispatch, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (leadAssignedSharedStatus) {
       let installment = property.cmInstallment
         ? property.cmInstallment
         : {
-          installmentAmount: null,
-          type: '',
-          rcmLeadId: null,
-          details: '',
-          visible: false,
-          paymentAttachments: [],
-          selectedPropertyId: property.id,
-        }
+            installmentAmount: null,
+            type: '',
+            rcmLeadId: null,
+            details: '',
+            visible: false,
+            paymentAttachments: [],
+            selectedPropertyId: property.id,
+          }
       dispatch(setPropsurePayment(installment))
       this.setState({
         documentModalVisible: true,
@@ -697,8 +701,13 @@ class LeadPropsure extends React.Component {
   }
 
   showReportsModal = (property) => {
-    const { lead, user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (leadAssignedSharedStatus) {
       this.setState({
         isVisible: true,
@@ -803,7 +812,6 @@ class LeadPropsure extends React.Component {
           })
 
           this.assignToAccountsOpen(data)
-
         }
         if (buttonIndex === 1) {
           //Delete
@@ -842,8 +850,8 @@ class LeadPropsure extends React.Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
 
@@ -933,7 +941,7 @@ class LeadPropsure extends React.Component {
   submitCommissionPropsurePayment = () => {
     const { propsurePayment, user, lead } = this.props
     const { editable, selectedProperty, previousPayment } = this.state
-    const { propsureOutstandingPayment } = lead;
+    const { propsureOutstandingPayment } = lead
 
     if (
       propsurePayment.installmentAmount != null &&
@@ -979,10 +987,7 @@ class LeadPropsure extends React.Component {
           delete body.paymentCategory
           this.updatePropsurePayment(body)
         }
-
-      }
-      else {
-
+      } else {
         if (Number(propsurePayment.installmentAmount) <= 0) {
           this.setState({
             buyerNotZero: true,
@@ -1062,18 +1067,13 @@ class LeadPropsure extends React.Component {
           }
         }
       }
-    }
-
-    else {
-
+    } else {
       // Installment amount or type is missing so validation goes true, show error
       this.setState({
         modalValidation: true,
       })
     }
   }
-
-
 
   checkInstrumentValidation = () => {
     const { addInstrument } = this.props
@@ -1133,12 +1133,11 @@ class LeadPropsure extends React.Component {
     axios
       .patch(`/api/leads/project/payment?id=${body.id}`, body)
       .then((res) => {
-
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
           ? _.filter(propsurePayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1150,8 +1149,7 @@ class LeadPropsure extends React.Component {
           this.getCallHistory()
           if (body?.paymentType == 'AssignToAccount') {
             this.fetchProperties(lead, 'AssignToAccount')
-          }
-          else {
+          } else {
             this.fetchProperties(lead)
           }
           this.fetchPropsureReportsList()
@@ -1257,9 +1255,9 @@ class LeadPropsure extends React.Component {
       let pendingPropsures =
         data.propsures && data.propsures.length
           ? _.filter(
-            data.propsures,
-            (item) => item.status === 'pending' && item.addedBy === 'buyer'
-          )
+              data.propsures,
+              (item) => item.status === 'pending' && item.addedBy === 'buyer'
+            )
           : null
       let totalFee = helper.AddPropsureReportsFee(pendingPropsures, 'buyer')
       totalFee = Number(propsureOutstandingPayment) - Number(totalFee)
@@ -1309,7 +1307,6 @@ class LeadPropsure extends React.Component {
     )
   }
 
-
   //Open status assign to Accounts
   assignToAccountsOpen = (data) => {
     Alert.alert(
@@ -1320,10 +1317,14 @@ class LeadPropsure extends React.Component {
         {
           text: 'Yes',
           onPress: async () => {
-
             const { propsurePayment, dispatch } = this.props
             await dispatch(
-              setPropsurePayment({ ...data, visible: false, status: 'pendingAccount', paymentType: 'AssignToAccount' })
+              setPropsurePayment({
+                ...data,
+                visible: false,
+                status: 'pendingAccount',
+                paymentType: 'AssignToAccount',
+              })
             )
             this.setState({ assignToAccountsLoading: true }, () => {
               this.submitCommissionPropsurePayment()
@@ -1334,7 +1335,6 @@ class LeadPropsure extends React.Component {
       { cancelable: false }
     )
   }
-
 
   handleOfficeLocation = (value) => {
     const { propsurePayment, dispatch } = this.props
@@ -1523,8 +1523,8 @@ class LeadPropsure extends React.Component {
       forStatusPrice,
       formData,
     } = this.state
-    const { lead, navigation, user, permissions } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, navigation, user, permissions, shortlistedData } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     return !loading ? (
       <StyleProvider style={getTheme(formTheme)}>
         <View
@@ -1746,6 +1746,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

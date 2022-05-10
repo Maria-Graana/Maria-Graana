@@ -26,13 +26,14 @@ import {
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 import HistoryModal from '../../components/HistoryModal'
 import diaryHelper from '../../screens/Diary/diaryHelper'
+import { setShortlistedData } from '../../actions/drawer'
 
 const _format = 'YYYY-MM-DD'
 
 class LeadDetail extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       type: '',
       lead: [],
@@ -43,7 +44,7 @@ class LeadDetail extends React.Component {
       description: '',
       mainButtonText: `Let’s Earn`,
       fromScreen: null,
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
     }
   }
 
@@ -120,10 +121,11 @@ class LeadDetail extends React.Component {
   }
 
   fetchLead = (url) => {
-    const { route, user } = this.props
+    const { route, user, dispatch } = this.props
     const { type } = this.state
     const { lead, purposeTab } = route.params
     const that = this
+    dispatch(setShortlistedData(lead))
     axios
       .get(`${url}?id=${lead.id}`)
       .then((res) => {
@@ -173,11 +175,11 @@ class LeadDetail extends React.Component {
   }
 
   navigateTo = () => {
-    const { navigation, user } = this.props
+    const { navigation, user, shortlistedData } = this.props
     const { lead, type } = this.state
     var status = lead.status
     let page = ''
-    if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead)) {
+    if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead, shortlistedData)) {
       return
     }
     if (type === 'Investment') {
@@ -287,8 +289,8 @@ class LeadDetail extends React.Component {
 
   goToClientsDetail = () => {
     const { lead } = this.state
-    const { navigation, user } = this.props
-    if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead)) {
+    const { navigation, user, shortlistedData } = this.props
+    if (!helper.checkAssignedSharedStatusANDReadOnly(user, lead, shortlistedData)) {
       return
     }
     if (lead.customer) {
@@ -959,6 +961,7 @@ mapStateToProps = (store) => {
     selectedDiary: store.diary.selectedDiary,
     connectFeedback: store.diary.connectFeedback,
     contacts: store.contacts.contacts,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

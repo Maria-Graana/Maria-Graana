@@ -26,7 +26,7 @@ import styles from './styles'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       open: false,
       loading: true,
@@ -45,7 +45,7 @@ class LeadOffer extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -357,11 +357,17 @@ class LeadOffer extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
       user,
-      lead
+      lead,
+      shortlistedData
     )
     if (property.agreedOffer.length) {
       return (
@@ -662,10 +668,10 @@ class LeadOffer extends React.Component {
     }
     console.log(body)
     if (body.propertyType === 'graana') {
-          // // for graana properties
+      // // for graana properties
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
     } else {
-          // for arms properties
+      // for arms properties
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
     }
     formData['amount'] = ''
@@ -762,8 +768,8 @@ class LeadOffer extends React.Component {
       forStatusPrice,
       formData,
     } = this.state
-    const { lead, navigation, user, permissions } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, navigation, user, permissions, shortlistedData } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     const showBuyerSide = helper.setBuyerAgent(lead, 'buyerSide', user)
     const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'buyerSide', user)
 
@@ -877,7 +883,7 @@ class LeadOffer extends React.Component {
           setNewActionModal={(value) => this.setNewActionModal(value)}
           leadType={'RCM'}
         />
-         <GraanaPropertiesModal
+        <GraanaPropertiesModal
           active={graanaModalActive}
           data={singlePropertyData}
           forStatusPrice={forStatusPrice}
@@ -953,6 +959,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

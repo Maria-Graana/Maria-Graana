@@ -129,12 +129,15 @@ export function clearDiaries() {
 
 export function getDiaryFeedbacks(payload) {
   return (dispatch, getsState) => {
-    const { leadType = null, taskType = null, actionType = null } = payload
+    const { leadType = null, taskType = null, actionType = null, section = null } = payload
     let url = `/api/feedbacks/fetch?taskType=${
       taskType === 'follow_up' && actionType != 'Done'
         ? 'Connect'
         : capitalizeWordsWithoutUnderscore(taskType, true)
     }&actionType=${actionType}&leadType=${leadType}`
+    if (section) {
+      url = url + `&section=${section}`
+    }
     //console.log(url)
     axios
       .get(url)

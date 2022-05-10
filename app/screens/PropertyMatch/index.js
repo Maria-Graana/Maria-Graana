@@ -252,7 +252,7 @@ class PropertyMatch extends React.Component {
     if ('armsLeadAreas' in lead) {
       if (lead.armsLeadAreas.length) {
         areas = lead.armsLeadAreas.map((area) => {
-          if ('area' in area) return area.area.id
+          if ('area' in area) return area?.area?.id
         })
       }
     }

@@ -216,7 +216,7 @@ class AddDiary extends Component {
           for (let i in res.data[1]) {
             notificationData = res.data[1][i]
           }
-       
+
 
 
           let start = new Date(notificationData.start)
@@ -225,9 +225,10 @@ class AddDiary extends Component {
           let notificationPayload;
 
           if (diary.taskType == 'viewing') {
+
             start = new Date(diary.start)
-             end = new Date(diary.end)
-  
+            end = new Date(diary.end)
+
 
             notificationPayload = {
               clientName: screenName == 'ScheduledTasks' ? customerName : data?.selectedLead?.customer?.customerName,
@@ -239,11 +240,12 @@ class AddDiary extends Component {
             }
 
             TimerNotification(notificationPayload, start)
-            
+
 
           }
           else {
             if (notificationData.taskCategory == 'leadTask') {
+
 
               notificationPayload = {
                 clientName: screenName == 'ScheduledTasks' ? customerName : data?.selectedLead?.customer?.customerName,
@@ -251,13 +253,14 @@ class AddDiary extends Component {
                 title: DiaryHelper.showTaskType(
                   notificationData?.taskType
                 ),
-                body: moment( new Date(notificationData.start)).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+                body: moment(new Date(notificationData.start)).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
               }
 
               TimerNotification(notificationPayload, start)
             }
 
             else {
+
               notificationPayload = {
                 id: notificationData.id,
                 title: DiaryHelper.showTaskType(
@@ -265,11 +268,12 @@ class AddDiary extends Component {
                 ),
                 body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
               }
+              TimerNotification(notificationPayload, start)
             }
-            TimerNotification(notificationPayload, start)
+
           }
 
-         
+
           if (screenName === 'Diary') {
             dispatch(
               getDiaryTasks({

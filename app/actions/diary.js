@@ -134,7 +134,10 @@ export function getDiaryFeedbacks(payload) {
       taskType === 'follow_up' && actionType != 'Done'
         ? 'Connect'
         : capitalizeWordsWithoutUnderscore(taskType, true)
-    }&actionType=${actionType}&leadType=${leadType}&section=${section}`
+    }&actionType=${actionType}&leadType=${leadType}`
+    if (section) {
+      url = url + `&section=${section}`
+    }
     //console.log(url)
     axios
       .get(url)

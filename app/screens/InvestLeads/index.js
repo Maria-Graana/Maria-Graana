@@ -99,17 +99,15 @@ class InvestLeads extends React.Component {
   }
 
   componentDidMount() {
-
     const { dispatch, route } = this.props
     const { client } = route.params
     const { hasBooking = false } = this.props.route.params
 
-    dispatch(setLeadsDropdown(hasBooking
-      ? '&pageType=myDeals&hasBooking=true'
-      : '&pageType=myLeads&hasBooking=false'))
-
-
-
+    dispatch(
+      setLeadsDropdown(
+        hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
+      )
+    )
 
     if (client) {
       this.fetchAddedLeads(client)
@@ -122,9 +120,6 @@ class InvestLeads extends React.Component {
       })
     }
   }
-
-
-
 
   componentWillUnmount() {
     this.clearStateValues()
@@ -144,14 +139,10 @@ class InvestLeads extends React.Component {
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
-
   }
 
   componentDidUpdate(prevProps, prevState) {
-
     if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
-
-
       this.changePageType(this.props.leadsDropdown)
     }
     if (this.props.referenceGuide !== prevProps.referenceGuide) {
@@ -425,8 +416,6 @@ class InvestLeads extends React.Component {
       this.props.dispatch(setlead(data))
       let page = ''
       if (data.readAt === null) {
-        console.log("HELLLLLLLLl")
-
         this.props.navigation.navigate('LeadDetail', {
           lead: data,
           purposeTab: 'invest',
@@ -448,7 +437,6 @@ class InvestLeads extends React.Component {
             params: { lead: data, unitData: unitData, screenName: screen },
           })
         } else if (data.status === 'open' || data.status === 'in_progress') {
-          console.log("HELLL")
           this.props.navigation.navigate('LeadDetail', {
             lead: data,
             purposeTab: 'invest',
@@ -605,7 +593,6 @@ class InvestLeads extends React.Component {
     this.setState({ activeSortModal: !this.state.activeSortModal })
   }
 
-
   renderItem = ({ item }) => {
     return (
       <LeadTile
@@ -645,12 +632,8 @@ class InvestLeads extends React.Component {
           )
         }
       />
-
-    );
-  };
-
-
-
+    )
+  }
 
   render() {
     const {
@@ -671,7 +654,7 @@ class InvestLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
-      phoneModelDataLoader
+      phoneModelDataLoader,
     } = this.state
     const {
       user,
@@ -729,10 +712,15 @@ class InvestLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, {
-              //paddingHorizontal: 15,
-              justifyContent: 'space-between',
-            }]}>
+            <View
+              style={[
+                styles.filterRow,
+                {
+                  //paddingHorizontal: 15,
+                  justifyContent: 'space-between',
+                },
+              ]}
+            >
               <View style={styles.pickerMain}>
                 <PickerComponent
                   placeholder={'Lead Status'}
@@ -740,8 +728,8 @@ class InvestLeads extends React.Component {
                     hasBooking
                       ? StaticData.investmentFilterDeals
                       : hideCloseLostFilter
-                        ? StaticData.investmentFilterLeadsAddTask
-                        : StaticData.investmentFilterLeads
+                      ? StaticData.investmentFilterLeadsAddTask
+                      : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -834,7 +822,9 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && (screen === 'Leads' || screen === 'ProjectLeads') && !hideCloseLostFilter ? (
+        {(createProjectLead || createBuyRentLead) &&
+        (screen === 'Leads' || screen === 'ProjectLeads') &&
+        !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"
@@ -865,7 +855,6 @@ class InvestLeads extends React.Component {
 }
 
 mapStateToProps = (store) => {
-
   return {
     user: store.user.user,
     contacts: store.contacts.contacts,

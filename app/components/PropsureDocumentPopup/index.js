@@ -190,8 +190,10 @@ const PropsureDocumentPopup = (props) => {
                 <CommissionTile
                   data={singlePayment}
                   editTile={editable}
-                  onPaymentLongPress={() => onPaymentLongPress(singlePayment)}
+                 onPaymentLongPress={() => onPaymentLongPress(singlePayment)}
                   commissionEdit={false}
+                  updatePermission={true}
+                  closedLeadEdit={true}
                   title={'Propsure Payment'}
                 />
               ) : (

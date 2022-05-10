@@ -31,7 +31,7 @@ class DropdownHeader extends React.Component {
 
         return (
 
-            <View style={{ flexDirection: 'row', flex: 1 }}>
+            <View style={{ flexDirection: 'row', flex: 1, }}>
                 {!isInternetConnected ? (
                     <TouchableOpacity
                         onPress={() => {
@@ -46,11 +46,20 @@ class DropdownHeader extends React.Component {
                 <View style={{ margin: 5 }}>
                     {isInternetConnected && updateLoader ? <Loader size={'small'} loading={true} /> : null}
                 </View>
-                <View style={{ flexDirection: 'row', width: 275, 
-                justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ 
-                        //width: 175, 
-                        justifyContent: 'center', alignSelf: 'center', marginRight: 20 }}>
+                <View style={{
+                    flexDirection: 'row',
+
+
+                    width: 255,
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}>
+                    <View style={{
+
+                        //  width: 160, 
+                        justifyContent: 'center', alignSelf: 'center',
+                        // marginRight: 20
+                    }}>
 
 
                         {leadType == 'ProjectLeads' ?

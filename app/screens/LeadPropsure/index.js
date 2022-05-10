@@ -53,7 +53,8 @@ import {
 } from '../../actions/addInstrument'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
-var BUTTONS = ['Assign to Accounts', 'Delete', 'Cancel']
+var BUTTONS = [//'Assign to Accounts',
+ 'Delete', 'Cancel']
 var CANCEL_INDEX = 1
 
 class LeadPropsure extends React.Component {

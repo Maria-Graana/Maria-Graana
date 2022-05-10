@@ -116,8 +116,8 @@ class AgentTile extends React.Component {
   }
 
   callToggleFunc = (data) => {
-    const { permissions, toggleMenu, user, lead } = this.props
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { permissions, toggleMenu, user, lead, shortlistedData } = this.props
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     if (
       getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions) &&
       closedLeadEdit
@@ -138,12 +138,13 @@ class AgentTile extends React.Component {
       lead,
       permissions,
       user,
+      shortlistedData,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let otherAgentdiary = this.getOtherDiary(data) || null
     let agentName = data ? this.displayName(data) : ''
     let show = isMenuVisible
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
 
     if (isMenuVisible) {
       if (ownDiary) {
@@ -666,6 +667,7 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

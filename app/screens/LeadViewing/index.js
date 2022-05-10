@@ -43,7 +43,7 @@ const _today = moment(new Date()).format('YYYY-MM-DD')
 class LeadViewing extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       isVisible: false,
       open: false,
@@ -65,7 +65,7 @@ class LeadViewing extends React.Component {
       organization: 'arms',
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -294,7 +294,7 @@ class LeadViewing extends React.Component {
     copyObj.customerId = customerId
     copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
     copyObj.propertyId = property && property.id ? property.id : null
-    copyObj.customer=lead.customer
+    copyObj.customer = lead.customer
     navigation.navigate('TimeSlotManagement', {
       data: copyObj,
       taskType: 'viewing',
@@ -333,7 +333,7 @@ class LeadViewing extends React.Component {
     copyObj.customerId = customerId
     copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
     copyObj.propertyId = property && property.id ? property.id : null
-    copyObj.customer=lead.customer
+    copyObj.customer = lead.customer
     navigation.navigate('TimeSlotManagement', {
       data: copyObj,
       taskType: 'viewing',
@@ -503,8 +503,13 @@ class LeadViewing extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (helper.checkMyDiary(property, user)) {
       let diaries = property.diaries
       let diary = _.find(diaries, (item) => user.id === item.userId && item.status === 'pending')
@@ -599,8 +604,13 @@ class LeadViewing extends React.Component {
   }
 
   bookAnotherViewing = (property) => {
-    const { lead, user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (leadAssignedSharedStatus) {
       // this.openModal()
       this.setProperty(property)
@@ -1051,8 +1061,8 @@ class LeadViewing extends React.Component {
       forStatusPrice,
       formData,
     } = this.state
-    const { lead, user, navigation, permissions } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, navigation, permissions, shortlistedData } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
 
     return !loading ? (
       <View style={{ flex: 1 }}>
@@ -1272,6 +1282,7 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

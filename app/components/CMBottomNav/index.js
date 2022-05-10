@@ -339,6 +339,22 @@ class CMBottomNav extends React.Component {
       })
   }
 
+  canMarkCloseAsLost = (lead, type) => {
+    if (type === 'Project') {
+      if (lead && lead.payment && lead.payment.length > 0) {
+        return false
+      } else {
+        return true
+      }
+    } else {
+      if (lead && lead.commissions && lead.commissions.length > 0) {
+        return false
+      } else {
+        return true
+      }
+    }
+  }
+
   render() {
     const {
       navigateTo,
@@ -683,17 +699,24 @@ class CMBottomNav extends React.Component {
               {(screenName === 'InvestDetailScreen' || screenName === 'BuyRentDetailScreen') && (
                 <Menu.Item
                   onPress={() => {
-                    dispatch(
-                      getDiaryFeedbacks({
-                        // taskType: selectedDiary.taskType,
-                        leadType: diaryHelper.getLeadType(selectedDiary),
-                        actionType: 'Connect',
-                      })
-                    )
-                      .then((res) => {
-                        this.props.navigation.navigate('DiaryFeedback', { actionType: 'Connect' })
-                      })
-                      .catch((err) => console.error('An error occurred', err))
+                    this.canMarkCloseAsLost(lead, lead.armsProjectTypeId ? 'Project' : 'BuyRent')
+                      ? dispatch(
+                          getDiaryFeedbacks({
+                            taskType: 'Connect',
+                            leadType: 'Project',
+                            actionType: 'Connect',
+                            section: 'Reject',
+                          })
+                        )
+                          .then((res) => {
+                            this.props.navigation.navigate('DiaryFeedback', {
+                              actionType: 'Connect',
+                            })
+                          })
+                          .catch((err) => console.error('An error occurred', err))
+                      : helper.errorToast(
+                          `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
+                        )
                     this.openMenu(false)
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}

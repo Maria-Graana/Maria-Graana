@@ -585,6 +585,9 @@ class DiaryFeedback extends Component {
               this.handleNextAction({ type: 'reject', reason, isBlacklist })
             }
             selectedReason={connectFeedback.tag ? connectFeedback.tag : null}
+            message={
+              'Lead will be closed as lost with this action. Are you sure you want to continue?'
+            }
           />
 
           {actionType &&

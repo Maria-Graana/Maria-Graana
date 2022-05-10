@@ -612,7 +612,7 @@ class BuyLeads extends React.Component {
       pageType,
       phoneModelDataLoader
     } = this.state
-    const {leadsDropdown, user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
+    const { leadsDropdown, user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
       this.props
     const {
       screen,
@@ -625,7 +625,7 @@ class BuyLeads extends React.Component {
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
-      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 ,}]}>
+      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0, }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           <ShortlistedProperties
@@ -668,8 +668,9 @@ class BuyLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, {
-             //  paddingHorizontal: 15 ,
-                justifyContent:'space-between'}]}>
+              paddingLeft: 15,
+              justifyContent: 'space-between'
+            }]}>
               {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
               ) : ( */}
@@ -712,9 +713,9 @@ class BuyLeads extends React.Component {
                   selectedItem={pageType}
                   showPickerArrow={false}
                 />
-              </View>
-              <View style={styles.verticleLine} /> */}
-              <View style={[styles.stylesMainSort,{ marginHorizontal: 5 }]}>
+              </View>*/}
+              <View style={styles.verticleLine} />
+              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
                   style={styles.sortBtn}
                   onPress={() => {
@@ -781,7 +782,7 @@ class BuyLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        : 
+                        :
                         this.setState({ phoneModelDataLoader: true })
                       this.showMultiPhoneModal(true)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {

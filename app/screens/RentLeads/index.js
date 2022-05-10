@@ -696,7 +696,7 @@ class RentLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, {
-              //paddingHorizontal: 15, 
+              paddingLeft: 15, 
               justifyContent: 'space-between'
             }]}>
               {/* {hasBooking ? (
@@ -743,7 +743,7 @@ class RentLeads extends React.Component {
                   showPickerArrow={false}
                 />
               </View> */}
-              {/* <View style={styles.verticleLine} /> */}
+              <View style={styles.verticleLine} />
               <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
                   style={styles.sortBtn}

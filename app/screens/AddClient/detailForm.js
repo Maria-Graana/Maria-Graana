@@ -677,9 +677,9 @@ class DetailForm extends Component {
                   <PickerComponent
                     onValueChange={handleForm}
                     data={StaticData.clientTypePickerData}
-                    name={'clientType'}
+                    name={'clientSource'}
                     placeholder="Client Type"
-                    selectedItem={formData.clientType}
+                    selectedItem={formData.clientSource}
 
                   />
                 </View>

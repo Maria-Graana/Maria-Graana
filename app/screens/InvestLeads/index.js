@@ -730,7 +730,7 @@ class InvestLeads extends React.Component {
             </View>
           ) : (
             <View style={[styles.filterRow, {
-              //paddingHorizontal: 15,
+              paddingLeft: 15,
               justifyContent: 'space-between',
             }]}>
               <View style={styles.pickerMain}>
@@ -771,8 +771,8 @@ class InvestLeads extends React.Component {
                   selectedItem={pageType}
                   showPickerArrow={false}
                 />
-              </View>
-              <View style={styles.verticleLine} /> */}
+              </View>*/}
+              <View style={styles.verticleLine} /> 
 
               <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity

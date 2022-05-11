@@ -2226,35 +2226,36 @@ class CMPayment extends Component {
             closePopup={this.goToHistory}
             openPopup={callModal}
           />
-
-          <View style={AppStyles.mainCMBottomNav}>
-            <CMBottomNav
-              goToAttachments={this.goToAttachments}
-              navigateTo={this.navigateTo}
-              goToDiaryForm={this.goToDiaryForm}
-              goToComments={this.goToComments}
-              closedLeadEdit={checkLeadClosedOrNot}
-              alreadyClosedLead={this.closedLead}
-              closeLead={this.fetchLead}
-              closeLeadFor={'leadClose'}
-              goToFollowUp={(value) => this.openModalInFollowupMode(value)}
-              goToRejectForm={this.goToRejectForm}
-              closedWon={closedWon}
-              showStatusFeedbackModal={(value, modalMode) =>
-                this.showStatusFeedbackModal(value, modalMode)
-              }
-              addMeeting={() => this.openModalInMeetingMode()}
-              leadType={'CM'}
-              navigation={navigation}
-              customer={lead.customer}
-              goToHistory={this.goToHistory}
-              onHandleCloseLead={this.onHandleCloseLead}
-              fetchLead={this.fetchLead}
-              screenName={screenName}
-              lead={lead}
-              closeWonOptionVisibleFromInvest={true}
-            />
-          </View>
+          {secondForm && (
+            <View style={AppStyles.mainCMBottomNav}>
+              <CMBottomNav
+                goToAttachments={this.goToAttachments}
+                navigateTo={this.navigateTo}
+                goToDiaryForm={this.goToDiaryForm}
+                goToComments={this.goToComments}
+                closedLeadEdit={checkLeadClosedOrNot}
+                alreadyClosedLead={this.closedLead}
+                closeLead={this.fetchLead}
+                closeLeadFor={'leadClose'}
+                goToFollowUp={(value) => this.openModalInFollowupMode(value)}
+                goToRejectForm={this.goToRejectForm}
+                closedWon={closedWon}
+                showStatusFeedbackModal={(value, modalMode) =>
+                  this.showStatusFeedbackModal(value, modalMode)
+                }
+                addMeeting={() => this.openModalInMeetingMode()}
+                leadType={'CM'}
+                navigation={navigation}
+                customer={lead.customer}
+                goToHistory={this.goToHistory}
+                onHandleCloseLead={this.onHandleCloseLead}
+                fetchLead={this.fetchLead}
+                screenName={screenName}
+                lead={lead}
+                closeWonOptionVisibleFromInvest={true}
+              />
+            </View>
+          )}
         </View>
       </View>
     )

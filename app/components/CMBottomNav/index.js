@@ -496,7 +496,7 @@ class CMBottomNav extends React.Component {
                 style={styles.bottomNavImg}
                 source={require('../../../assets/img/black/tasks.png')}
               />
-              <Text style={styles.followText}>Tasksss</Text>
+              <Text style={styles.followText}>Tasks</Text>
             </View>
           </TouchableOpacity>
         )}

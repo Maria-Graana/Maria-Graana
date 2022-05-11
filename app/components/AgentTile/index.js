@@ -533,6 +533,20 @@ class AgentTile extends React.Component {
                                     ) &&
                                     closedLeadEdit
                                   )
+                                    bookAnotherViewing(data)
+                                }}
+                                title="Book Another Viewing"
+                              />
+                              <Menu.Item
+                                onPress={() => {
+                                  if (
+                                    getPermissionValue(
+                                      PermissionFeatures.BUY_RENT_LEADS,
+                                      PermissionActions.UPDATE,
+                                      permissions
+                                    ) &&
+                                    closedLeadEdit
+                                  )
                                     propertyGeoTagging(data)
                                 }}
                                 title="GeoTag"

@@ -948,12 +948,13 @@ function TimeSlotManagement(props) {
         onEditSlots(tempStartPick, tempEndPick, true)
         setDisabled(false)
       } else {
-        setTimeStart(null)
-        // setTimeEnd(null)
+        // setTimeStart(null)
+        setTimeEnd(null)
         setSlotsData([])
         setSlots([])
         setIsSelected([])
-        helper.errorToast(`Start Time should be less than End Time`)
+        // helper.errorToast(`Start Time should be less than End Time`)
+        helper.errorToast(`End Time should be greater than Start Time`)
       }
     }
   }

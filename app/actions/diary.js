@@ -4,6 +4,8 @@ import * as types from '../types'
 import axios from 'axios'
 import helper from '../helper.js'
 import _ from 'underscore'
+import { alltimeSlots, setTimeSlots } from './slotManagement'
+import { Linking } from 'react-native'
 
 export const FEEDBACK_ACTIONS = {
   ADD_MEETING: 'Add Meeting',
@@ -102,7 +104,6 @@ export function getDiaryTasks(data) {
           dispatch(setOnEndReachedLoader(false))
         }
       })
-
       .catch((error) => {
         console.log(error)
         dispatch({
@@ -128,12 +129,15 @@ export function clearDiaries() {
 
 export function getDiaryFeedbacks(payload) {
   return (dispatch, getsState) => {
-    const { leadType = null, taskType = null, actionType = null } = payload
+    const { leadType = null, taskType = null, actionType = null, section = null } = payload
     let url = `/api/feedbacks/fetch?taskType=${
       taskType === 'follow_up' && actionType != 'Done'
         ? 'Connect'
         : capitalizeWordsWithoutUnderscore(taskType, true)
     }&actionType=${actionType}&leadType=${leadType}`
+    if (section) {
+      url = url + `&section=${section}`
+    }
     //console.log(url)
     axios
       .get(url)
@@ -354,13 +358,16 @@ export const setReferenceGuideData = (data) => {
   }
 }
 
-export const addInvestmentGuide = (data) => {
+export const addInvestmentGuide = (data, lead = null) => {
   return (dispatch, getsState) => {
     const { guideNo, attachments } = data
     let promise = null
     const { referenceGuide } = getsState().diary
     const { selectedLead } = getsState().diary
-    const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${selectedLead.id}&guideReference=${guideNo}`
+
+    const referenceNumberUrl = `/api/diary/addGuideReference?cmLeadId=${
+      lead ? lead.id : selectedLead.id
+    }&guideReference=${guideNo}`
     dispatch(setReferenceGuideData({ ...referenceGuide, referenceGuideLoading: true })).then(
       (res) => {
         promise = axios
@@ -404,6 +411,13 @@ export const addInvestmentGuide = (data) => {
           })
           .catch((error) => {
             console.log('error', error)
+            dispatch(
+              setReferenceGuideData({
+                ...referenceGuide,
+                referenceGuideLoading: false,
+                referenceErrorMessage: null,
+              })
+            )
           })
       }
     )
@@ -554,20 +568,23 @@ export const markDiaryTaskAsDone = (data) => {
       overdue = false,
       leadId = null,
       leadType = null,
+      comment = null,
     } = data
     let endPoint = ``
     endPoint = `/api/diary/update?id=${selectedDiary.id}`
-    axios
-      .patch(endPoint, {
-        status: 'completed',
-      })
-      .then(function (response) {
-        if (response.status == 200) {
-          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
-          helper.successToast(`Task completed`)
-          helper.deleteLocalNotification(response.data.id)
-        }
-      })
+    let body = {
+      status: 'completed',
+      comments: comment,
+      response: comment,
+    }
+    let promise = axios.patch(endPoint, body).then(function (response) {
+      if (response.status == 200) {
+        dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
+        helper.successToast(`Task completed`)
+        helper.deleteLocalNotification(response.data.id)
+      }
+    })
+    return promise
   }
 }
 
@@ -663,4 +680,69 @@ export const getDiaryStats = (userId, day, startTime, endTime) => {
       })
   }
 }
+
+export const callToAgent = (lead) => {
+  if (lead && lead.armsuser && lead.armsuser.phoneNumber) {
+    Linking.openURL('tel:' + lead.armsuser.phoneNumber)
+  } else {
+    helper.errorToast(`No Phone Number`)
+  }
+}
 // ARMS-2448 end
+
+export const callNumberFromLeads = (lead, leadType) => {
+  return (dispatch, getsState) => {
+    let promise = null
+    let params = {
+      taskType: ['connect', 'follow_up'],
+      [leadType === 'Project' ? 'cmLeadId' : 'rcmLeadId']: lead.id,
+    }
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+    promise = axios
+      .get(`/api/leads/tasks`, { params })
+      .then((res) => {
+        if (res && res.data) {
+          const connectTask = res.data.filter((task) => task.status !== 'completed')
+          if (connectTask.length) {
+            // connect task type priority is highest for recording feedback else followback
+            let originalConnectTask = connectTask[0]
+            if (leadType === 'Project') {
+              // deleting the original armsProjectLead obj that exists in connect task because it does not contain customer object
+              delete originalConnectTask.armsProjectLead
+            }
+
+            let finaDiaryObj = {
+              [leadType === 'Project' ? 'armsProjectLead' : 'armsLead']: lead,
+              ...originalConnectTask,
+            }
+            dispatch(setSelectedDiary(finaDiaryObj))
+            dispatch(initiateConnectFlow())
+          } else {
+            // create new connect task because previous ones are completed
+            let createDiaryPayload = {
+              subject: `${capitalizeWordsWithoutUnderscore('connect')} scheduled`,
+              taskCategory: 'leadTask',
+              taskType: 'connect',
+              status: 'pending',
+              currentSlot: true,
+              [leadType === 'Project' ? 'leadId' : 'armsLeadId']: lead.id,
+            }
+            saveOrUpdateDiaryTask(createDiaryPayload).then((diary) => {
+              if (diary && diary.data.length === 2 && diary.data[1].length) {
+                let finalLeadObj = {
+                  [leadType === 'Project' ? 'armsProjectLead' : 'armsLead']: lead,
+                }
+                dispatch(setSelectedDiary({ ...finalLeadObj, ...diary.data[1][0] }))
+                dispatch(initiateConnectFlow())
+              }
+            })
+          }
+        }
+      })
+      .catch((error) => {
+        console.log('Error: `/api/leads/tasks ', error.message)
+      })
+    return promise
+  }
+}

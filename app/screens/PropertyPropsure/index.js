@@ -27,7 +27,6 @@ import DeleteModal from '../../components/DeleteModal'
 import { ActionSheet } from 'native-base'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
-import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import AddPropsurePayment from '../../components/AddPRopsurePayment'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
@@ -209,7 +208,7 @@ class PropertyPropsure extends React.Component {
   }
 
   saveFile = async (fileUri, doc) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
@@ -350,7 +349,7 @@ class PropertyPropsure extends React.Component {
     if (id) {
       let options = {
         type: '*/*',
-        copyToCacheDirectory: true,
+        copyToCacheDirectory: false,
       }
       DocumentPicker.getDocumentAsync(options)
         .then((item) => {
@@ -932,6 +931,7 @@ class PropertyPropsure extends React.Component {
     axios
       .patch(`/api/leads/project/payment?id=${body.id}`, body)
       .then((res) => {
+        
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = propsurePayment.paymentAttachments
           ? _.filter(propsurePayment.paymentAttachments, (item) => {

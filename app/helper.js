@@ -8,6 +8,7 @@ import { Linking } from 'react-native'
 import _ from 'underscore'
 import Clients from '../assets/img/client.png'
 import DashboardImg from '../assets/img/Dashboard.png'
+import ContactsImg from '../assets/img/contacts.png'
 import DiaryImg from '../assets/img/diary.png'
 import LeadsImg from '../assets/img/lead-icon-l.png'
 import InventoryImg from '../assets/img/property_leads.png'
@@ -19,8 +20,10 @@ import Ability from './hoc/Ability'
 import TimerNotification from './LocalNotifications'
 import { formatPrice } from './PriceFormate'
 import StaticData from './StaticData'
-import LeadIcon from '../assets/img/leads.png'
-import DealIcon from '../assets/img/deals.png'
+import LeadIcon from '../assets/icons/BuyRentLeads.png'
+import DealIcon from '../assets/icons/RentDeals.png'
+import ProjectDealIcon from '../assets/icons/ProjectDeals.png'
+import ProjectLeadIcon from '../assets/icons/ProjectLeads.png'
 import ProjectInventoryIcon from '../assets/img/project-inventory.png'
 import { getPermissionValue } from './hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from './hoc/PermissionsTypes'
@@ -62,6 +65,28 @@ const helper = {
     if (onlyNums.length <= 5) {
       return onlyNums
     }
+    if (onlyNums.length <= 12) {
+      return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5)}`
+    }
+    return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5, 12)}-${onlyNums.slice(12, 13)}`
+  },
+  normalizeCnicAndNTN(value) {
+    if (!value) {
+      return value
+    }
+    const onlyNums = value && value.toString().replace(/[^\d]/g, '')
+    if (onlyNums.length <= 5) {
+      return onlyNums
+    }
+
+    if (onlyNums.length === 7) {
+      return value
+    }
+
+    if (onlyNums.length === 8) {
+      return `${onlyNums.slice(0, 7)}-${onlyNums.slice(7)}`
+    }
+
     if (onlyNums.length <= 12) {
       return `${onlyNums.slice(0, 5)}-${onlyNums.slice(5)}`
     }
@@ -218,8 +243,14 @@ const helper = {
           return DashboardImg
         case 'MyDeals':
           return DealIcon
+        case 'ProjectDeals':
+          return ProjectDealIcon
+        case 'ProjectLeads':
+          return ProjectLeadIcon
         case 'ProjectInventory':
           return ProjectInventoryIcon
+        case 'Contacts':
+          return ContactsImg
         default:
           break
       }
@@ -258,27 +289,12 @@ const helper = {
   callNumber(body, contacts, title = 'ARMS') {
     let url = body.url
     if (url && url != 'tel:null') {
-      Linking.canOpenURL(url)
-        .then((supported) => {
-          if (!supported) {
-            helper.errorToast(`No application available to dial phone number`)
-            console.log("Can't handle url: " + url)
-          } else {
-            if (contacts) {
-              let result = helper.contacts(body.phone, contacts)
-              if (
-                body.name &&
-                body.name !== '' &&
-                body.name !== ' ' &&
-                body.phone &&
-                body.phone !== ''
-              )
-                if (!result) helper.addContact(body, title)
-            }
-            return Linking.openURL(url)
-          }
-        })
-        .catch((err) => console.error('An error occurred', err))
+      if (contacts) {
+        let result = helper.contacts(body.phone, contacts)
+        if (body.name && body.name !== '' && body.name !== ' ' && body.phone && body.phone !== '')
+          if (!result) helper.addContact(body, title)
+      }
+      return Linking.openURL(url).catch((err) => console.error('An error occurred', err))
     } else {
       helper.errorToast(`No Phone Number`)
     }
@@ -338,6 +354,17 @@ const helper = {
   formatTime(time) {
     return moment(time).format('hh:mm a')
   },
+  formatTimeForTimePicker(time) {
+    let t = moment(time)
+    const formatedTime = moment(time).format('hh:mm a')
+    const min = parseInt(moment(t).format('mm'))
+    const roundoff = Math.ceil(min / 5) * 5
+    t.set({ minute: roundoff })
+    return t.format('hh:mm a')
+  },
+  formatTimeForSlot(time) {
+    return moment(time).format('hh:mm:ss')
+  },
   formatDateAndTime(date, time) {
     return moment(date + moment(time).format('hh:mm a'), 'YYYY-MM-DDLT').format(
       'YYYY-MM-DDTHH:mm:ssZ'
@@ -345,6 +372,9 @@ const helper = {
   },
   formatDateTime(date, time) {
     return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss')
+  },
+  formatDateTimeforPicker(date, time) {
+    return moment(date + time, 'YYYY-MM-DDLT').format('YYYY-MM-DDTHH:mm:ss.sssZ')
   },
   createContactPayload(customer) {
     let payload = []
@@ -449,7 +479,7 @@ const helper = {
       }
     } else return false
   },
-  checkAssignedSharedStatus(user, lead, permissions) {
+  checkAssignedSharedStatus(user, lead, permissions, shortlistedData) {
     if (user && lead) {
       if (helper.getAiraPermission(permissions) && user.id !== lead.assigned_to_armsuser_id) {
         this.leadAiraToast(lead.armsuser)
@@ -465,18 +495,29 @@ const helper = {
       if (
         user.id === lead.assigned_to_armsuser_id ||
         user.id === lead.shared_with_armsuser_id ||
-        (lead && lead.requiredProperties)
-      )
+        (lead && lead.requiredProperties) ||
+        (shortlistedData &&
+          shortlistedData.find(function (e) {
+            return e === user.id
+          }) === user.id)
+      ) {
         return true
-      else {
+      } else {
         this.leadNotAssignedToast()
         return false
       }
     } else return false
   },
-  checkAssignedSharedStatusANDReadOnly(user, lead) {
+  checkAssignedSharedStatusANDReadOnly(user, lead, shortlistedData) {
     if (user && lead) {
-      if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
+      if (
+        user.id === lead.assigned_to_armsuser_id ||
+        user.id === lead.shared_with_armsuser_id ||
+        (shortlistedData &&
+          shortlistedData.find(function (e) {
+            return e === user.id
+          }) === user.id)
+      )
         return true
       else {
         this.leadNotAssignedToast()
@@ -554,17 +595,17 @@ const helper = {
     if (!start) start = 0
     if (!end) end = 0
     if (start === 0 && end === 0) {
-      return 'PKR 0'
+      return 'PKR: 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `PKR Any`
+      return `PKR: Any`
     } else if (start === 0 && end !== maxValue) {
-      return `PKR Upto ${formatPrice(end)}`
+      return `PKR: Upto ${formatPrice(end)}`
     } else if (start !== 0 && end === maxValue) {
-      return `PKR ${formatPrice(start)} or more`
+      return `PKR: ${formatPrice(start)} or more`
     } else if (start === end) {
-      return `PKR ${formatPrice(start)} to ${formatPrice(end)}`
+      return `PKR: ${formatPrice(start)} to ${formatPrice(end)}`
     } else {
-      return `PKR ${formatPrice(start)} - ${formatPrice(end)}`
+      return `PKR: ${formatPrice(start)} - ${formatPrice(end)}`
     }
   },
   convertPriceToStringLead(start, end, maxValue) {
@@ -609,17 +650,17 @@ const helper = {
       else unitType = this.capitalize(unitType)
     }
     if (start === 0 && end === 0) {
-      return 'Size 0'
+      return 'Size: 0'
     } else if ((start === 0 && end === maxValue) || (start === maxValue && end === maxValue)) {
-      return `Size Any`
+      return `Size: Any`
     } else if (start === 0 && end !== maxValue) {
-      return `Size Upto ${end} ${this.capitalize(unitType)}`
+      return `Size: Upto ${end} ${this.capitalize(unitType)}`
     } else if (start !== 0 && end === maxValue) {
-      return `Size ${start} or more ${this.capitalize(unitType)}`
+      return `Size: ${start} or more ${this.capitalize(unitType)}`
     } else if (start === end) {
-      return `Size ${start} ${this.capitalize(unitType)}`
+      return `Size: ${start} ${this.capitalize(unitType)}`
     } else {
-      return `Size ${start} - ${end} ${this.capitalize(unitType)}`
+      return `Size: ${start} - ${end} ${this.capitalize(unitType)}`
     }
   },
   convertSizeToStringV2(start, end, maxValue, unit) {
@@ -1132,37 +1173,47 @@ const helper = {
       return !_.findWhere(shortListedProperties, obj)
     })
   },
-  setBuyerAgent(lead, type, user) {
-    if (type === 'buyerSide') {
-      return lead.assigned_to_armsuser_id === user.id ? true : false
-    } else return false
+  setBuyerAgent(lead, type, user, property) {
+    if (property && !property.sellerFlowAgent) {
+      return true
+    } else {
+      return lead.assigned_to_armsuser_id === user.id
+    }
+    // if (type === 'buyerSide') {
+    //   return lead.assigned_to_armsuser_id === user.id ? true : false
+    // } else return false
   },
   setSellerAgent(lead, property, type, user) {
+    if (property && !property.sellerFlowAgent) {
+      return true
+    } else {
+      return property && property.sellerFlowAgent.id === user.id
+    }
     // console.log('lead: ', lead)
     // console.log('property: ', property)
     // console.log('type: ', type)
     // console.log('user: ', user)
-    if (type === 'buyerSide') {
-      console.log('buyerSide')
-      if (lead.assigned_to_armsuser_id === user.id && property && !property.sellerFlowAgent)
-        return true
-      console.log('buyerSide 1')
-      if (
-        lead.assigned_to_armsuser_id === user.id &&
-        property &&
-        property.sellerFlowAgent &&
-        property.sellerFlowAgent.id === user.id
-      )
-        return true
-      else false
-      console.log('buyerSide 2')
-    } else {
-      console.log('buyerSide 3')
-      if (property && property.sellerFlowAgent && property.sellerFlowAgent.id === user.id)
-        return true
-      else false
-      console.log('buyerSide 4')
-    }
+    // if (type === 'buyerSide') {
+    //   // console.log('buyerSide')
+    //   if (lead.assigned_to_armsuser_id === user.id && property && !property.sellerFlowAgent)
+    //     return true
+    //   // console.log('buyerSide 1')
+    //   if (
+    //     lead.assigned_to_armsuser_id === user.id &&
+    //     property &&
+    //     property.sellerFlowAgent &&
+    //     property.sellerFlowAgent.id === user.id
+    //   )
+    //     return true
+    //   else false
+    //   // console.log('buyerSide 2')
+    // } else {
+    //   // console.log('buyerSide 3')
+    //   if (property && property.sellerFlowAgent && property.sellerFlowAgent.id === user.id)
+    //     return true
+    //   else false
+    //   // console.log('buyerSide 4')
+    // }
   },
   getAiraPermission(permissions) {
     return getPermissionValue(

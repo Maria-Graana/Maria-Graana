@@ -140,8 +140,8 @@ class MatchTile extends React.Component {
   }
 
   callToggleFunc = (data) => {
-    const { permissions, toggleMenu, user, lead } = this.props
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { permissions, toggleMenu, user, lead, shortlistedData } = this.props
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     if (
       getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.READ, permissions) &&
       closedLeadEdit
@@ -164,6 +164,7 @@ class MatchTile extends React.Component {
       user,
       graanaVerifeyModal,
       cancelViewing,
+      shortlistedData,
     } = this.props
     let ownDiary = this.getOwnDiary(data) || null
     let imagesList = this.checkImages()
@@ -172,7 +173,7 @@ class MatchTile extends React.Component {
     let totalImages = imagesList.length
     let showDone = this.checkDiaryStatus(data)
     let isPP = helper.checkPPFlag(data)
-    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions)
+    let closedLeadEdit = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     if (isMenuVisible) {
       if (ownDiary) {
         if (ownDiary.status === 'completed') viewingMenu = false
@@ -721,6 +722,7 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

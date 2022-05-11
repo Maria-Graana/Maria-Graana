@@ -35,7 +35,7 @@ export default styles = StyleSheet.create({
     height: 25,
   },
   bottomNavBtnText: {
-    fontSize: 15,
+    fontSize: 12,
     color: 'black',
   },
   forMenuIcon: {},
@@ -58,7 +58,7 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 1,
     justifyContent: 'center',
-    padding: 10,
+    paddingVertical: 10,
     paddingTop: 5,
   },
   rejectBtn: {
@@ -76,8 +76,9 @@ export default styles = StyleSheet.create({
     fontSize: 16,
   },
   followText: {
-    fontSize: 16,
+    fontSize: 12,
     textAlign: 'center',
+    color: 'black',
   },
   menuStyle: {
     flexDirection: 'row',

@@ -4,7 +4,7 @@ import * as Updates from 'expo-updates'
 import * as React from 'react'
 import { AppState, View } from 'react-native'
 import { connect } from 'react-redux'
-import * as Sentry from 'sentry-expo'
+// import * as Sentry from 'sentry-expo'
 import SuccessModal from './components/SuccessModal'
 import UpdateModal from './components/UpdateModal'
 
@@ -39,7 +39,7 @@ class UpdateApp extends React.Component {
         this.setState({ visible: true, expoVersion: canUpdate.manifest.version })
       }
     } catch (e) {
-      Sentry.captureException(`Error ! ${JSON.stringify(e)}`)
+      // Sentry.captureException(`Error ! ${JSON.stringify(e)}`)
     }
   }
 

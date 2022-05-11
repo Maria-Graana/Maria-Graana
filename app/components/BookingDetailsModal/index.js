@@ -2,7 +2,6 @@
 
 import * as FileSystem from 'expo-file-system'
 import * as MediaLibrary from 'expo-media-library'
-import * as Permissions from 'expo-permissions'
 import React from 'react'
 import { Image, Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
@@ -45,7 +44,7 @@ class BookingDetailsModal extends React.Component {
   }
 
   saveFile = async (fileUri) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
@@ -276,7 +275,7 @@ class BookingDetailsModal extends React.Component {
                       <View>
                         <Text style={styles.smallText}>Final Price</Text>
                         <Text style={styles.largeText}>
-                          {helper.currencyConvert(this.handleEmptyValueReturnZero(finalPrice))}
+                          {helper.currencyConvert(this.handleEmptyValueReturnZero(unit.finalPrice))}
                         </Text>
                       </View>
                     </View>

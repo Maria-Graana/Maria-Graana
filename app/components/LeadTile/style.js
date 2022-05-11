@@ -40,12 +40,13 @@ export default styles = StyleSheet.create({
   contentMultiMain: {
     flexDirection: 'row',
     flex: 1,
+    alignItems: 'center',
   },
   topIcons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     position: 'absolute',
-    top: 10,
+    top: 5,
     right: 10,
   },
   normalText: {
@@ -60,9 +61,11 @@ export default styles = StyleSheet.create({
     width: '85%',
   },
   phoneMain: {
-    justifyContent: 'flex-end',
     width: '15%',
+   
+    padding:10
   },
+  
   tokenLabel: {
     borderWidth: 1,
     borderColor: '#2A7EF0',
@@ -115,11 +118,6 @@ export default styles = StyleSheet.create({
   selectedInventory: {
     borderColor: '#2A7EF0',
     borderWidth: 1,
-  },
-  actionBtn: {
-    alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
   },
   desBlue: {
     color: '#0E73EE',

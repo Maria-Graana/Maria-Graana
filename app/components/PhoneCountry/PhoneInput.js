@@ -42,7 +42,14 @@ let input = {
   fontSize: 16,
 }
 const PhoneInputComponent = (props) => {
-  const { onChangeHandle, name, placeholder, countryCodeValue, editable } = props
+  const {
+    onChangeHandle,
+    name,
+    placeholder,
+    countryCodeValue,
+    editable,
+    applyMaxLengthLimit = true,
+  } = props
   const [currentCountryCode, setCurrentCountryCode] = useState('')
   return (
     <View style={locationButtonAlt}>
@@ -66,11 +73,10 @@ const PhoneInputComponent = (props) => {
       <Text style={{ padding: 10 }}>-</Text>
       <TextInput
         placeholder={placeholder}
-        style={{ placeholder: { fontSize: 10 } }}
-        style={[props.inputStyle || input]}
+        style={[props.inputStyle || input, { placeholder: { fontSize: 10 } }]}
         keyboardType="number-pad"
         autoCorrect={false}
-        maxLength={countryCodeValue === 'PK' ? 10 : 15}
+        maxLength={applyMaxLengthLimit ? (countryCodeValue === 'PK' ? 10 : 15) : 500}
         autoCompleteType="cc-number"
         value={props.phoneValue && props.phoneValue}
         onChangeText={(value) => {

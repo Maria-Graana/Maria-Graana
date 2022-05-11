@@ -34,6 +34,7 @@ class PickerComponent extends React.Component {
       customIconStyle,
       clearOnChange,
       enabled = true,
+      showPickerArrow = true,
     } = this.props
     const items = data || []
 
@@ -65,18 +66,22 @@ class PickerComponent extends React.Component {
       })
     }
     return (
-      <View style={[styles.pickerMain, { backgroundColor: '#fff' }]}>
-        <Ionicons
-          style={[styles.arrowIcon, customIconStyle]}
-          name="chevron-down-outline"
-          size={26}
-          color={AppStyles.colors.subTextColor}
-        />
+      <View style={[styles.pickerMain, { backgroundColor: '#fff',}]}>
+        {showPickerArrow && (
+          <Ionicons
+            style={[styles.arrowIcon, customIconStyle]}
+            name="chevron-down-outline"
+            size={26}
+            color={AppStyles.colors.subTextColor}
+          />
+        )}
+
         <Picker
           headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff' }}
           headerBackButtonTextStyle={{ color: '#fff' }}
           headerTitleStyle={{ color: '#fff' }}
           textStyle={[AppStyles.formFontSettings]}
+          // mode='dialog'
           mode="dropdown"
           enabled={enabled}
           style={[
@@ -103,7 +108,7 @@ const styles = StyleSheet.create({
   },
   arrowIcon: {
     position: 'absolute',
-    right: 15,
+    right: 10,
     top: 8,
     zIndex: 2,
   },

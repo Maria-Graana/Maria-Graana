@@ -40,12 +40,27 @@ class DiaryTile extends React.Component {
       screenName,
       leadType,
       isOwnDiaryView,
+      assignedToMe,
     } = this.props
+    let isEditTaskAllowed = true
+    if (diary.status !== 'completed' && isOwnDiaryView && diary.taskCategory === 'simpleTask') {
+      isEditTaskAllowed = true
+    } else if (
+      diary.taskCategory === 'leadTask' &&
+      DiaryHelper.getLeadType(diary) === 'BuyRent' &&
+      diary.status !== 'completed' &&
+      diary.status !== 'cancelled' &&
+      isOwnDiaryView
+    ) {
+      isEditTaskAllowed = assignedToMe ? true : false
+    } else {
+      isEditTaskAllowed = true
+    }
     return (
       <View style={styles.mainContainer}>
         <View style={styles.rowTwo}>
           <View style={styles.timeView}>
-            {screenName === 'overduetasks' ? (
+            {screenName === 'overduetasks' || screenName === 'scheduledTasks' ? (
               <Text style={styles.time}>{moment(diary.start).format('DD MMM')}</Text>
             ) : null}
             <Text style={styles.time}>{moment(diary.start).format('hh:mm a')}</Text>
@@ -97,6 +112,7 @@ class DiaryTile extends React.Component {
 
                       {diary.status !== 'completed' &&
                       diary.status !== 'cancelled' &&
+                      isEditTaskAllowed &&
                       isOwnDiaryView &&
                       (diary.taskType === 'viewing' || diary.taskType === 'meeting') ? (
                         <Menu.Item
@@ -111,6 +127,7 @@ class DiaryTile extends React.Component {
                       {diary.taskType === 'viewing' &&
                       diary.armsLeadId &&
                       isOwnDiaryView &&
+                      isEditTaskAllowed &&
                       diary.status !== 'completed' &&
                       diary.status !== 'cancelled' ? (
                         <Menu.Item
@@ -144,17 +161,15 @@ class DiaryTile extends React.Component {
                         title="Task Details"
                       />
 
-                      {diary.status !== 'completed' &&
-                        diary.status !== 'cancelled' &&
-                        isOwnDiaryView && (
-                          <Menu.Item
-                            onPress={() => {
-                              handleMenuActions('edit_task')
-                              hideMenu()
-                            }}
-                            title="Edit Task"
-                          />
-                        )}
+                      {isEditTaskAllowed && (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('edit_task')
+                            hideMenu()
+                          }}
+                          title="Edit Task"
+                        />
+                      )}
 
                       {diary.taskCategory === 'leadTask' ? (
                         <Menu.Item
@@ -171,6 +186,7 @@ class DiaryTile extends React.Component {
                       diary.taskType !== 'meeting_with_pp' &&
                       diary.status !== 'completed' &&
                       diary.status !== 'cancelled' &&
+                      isEditTaskAllowed &&
                       isOwnDiaryView ? (
                         <View>
                           {!diary.wantedId ? (
@@ -189,7 +205,8 @@ class DiaryTile extends React.Component {
                       diary.taskType !== 'daily_update' &&
                       diary.taskType !== 'meeting_with_pp' &&
                       diary.status !== 'completed' &&
-                      diary.status !== 'cancelled' ? (
+                      diary.status !== 'cancelled' &&
+                      isEditTaskAllowed ? (
                         <View>
                           {!diary.wantedId ? (
                             <Menu.Item
@@ -206,13 +223,29 @@ class DiaryTile extends React.Component {
                       {DiaryHelper.getLeadId(diary) &&
                       diary.status !== 'completed' &&
                       diary.status !== 'cancelled' &&
-                      isOwnDiaryView ? (
+                      isOwnDiaryView &&
+                      isEditTaskAllowed ? (
                         <Menu.Item
                           onPress={() => {
                             setClassification(diary)
                             hideMenu()
                           }}
                           title="Set Classification"
+                        />
+                      ) : null}
+
+                      {diary.status !== 'completed' &&
+                      diary.status !== 'cancelled' &&
+                      isOwnDiaryView &&
+                      diary.armsProjectLead &&
+                      !diary.armsProjectLead.guideReference &&
+                      diary.taskType === 'meeting' ? (
+                        <Menu.Item
+                          onPress={() => {
+                            handleMenuActions('add_investment_guide')
+                            hideMenu()
+                          }}
+                          title="Add Guide Reference #"
                         />
                       ) : null}
 

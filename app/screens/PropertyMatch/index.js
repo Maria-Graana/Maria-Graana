@@ -252,7 +252,7 @@ class PropertyMatch extends React.Component {
     if ('armsLeadAreas' in lead) {
       if (lead.armsLeadAreas.length) {
         areas = lead.armsLeadAreas.map((area) => {
-          if ('area' in area) return area.area.id
+          if ('area' in area) return area?.area?.id
         })
       }
     }
@@ -830,14 +830,6 @@ class PropertyMatch extends React.Component {
       shortListedProperties,
     } = this.state
     const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
-    // matchData.data = _.clone(
-    //   helper.skipShortlistedProperties(matchData.data, shortListedProperties)
-    // )
-    console.log(
-      'helper.skipShortlistedProperties(matchData.data, shortListedProperties): ',
-      helper.skipShortlistedProperties(matchData.data, shortListedProperties)
-    )
-    console.log('matchData.data: ', matchData.data)
     return !loading ? (
       <View
         style={[

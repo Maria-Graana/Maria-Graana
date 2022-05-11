@@ -26,6 +26,7 @@ export const PermissionFeatures = {
   CLIENTS: 'Clients',
   WEB_PAGES: 'Web (Pages)',
   APP_PAGES: 'App (Pages)',
+  CONTACTS: 'Contacts',
 }
 
 export const PermissionActions = {
@@ -33,10 +34,11 @@ export const PermissionActions = {
   READ: 'Read',
   UPDATE: 'Update',
   DELETE: 'Delete',
+  CreateUpdateContact: 'Create & Update',
   LEADS_ASSIGNMENT_BUSINESS_RULE: 'Leads Assignment Business Rule',
   ELIGIABLE_FOR_COMPANY_LEADS: 'Eligiable for Company Leads',
   Assign_Company_Leads: 'Assign Company Leads',
-  ASSIGN_REASSIGN: 'Re-assign',
+  ASSIGN_REASSIGN: 'Reassign',
   REFER: 'Refer',
   DOWNLOAD_REBATE_DATA: 'Download Rebate Data',
   CLEARANCE: 'Clearance',

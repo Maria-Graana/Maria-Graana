@@ -2,7 +2,6 @@
 
 import Constants from 'expo-constants'
 import * as Notifications from 'expo-notifications'
-import * as Permissions from 'expo-permissions'
 import moment from 'moment-timezone'
 import { Keyboard } from 'react-native'
 
@@ -10,8 +9,8 @@ const submitNotification = (body, date) => {
   Keyboard.dismiss()
   const trigger = convertTimeZone(date)
   let localNotification = {
-    title: body.title,
-    body: body.body,
+    title:` ${body.title} ${body.clientName ? "with " + body.clientName : ''}`,
+    body: ` Time: ${body.body}`,
     data: {
       type: 'local',
       date: date,
@@ -41,14 +40,34 @@ const handleNotification = () => {
 
 const askNotification = async (body, date) => {
   if (Constants.isDevice) {
-    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS)
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
     let finalStatus = existingStatus
     if (existingStatus !== 'granted') {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS)
+      const { status } = await Notifications.getPermissionsAsync()
       finalStatus = status
     }
     if (finalStatus !== 'granted') {
-      return
+
+      if (Platform.OS === 'ios') {
+
+        const checkPermissions = await this.allowsNotificationsAsync();
+
+        if (!checkPermissions) {
+
+          const reqResponse = await this.requestPermissionsAsync()
+        
+          if(reqResponse.status=='denied')
+          {
+            Alert.alert('Please allow push notifications. ')
+          }
+        }
+      }
+      else {
+
+
+        Alert.alert('Failed to get push token for push notification!')
+        return
+      }
     }
     submitNotification(body, date)
   } else {
@@ -57,7 +76,10 @@ const askNotification = async (body, date) => {
 }
 
 const TimerNotification = (body, date) => {
+
+
   askNotification(body, date)
 }
 
 export default TimerNotification
+

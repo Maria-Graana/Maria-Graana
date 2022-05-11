@@ -5,13 +5,22 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen'
 
-import { Platform } from 'react-native'
-
 export default AppStyles = {
   container: {
     flex: 1,
     backgroundColor: '#e7ecf0',
     paddingHorizontal: wp('2%'),
+  },
+
+
+  container2: {
+    //  flex: 1,
+    backgroundColor: '#e7ecf0',
+    paddingHorizontal: wp('2%'),
+  },
+  containerWithoutPadding: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
   colors: {
     background: '#f4f9fd',
@@ -29,6 +38,18 @@ export default AppStyles = {
   },
   flexDirectionRow: {
     flexDirection: 'row',
+  },
+
+  headingText: {
+    fontFamily: 'Poppins_regular',
+
+    fontSize: 14
+  },
+
+  boldHeadingText: {
+    // fontFamily: 'Poppins_regular',
+    fontWeight: 'bold',
+    fontSize: 14
   },
   fonts: {
     defaultFont: 'Poppins_regular',
@@ -206,6 +227,13 @@ export default AppStyles = {
     color: 'red',
     fontSize: 10,
     marginTop: 5,
+  },
+
+
+  bottomStickyButton: {
+    marginBottom: 30,
+
+    marginTop: 10,
   },
   mainInputWrap: {
     marginBottom: 10,

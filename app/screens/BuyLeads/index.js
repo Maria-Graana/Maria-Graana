@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
+import { setLeadsDropdown } from '../../actions/leadsDropdown'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -34,6 +35,7 @@ import helper from '../../helper'
 import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
+import { callNumberFromLeads, callToAgent, setMultipleModalVisible } from '../../actions/diary'
 
 var BUTTONS = [
   'Assign to team member',
@@ -47,7 +49,9 @@ class BuyLeads extends React.Component {
   constructor(props) {
     super(props)
     const { permissions } = this.props
+    const { hasBooking = false } = this.props.route.params
     this.state = {
+      phoneModelDataLoader: false,
       language: '',
       leadsData: [],
       statusFilter: '',
@@ -57,7 +61,7 @@ class BuyLeads extends React.Component {
       activeSortModal: false,
       totalLeads: 0,
       page: 1,
-      pageSize: 20,
+      pageSize: 50,
       onEndReachedLoader: false,
       showSearchBar: false,
       searchText: '',
@@ -74,7 +78,6 @@ class BuyLeads extends React.Component {
       isMultiPhoneModalVisible: false,
       selectedClientContacts: [],
       statusFilterType: 'id',
-      newActionModal: false,
       fabActions: [],
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
@@ -86,10 +89,14 @@ class BuyLeads extends React.Component {
         PermissionActions.CREATE,
         permissions
       ),
+      pageType: hasBooking
+        ? '&pageType=myDeals&hasBooking=true'
+        : '&pageType=myLeads&hasBooking=false',
     }
   }
 
   componentDidMount() {
+    const { hasBooking = false } = this.props.route.params
     const { dispatch } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       const { PPBuyNotification } = this.props
@@ -101,10 +108,26 @@ class BuyLeads extends React.Component {
       this.onFocus()
       this.setFabActions()
     })
+
+
+    dispatch(setLeadsDropdown(hasBooking
+      ? '&pageType=myDeals&hasBooking=true'
+      : '&pageType=myLeads&hasBooking=false'))
   }
 
   componentWillUnmount() {
     this.clearStateValues()
+    this.showMultiPhoneModal(false)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
+      this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
+    }
+    if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
+
+      this.changePageType(this.props.leadsDropdown)
+    }
   }
 
   onFocus = async () => {
@@ -128,6 +151,13 @@ class BuyLeads extends React.Component {
         })
       }
     }
+  }
+
+  sendStatus = (status) => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+      storeItem('sortBuy', status)
+      this.fetchLeads()
+    })
   }
 
   getServerTime = () => {
@@ -173,43 +203,40 @@ class BuyLeads extends React.Component {
       searchText,
       statusFilter,
       statusFilterType,
+      pageType,
     } = this.state
-    const { permissions } = this.props
+    const { permissions, user } = this.props
     this.setState({ loading: true })
-    const { hasBooking } = this.props.route.params
+    const { hasBooking, navFrom } = this.props.route.params
+    let isAiraPermission = helper.getAiraPermission(permissions)
     let query = ``
-    if (helper.getAiraPermission(permissions)) {
-      if (showSearchBar) {
-        if (statusFilterType === 'name' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&aira=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        } else if (statusFilterType === 'id' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&id=${searchText}&aira=${true}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        } else {
-          query = `/api/leads?purpose[]=buy&startDate=${fromDate}&aira=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        }
+    if (showSearchBar) {
+      if (statusFilterType === 'name' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+      } else if (statusFilterType === 'id' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
-        if (statusFilter === 'shortlisting') {
-          query = `/api/leads?purpose[]=buy&aira=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        } else {
-          query = `/api/leads?purpose[]=buy&aira=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        }
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
-      if (showSearchBar) {
-        if (statusFilterType === 'name' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&assignToMe=${true}&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        } else if (statusFilterType === 'id' && searchText !== '') {
-          query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}&web=${true}`
-        } else {
-          query = `/api/leads?purpose[]=buy&startDate=${fromDate}&assignToMe=${true}&endDate=${toDate}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        }
+      if (statusFilter === 'shortlisting') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&status=shortlisting&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&status[0]=offer&status[1]=viewing&status[2]=propsure&status=shortlisting&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
-        if (statusFilter === 'shortlisting') {
-          query = `/api/leads?purpose[]=buy&assignToMe=${true}&status[0]=offer&status[1]=viewing&status[2]=propsure&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        } else {
-          query = `/api/leads?purpose[]=buy&assignToMe=${true}&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}&hasBooking=${hasBooking}`
-        }
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
+    }
+    if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
+      query = `${query}&aira=true`
     }
     axios
       .get(`${query}`)
@@ -217,6 +244,12 @@ class BuyLeads extends React.Component {
         let leadNewData = helper.leadMenu(
           page === 1 ? res.data.rows : [...leadsData, ...res.data.rows]
         )
+
+        if (leadNewData && navFrom) {
+          leadNewData = leadNewData.filter(
+            (item) => item.status !== 'closed_won' && item.status !== 'closed_lost'
+          )
+        }
         this.setState({
           leadsData: leadNewData,
           loading: false,
@@ -254,49 +287,71 @@ class BuyLeads extends React.Component {
     })
   }
 
+  changePageType = (value) => {
+    this.clearStateValues()
+    this.setState({ pageType: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
+  }
+
   navigateTo = (data) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
+    const { navigation } = this.props
+
     this.props.dispatch(setlead(data))
-    let page = ''
-    if (this.props.route.params?.screen === 'MyDeals') {
-      this.props.navigation.navigate('LeadDetail', {
+
+    if (navFrom) {
+      navigation.navigate('AddDiary', {
         lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
-      })
-    } else if (data.readAt === null) {
-      this.props.navigation.navigate('LeadDetail', {
-        lead: data,
-        purposeTab: 'sale',
-        screenName: screen,
+        rcmLeadId: data.id,
       })
     } else {
-      if (data.status == 'open') {
-        page = 'Match'
-      }
-      if (data.status === 'viewing') {
-        page = 'Viewing'
-      }
-      if (data.status === 'offer') {
-        page = 'Offer'
-      }
-      if (data.status === 'propsure') {
-        page = 'Propsure'
-      }
-      if (data.status === 'payment') {
-        page = 'Payment'
-      }
-      if (
-        data.status === 'payment' ||
-        data.status === 'closed_won' ||
-        data.status === 'closed_lost'
-      ) {
-        page = 'Payment'
-      }
-      this.props.navigation.navigate('RCMLeadTabs', {
-        screen: page,
-        params: { lead: data },
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'sale',
+        screenName: screen,
       })
+      // let page = ''
+      // if (this.props.route.params?.screen === 'MyDeals') {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'sale',
+      //     screenName: screen,
+      //   })
+      // } else if (data.readAt === null) {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'sale',
+      //     screenName: screen,
+      //   })
+      // } else {
+      //   if (data.status == 'open') {
+      //     page = 'Match'
+      //   }
+      //   if (data.status === 'viewing') {
+      //     page = 'Viewing'
+      //   }
+      //   if (data.status === 'offer') {
+      //     page = 'Offer'
+      //   }
+      //   if (data.status === 'propsure') {
+      //     page = 'Propsure'
+      //   }
+      //   if (data.status === 'payment') {
+      //     page = 'Payment'
+      //   }
+      //   if (
+      //     data.status === 'payment' ||
+      //     data.status === 'closed_won' ||
+      //     data.status === 'closed_lost'
+      //   ) {
+      //     page = 'Payment'
+      //   }
+      //   this.props.navigation.navigate('RCMLeadTabs', {
+      //     screen: page,
+      //     params: { lead: data },
+      //   })
+      // }
     }
   }
 
@@ -345,68 +400,9 @@ class BuyLeads extends React.Component {
     }
   }
 
-  callNumber = (data) => {
-    const { contacts, dispatch } = this.props
-    this.setState({ selectedLead: data }, () => {
-      if (data && data.customer) {
-        let selectedClientContacts = helper.createContactPayload(data.customer)
-        this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
-          if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-            //  multiple numbers to select
-            this.showMultiPhoneModal(true)
-          } else {
-            dispatch(
-              setCallPayload(
-                selectedClientContacts ? selectedClientContacts.phone : null,
-                'phone',
-                data
-              )
-            )
-            helper.callNumber(selectedClientContacts, contacts)
-            // this.showStatusFeedbackModal(true, 'call')
-          }
-        })
-      }
-    })
-  }
-
-  setNewActionModal = (value) => {
-    this.setState({ newActionModal: value })
-  }
-
   showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
-  }
-
-  handlePhoneSelectDone = (phone) => {
-    const { contacts, dispatch } = this.props
-    const { selectedLead } = this.state
-    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          dispatch(
-            setCallPayload(
-              copySelectedClientContacts ? copySelectedClientContacts.phone : null,
-              'phone',
-              selectedLead
-            )
-          )
-          helper.callNumber(copySelectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
-      )
-    }
-  }
-
-  sendStatus = (status) => {
-    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
-      storeItem('sortBuy', status)
-      this.fetchLeads()
-    })
+    const { dispatch } = this.props
+    dispatch(setMultipleModalVisible(value))
   }
 
   openStatus = () => {
@@ -560,67 +556,6 @@ class BuyLeads extends React.Component {
       })
   }
 
-  closePopup = () => {
-    const { openPopup, selectedLead } = this.state
-    this.setState({
-      openPopup: !openPopup,
-      selectedLead: openPopup === false ? {} : selectedLead,
-    })
-  }
-
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-  //  ************ Function for open Follow up modal ************
-  openModalInFollowupMode = (value) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: true,
-      comment: value,
-    })
-  }
-
-  openModalInMeetingMode = (edit = false, id = null) => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  // ************ Function for Reject modal ************
-  goToRejectForm = () => {
-    const { statusfeedbackModalVisible } = this.state
-    this.setState({
-      statusfeedbackModalVisible: !statusfeedbackModalVisible,
-      modalMode: 'reject',
-    })
-  }
-
-  rejectLead = (body) => {
-    const { navigation, lead } = this.props
-    const { selectedLead } = this.state
-    if (selectedLead) {
-      var leadId = []
-      leadId.push(selectedLead.id)
-      axios
-        .patch(`/api/leads`, body, { params: { id: leadId } })
-        .then((res) => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    }
-  }
-
-  showStatusFeedbackModal = (value, modalMode) => {
-    this.setState({ statusfeedbackModalVisible: value, modalMode })
-  }
-
   goToViewingScreen = () => {
     const { navigation } = this.props
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
@@ -670,27 +605,27 @@ class BuyLeads extends React.Component {
       shortListedProperties,
       popupLoading,
       serverTime,
-      active,
-      statusfeedbackModalVisible,
-      isFollowUpMode,
-      modalMode,
-      selectedClientContacts,
-      isMultiPhoneModalVisible,
       statusFilterType,
-      newActionModal,
-      selectedLead,
       fabActions,
       createBuyRentLead,
       createProjectLead,
+      pageType,
+      phoneModelDataLoader
     } = this.state
-    const { user, permissions } = this.props
-    const { screen, hasBooking = false } = this.props.route.params
+    const { leadsDropdown, user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
+      this.props
+    const {
+      screen,
+      hasBooking = false,
+      navFrom = null,
+      hideCloseLostFilter,
+    } = this.props.route.params
     let leadStatus = StaticData.buyRentFilter
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
-      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
+      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0, }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           <ShortlistedProperties
@@ -732,22 +667,55 @@ class BuyLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-              {hasBooking ? (
+            <View style={[styles.filterRow, {
+              paddingLeft: 15,
+              justifyContent: 'space-between'
+            }]}>
+              {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
-              ) : (
-                <View style={styles.pickerMain}>
-                  <PickerComponent
-                    placeholder={'Lead Status'}
-                    data={StaticData.buyRentFilter}
-                    customStyle={styles.pickerStyle}
-                    customIconStyle={styles.customIconStyle}
-                    onValueChange={this.changeStatus}
-                    selectedItem={statusFilter}
-                  />
-                </View>
-              )}
-              <View style={styles.stylesMainSort}>
+              ) : ( */}
+              <View style={styles.pickerMain}>
+                <PickerComponent
+                  placeholder={'Lead Status'}
+                  data={
+                    hasBooking
+                      ? StaticData.buyRentFilterDeals
+                      : hideCloseLostFilter
+                        ? StaticData.buyRentFilterAddTask
+                        : StaticData.buyRentFilter
+                  }
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changeStatus}
+                  selectedItem={statusFilter}
+                />
+              </View>
+              {/* )} */}
+
+              {/* <View style={styles.iconRow}>
+                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
+              </View>
+              <View style={styles.pageTypeRow}>
+                <PickerComponent
+                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                  data={
+                    hasBooking
+                      ? getIsTerminalUser
+                        ? StaticData.filterDealsValueTerminal
+                        : StaticData.filterDealsValue
+                      : getIsTerminalUser
+                        ? StaticData.filterLeadsValueTerminal
+                        : StaticData.filterLeadsValue
+                  }
+                  customStyle={styles.pickerStyle}
+                  customIconStyle={styles.customIconStyle}
+                  onValueChange={this.changePageType}
+                  selectedItem={pageType}
+                  showPickerArrow={false}
+                />
+              </View>*/}
+              <View style={styles.verticleLine} />
+              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
                   style={styles.sortBtn}
                   onPress={() => {
@@ -778,7 +746,7 @@ class BuyLeads extends React.Component {
             renderItem={({ item }) => (
               <View>
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                (user.organization && !user.organization.isPP) ? (
+                  (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
@@ -786,7 +754,19 @@ class BuyLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={this.callNumber}
+                    pageType={pageType}
+                    callNumber={(data) => {
+                      pageType === '&pageType=demandLeads&hasBooking=false'
+                        ? callToAgent(data)
+                        : this.setState({ phoneModelDataLoader: true })
+                      this.showMultiPhoneModal(true)
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.setState({ phoneModelDataLoader: false })
+                        }
+                      })
+                    }}
+                    navFrom={navFrom}
                     handleLongPress={this.handleLongPress}
                     serverTime={serverTime}
                     screenName={screen}
@@ -799,7 +779,18 @@ class BuyLeads extends React.Component {
                     user={user}
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
-                    callNumber={this.callNumber}
+                    callNumber={(data) => {
+                      pageType === '&pageType=demandLeads&hasBooking=false'
+                        ? callToAgent(data)
+                        :
+                        this.setState({ phoneModelDataLoader: true })
+                      this.showMultiPhoneModal(true)
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.setState({ phoneModelDataLoader: false })
+                        }
+                      })
+                    }}
                     handleLongPress={this.handleLongPress}
                     changeLeadStatus={this.changeLeadStatus}
                     redirectToCompare={this.redirectToCompare}
@@ -829,7 +820,7 @@ class BuyLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' ? (
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"
@@ -841,42 +832,12 @@ class BuyLeads extends React.Component {
           />
         ) : null}
         <MultiplePhoneOptionModal
+          modelDataLoading={phoneModelDataLoader}
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
-          contacts={selectedClientContacts.payload}
-          showMultiPhoneModal={this.showMultiPhoneModal}
-          handlePhoneSelectDone={this.handlePhoneSelectDone}
+          showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
+          navigation={navigation}
         />
 
-        <StatusFeedbackModal
-          visible={statusfeedbackModalVisible}
-          showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
-          commentsList={
-            modalMode === 'call'
-              ? StaticData.commentsFeedbackCall
-              : StaticData.leadClosedCommentsFeedback
-          }
-          modalMode={modalMode}
-          rejectLead={(body) => this.rejectLead(body)}
-          setNewActionModal={(value) => this.setNewActionModal(value)}
-          leadType={'RCM'}
-        />
-        <SubmitFeedbackOptionsModal
-          showModal={newActionModal}
-          modalMode={modalMode}
-          setShowModal={(value) => this.setNewActionModal(value)}
-          performFollowUp={this.openModalInFollowupMode}
-          performReject={this.goToRejectForm}
-          //call={this.callAgain}
-          goToViewingScreen={this.goToViewingScreen}
-          leadType={'RCM'}
-        />
-        <MeetingFollowupModal
-          closeModal={() => this.closeMeetingFollowupModal()}
-          active={active}
-          isFollowUpMode={isFollowUpMode}
-          lead={selectedLead}
-          leadType={'RCM'}
-        />
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -895,7 +856,10 @@ mapStateToProps = (store) => {
     count: store.listings.count,
     contacts: store.contacts.contacts,
     PPBuyNotification: store.Notification.PPBuyNotification,
+    isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     permissions: store.user.permissions,
+    getIsTerminalUser: store.user.getIsTerminalUser,
+    leadsDropdown: store.leadsDropdown.leadsDropdown,
   }
 }
 export default connect(mapStateToProps)(BuyLeads)

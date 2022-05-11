@@ -2,6 +2,8 @@
 
 import { StyleSheet } from 'react-native'
 import { widthPercentageToDP } from 'react-native-responsive-screen'
+import AppStyles from '../../AppStyles'
+
 export default styles = StyleSheet.create({
   filterRow: {
     backgroundColor: '#fff',
@@ -9,12 +11,21 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     paddingBottom: 10,
     width: '100%',
-  },
-  emptyViewWidth: {
-    width: '75%',
+    alignItems: 'center',
   },
   pickerMain: {
-    width: '80%',
+    width: '70%',
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: '#ebebeb',
+    overflow: 'hidden',
+  },
+  idPicker: {
+    width: '25%',
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    height: 40,
     borderWidth: 1,
     borderRadius: 20,
     borderColor: '#ebebeb',
@@ -56,17 +67,22 @@ export default styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     alignItems: 'center',
-    width: '20%',
+    width: '30%',
   },
-  idPicker: {
-    width: '25%',
-    marginLeft: 10,
+  pageTypeRow: {
+    // alignItems: 'center',
+    // flexDirection: 'row',
+    width: '30%',
+    // marginHorizontal: 10,
+  },
+  verticleLine: {
+    height: '100%',
+    width: 1,
+    backgroundColor: AppStyles.colors.subTextColor,
+  },
+  iconRow: {
     justifyContent: 'center',
-    alignSelf: 'center',
-    height: 40,
-    borderWidth: 1,
-    borderRadius: 20,
-    borderColor: '#ebebeb',
-    overflow: 'hidden',
+    alignItems: 'center',
+    marginLeft: '3%',
   },
 })

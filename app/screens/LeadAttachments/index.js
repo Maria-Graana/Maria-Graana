@@ -1,13 +1,9 @@
 /** @format */
 
 import axios from 'axios'
-import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
-import * as Permissions from 'expo-permissions'
-import { getPermissionValue } from '../../hoc/Permissions'
-import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import React, { Component } from 'react'
 import { Alert, FlatList, View } from 'react-native'
 import { connect } from 'react-redux'
@@ -268,10 +264,10 @@ class LeadAttachments extends Component {
       {
         formData: formData,
         showAction: false,
-      },
-      () => {
-        this.formSubmit()
       }
+      // () => {
+      //   this.formSubmit()
+      // }
     )
   }
 
@@ -355,7 +351,7 @@ class LeadAttachments extends Component {
   }
 
   saveFile = async (fileUri, doc) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then(() => {
@@ -525,6 +521,7 @@ class LeadAttachments extends Component {
       .then((res) => {
         if (res.data) {
           navProperty ? this.fetchPropertyAttachement() : this.fetchAttachments()
+          this.closeModal()
         }
       })
       .catch((error) => {

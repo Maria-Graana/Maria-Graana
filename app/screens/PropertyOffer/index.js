@@ -624,8 +624,8 @@ class PropertyOffer extends React.Component {
     const { lead, navigation, user } = this.props
     const showBuyerSide = helper.setBuyerAgent(lead, 'sellerSide', user)
     const showSellerSide = helper.setSellerAgent(lead, currentProperty, 'sellerSide', user)
-    console.log('Property showBuyerSide: ', showBuyerSide)
-    console.log('Property showSellerSide: ', showSellerSide)
+    // console.log('Property showBuyerSide: ', showBuyerSide)
+    // console.log('Property showSellerSide: ', showSellerSide)
 
     return !loading ? (
       <View style={{ flex: 1 }}>

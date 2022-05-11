@@ -6,6 +6,7 @@ import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import helper from '../../helper'
 import Loader from '../loader'
+import { setDrawerInternalMenu } from '../../actions/drawer'
 
 class HeaderRight extends React.Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class HeaderRight extends React.Component {
   }
 
   render() {
-    const { navigation, isInternetConnected, updateLoader } = this.props
+    const { navigation, isInternetConnected, updateLoader, dispatch} = this.props
     return (
       <View style={{ flexDirection: 'row' }}>
         {!isInternetConnected ? (
@@ -35,6 +36,7 @@ class HeaderRight extends React.Component {
 
         <TouchableOpacity
           onPress={() => {
+            dispatch(setDrawerInternalMenu(false))
             navigation.openDrawer()
           }}
         >

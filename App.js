@@ -23,7 +23,7 @@ import { MenuProvider } from 'react-native-popup-menu'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
-import * as Sentry from 'sentry-expo'
+// import * as Sentry from 'sentry-expo'
 import { setPPBuyNotification } from './app/actions/notification'
 import { setInternetConnection } from './app/actions/user'
 import config from './app/config'
@@ -99,13 +99,13 @@ export default class App extends React.Component {
           resolve(config)
         })
     )
-    if (config.channel === 'production') {
-      Sentry.init({
-        enableInExpoDevelopment: false,
-        dsn: 'https://ed71a841530f479cb60896ee2db0788f@sentry.graana.rocks/7',
-      })
-      Sentry.setRelease(Constants.manifest.revisionId)
-    }
+    // if (config.channel === 'production') {
+    //   Sentry.init({
+    //     enableInExpoDevelopment: false,
+    //     dsn: 'https://ed71a841530f479cb60896ee2db0788f@sentry.graana.rocks/7',
+    //   })
+    //   Sentry.setRelease(Constants.manifest.revisionId)
+    // }
     await Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),

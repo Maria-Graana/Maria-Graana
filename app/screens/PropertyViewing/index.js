@@ -26,6 +26,12 @@ import helper from '../../helper'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
 import styles from './style'
+import {
+  alltimeSlots,
+  getTimeShifts,
+  setSlotDiaryData,
+  setTimeSlots,
+} from '../../actions/slotManagement'
 
 class PropertyViewing extends React.Component {
   constructor(props) {
@@ -379,6 +385,80 @@ class PropertyViewing extends React.Component {
     })
   }
 
+  goToTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch, permissions } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
+  updateTimeSlots = (property) => {
+    const { lead, navigation, user, dispatch, permissions } = this.props
+    dispatch(alltimeSlots())
+    dispatch(setTimeSlots())
+
+    if (helper.getAiraPermission(permissions) && lead) {
+      dispatch(getTimeShifts(lead.armsuser.id))
+      dispatch(setSlotDiaryData(_today, lead.armsuser.id))
+    } else {
+      dispatch(getTimeShifts())
+      dispatch(setSlotDiaryData(_today))
+    }
+
+    let diary = property.diaries[0]
+    let customer =
+      (lead.customer &&
+        lead.customer.customerName &&
+        helper.capitalize(lead.customer.customerName)) ||
+      ''
+    let copyObj = {}
+    let customerId = lead.customer && lead.customer.id ? lead.customer.id : null
+    let areaName = (property.area && property.area.name && property.area.name) || ''
+    copyObj.status = 'pending'
+    copyObj.id = diary.id
+    copyObj.taskCategory = 'leadTask'
+    copyObj.userId = helper.getAiraPermission(permissions) && lead ? lead.armsuser.id : user.id
+    copyObj.taskType = 'viewing'
+    copyObj.leadId = lead && lead.id ? lead.id : null
+    copyObj.customerId = customerId
+    copyObj.subject = 'Viewing with ' + customer + ' at ' + areaName
+    copyObj.propertyId = property && property.id ? property.id : null
+    navigation.navigate('TimeSlotManagement', {
+      data: copyObj,
+      taskType: 'viewing',
+      isBookViewing: true,
+    })
+  }
+
   checkStatus = (property) => {
     const { lead, user, permissions } = this.props
     const leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(
@@ -410,8 +490,9 @@ class PropertyViewing extends React.Component {
                 }}
                 onPress={() => {
                   if (leadAssignedSharedStatus) {
-                    this.openModal()
-                    this.updateProperty(property)
+                    // this.openModal()
+                    // this.updateProperty(property)
+                    this.updateTimeSlots(property)
                   }
                 }}
               >
@@ -492,8 +573,9 @@ class PropertyViewing extends React.Component {
     const { lead, user, permissions } = this.props
     const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
     if (leadAssignedSharedStatus) {
-      this.openModal()
+      // this.openModal()
       this.setProperty(property)
+      this.goToTimeSlots(property)
     }
   }
 
@@ -736,7 +818,7 @@ class PropertyViewing extends React.Component {
 
   _getLocationAsync = async () => {
     // get current lat/lng location of user when opting for auto mode
-    const { status } = await Location.requestPermissionsAsync()
+    const { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== 'granted') {
       alert('Permission to access location was denied')
     }

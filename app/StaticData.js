@@ -1,6 +1,11 @@
 /** @format */
 
 export default StaticData = {
+  parkingAvailable: [
+    { name: 'Yes', value: 'yes' },
+    { name: 'No', value: 'no' },
+  ],
+
   diaryTasks: [
     {
       name: 'Morning Meeting',
@@ -13,6 +18,86 @@ export default StaticData = {
     {
       name: 'Meeting with PP',
       value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+  ],
+  diaryTasksMeet: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
+    },
+  ],
+  diaryTasksView: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Viewing',
+      value: 'viewing',
+    },
+  ],
+  diaryTasksMeetView: [
+    {
+      name: 'Morning Meeting',
+      value: 'morning_meeting',
+    },
+    {
+      name: 'Daily Update',
+      value: 'daily_update',
+    },
+    {
+      name: 'Meeting with PP',
+      value: 'meeting_with_pp',
+    },
+    {
+      name: 'Follow up',
+      value: 'follow_up',
+    },
+    {
+      name: 'Viewing',
+      value: 'viewing',
+    },
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
+    },
+  ],
+  diaryTasksMeetingWithClient: [
+    {
+      name: 'Meeting with Client',
+      value: 'meeting',
     },
   ],
   diaryTasksCM: [
@@ -49,6 +134,7 @@ export default StaticData = {
     { value: 'sqyd', name: 'Yd²' },
     { value: 'kanal', name: 'Kanal' },
     { value: 'marla', name: 'Marla' },
+    { value: 'acre', name: 'Acre' },
   ],
   purpose: [
     { value: 'sale', name: 'Sale' },
@@ -313,6 +399,13 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
+  buyRentFilterAddTask: [
+    { value: 'all', name: 'All' },
+    { value: 'open', name: 'Open' },
+    { value: 'shortlisting', name: 'Shortlisting' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
+  ],
   ppBuyRentFilter: [
     { value: 'all', name: 'All' },
     { value: 'called', name: 'Called' },
@@ -324,19 +417,26 @@ export default StaticData = {
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
     { value: 'in_progress', name: 'In-progress' },
-    { value: 'token', name: 'Token' },
-    { value: 'payment', name: 'Payment' },
+    // { value: 'token', name: 'Token' },
+    // { value: 'payment', name: 'Payment' },
     { value: 'closed_lost', name: 'Closed Lost' },
   ],
-
-  investmentFilterDeals: [
+  investmentFilterLeadsAddTask: [
     { value: 'all', name: 'All' },
     { value: 'open', name: 'Open' },
     { value: 'in_progress', name: 'In-progress' },
     { value: 'token', name: 'Token' },
     { value: 'payment', name: 'Payment' },
+  ],
+
+  investmentFilterDeals: [
+    { value: 'all', name: 'All' },
+    // { value: 'open', name: 'Open' },
+    // { value: 'in_progress', name: 'In-progress' },
+    { value: 'token', name: 'Token' },
+    { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
-    { value: 'closed_lost', name: 'Closed Lost' },
+    // { value: 'closed_lost', name: 'Closed Lost' },
   ],
   commentsFeedbackCall: [
     { value: 'no_response', name: 'No Response', colorCode: '#FEC107' },
@@ -639,6 +739,7 @@ export default StaticData = {
   bedBathRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1000],
   sizeMarla: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30, 40, 50, 10000000],
   sizeKanal: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 30, 40, 50, 100, 10000000],
+  sizeAcre: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10000000],
   sizeSqft: [
     0, 1, 100, 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 10000000,
   ],
@@ -735,6 +836,14 @@ export default StaticData = {
     { value: 'bank-Transfer', name: 'Bank-Transfer' },
     { value: 'e-Gateway', name: 'E-Gateway' },
   ],
+  investmentPaymentType: [
+    { value: 'payment', name: 'Payment' },
+    { value: 'possession charges', name: 'Possession Charges' },
+    { value: 'installment', name: 'Installment' },
+    { value: 'down payment', name: 'Down Payment' },
+    { value: 'full payment', name: 'Full Payment' },
+  ],
+  investmentTaxType: [{ value: 'tax', name: 'Tax' }],
   investFullPaymentType: [
     { value: 'cash', name: 'Cash' },
     { value: 'cheque', name: 'Cheque' },
@@ -746,16 +855,14 @@ export default StaticData = {
     { value: 'Rebate Adjustment', name: 'Rebate Adjustment' },
     { value: 'Rent Adjustment', name: 'Rent Adjustment' },
     { value: 'Inter-Mall Adjustment', name: 'Inter-Mall Adjustment' },
+    { value: 'asset_adjustment', name: 'Asset Adjustment' },
   ],
   unitType: [
     { value: 'fullUnit', name: 'Full Unit' },
     { value: 'pearl', name: 'Pearl' },
   ],
   onlyUnitType: [{ value: 'fullUnit', name: 'Full Unit' }],
-  paymentTypeForToken: [
-    { value: 'Token', name: 'Token' },
-    { value: 'Payment', name: 'Other Payment' },
-  ],
+  paymentTypeForToken: [{ value: 'token', name: 'Token' }],
   statusOptions: [
     { label: 'Open', value: 'open' },
     { label: 'Pending Account', value: 'pendingAccount' },
@@ -1361,22 +1468,6 @@ export default StaticData = {
       label: 'Cold',
       color: '#1688db',
     },
-    // {
-    //   label: 'Call back',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Interested to meet',
-    //   color: '#61a70b',
-    // },
-    // {
-    //   label: 'Powered off',
-    //   color: '#9a9a9a',
-    // },
-    // {
-    //   label: 'No response',
-    //   color: '#9a9a9a',
-    // },
   ],
   unitStatuses: [
     { name: 'Available', value: 'Available' },
@@ -1418,5 +1509,66 @@ export default StaticData = {
     { name: 'Time Based', value: '' },
     { name: 'Task Type', value: 'type' },
     { name: 'Classification', value: 'class' },
+  ],
+  filterLeadsValue: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: "Team's Leads", value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'Referred by Me', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'My Demand Leads', value: '&pageType=demandLeads&hasBooking=false' },
+  ],
+  filterLeadsValueProject: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: "Teams's Leads", value: '&pageType=teamLeads&hasBooking=false' },
+    { name: 'Referred by Me', value: '&pageType=referredLeads&hasBooking=false' },
+  ],
+  filterDealsValue: [
+    { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
+    { name: "Team's Deals", value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  filterDealsValueProject: [
+    { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
+    { name: "Team's Deals", value: '&pageType=teamDeals&hasBooking=true' },
+  ],
+  buyRentFilterDeals: [{ value: 'closed_won', name: 'Closed Won' }],
+
+  filterLeadsValueTerminal: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'Referred by Me', value: '&pageType=referredLeads&hasBooking=false' },
+    { name: 'My Demand Leads', value: '&pageType=demandLeads&hasBooking=false' },
+  ],
+  filterDealsValueTerminal: [{ name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' }],
+  filterLeadsValueProjectTerminal: [
+    { name: 'My Leads', value: '&pageType=myLeads&hasBooking=false' },
+    { name: 'Reffered By Me', value: '&pageType=referredLeads&hasBooking=false' },
+  ],
+  filterDealsValueProjectTerminal: [
+    { name: 'My Deals', value: '&pageType=myDeals&hasBooking=true' },
+  ],
+
+  leadTypePickerData: [
+    { name: 'Select Lead Type', value: 'Select Lead Type' },
+    { name: 'Rent', value: 'Rent' },
+    { name: 'Buy', value: 'Buy' },
+    { name: 'Invest', value: 'Invest' },
+  ],
+
+  clientTypePickerData: [
+    { name: 'Personal Client', value: 'Personal Client' },
+    { name: 'Inbound Client', value: 'Inbound Client' },
+    { name: 'Walk-In', value: 'Walk-In' },
+    { name: 'Event', value: 'Event' },
+  ],
+  provincePickerData: [
+    { name: 'Punjab', value: 'Punjab' },
+    { name: 'Balochistan', value: 'Balochistan' },
+    { name: 'Khyber Pakhtunkhwa', value: 'Khyber Pakhtunkhwa' },
+    { name: 'Sindh', value: 'Sindh' },
+    { name: 'Islamabad Capital Territory', value: 'Islamabad Capital Territory' },
+  ],
+
+  relationStatusPickerData: [
+    { name: 'Son of', value: 'Son of' },
+    { name: 'Daughter of', value: 'Daughter of' },
+    { name: 'Wife of', value: 'Wife of' },
   ],
 }

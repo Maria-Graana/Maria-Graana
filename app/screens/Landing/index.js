@@ -3,20 +3,30 @@
 import axios from 'axios'
 import * as Linking from 'expo-linking'
 import React from 'react'
-import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, SafeAreaView } from 'react-native'
 import { connect } from 'react-redux'
-import addIcon from '../../../assets/img/add-icon-l.png'
 import { setContacts } from '../../actions/contacts'
 import { getListingsCount } from '../../actions/listings'
-import { getCurrentUser } from '../../actions/user'
+import { getCurrentUser, isTerminalUser } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import LandingTile from '../../components/LandingTile'
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency'
+import Loader from '../../components/loader'
+import StatisticsTile from '../../components/StatisticsTile'
 import helper from '../../helper'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import { FAB } from 'react-native-paper'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
+import { clearDiaries } from '../../actions/diary'
+import { getTimeShifts, setSlotData } from '../../actions/slotManagement'
+import moment from 'moment'
+
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
+
 class Landing extends React.Component {
   constructor(props) {
     super(props)
@@ -24,8 +34,20 @@ class Landing extends React.Component {
       tiles: [],
       tileNames: [
         {
+          tile: 'Clients',
+          actions: 'CLIENTS',
+        },
+        {
           tile: 'Diary',
           actions: 'DIARY',
+        },
+        {
+          tile: 'Project Leads',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'Project Deals',
+          actions: 'PROJECT_LEADS',
         },
         {
           tile: 'Leads',
@@ -34,10 +56,6 @@ class Landing extends React.Component {
         {
           tile: 'My Deals',
           actions: 'PROJECT_LEADS',
-        },
-        {
-          tile: 'Clients',
-          actions: 'CLIENTS',
         },
         {
           tile: 'Properties',
@@ -51,25 +69,39 @@ class Landing extends React.Component {
           tile: 'Targets',
           actions: 'TARGETS',
         },
+        {
+          tile: 'Contacts',
+          actions: 'CONTACTS',
+        },
       ],
       loading: true,
       userStatistics: null,
       toggleStatsTile: true,
       kpisData: [],
+      fabActions: [],
+      open: false,
+      selectedDate: _today,
     }
   }
 
   async componentDidMount() {
-    const { navigation, dispatch, permissions } = this.props
+    const { navigation, dispatch } = this.props
+    dispatch(getTimeShifts())
+    this.props.dispatch(setContacts())
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
-      this.props.dispatch(setContacts())
+      dispatch(isTerminalUser())
       this.getUserStatistics()
       this.getUserStatistics2()
+      this.setFabActions()
     })
     await dispatch(getCurrentUser()) // always get updated information of user from /api/user/me
     this._handleDeepLink()
     this._addLinkingListener() // if app is in foreground, this function is called for deep linking
+    const { status } = await requestTrackingPermissionsAsync()
+    if (status === 'granted') {
+      console.log('Yay! I have user permission to track data')
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -170,7 +202,7 @@ class Landing extends React.Component {
   }
 
   fetchTiles = () => {
-    const { user, count, permissions } = this.props
+    const { count, permissions } = this.props
     const { tileNames } = this.state
     let counter = 0
     let tileData = []
@@ -179,6 +211,9 @@ class Landing extends React.Component {
       const { tile, actions } = oneTile
       let label = tile
       tile = tile.replace(/ /g, '')
+      if (oneTile.tile === 'Contacts') {
+        getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
+      }
       if (oneTile.tile === 'Leads' || oneTile.tile === 'My Deals') {
         if (
           getPermissionValue(
@@ -193,12 +228,9 @@ class Landing extends React.Component {
           ) ||
           getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions)
         ) {
-          let oneTilee = {
-            screenName: tile,
-          }
           if (label === 'Team Diary') label = "Team's Diary"
-          if (tile === 'Leads') label = 'Leads'
-          if (tile === 'MyDeals') label = 'Deals'
+          if (tile === 'Leads') label = 'Buy/Rent Leads'
+          if (tile === 'MyDeals') label = 'Buy/Rent Deals'
           let oneTile = {
             id: counter,
             label: label,
@@ -231,13 +263,11 @@ class Landing extends React.Component {
               permissions
             ))
         ) {
+          if (label === 'Project Inventory') label = 'Inventory'
           if (label === 'InventoryTabs') label = 'Properties'
-          let oneTilee = {
-            screenName: tile,
-          }
           if (label === 'Team Diary') label = "Team's Diary"
-          if (tile === 'Leads') label = 'Leads'
-          if (tile === 'MyDeals') label = 'Deals'
+          if (tile === 'Leads') label = 'Buy/Rent Leads'
+          if (tile === 'MyDeals') label = 'Buy/Rent Deals'
           let oneTile = {
             id: counter,
             label: label,
@@ -273,6 +303,16 @@ class Landing extends React.Component {
       navigation.navigate('Leads', {
         screen: screenName,
         hasBooking: true,
+      })
+    } else if (screenName === 'ProjectDeals') {
+      navigation.navigate('ProjectLeads', {
+        screen: screenName,
+        hasBooking: true,
+      })
+    } else if (screenName === 'ProjectLeads') {
+      navigation.navigate('ProjectLeads', {
+        screen: screenName,
+        hasBooking: false,
       })
     } else if (screenName === 'ProjectInventory') {
       navigation.navigate('AvailableInventory', {
@@ -319,29 +359,105 @@ class Landing extends React.Component {
     else return false
   }
 
+  goToAddEditDiaryScreen = (update, data = null) => {
+    const { navigation, dispatch } = this.props
+    const { selectedDate } = this.state
+    dispatch(clearDiaries())
+    if (data) {
+      dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
+    }
+    navigation.navigate('AddDiary', { update, data, selectedDate })
+  }
+
+  setFabActions = () => {
+    const { navigation, permissions } = this.props
+    let fabActions = []
+    {
+      getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Register Client',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => navigation.navigate('AddClient', { update: false }),
+        })
+    }
+    {
+      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Project Lead',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+        })
+    }
+
+    {
+      getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.CREATE,
+        permissions
+      ) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Buy/Rent Lead',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+        })
+    }
+
+    {
+      getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Diary Task',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => this.goToAddEditDiaryScreen(),
+        })
+    }
+
+    {
+      getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
+        fabActions.push({
+          icon: 'plus',
+          label: 'Add Property',
+          color: AppStyles.colors.primaryColor,
+          onPress: () => navigation.navigate('AddInventory', { update: false }),
+        })
+    }
+
+    this.setState({
+      fabActions: fabActions,
+    })
+  }
+
+  goToFormPage = (page, status, client) => {
+    const { navigation } = this.props
+    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
+  }
+
   render() {
-    const { tiles, loading, toggleStatsTile, kpisData } = this.state
-    const { user, navigation, permissions } = this.props
-    let isShowKPIs = this.isShowKPIsView()
+    const { tiles, open, fabActions } = this.state
+    const { navigation, permissions } = this.props
     return (
       <SafeAreaView style={[AppStyles.container, styles.mainContainer]}>
         <AndroidNotifications navigation={navigation} />
+
         {tiles.length ? (
           <FlatList
             style={styles.scrollContainer}
             numColumns={2}
             data={tiles}
-            renderItem={(item, index) => (
+            renderItem={(item) => (
               <LandingTile
                 navigateFunction={this.navigateFunction}
                 pagePath={item.item.pagePath}
                 screenName={item.item.screenName}
-                badges={item.item.badges} // temporarily hiding count for diary
+                // badges={item.item.badges} // temporarily hiding count for diary
                 label={item.item.label}
                 imagePath={item.item.buttonImg}
               />
             )}
-            keyExtractor={(item, index) => item.id.toString()}
+            keyExtractor={(item) => item.id.toString()}
           />
         ) : null}
         {/* {isShowKPIs ? (
@@ -382,8 +498,31 @@ class Landing extends React.Component {
           </TouchableOpacity>
         ) : null} */}
 
-        <View style={styles.btnView}>
-          {getPermissionValue(
+        {/* <View style={styles.btnView}> */}
+        {getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) ||
+        getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) ||
+        getPermissionValue(
+          PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ||
+        getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) ||
+        getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) ? (
+          <FAB.Group
+            open={open}
+            icon={open ? 'close' : 'plus'}
+            style={{ marginBottom: 16 }}
+            fabStyle={{ backgroundColor: AppStyles.bgcWhite.backgroundColor }}
+            color={AppStyles.colors.primaryColor}
+            actions={fabActions}
+            onStateChange={({ open }) => this.setState({ open })}
+          />
+        ) : null}
+        {/* {getPermissionValue(
             PermissionFeatures.PROPERTIES,
             PermissionActions.CREATE,
             permissions
@@ -408,8 +547,8 @@ class Landing extends React.Component {
               <Image source={addIcon} style={styles.containerImg} />
               <Text style={styles.font}>CR</Text>
             </TouchableOpacity>
-          ) : null}
-        </View>
+          ) : null} */}
+        {/* </View> */}
         <UpdateApp />
       </SafeAreaView>
     )

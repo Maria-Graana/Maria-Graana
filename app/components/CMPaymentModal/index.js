@@ -27,6 +27,7 @@ import axios from 'axios'
 import moment from 'moment'
 import OfficeLocationSelector from '../OfficeLocationSelector'
 import AddEditInstrument from '../AddEditInstrument'
+import MonthPicker from '../MonthPicker'
 
 const CMPaymentModal = ({
   onModalCloseClick,
@@ -44,6 +45,12 @@ const CMPaymentModal = ({
   handleOfficeLocationChange,
   assignToAccountsLoading,
   handleInstrumentInfoChange,
+  AllAssignedLeads,
+  SelectedLeadDetails,
+  months,
+  selectedMonth,
+  selectedYear,
+  showPicker,
 }) => {
   const handleEmptyValue = (value) => {
     return value != null && value != '' ? value : ''
@@ -72,7 +79,7 @@ const CMPaymentModal = ({
   }
 
   return (
-    <Modal visible={CMPayment.visible}>
+    <Modal visible={CMPayment.visible} style={{ zIndex: 97 }}>
       <SafeAreaView style={AppStyles.mb1}>
         <ScrollView style={styles.modalMain}>
           <View style={styles.topHeader}>
@@ -116,23 +123,29 @@ const CMPaymentModal = ({
 
           <View style={styles.moreViewContainer}>
             {/* **************************************** */}
-            {CMPayment.paymentType === 'token' && (
+            {
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
                   <PickerComponent
                     enabled={CMPayment.status !== 'pendingAccount'}
                     onValueChange={handleCommissionChange}
-                    data={StaticData.paymentTypeForToken}
-                    name={'paymentCategory'}
+                    data={
+                      CMPayment.paymentType === 'token'
+                        ? StaticData.paymentTypeForToken
+                        : CMPayment.paymentType === 'tax'
+                        ? StaticData.investmentTaxType
+                        : StaticData.investmentPaymentType
+                    }
+                    name={'paymentType'}
                     placeholder="Payment Type"
-                    selectedItem={CMPayment.paymentCategory}
+                    selectedItem={CMPayment.paymentType}
                   />
-                  {modalValidation === true && CMPayment.paymentCategory == '' && (
+                  {modalValidation === true && CMPayment.paymentType == '' && (
                     <ErrorMessage errorMessage={'Required'} />
                   )}
                 </View>
               </View>
-            )}
+            }
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
               name={'installmentAmount'}
@@ -158,7 +171,7 @@ const CMPaymentModal = ({
                   onValueChange={handleCommissionChange}
                   data={StaticData.investFullPaymentType}
                   name={'type'}
-                  placeholder="Type"
+                  placeholder="Payment Category"
                   selectedItem={CMPayment.type}
                 />
                 {modalValidation === true && CMPayment.type == '' && (
@@ -166,6 +179,47 @@ const CMPaymentModal = ({
                 )}
               </View>
             </View>
+
+            {CMPayment.type === 'Rent Adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <PickerComponent
+                    onValueChange={handleCommissionChange}
+                    enabled={CMPayment.status !== 'pendingAccount'}
+                    data={AllAssignedLeads}
+                    name={'rentAdjLeadID'}
+                    placeholder="Lead ID"
+                    selectedItem={CMPayment.rentAdjLeadID}
+                  />
+                  {modalValidation === true && CMPayment.rentAdjLeadID == null && (
+                    <ErrorMessage errorMessage={'Required'} />
+                  )}
+                </View>
+              </View>
+            )}
+
+            {/* The View for Lead Details */}
+            {CMPayment.rentAdjLeadID &&
+              SelectedLeadDetails &&
+              SelectedLeadDetails.length != 0 &&
+              SelectedLeadDetails[0] && (
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={[AppStyles.inputWrap]}>
+                    <View style={styles.detailsView}>
+                      <Text style={styles.labelText}>Reference number</Text>
+                      <Text style={styles.detailsText}>
+                        {SelectedLeadDetails[0].referenceNumber}
+                      </Text>
+                      <Text style={styles.labelText}>Project</Text>
+                      <Text style={styles.detailsText}>{SelectedLeadDetails[0].project.name}</Text>
+                      <Text style={styles.labelText}>Floor</Text>
+                      <Text style={styles.detailsText}>{SelectedLeadDetails[0].floor.name}</Text>
+                      <Text style={styles.labelText}>Unit</Text>
+                      <Text style={styles.detailsText}>{SelectedLeadDetails[0].unit.name}</Text>
+                    </View>
+                  </View>
+                </View>
+              )}
 
             {CMPayment.type === 'cheque' ||
             CMPayment.type === 'pay-Order' ||
@@ -176,6 +230,81 @@ const CMPaymentModal = ({
                 errorMessage={CMPayment.instrumentDuplicateError}
               />
             ) : null}
+
+            {CMPayment.type === 'asset_adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <SimpleInputText
+                    name={'assetAdjDetails'}
+                    fromatName={false}
+                    placeholder={'Asset Adjustment Details'}
+                    label={'ASSET ADJUSTMENT DETAILS'}
+                    value={CMPayment.assetAdjDetails != '' ? CMPayment.assetAdjDetails : ''}
+                    editable={CMPayment.status !== 'pendingAccount'}
+                    formatValue={''}
+                    onChangeHandle={handleCommissionChange}
+                  />
+                  {modalValidation === true &&
+                    (CMPayment.assetAdjDetails == undefined || CMPayment.assetAdjDetails == '') && (
+                      <ErrorMessage errorMessage={'Required'} />
+                    )}
+                </View>
+              </View>
+            )}
+
+            {CMPayment.type === 'Inter-Mall Adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <SimpleInputText
+                    name={'adjustedRefNo'}
+                    fromatName={false}
+                    placeholder={'Reference # of Adjusted Unit'}
+                    label={'Reference # of Adjusted Unit'}
+                    value={CMPayment.adjustedRefNo != '' ? CMPayment.adjustedRefNo : ''}
+                    editable={CMPayment.status !== 'pendingAccount'}
+                    formatValue={''}
+                    onChangeHandle={handleCommissionChange}
+                  />
+                  {modalValidation === true &&
+                    (CMPayment.adjustedRefNo == undefined || CMPayment.adjustedRefNo == '') && (
+                      <ErrorMessage errorMessage={'Required'} />
+                    )}
+                </View>
+              </View>
+            )}
+
+            {CMPayment.type === 'Rent Adjustment' && (
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <TouchableOpacity
+                    onPress={() => showPicker()}
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                      },
+                    ]}
+                    disabled={CMPayment.status === 'pendingAccount'}
+                  >
+                    {CMPayment.rentMonth == undefined || CMPayment.rentMonth == '' ? (
+                      <Text style={styles.inputTextLabel}>Select Month</Text>
+                    ) : (
+                      <Text style={styles.inputText}>
+                        {months[selectedMonth - 1]} {selectedYear}
+                      </Text>
+                    )}
+                    <Image
+                      style={{ width: 26, height: 26 }}
+                      source={require('../../../assets/img/calendar.png')}
+                    />
+                  </TouchableOpacity>
+                  {modalValidation === true &&
+                    (CMPayment.rentMonth == undefined || CMPayment.rentMonth == '') && (
+                      <ErrorMessage errorMessage={'Required'} />
+                    )}
+                </View>
+              </View>
+            )}
 
             <SimpleInputText
               editable={CMPayment.status !== 'pendingAccount'}
@@ -228,40 +357,54 @@ const CMPaymentModal = ({
               )
             ) : null}
 
+            {/* Attachments View */}
             {CMPayment.installmentAmount != null &&
               CMPayment.installmentAmount != '' &&
               CMPayment.type != '' &&
               !checkFirstFormToken && (
-                <TouchableOpacity
-                  disabled={CMPayment.status === 'pendingAccount'}
-                  style={[
-                    styles.addPaymentBtn,
-                    {
-                      backgroundColor: CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
-                      borderColor:
-                        CMPayment.status === 'pendingAccount'
-                          ? '#8baaef'
-                          : AppStyles.colors.primaryColor,
-                    },
-                  ]}
-                  onPress={() => {
-                    goToPayAttachments()
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.addPaymentBtnText,
-                      {
-                        color:
-                          CMPayment.status === 'pendingAccount'
-                            ? '#f3f5f7'
-                            : AppStyles.colors.primaryColor,
-                      },
-                    ]}
-                  >
-                    ATTACHMENTS
-                  </Text>
-                </TouchableOpacity>
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={[AppStyles.inputWrap]}>
+                    <TouchableOpacity
+                      disabled={CMPayment.status === 'pendingAccount'}
+                      style={[
+                        styles.addPaymentBtn,
+                        {
+                          backgroundColor:
+                            CMPayment.status === 'pendingAccount' ? '#8baaef' : '#fff',
+                          borderColor:
+                            CMPayment.status === 'pendingAccount'
+                              ? '#8baaef'
+                              : AppStyles.colors.primaryColor,
+                        },
+                      ]}
+                      onPress={() => {
+                        goToPayAttachments()
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.addPaymentBtnText,
+                          {
+                            color:
+                              CMPayment.status === 'pendingAccount'
+                                ? '#f3f5f7'
+                                : AppStyles.colors.primaryColor,
+                          },
+                        ]}
+                      >
+                        ATTACHMENTS
+                      </Text>
+                      {/* For Check if Required in case of Rebate */}
+                    </TouchableOpacity>
+                    {CMPayment.type == 'Rebate Adjustment' &&
+                      modalValidation === true &&
+                      (CMPayment.paymentAttachments.length == 0 ||
+                        CMPayment.paymentAttachments === null ||
+                        CMPayment.paymentAttachments == undefined) && (
+                        <ErrorMessage errorMessage={'Required'} />
+                      )}
+                  </View>
+                </View>
               )}
 
             {CMPayment.id ? (
@@ -515,5 +658,44 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  detailsText: {
+    letterSpacing: 2,
+    color: '#0E73EE',
+    fontWeight: '600',
+    marginBottom: 10,
+    marginTop: 5,
+  },
+  labelText: {
+    color: '#23232C',
+    fontSize: 10,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    marginTop: 5,
+  },
+  detailsView: {
+    backgroundColor: 'white',
+    padding: '4%',
+  },
+  input: {
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 4,
+  },
+  inputText: {
+    fontSize: 16,
+    fontSize: 14,
+    fontFamily: 'OpenSans_regular',
+  },
+  inputTextLabel: {
+    fontSize: 14,
+    fontFamily: 'OpenSans_regular',
+    fontWeight: '200',
+    color: '#a8a8aa',
   },
 })

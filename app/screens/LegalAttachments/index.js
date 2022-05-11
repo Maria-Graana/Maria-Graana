@@ -5,7 +5,6 @@ import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
-import * as Permissions from 'expo-permissions'
 import { ActionSheet } from 'native-base'
 import moment from 'moment-timezone'
 import React, { Component } from 'react'
@@ -250,8 +249,7 @@ class LegalAttachment extends Component {
     const { route, lead } = this.props
     axios
       .post(
-        `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
-          legalType === 'internal' ? 'agent' : legalDescription
+        `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${legalType === 'internal' ? 'agent' : legalDescription
         }&addedBy=${route.params.addedBy}`
       )
       .then((res) => {
@@ -259,8 +257,7 @@ class LegalAttachment extends Component {
       })
       .catch((error) => {
         console.log(
-          `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
-            legalType === 'internal' ? 'agent' : legalDescription
+          `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${legalType === 'internal' ? 'agent' : legalDescription
           }}&addedBy=${route.params.addedBy}`,
           error
         )
@@ -285,6 +282,7 @@ class LegalAttachment extends Component {
   }
 
   handleForm = (formData) => {
+
     const { currentItem } = this.state
     formData.category = currentItem.category
     this.setState(
@@ -294,7 +292,8 @@ class LegalAttachment extends Component {
         loading: true,
       },
       () => {
-        this.uploadAttachment(this.state.formData)
+        // this.uploadAttachment(this.state.formData)
+        this.uploadAttachment(formData)
       }
     )
   }
@@ -311,7 +310,7 @@ class LegalAttachment extends Component {
     var newFormData = { ...formData }
     let options = {
       type: '*/*',
-      copyToCacheDirectory: true,
+      copyToCacheDirectory: false,
     }
     DocumentPicker.getDocumentAsync(options)
       .then((item) => {
@@ -341,10 +340,11 @@ class LegalAttachment extends Component {
     const { route, lead } = this.props
     const { checkListDoc, currentItem } = this.state
     let attachment = {
-      name: legalAttachment.fileName,
+      uri:legalAttachment.uri,
       type: 'file/' + legalAttachment.fileName.split('.').pop(),
-      uri: legalAttachment.uri,
+      name: legalAttachment.fileName,
     }
+ 
     let fd = new FormData()
     fd.append('file', attachment)
     // ====================== API call for Attachments base on Payment ID
@@ -413,7 +413,7 @@ class LegalAttachment extends Component {
   }
 
   saveFile = async (fileUri, doc) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
@@ -549,7 +549,7 @@ class LegalAttachment extends Component {
   }
 
   saveFile = async (fileUri, doc) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
@@ -718,8 +718,8 @@ class LegalAttachment extends Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-            ? user.officeLocation.id
-            : null,
+              ? user.officeLocation.id
+              : null,
       })
     )
 
@@ -884,8 +884,8 @@ class LegalAttachment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = legalPayment.paymentAttachments
           ? _.filter(legalPayment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1306,8 +1306,8 @@ class LegalAttachment extends Component {
                 />
               </View>
               {leadPurpose === 'sale' &&
-              addedBy !== 'seller' &&
-              firstFormData.legalService === 'internal' ? (
+                addedBy !== 'seller' &&
+                firstFormData.legalService === 'internal' ? (
                 <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
                   {!mailCheck ? (
                     <RCMBTN
@@ -1387,9 +1387,9 @@ class LegalAttachment extends Component {
                         <LegalTile
                           data={checkListDoc}
                           index={null}
-                          submitMenu={() => {}}
-                          getAttachmentFromStorage={() => {}}
-                          downloadLegalDocs={() => {}}
+                          submitMenu={() => { }}
+                          getAttachmentFromStorage={() => { }}
+                          downloadLegalDocs={() => { }}
                           isLeadClosed={isLeadClosed}
                           addBorder={true}
                         />

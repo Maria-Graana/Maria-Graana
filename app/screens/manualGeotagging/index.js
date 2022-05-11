@@ -87,40 +87,43 @@ class ManualMap extends Component {
     this.getLocation()
 
     if (this.props.addPropertyParams?.latitude) {
+      const region = {
+        latitude: this.props.addPropertyParams.latitude,
+        longitude: this.props.addPropertyParams.longitude,
+        latitudeDelta,
+        longitudeDelta,
+      }
       this.setState({
         marker_lat: this.props.addPropertyParams.latitude,
         marker_long: this.props.addPropertyParams.longitude,
-        region: {
-          latitude: this.props.addPropertyParams.latitude,
-          longitude: this.props.addPropertyParams.longitude,
-          latitudeDelta,
-          longitudeDelta,
-        },
+        region: region,
         placeSearch: '',
         placesList: [],
       })
+      mapRef.current.animateToRegion(region, 500)
     }
 
     LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
   }
 
   getLocation = async () => {
-    const { status } = await Location.requestPermissionsAsync()
+    const { status } = await Location.requestBackgroundPermissionsAsync()
     if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied')
+      alert(
+        'Permission to access location was denied, please go to phone settings and give permission to ARMS app to continue'
+      )
       return
     }
     const location = await Location.getCurrentPositionAsync({})
-    //setLocation(location);
-    //console.log('Location : ', location);
     const region = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
       latitudeDelta: 0.012,
       longitudeDelta: 0.01,
     }
-
-    mapRef.current.animateToRegion(region, 500)
+    if (!this.props.addPropertyParams?.latitude) {
+      mapRef.current.animateToRegion(region, 500)
+    }
     this.setState({
       plots: '',
       chosen_plot: '',

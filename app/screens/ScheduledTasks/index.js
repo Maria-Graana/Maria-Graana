@@ -137,46 +137,44 @@ export class ScheduledTasks extends Component {
       selectedDiary,
       selectedLead,
       user,
+      route,
     } = this.props
     const { selectedDate } = this.state
+    const { isFromTimeSlot = false } = route.params
     if (action === 'mark_as_done') {
-      if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId: user ? user.id : null }))
-      } else {
-        dispatch(
-          setConnectFeedback({
-            ...connectFeedback,
-            id: selectedDiary.id,
-          })
-        ).then((res) => {
-          if (selectedDiary.taskType === 'meeting') {
-            // check if reference number exists for meeting task when marking task as done, show modal if not
-            // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-            // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
-            // reference number exists for the selected lead, so directly marking it as done
-            dispatch(
-              getDiaryFeedbacks({
-                taskType: selectedDiary.taskType,
-                leadType: diaryHelper.getLeadType(selectedDiary),
-                actionType: 'Done',
-              })
-            ).then((res) => {
-              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-            })
-          } else {
-            // for all other cases
-            dispatch(
-              getDiaryFeedbacks({
-                taskType: selectedDiary.taskType,
-                leadType: diaryHelper.getLeadType(selectedDiary),
-                actionType: 'Done',
-              })
-            ).then((res) => {
-              navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-            })
-          }
+      dispatch(
+        setConnectFeedback({
+          ...connectFeedback,
+          id: selectedDiary.id,
         })
-      }
+      ).then((res) => {
+        if (selectedDiary.taskType === 'meeting') {
+          // check if reference number exists for meeting task when marking task as done, show modal if not
+          // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
+          // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
+          // reference number exists for the selected lead, so directly marking it as done
+          dispatch(
+            getDiaryFeedbacks({
+              taskType: selectedDiary.taskType,
+              leadType: diaryHelper.getLeadType(selectedDiary),
+              actionType: 'Done',
+            })
+          ).then((res) => {
+            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+          })
+        } else {
+          // for all other cases
+          dispatch(
+            getDiaryFeedbacks({
+              taskType: selectedDiary.taskType,
+              leadType: diaryHelper.getLeadType(selectedDiary),
+              actionType: 'Done',
+            })
+          ).then((res) => {
+            navigation.navigate('DiaryFeedback', { actionType: 'Done' })
+          })
+        }
+      })
     } else if (action === 'cancel_viewing') {
       dispatch(
         setConnectFeedback({
@@ -226,6 +224,7 @@ export class ScheduledTasks extends Component {
         diary: selectedDiary,
         selectedDate,
         agentId: user ? user.id : null,
+        isFromTimeSlot: isFromTimeSlot,
       })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
@@ -257,6 +256,8 @@ export class ScheduledTasks extends Component {
         ],
         { cancelable: false }
       )
+    } else if (action === 'add_investment_guide') {
+      dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
     }
   }
 
@@ -266,6 +267,7 @@ export class ScheduledTasks extends Component {
     if (data) {
       dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     }
+  
     navigation.navigate('AddDiary', {
       update,
       data,
@@ -273,6 +275,7 @@ export class ScheduledTasks extends Component {
       cmLeadId: cmLeadId,
       rcmLeadId: rcmLeadId,
       screenName: 'ScheduledTasks',
+      customerName:lead?.customer?.customerName,
       lead: lead && helper.getAiraPermission(permissions) ? lead : null,
     })
   }
@@ -312,11 +315,11 @@ export class ScheduledTasks extends Component {
       selectedLead,
       user,
     } = this.props
-    const { purposeTab } = route.params
+    const { purposeTab, isFromTimeSlot = false } = route.params
     const { diaries, loading, showClassificationModal, page } = diary
     return (
       <SafeAreaView style={styles.container}>
-        {purposeTab != 'wanted' && (
+        {purposeTab != 'wanted' && !isFromTimeSlot && (
           <Fab
             active="true"
             containerStyle={{ zIndex: 20 }}
@@ -356,15 +359,7 @@ export class ScheduledTasks extends Component {
           }
           addInvestmentGuide={(guideNo, attachments) =>
             dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
-              dispatch(
-                getDiaryFeedbacks({
-                  taskType: selectedDiary.taskType,
-                  leadType: diaryHelper.getLeadType(selectedDiary),
-                  actionType: 'Done',
-                })
-              ).then((res) => {
-                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-              })
+              dispatch(getDiaryTasks({ leadId, leadType }))
             })
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
@@ -413,6 +408,14 @@ export class ScheduledTasks extends Component {
                 }}
                 leadType={leadType}
                 isOwnDiaryView={true}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

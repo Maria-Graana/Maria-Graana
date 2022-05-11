@@ -6,7 +6,6 @@ import * as DocumentPicker from 'expo-document-picker'
 import * as FileSystem from 'expo-file-system'
 import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
-import * as Permissions from 'expo-permissions'
 import { ActionSheet } from 'native-base'
 import * as React from 'react'
 import {
@@ -61,7 +60,7 @@ var CANCEL_INDEX = 1
 class LeadRCMPayment extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       loading: true,
       isVisible: false,
@@ -75,6 +74,7 @@ class LeadRCMPayment extends React.Component {
       token: null,
       showAgreedAmountArrow: false,
       showTokenAmountArrow: false,
+      leadInfo: [],
       lead: props.lead,
       pickerData: StaticData.oneToTwelve,
       showMonthlyRentArrow: false,
@@ -93,7 +93,7 @@ class LeadRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -143,6 +143,8 @@ class LeadRCMPayment extends React.Component {
       accountsLoading: false,
       isMultiPhoneModalVisible: false,
       newActionModal: false,
+      legalBuyListing: [],
+      legalSellerListing: [],
     }
   }
 
@@ -150,21 +152,43 @@ class LeadRCMPayment extends React.Component {
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       if (this.props.route.params && this.props.route.params.isFromNotification) {
         const { lead } = this.props.route.params
-        this.getSelectedProperty(lead)
-        this.getLegalDocumentsCount()
-        this.getCallHistory()
-        this.fetchOfficeLocations()
-        this.fetchLegalPaymentInfo()
+        this.fetchFunctions(lead)
       } else {
         const { lead } = this.props
-        this.getSelectedProperty(lead)
-        this.getLegalDocumentsCount()
-        this.getCallHistory()
-        this.fetchOfficeLocations()
-        this.fetchLegalPaymentInfo()
+        this.fetchFunctions(lead)
       }
     })
   }
+
+  fetchFunctions = (lead) => {
+    this.fetchLeadInfo()
+    this.getSelectedProperty(lead)
+    this.getLegalDocumentsCount()
+    this.getCallHistory()
+    this.fetchOfficeLocations()
+    this.fetchLegalPaymentInfo()
+    this.fetchSellerDocuments(lead)
+    this.fetchBuyerDocuments(lead)
+  }
+
+  // componentDidUpdate(prevProps, prevState) {
+  //   // console.log(this.state.commissionNotApplicableBuyer, 'CURRENTBUYER')
+  //   // console.log(prevState.commissionNotApplicableBuyer, 'PREVSTATE')
+  //   const { lead } = this.props.route.params
+
+  //   if (prevState.commissionNotApplicableBuyer !== this.state.commissionNotApplicableBuyer) {
+  //     this.fetchSellerDocuments(lead)
+  //     this.fetchBuyerDocuments(lead)
+  //     console.log('BUYER')
+  //     this.checkCloseWon()
+  //   }
+  //   if (prevState.commissionNotApplicableSeller !== this.state.commissionNotApplicableSeller) {
+  //     console.log('SELLER')
+  //     this.fetchSellerDocuments(lead)
+  //     this.fetchBuyerDocuments(lead)
+  //     this.checkCloseWon()
+  //   }
+  // }
 
   fetchLegalPaymentInfo = () => {
     this.setState({ loading: true }, () => {
@@ -253,7 +277,7 @@ class LeadRCMPayment extends React.Component {
   }
 
   saveFile = async (fileUri, doc) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
@@ -333,7 +357,7 @@ class LeadRCMPayment extends React.Component {
   uploadDocument = (category) => {
     let options = {
       type: '*/*',
-      copyToCacheDirectory: true,
+      copyToCacheDirectory: false,
     }
     DocumentPicker.getDocumentAsync(options)
       .then((item) => {
@@ -500,12 +524,12 @@ class LeadRCMPayment extends React.Component {
                   agreedAmount: lead.payment ? String(lead.payment) : '',
                   token: lead.token ? String(lead.token) : '',
                   commissions: lead.commissions ? lead.commissions : null,
-                  commissionNotApplicableBuyer: lead.commissionNotApplicableBuyer
-                    ? lead.commissionNotApplicableBuyer
-                    : false,
-                  commissionNotApplicableSeller: lead.commissionNotApplicableSeller
-                    ? lead.commissionNotApplicableSeller
-                    : false,
+                  // commissionNotApplicableBuyer: lead.commissionNotApplicableBuyer
+                  //   ? lead.commissionNotApplicableBuyer
+                  //   : false,
+                  // commissionNotApplicableSeller: lead.commissionNotApplicableSeller
+                  //   ? lead.commissionNotApplicableSeller
+                  //   : false,
                   formData: {
                     contract_months: lead.contract_months ? String(lead.contract_months) : '',
                     security: lead.security ? String(lead.security) : '',
@@ -672,8 +696,13 @@ class LeadRCMPayment extends React.Component {
   showConfirmationDialog = (item) => {
     console.log('showConfirmationDialog')
     const { lead } = this.state
-    const { user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { user, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (leadAssignedSharedStatus) {
       if (lead && lead.commissions && lead.commissions.length > 0) {
         let count = 0
@@ -1309,6 +1338,7 @@ class LeadRCMPayment extends React.Component {
         modalValidation: true,
       })
     }
+    this.fetchFunctions(lead)
   }
 
   addRCMPayment = (body) => {
@@ -1686,6 +1716,146 @@ class LeadRCMPayment extends React.Component {
         })
     })
   }
+  fetchBuyerDocuments = (lead) => {
+    axios
+      .get(
+        `/api/legal/documents/${lead.id}?addedBy=buyer&leadType=${lead.purpose}&legalType=${lead.legalTypeBuyer}`
+      )
+      .then((res) => {
+        if (res.data && res.data.length) {
+          this.setState({
+            legalBuyListing: helper.setLegalListing(res.data),
+          })
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error)
+      })
+  }
+  fetchSellerDocuments = (lead) => {
+    let query = `/api/legal/documents/${lead.id}?addedBy=seller&leadType=${lead.purpose}&legalType=${lead.legalTypeSeller}`
+    axios
+      .get(query)
+      .then((res) => {
+        if (res.data && res.data.length) {
+          this.setState({
+            legalSellerListing: helper.setLegalListing(res.data),
+          })
+        }
+      })
+      .catch((error) => {
+        console.log('error: ', error)
+      })
+  }
+  fetchLeadInfo = () => {
+    const { lead } = this.props
+    axios
+      .get(`api/leads/byid?id=${lead.id}`)
+      .then((res) => {
+        this.setState({
+          leadInfo: res.data,
+          commissionNotApplicableBuyer: res.data.commissionNotApplicableBuyer,
+          commissionNotApplicableSeller: res.data.commissionNotApplicableSeller,
+        })
+        this.props.dispatch(setlead(res.data))
+        this.checkCloseWon()
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+  docsValidationHtml = (docs, type) => {
+    let docsValidationHtml = ''
+    let category = ''
+    docs.map((doc) => {
+      if (
+        doc.status !== 'approved' &&
+        (doc.category !== 'police_verification_report_optional' || doc.status === 'uploaded')
+      ) {
+        category =
+          doc.category === 'cnic' ? 'CNIC' : doc.category && doc.category.replace(/_/g, ' ')
+        docsValidationHtml += `${type} ${this.capitalizeWordsWithoutUnderscore(
+          category
+        )} is not approved. \n`
+      }
+    })
+    return docsValidationHtml
+  }
+
+  checkCloseWon() {
+    let isBuyerCommissionNotClear = false
+    let isBuyerLegalPaymentNotClear = false
+    let isBuyerPropsureServiceNotClear = false
+    let isSellerCommissionNotClear = false
+    let isSellerLegalPaymentNotClear = false
+    let isSellerPropsureServiceNotClear = false
+    let buyerCommissionPaymentFound = false
+    let sellerCommissionPaymentFound = false
+
+    const { leadInfo, legalSellerListing, legalBuyListing } = this.state
+    const { commissions, propsureOutstandingPayment } = leadInfo
+    if (commissions && commissions.length) {
+      commissions.map((item) => {
+        if (item.addedBy === 'buyer') {
+          if (item.paymentCategory === 'commission') buyerCommissionPaymentFound = true
+          if (item.status !== 'cleared') {
+            if (item.paymentCategory === 'commission') isBuyerCommissionNotClear = true
+            else if (item.paymentCategory === 'legal_payment') isBuyerLegalPaymentNotClear = true
+            else if (item.paymentCategory === 'propsure_services')
+              isBuyerPropsureServiceNotClear = true
+          }
+        } else if (item.addedBy === 'seller') {
+          if (item.paymentCategory === 'commission') sellerCommissionPaymentFound = true
+          if (item.status !== 'cleared') {
+            if (item.paymentCategory === 'commission') isSellerCommissionNotClear = true
+            else if (item.paymentCategory === 'legal_payment') isSellerLegalPaymentNotClear = true
+            else if (item.paymentCategory === 'propsure_services')
+              isSellerPropsureServiceNotClear = true
+          }
+        }
+      })
+    }
+
+    let paymentsValidationHtml = ''
+    let documentsValidationHtml = ''
+    if (this.state.commissionNotApplicableBuyer === false) {
+      if (isBuyerCommissionNotClear || !buyerCommissionPaymentFound)
+        paymentsValidationHtml += `Buyer advisor's commission payment is not cleared.\n`
+      if (isBuyerLegalPaymentNotClear)
+        paymentsValidationHtml += `Buyer advisor's legal payment is not cleared.\n`
+      if (isBuyerPropsureServiceNotClear)
+        paymentsValidationHtml += `Buyer advisor's propsure payment is not cleared.\n`
+      if (propsureOutstandingPayment > 0)
+        paymentsValidationHtml += `Buyer advisor's propsure outstanding payment is not cleared.\n`
+
+      if (legalBuyListing && legalBuyListing.length)
+        documentsValidationHtml += this.docsValidationHtml(legalBuyListing, "Buyer client's")
+    }
+
+    if (this.state.commissionNotApplicableSeller === false) {
+      if (isSellerCommissionNotClear || !sellerCommissionPaymentFound)
+        paymentsValidationHtml += `Seller advisor's commission payment is not cleared.\n`
+      if (isSellerLegalPaymentNotClear)
+        paymentsValidationHtml += `Seller advisor's legal payment is not cleared.\n`
+      if (isSellerPropsureServiceNotClear)
+        paymentsValidationHtml += `Seller advisor's propsure payment is not cleared.\n`
+
+      if (legalSellerListing && legalSellerListing.length)
+        documentsValidationHtml += this.docsValidationHtml(legalSellerListing, "Seller client's")
+    }
+    return { paymentEr: paymentsValidationHtml, documentEr: documentsValidationHtml }
+  }
+
+  capitalizeWordsWithoutUnderscore = (str, skip = false) => {
+    return (
+      str &&
+      str.replace(/(^|_)./g, function (txt) {
+        let withOut = txt.replace(/_/, ' ')
+        if (skip) return withOut.charAt(0).toUpperCase() + withOut.substr(1)
+        else return withOut.charAt(0).toUpperCase() + withOut.substr(1).toUpperCase()
+      })
+    )
+  }
 
   showHideDeletePayment = (val) => {
     this.setState({ deletePaymentVisible: val })
@@ -1935,12 +2105,13 @@ class LeadRCMPayment extends React.Component {
       accountsLoading,
       isMultiPhoneModalVisible,
       newActionModal,
+      legalSellerListing,
+      legalBuyListing,
     } = this.state
-    const { navigation, user, contacts, permissions } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { navigation, user, contacts, permissions, shortlistedData } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
-
     return !loading ? (
       <KeyboardAvoidingView
         style={[
@@ -2064,7 +2235,7 @@ class LeadRCMPayment extends React.Component {
               ListFooterComponent={
                 <View style={{ marginHorizontal: 10 }}>
                   {lead.shortlist_id !== null ? (
-                    lead.purpose === 'sale' ? (
+                    lead.purpose === 'sale' || lead.purpose === 'buy' ? (
                       <BuyPaymentView
                         lead={lead}
                         agreedAmount={agreedAmount}
@@ -2196,6 +2367,9 @@ class LeadRCMPayment extends React.Component {
               leadType={'RCM'}
               closedWon={closedWon}
               onHandleCloseLead={this.onHandleCloseLead}
+              closedWonOptionVisible={true}
+              checkCloseWon={this.checkCloseWon()}
+              leadData={this.state.leadInfo}
             />
           </View>
         </View>
@@ -2215,6 +2389,7 @@ mapStateToProps = (store) => {
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

@@ -13,8 +13,10 @@ export default class HeaderLeftLogo extends React.Component {
                 {
                     leftBool ?
                         <View style={styles.viewWrap}>
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Ionicons name="md-arrow-back"  size={26} style={styles.iconWrap} />
+                            <TouchableOpacity onPress={() => this.props?.leftClientScreen == 'Client' ? navigation.navigate('Client', {
+                                isUnitBooking: false,
+                            }) : this.props?.leftScreen ? navigation.navigate(this.props.leftScreen) : navigation.goBack()}>
+                                <Ionicons name="md-arrow-back" size={26} style={styles.iconWrap} />
                             </TouchableOpacity>
                         </View>
                         :

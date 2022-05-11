@@ -55,7 +55,8 @@ import {
   setSlotDiaryData,
   setTimeSlots,
 } from '../../actions/slotManagement'
-
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import DayShiftEnd from '../../components/DayShiftEnd'
 import { Menu } from 'react-native-paper'
 import { DiarySortModal } from '../../components/DiarySortModal'
@@ -64,6 +65,7 @@ import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import diaryHelper from './diaryHelper'
 import HistoryModal from '../../components/HistoryModal'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import NonLeadTaskModal from '../../components/NonLeadTaskModal'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -88,6 +90,7 @@ class Diary extends React.Component {
       isDelete: false,
       activityHistoryData: [],
       isActivityHistoryModalVisible: false,
+      nonLeadModalVisible: false,
     }
   }
   componentDidMount() {
@@ -97,9 +100,9 @@ class Diary extends React.Component {
     dispatch(alltimeSlots())
     dispatch(setTimeSlots())
     dispatch(getTimeShifts())
-    this.getDiariesStats()
     this._unsubscribe = navigation.addListener('focus', () => {
       const { user, isFilterApplied, filters } = this.props
+      this.getDiariesStats()
       dispatch(setSlotDiaryData(_today))
       let dateSelected = null
       if (isFilterApplied) {
@@ -170,18 +173,25 @@ class Diary extends React.Component {
   dayEndStat = (selectedDate, nextDay, array) => {
     if (array[0] && array[0].armsShift && array.length == 2) {
       const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
-      const end = formatDateTime(nextDay, array[1].armsShift.endTime)
-
-      this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 3) {
-      const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
       const end = formatDateTime(
-        array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
-        array[2].armsShift.endTime
+        array[0] && (array[1].armsShift.name == 'Evening' || array[1].armsShift.name == 'Night')
+          ? nextDay
+          : selectedDate,
+        array[1].armsShift.endTime
       )
 
       this.setStatsData(start, end)
-    } else if (array[0] && array[0].armsShift && array.length == 1) {
+    }
+    // else if (array[0] && array[0].armsShift && array.length == 3) {
+    //   const start = formatDateTime(selectedDate, array[0].armsShift.startTime)
+    //   const end = formatDateTime(
+    //     array[2].armsShift.name == 'Night' ? nextDay : selectedDate,
+    //     array[2].armsShift.endTime
+    //   )
+
+    //   this.setStatsData(start, end)
+    // }
+    else if (array[0] && array[0].armsShift && array.length == 1) {
       const start = formatDateTime(selectedDate, array[0] && array[0].armsShift.startTime)
       const end = formatDateTime(
         array[0] && array[0].armsShift.name == 'Evening' ? nextDay : selectedDate,
@@ -277,7 +287,7 @@ class Diary extends React.Component {
     const { selectedDate, agentId } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+        this.setState({ nonLeadModalVisible: true })
       } else {
         dispatch(
           setConnectFeedback({
@@ -286,7 +296,6 @@ class Diary extends React.Component {
           })
         ).then((res) => {
           if (selectedDiary.taskType === 'meeting') {
-            // check if reference number exists for meeting task when marking task as done, show modal if not
             dispatch(
               getDiaryFeedbacks({
                 taskType: selectedDiary.taskType,
@@ -296,20 +305,7 @@ class Diary extends React.Component {
             ).then((res) => {
               navigation.navigate('DiaryFeedback', { actionType: 'Done' })
             })
-          } 
-          // else if (selectedDiary.taskType === 'meeting') {
-          //   // reference number exists for the selected lead, so directly marking it as done
-          //   dispatch(
-          //     getDiaryFeedbacks({
-          //       taskType: selectedDiary.taskType,
-          //       leadType: diaryHelper.getLeadType(selectedDiary),
-          //       actionType: 'Done',
-          //     })
-          //   ).then((res) => {
-          //     navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-          //   })
-          // } 
-          else {
+          } else {
             // for all other cases
             dispatch(
               getDiaryFeedbacks({
@@ -372,9 +368,9 @@ class Diary extends React.Component {
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
-      this.navigateToReferAssignLead('refer')
+      this.navigateToShareScreen()
     } else if (action === 'reassign_lead') {
-      this.navigateToReferAssignLead('reassign')
+      this.checkAssignedLead()
     } else if (action === 'activity_history') {
       getActivityHistory(selectedLead, diaryHelper.getLeadType(selectedDiary)).then((res) => {
         if (res) {
@@ -399,23 +395,102 @@ class Diary extends React.Component {
         ],
         { cancelable: false }
       )
+    } else if (action === 'add_investment_guide') {
+      dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
     }
   }
 
-  navigateToReferAssignLead = (mode) => {
-    const { navigation, selectedDiary, selectedLead } = this.props
+  // navigateToReferAssignLead = (mode) => {
+  //   const { navigation, selectedDiary, selectedLead } = this.props
+  //   let type = null
+  //   if (selectedDiary.armsProjectLeadId) {
+  //     type = 'Investment'
+  //   } else if (selectedDiary.armsLeadId) {
+  //     type = selectedLead.purpose
+  //   }
+  //   navigation.navigate('AssignLead', {
+  //     leadId: selectedLead.id,
+  //     type: type,
+  //     purpose: mode,
+  //     screenName: 'Diary',
+  //   })
+  // }
+  navigateToShareScreen = () => {
+    const { user, selectedLead, navigation, selectedDiary, permissions } = this.props
     let type = null
     if (selectedDiary.armsProjectLeadId) {
       type = 'Investment'
     } else if (selectedDiary.armsLeadId) {
       type = selectedLead.purpose
     }
-    navigation.navigate('AssignLead', {
-      leadId: selectedLead.id,
-      type: type,
-      purpose: mode,
-      screenName: 'Diary',
-    })
+    if (selectedLead) {
+      if (
+        (getPermissionValue(
+          selectedLead.projectId && selectedLead.project
+            ? PermissionFeatures.PROJECT_LEADS
+            : PermissionFeatures.BUY_RENT_LEADS,
+          PermissionActions.REFER,
+          permissions
+        ) &&
+          selectedLead.status === StaticData.Constants.lead_closed_lost) ||
+        selectedLead.status === StaticData.Constants.lead_closed_won
+      ) {
+        helper.errorToast('Closed leads cannot be shared with other agents')
+        return
+      }
+      if (user.id === selectedLead.assigned_to_armsuser_id) {
+        if (selectedLead.shared_with_armsuser_id) {
+          helper.errorToast('lead is already shared')
+        } else {
+          navigation.navigate('AssignLead', {
+            leadId: selectedLead.id,
+            type: type,
+            purpose: 'refer',
+            screenName: 'Diary',
+          })
+        }
+      } else {
+        helper.errorToast('Only the leads assigned to you can be shared')
+      }
+    } else {
+      helper.errorToast('Something went wrong!')
+    }
+  }
+  checkAssignedLead = () => {
+    const { user, navigation, selectedDiary, selectedLead, permissions } = this.props
+    let type = null
+    if (selectedDiary.armsProjectLeadId) {
+      type = 'Investment'
+    } else if (selectedDiary.armsLeadId) {
+      type = selectedLead.purpose
+    }
+    // Show assign lead button only if loggedIn user is Sales level2 or CC/BC/RE Manager
+    if (
+      getPermissionValue(
+        selectedLead.projectId && selectedLead.project
+          ? PermissionFeatures.PROJECT_LEADS
+          : PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.REFER,
+        permissions
+      ) &&
+      selectedLead.status !== StaticData.Constants.lead_closed_lost &&
+      selectedLead.status !== StaticData.Constants.lead_closed_won
+    ) {
+      // Lead can only be assigned to someone else if it is assigned to no one or to current user
+      if (
+        selectedLead.assigned_to_armsuser_id === null ||
+        user.id === selectedLead.assigned_to_armsuser_id
+      ) {
+        navigation.navigate('AssignLead', {
+          leadId: selectedLead.id,
+          type: type,
+          purpose: 'reassign',
+          screenName: 'Diary',
+        })
+      }
+    } else {
+      helper.errorToast('Sorry you are not authorized to assign lead')
+    }
   }
 
   navigateToLeadDetail = (data) => {
@@ -481,6 +556,7 @@ class Diary extends React.Component {
       isSortModalVisible,
       isActivityHistoryModalVisible,
       activityHistoryData,
+      nonLeadModalVisible,
     } = this.state
     const {
       overdueCount,
@@ -498,13 +574,16 @@ class Diary extends React.Component {
       selectedDiary,
       selectedLead,
       page,
+      permissions,
     } = this.props
     const { diaries, loading, showClassificationModal } = diary
     const { name = null, screen } = route.params
 
     return (
       <SafeAreaView style={styles.container}>
-        {screen && screen !== 'TeamDiary' ? (
+        {screen &&
+        getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) &&
+        screen !== 'TeamDiary' ? (
           <Fab
             active="true"
             containerStyle={{ zIndex: 20 }}
@@ -517,6 +596,14 @@ class Diary extends React.Component {
             <Ionicons name="md-add" color="#ffffff" />
           </Fab>
         ) : null}
+
+        <NonLeadTaskModal
+          isVisible={nonLeadModalVisible}
+          showHideModal={(value) => this.setState({ nonLeadModalVisible: value })}
+          markTaskasDone={(comment) =>
+            dispatch(markDiaryTaskAsDone({ selectedDate, agentId, comment }))
+          }
+        />
 
         <AddLeadCategoryModal
           visible={showClassificationModal}
@@ -544,15 +631,7 @@ class Diary extends React.Component {
           }
           addInvestmentGuide={(guideNo, attachments) =>
             dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
-              dispatch(
-                getDiaryFeedbacks({
-                  taskType: selectedDiary.taskType,
-                  leadType: diaryHelper.getLeadType(selectedDiary),
-                  actionType: 'Done',
-                })
-              ).then((res) => {
-                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-              })
+              this.getMyDiary(_today)
             })
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
@@ -711,6 +790,14 @@ class Diary extends React.Component {
                   })
                 }}
                 isOwnDiaryView={agentId === user.id}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             onEndReached={() => {
@@ -824,6 +911,7 @@ mapStateToProps = (store) => {
     connectFeedback: store.diary.connectFeedback,
     filters: store.diary.filters,
     referenceGuide: store.diary.referenceGuide,
+    permissions: store.user.permissions,
   }
 }
 

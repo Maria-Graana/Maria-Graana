@@ -10,6 +10,7 @@ import {
   FlatList,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Fab } from 'native-base'
@@ -104,7 +105,7 @@ class OverdueTasks extends React.Component {
     const { selectedDate } = this.state
     if (action === 'mark_as_done') {
       if (selectedDiary.taskCategory === 'simpleTask') {
-        dispatch(markDiaryTaskAsDone({ selectedDate, agentId }))
+        dispatch(markDiaryTaskAsDone({ agentId, overdue: true }))
       } else {
         dispatch(
           setConnectFeedback({
@@ -113,10 +114,6 @@ class OverdueTasks extends React.Component {
           })
         ).then((res) => {
           if (selectedDiary.taskType === 'meeting') {
-            // check if reference number exists for meeting task when marking task as done, show modal if not
-            // dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
-          // } else if (selectedDiary.taskType === 'meeting' && selectedLead.guideReference) {
-            // reference number exists for the selected lead, so directly marking it as done
             dispatch(
               getDiaryFeedbacks({
                 taskType: selectedDiary.taskType,
@@ -185,7 +182,12 @@ class OverdueTasks extends React.Component {
           )
         )
       }
-      navigation.navigate('TaskDetails', { diary: selectedDiary, selectedDate, agentId })
+      navigation.navigate('TaskDetails', {
+        diary: selectedDiary,
+        selectedDate,
+        agentId,
+        overdue: true,
+      })
     } else if (action === 'edit_task') {
       this.goToAddEditDiaryScreen(true, selectedDiary)
     } else if (action === 'refer_lead') {
@@ -207,15 +209,17 @@ class OverdueTasks extends React.Component {
           {
             text: 'Delete',
             onPress: () => {
-              dispatch(deleteDiaryTask({ selectedDate, agentId }))
+              dispatch(deleteDiaryTask({ agentId, overdue: true }))
               dispatch(clearSlotDiaryData())
-              dispatch(setSlotDiaryData(selectedDate))
+              // dispatch(setSlotDiaryData(selectedDate))
               this.setState({ isDelete: true })
             },
           },
         ],
         { cancelable: false }
       )
+    } else if (action === 'add_investment_guide') {
+      dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true }))
     }
   }
   navigateToReferAssignLead = (mode) => {
@@ -365,15 +369,7 @@ class OverdueTasks extends React.Component {
           }
           addInvestmentGuide={(guideNo, attachments) =>
             dispatch(addInvestmentGuide({ guideNo, attachments })).then((res) => {
-              dispatch(
-                getDiaryFeedbacks({
-                  taskType: selectedDiary.taskType,
-                  leadType: diaryHelper.getLeadType(selectedDiary),
-                  actionType: 'Done',
-                })
-              ).then((res) => {
-                navigation.navigate('DiaryFeedback', { actionType: 'Done' })
-              })
+              this.getDiaries()
             })
           }
           referenceGuideLoading={referenceGuide.referenceGuideLoading}
@@ -436,6 +432,14 @@ class OverdueTasks extends React.Component {
                   })
                 }}
                 isOwnDiaryView={agentId === user.id}
+                assignedToMe={
+                  selectedDiary &&
+                  selectedDiary.armsLead &&
+                  user &&
+                  selectedDiary.armsLead.assigned_to_armsuser_id === user.id
+                    ? true
+                    : false
+                }
               />
             )}
             keyExtractor={(item, index) => item.id.toString()}

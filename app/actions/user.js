@@ -6,7 +6,7 @@ import { AsyncStorage } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import config from '../config'
-import * as Sentry from 'sentry-expo'
+// import * as Sentry from 'sentry-expo'
 import * as WebBrowser from 'expo-web-browser'
 import Constants from 'expo-constants'
 
@@ -92,24 +92,24 @@ export function setuser(data) {
       dispatch({
         type: types.USER_LOADED,
       })
-      if (config.channel === 'production') {
-        Sentry.captureException(`Login API Source Cancel! ${JSON.stringify(data.email)}`)
-      }
+      // if (config.channel === 'production') {
+      //   Sentry.captureException(`Login API Source Cancel! ${JSON.stringify(data.email)}`)
+      // }
       source.cancel()
     }, 10000)
-    if (config.channel === 'production') {
-      Sentry.captureException(
-        `Login Action Loading And Before API call! ${JSON.stringify(
-          data.email
-        )}! URL:${JSON.stringify(axios.defaults.baseURL)}`
-      )
-    }
+    // if (config.channel === 'production') {
+    //   Sentry.captureException(
+    //     `Login Action Loading And Before API call! ${JSON.stringify(
+    //       data.email
+    //     )}! URL:${JSON.stringify(axios.defaults.baseURL)}`
+    //   )
+    // }
     return axios
       .post(`/api/user/login`, data, { cancelToken: source.token })
       .then((response) => {
-        if (config.channel === 'production') {
-          Sentry.captureException(`Login API Success Response! ${JSON.stringify(data.email)}`)
-        }
+        // if (config.channel === 'production') {
+        //   Sentry.captureException(`Login API Success Response! ${JSON.stringify(data.email)}`)
+        // }
         console.log('<<<<<<<<<< User >>>>>>>>>>>>>>')
         console.log(response.data)
         storeItem('token', response.data.token)
@@ -138,13 +138,13 @@ export function setuser(data) {
           type: types.SET_USER_ERROR,
           payload: error.response ? error.response.data : error.message,
         })
-        if (config.channel === 'production') {
-          Sentry.captureException(
-            `Login API Catch Response ERROR! ${JSON.stringify(data.email)}: ${JSON.stringify(
-              error.response.data
-            )}`
-          )
-        }
+        // if (config.channel === 'production') {
+        //   Sentry.captureException(
+        //     `Login API Catch Response ERROR! ${JSON.stringify(data.email)}: ${JSON.stringify(
+        //       error.response.data
+        //     )}`
+        //   )
+        // }
         return error
       })
       .finally(() => {
@@ -156,9 +156,9 @@ export function setuser(data) {
         dispatch({
           type: types.USER_LOADED,
         })
-        if (config.channel === 'production') {
-          Sentry.captureException(`Login API Finally Response! ${JSON.stringify(data.email)}`)
-        }
+        // if (config.channel === 'production') {
+        //   Sentry.captureException(`Login API Finally Response! ${JSON.stringify(data.email)}`)
+        // }
       })
   }
 }
@@ -304,5 +304,24 @@ export function getGoogleAuth() {
           return Promise.reject('Error auth')
         })
     }
+  }
+}
+
+export function isTerminalUser() {
+  return (dispatch, getsState) => {
+    let user = getsState().user.user
+    let groupManagerParam = ''
+    const userRoleId = user.armsUserRoleId
+    const userRole = user.armsUserRole
+    if (userRole && userRole.groupManger && userRole.groupManger.toString() == 'true') {
+      groupManagerParam = `&groupManager=true`
+    }
+    axios.get(`/api/role/sub-users?roleId=${userRoleId}${groupManagerParam}`).then((res) => {
+      if (res && res.data && res.data.length) {
+        return dispatch({ type: types.SET_IS_TERMINAL_USER, data: false })
+      } else {
+        return dispatch({ type: types.SET_IS_TERMINAL_USER, data: true })
+      }
+    })
   }
 }

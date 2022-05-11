@@ -10,7 +10,6 @@ import times from '../../../assets/img/times.png'
 import PaymentMethods from '../../PaymentMethods'
 import ViewDocs from '../ViewDocs'
 import * as MediaLibrary from 'expo-media-library'
-import * as Permissions from 'expo-permissions'
 import * as FileSystem from 'expo-file-system'
 
 class UnitDetailsModal extends React.Component {
@@ -44,7 +43,7 @@ class UnitDetailsModal extends React.Component {
   }
 
   saveFile = async (fileUri) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
@@ -61,15 +60,8 @@ class UnitDetailsModal extends React.Component {
   }
 
   render() {
-    const {
-      active,
-      openUnitDetailsModal,
-      data,
-      pearlModal,
-      formData,
-      pearlUnitPrice,
-      lead,
-    } = this.props
+    const { active, openUnitDetailsModal, data, pearlModal, formData, pearlUnitPrice, lead } =
+      this.props
     const { noProducts } = lead
     var optionalArray = data && data.optional_fields != null && data.optional_fields
     const { imageUrl, showWebView } = this.state

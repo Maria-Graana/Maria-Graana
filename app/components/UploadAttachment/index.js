@@ -1,12 +1,12 @@
 /** @format */
 
 import * as ImagePicker from 'expo-image-picker'
-import * as Permissions from 'expo-permissions'
 import * as DocumentPicker from 'expo-document-picker'
 import { ActionSheet } from 'native-base'
 import * as ImageManipulator from 'expo-image-manipulator'
 import React from 'react'
 import { StyleSheet, View, Alert } from 'react-native'
+import { Camera } from 'expo-camera'
 import helper from '../../helper'
 
 var BUTTONS = ['Upload File', 'Take a Photo', 'Cancel']
@@ -42,9 +42,9 @@ export default class UploadAttachment extends React.Component {
 
   // ************* Take A Photo *****************
   takePhotos = async () => {
-    let { status: camStatus } = await Permissions.getAsync(Permissions.CAMERA)
+    let { status: camStatus } = await Camera.requestPermissionsAsync()
     if (camStatus !== 'granted') {
-      const status = await Permissions.askAsync(Permissions.CAMERA).status
+      const status = await Camera.requestPermissionsAsync().status
       if (status !== 'granted') {
         return
       }
@@ -86,13 +86,14 @@ export default class UploadAttachment extends React.Component {
 
   // ************* Upload Attachment From Gallery *****************
   getAttachmentFromStorage = () => {
+
     const { formData } = this.state
     const { submitUploadedAttachment } = this.props
     var newFormData = { ...formData }
 
     let options = {
       type: '*/*',
-      copyToCacheDirectory: true,
+      copyToCacheDirectory: false,
     }
     DocumentPicker.getDocumentAsync(options)
       .then((item) => {

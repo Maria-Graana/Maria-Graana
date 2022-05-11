@@ -32,7 +32,6 @@ import StaticData from '../../StaticData'
 import styles from './styles'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
-import * as Permissions from 'expo-permissions'
 import * as IntentLauncher from 'expo-intent-launcher'
 import ViewDocs from '../../components/ViewDocs'
 import PaymentMethods from '../../PaymentMethods'
@@ -54,13 +53,17 @@ import {
 } from '../../actions/addInstrument'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 
-var BUTTONS = ['Delete', 'Cancel']
+var BUTTONS = [
+  //'Assign to Accounts',
+  'Delete',
+  'Cancel',
+]
 var CANCEL_INDEX = 1
 
 class LeadPropsure extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       loading: true,
       open: false,
@@ -79,7 +82,7 @@ class LeadPropsure extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
       callModal: false,
       meetings: [],
       menuShow: false,
@@ -216,7 +219,7 @@ class LeadPropsure extends React.Component {
   }
 
   saveFile = async (fileUri, doc) => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const { status } = await MediaLibrary.requestPermissionsAsync()
     if (status === 'granted') {
       const asset = await MediaLibrary.createAssetAsync(fileUri)
       MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
@@ -239,7 +242,7 @@ class LeadPropsure extends React.Component {
     }
   }
 
-  fetchProperties = (lead) => {
+  fetchProperties = (lead, AssignToAccount) => {
     const { rcmProgressBar } = StaticData
     let matches = []
     this.setState({ loading: true }, () => {
@@ -247,11 +250,21 @@ class LeadPropsure extends React.Component {
         .get(`/api/leads/${lead.id}/shortlist`)
         .then((res) => {
           matches = helper.propertyIdCheck(res.data.rows)
-          this.setState({
-            matchData: matches,
-            progressValue: rcmProgressBar[lead.status],
-            assignToAccountsLoading: false,
-          })
+          if (AssignToAccount == 'AssignToAccount') {
+            this.setState({
+              matchData: matches,
+              progressValue: rcmProgressBar[lead.status],
+              assignToAccountsLoading: false,
+              documentModalVisible: false,
+            })
+          } else {
+            this.setState({
+              matchData: matches,
+              progressValue: rcmProgressBar[lead.status],
+              assignToAccountsLoading: false,
+              documentModalVisible: false,
+            })
+          }
         })
         .catch((error) => {
           console.log(error)
@@ -299,8 +312,13 @@ class LeadPropsure extends React.Component {
   }
 
   showDocumentModal = (propsureReports, property) => {
-    const { lead, user, dispatch, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, dispatch, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (leadAssignedSharedStatus) {
       let installment = property.cmInstallment
         ? property.cmInstallment
@@ -344,7 +362,7 @@ class LeadPropsure extends React.Component {
     if (id) {
       let options = {
         type: '*/*',
-        copyToCacheDirectory: true,
+        copyToCacheDirectory: false,
       }
       DocumentPicker.getDocumentAsync(options)
         .then((item) => {
@@ -683,8 +701,13 @@ class LeadPropsure extends React.Component {
   }
 
   showReportsModal = (property) => {
-    const { lead, user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (leadAssignedSharedStatus) {
       this.setState({
         isVisible: true,
@@ -772,6 +795,7 @@ class LeadPropsure extends React.Component {
   }
 
   onPaymentLongPress = (data) => {
+    const { propsurePayment, lead } = this.props
     const { dispatch } = this.props
     ActionSheet.show(
       {
@@ -779,8 +803,17 @@ class LeadPropsure extends React.Component {
         cancelButtonIndex: CANCEL_INDEX,
         title: 'Select an Option',
       },
+
       (buttonIndex) => {
         if (buttonIndex === 0) {
+          //Assign To Accounts
+          this.setState({
+            selectedPayment: data,
+          })
+
+          this.assignToAccountsOpen(data)
+        }
+        if (buttonIndex === 1) {
           //Delete
           this.setState({
             selectedPayment: data,
@@ -909,6 +942,7 @@ class LeadPropsure extends React.Component {
     const { propsurePayment, user, lead } = this.props
     const { editable, selectedProperty, previousPayment } = this.state
     const { propsureOutstandingPayment } = lead
+
     if (
       propsurePayment.installmentAmount != null &&
       propsurePayment.installmentAmount != '' &&
@@ -917,48 +951,7 @@ class LeadPropsure extends React.Component {
       this.setState({
         addPaymentLoading: true,
       })
-      if (Number(propsurePayment.installmentAmount) <= 0) {
-        this.setState({
-          buyerNotZero: true,
-          addPaymentLoading: false,
-          assignToAccountsLoading: false,
-        })
-        return
-      }
-      if (editable === false) {
-        let body = {}
-        let outstandingPaymentCalc =
-          Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount)
-
-        // for payment addition
-        if (
-          propsurePayment.type === 'cheque' ||
-          propsurePayment.type === 'pay-Order' ||
-          propsurePayment.type === 'bank-Transfer'
-        ) {
-          // for cheque,pay order and bank transfer
-          let isValid = this.checkInstrumentValidation()
-          if (isValid) {
-            this.addEditPropsureInstrumentOnServer(false, outstandingPaymentCalc)
-          }
-        } else {
-          // for all other types
-          body = {
-            ...propsurePayment,
-            rcmLeadId: lead.id,
-            armsUserId: user.id,
-            outstandingPayment: outstandingPaymentCalc,
-            addedBy: 'buyer',
-            amount: propsurePayment.installmentAmount,
-            shortlistPropertyId: propsurePayment.selectedPropertyId,
-          }
-          delete body.visible
-          delete body.installmentAmount
-          delete body.selectedPropertyId
-          delete body.paymentCategory
-          this.addPropsurePayment(body)
-        }
-      } else {
+      if (propsurePayment.paymentType == 'AssignToAccount') {
         let remainingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
         remainingFee = remainingFee - Number(propsurePayment.installmentAmount)
         let body = {}
@@ -993,6 +986,85 @@ class LeadPropsure extends React.Component {
           delete body.selectedPropertyId
           delete body.paymentCategory
           this.updatePropsurePayment(body)
+        }
+      } else {
+        if (Number(propsurePayment.installmentAmount) <= 0) {
+          this.setState({
+            buyerNotZero: true,
+            addPaymentLoading: false,
+            assignToAccountsLoading: false,
+          })
+          return
+        }
+        if (editable === false) {
+          let body = {}
+          let outstandingPaymentCalc =
+            Number(propsureOutstandingPayment) - Number(propsurePayment.installmentAmount)
+
+          // for payment addition
+          if (
+            propsurePayment.type === 'cheque' ||
+            propsurePayment.type === 'pay-Order' ||
+            propsurePayment.type === 'bank-Transfer'
+          ) {
+            // for cheque,pay order and bank transfer
+            let isValid = this.checkInstrumentValidation()
+            if (isValid) {
+              this.addEditPropsureInstrumentOnServer(false, outstandingPaymentCalc)
+            }
+          } else {
+            // for all other types
+            body = {
+              ...propsurePayment,
+              rcmLeadId: lead.id,
+              armsUserId: user.id,
+              outstandingPayment: outstandingPaymentCalc,
+              addedBy: 'buyer',
+              amount: propsurePayment.installmentAmount,
+              shortlistPropertyId: propsurePayment.selectedPropertyId,
+            }
+            delete body.visible
+            delete body.installmentAmount
+            delete body.selectedPropertyId
+            delete body.paymentCategory
+            this.addPropsurePayment(body)
+          }
+        } else {
+          let remainingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
+          remainingFee = remainingFee - Number(propsurePayment.installmentAmount)
+          let body = {}
+          // payment update mode
+          if (
+            propsurePayment.type === 'cheque' ||
+            propsurePayment.type === 'pay-Order' ||
+            propsurePayment.type === 'bank-Transfer'
+          ) {
+            // for cheque,pay order and bank transfer
+            let isValid = this.checkInstrumentValidation()
+            if (isValid) {
+              this.addEditPropsureInstrumentOnServer(true, remainingFee)
+            }
+          } else {
+            // for all other types
+
+            let remainingFee = Number(propsureOutstandingPayment) + Number(previousPayment)
+            remainingFee = remainingFee - Number(propsurePayment.installmentAmount)
+
+            body = {
+              ...propsurePayment,
+              rcmLeadId: lead.id,
+              armsUserId: user.id,
+              outstandingPayment: remainingFee,
+              addedBy: 'buyer',
+              installmentAmount: propsurePayment.installmentAmount,
+              shortlistPropertyId: propsurePayment.selectedPropertyId,
+            }
+            delete body.visible
+            delete body.remarks
+            delete body.selectedPropertyId
+            delete body.paymentCategory
+            this.updatePropsurePayment(body)
+          }
         }
       }
     } else {
@@ -1075,7 +1147,11 @@ class LeadPropsure extends React.Component {
         } else {
           this.fetchLead(lead)
           this.getCallHistory()
-          this.fetchProperties(lead)
+          if (body?.paymentType == 'AssignToAccount') {
+            this.fetchProperties(lead, 'AssignToAccount')
+          } else {
+            this.fetchProperties(lead)
+          }
           this.fetchPropsureReportsList()
           helper.successToast('Propsure Payment Updated')
         }
@@ -1231,6 +1307,35 @@ class LeadPropsure extends React.Component {
     )
   }
 
+  //Open status assign to Accounts
+  assignToAccountsOpen = (data) => {
+    Alert.alert(
+      'Assign to Accounts',
+      'Are you sure you want to assign this payment to accounts?',
+      [
+        { text: 'No', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            const { propsurePayment, dispatch } = this.props
+            await dispatch(
+              setPropsurePayment({
+                ...data,
+                visible: false,
+                status: 'pendingAccount',
+                paymentType: 'AssignToAccount',
+              })
+            )
+            this.setState({ assignToAccountsLoading: true }, () => {
+              this.submitCommissionPropsurePayment()
+            })
+          },
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
   handleOfficeLocation = (value) => {
     const { propsurePayment, dispatch } = this.props
     dispatch(setPropsurePayment({ ...propsurePayment, officeLocationId: value }))
@@ -1318,10 +1423,10 @@ class LeadPropsure extends React.Component {
     }
     console.log(body)
     if (body.propertyType === 'graana') {
-          // // for graana properties
+      // // for graana properties
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.property.id}`
     } else {
-          // for arms properties
+      // for arms properties
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.armsProperty.id}`
     }
     console.log(endpoint)
@@ -1418,8 +1523,8 @@ class LeadPropsure extends React.Component {
       forStatusPrice,
       formData,
     } = this.state
-    const { lead, navigation, user, permissions } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, navigation, user, permissions, shortlistedData } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     return !loading ? (
       <StyleProvider style={getTheme(formTheme)}>
         <View
@@ -1572,15 +1677,15 @@ class LeadPropsure extends React.Component {
             leadType={'RCM'}
           />
           <GraanaPropertiesModal
-          active={graanaModalActive}
-          data={singlePropertyData}
-          forStatusPrice={forStatusPrice}
-          formData={formData}
-          handleForm={this.handleFormVerification}
-          graanaVerifeyModal={this.graanaVerifeyModal}
-          submitStatus={this.verifyStatusSubmit}
-          submitGraanaStatusAmount={this.submitGraanaStatusAmount}
-        />
+            active={graanaModalActive}
+            data={singlePropertyData}
+            forStatusPrice={forStatusPrice}
+            formData={formData}
+            handleForm={this.handleFormVerification}
+            graanaVerifeyModal={this.graanaVerifeyModal}
+            submitStatus={this.verifyStatusSubmit}
+            submitGraanaStatusAmount={this.submitGraanaStatusAmount}
+          />
           <MeetingFollowupModal
             closeModal={() => this.closeMeetingFollowupModal()}
             active={active}
@@ -1641,6 +1746,7 @@ mapStateToProps = (store) => {
     addInstrument: store.Instruments.addInstrument,
     instruments: store.Instruments.instruments,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

@@ -315,6 +315,7 @@ class CMFirstForm extends Component {
               value={firstFormData.downPaymentPercentage}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}
+              paddingBottomValue={true}
               editable={
                 updatePermission && oneProduct.downPaymentMin !== oneProduct.downPaymentMax
                   ? true
@@ -340,6 +341,7 @@ class CMFirstForm extends Component {
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              paddingBottomValue={true}
               editable={
                 updatePermission && oneProduct.downPaymentMin !== oneProduct.downPaymentMax
                   ? true
@@ -366,6 +368,7 @@ class CMFirstForm extends Component {
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              paddingBottomValue={true}
               editable={
                 updatePermission && oneProduct.noInstallmentsMin !== oneProduct.noInstallmentsMax
                   ? true
@@ -389,11 +392,12 @@ class CMFirstForm extends Component {
             <SimpleInputText
               name={'installmentFrequency'}
               placeholder={'Frequency(Months)'}
-              label={`Frequency (Months) (${oneProduct.installmentFrequencyMin} - ${oneProduct.installmentFrequencyMax})`}
+              label={`Frequency (${oneProduct.installmentFrequencyMin} - ${oneProduct.installmentFrequencyMax} Months)`}
               value={firstFormData.installmentFrequency}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}
               formatValue={''}
+              paddingBottomValue={true}
               editable={
                 updatePermission &&
                 oneProduct.installmentFrequencyMin !== oneProduct.installmentFrequencyMax
@@ -422,6 +426,7 @@ class CMFirstForm extends Component {
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              paddingBottomValue={true}
               editable={
                 updatePermission &&
                 oneProduct.possessionChargesMin !== oneProduct.possessionChargesMax
@@ -449,6 +454,7 @@ class CMFirstForm extends Component {
               onChangeHandle={handleFirstForm}
               formatValue={''}
               fromatName={false}
+              paddingBottomValue={true}
               editable={
                 updatePermission &&
                 oneProduct.possessionChargesMin !== oneProduct.possessionChargesMax
@@ -579,6 +585,7 @@ class CMFirstForm extends Component {
             formatValue={''}
             editable={cnicEditable && updatePermission}
             fromatName={false}
+            paddingBottomValue={true}
           />
         )}
         {firstFormData.cnic === null && firstFormValidate ? (

@@ -42,7 +42,14 @@ class AddDiary extends Component {
 
   componentDidMount() {
     const { route, navigation, dispatch, user, permissions } = this.props
-    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead, navFrom } = route.params
+    let {
+      tasksList = StaticData.diaryTasks,
+      rcmLeadId,
+      cmLeadId,
+      lead,
+      navFrom,
+      screenName = '',
+    } = route.params
     if (navFrom) {
       tasksList = StaticData.diaryTasksMeetingWithClient
     } else if (
@@ -74,11 +81,13 @@ class AddDiary extends Component {
       dispatch(getTimeShifts())
       dispatch(setSlotDiaryData(_today))
     }
-    if (rcmLeadId) {
+
+    if (rcmLeadId && screenName == 'ScheduledTasks') {
       tasksList = StaticData.diaryTasksRCM
-    } else if (cmLeadId) {
+    } else if (cmLeadId && screenName == 'ScheduledTasks') {
       tasksList = StaticData.diaryTasksCM
     }
+
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT TASK' })
     } else {
@@ -98,7 +107,6 @@ class AddDiary extends Component {
   }
 
   formSubmit = (data) => {
-
     const { slotsData } = this.props
     if (slotsData === null || !data.taskType) {
       this.setState({
@@ -140,10 +148,7 @@ class AddDiary extends Component {
       delete payload.endTime
       delete payload.hour
       return payload
-    }
-
-
-    else {
+    } else {
       // add payload contain these keys below
 
       payload = Object.assign({}, data)
@@ -186,7 +191,6 @@ class AddDiary extends Component {
   }
 
   createDiary = (diary) => {
-
     const { route, dispatch } = this.props
     if (route.params.update) {
       this.updateDiary(diary)
@@ -196,10 +200,15 @@ class AddDiary extends Component {
   }
 
   addDiary = (data) => {
-
     const { route, navigation, dispatch } = this.props
 
-    const { screenName = 'Diary', cmLeadId, rcmLeadId, property, customerName = null } = route.params
+    const {
+      screenName = 'Diary',
+      cmLeadId,
+      rcmLeadId,
+      property,
+      customerName = null,
+    } = route.params
 
     let diary = this.generatePayload(data)
 
@@ -207,73 +216,60 @@ class AddDiary extends Component {
     axios
       .post(query, diary)
       .then((res) => {
-
         if (res?.status === 200) {
-
           helper.successToast('TASK ADDED SUCCESSFULLY!')
 
-          let notificationData;
+          let notificationData
 
           for (let i in res.data[1]) {
             notificationData = res.data[1][i]
           }
 
-
-
           let start = new Date(notificationData.start)
           let end = new Date(notificationData.end)
 
-          let notificationPayload;
+          let notificationPayload
 
           if (diary.taskType == 'viewing') {
-
             start = new Date(diary.start)
             end = new Date(diary.end)
 
-
             notificationPayload = {
-              clientName: screenName == 'ScheduledTasks' ? customerName : data?.selectedLead?.customer?.customerName,
+              clientName:
+                screenName == 'ScheduledTasks'
+                  ? customerName
+                  : data?.selectedLead?.customer?.customerName,
               id: diary.userId,
-              title: DiaryHelper.showTaskType(
-                diary?.taskType
-              ),
+              title: DiaryHelper.showTaskType(diary?.taskType),
               body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
 
             //  TimerNotification(notificationPayload, start)
-
-
-          }
-          else {
+          } else {
             if (notificationData.taskCategory == 'leadTask') {
-
-
               notificationPayload = {
-                clientName: screenName == 'ScheduledTasks' ? customerName : data?.selectedLead?.customer?.customerName,
+                clientName:
+                  screenName == 'ScheduledTasks'
+                    ? customerName
+                    : data?.selectedLead?.customer?.customerName,
                 id: notificationData.id,
-                title: DiaryHelper.showTaskType(
-                  notificationData?.taskType
-                ),
-                body: moment(new Date(notificationData.start)).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+                title: DiaryHelper.showTaskType(notificationData?.taskType),
+                body:
+                  moment(new Date(notificationData.start)).format('hh:mm A') +
+                  ' - ' +
+                  moment(end).format('hh:mm A'),
               }
 
               // TimerNotification(notificationPayload, start)
-            }
-
-            else {
-
+            } else {
               notificationPayload = {
                 id: notificationData.id,
-                title: DiaryHelper.showTaskType(
-                  notificationData.taskType
-                ),
+                title: DiaryHelper.showTaskType(notificationData.taskType),
                 body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
               }
               //  TimerNotification(notificationPayload, start)
             }
-
           }
-
 
           if (screenName === 'Diary') {
             dispatch(
@@ -305,8 +301,6 @@ class AddDiary extends Component {
   }
 
   updateDiary = (data) => {
-
-
     let diary = this.generatePayload(data)
     const { dispatch, navigation, route } = this.props
     const { screenName = 'Diary', cmLeadId, rcmLeadId } = route.params
@@ -314,7 +308,6 @@ class AddDiary extends Component {
       .patch(`/api/diary/update?id=${diary.id}`, diary)
       .then((res) => {
         helper.successToast('TASK UPDATED SUCCESSFULLY!')
-
 
         let start = new Date(res.data.start)
         let end = new Date(res.data.end)
@@ -324,36 +317,23 @@ class AddDiary extends Component {
           body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
         }
 
-
-        let notificationPayload;
+        let notificationPayload
         if (res?.data?.taskCategory == 'leadTask') {
-
-
           notificationPayload = {
             clientName: data?.selectedLead?.customer?.customerName,
             id: res?.data?.id,
-            title: DiaryHelper.showTaskType(
-              res?.data?.taskType
-            ),
+            title: DiaryHelper.showTaskType(res?.data?.taskType),
             body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
           }
-        }
-
-        else {
+        } else {
           notificationPayload = {
             id: res?.data?.id,
-            title: DiaryHelper.showTaskType(
-              res?.data?.taskType
-            ),
+            title: DiaryHelper.showTaskType(res?.data?.taskType),
             body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
           }
         }
 
-
         helper.deleteAndUpdateNotification(notificationPayload, start, res.data.id)
-
-
-
 
         if (screenName === 'Diary') {
           dispatch(
@@ -395,15 +375,13 @@ class AddDiary extends Component {
   }
 
   goToLeads = (data) => {
-
-
     const { navigation } = this.props
 
     navigation.setOptions({
       headerRight: (props) => <HeaderRight navigation={navigation} />,
-      title: 'SELECT LEAD'
+      title: 'SELECT LEAD',
     })
- 
+
     navigation.dispatch(
       StackActions.push('Leads', {
         screen: 'Leads',
@@ -428,7 +406,7 @@ class AddDiary extends Component {
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route, slotsData, navigation } = this.props
-    const { lead, property } = route.params
+    const { lead, property, navFrom } = route.params
 
     return (
       <KeyboardAwareScrollView
@@ -460,7 +438,8 @@ class AddDiary extends Component {
                 lead={lead}
                 property={property}
                 navigation={navigation}
-              // performTaskActions={(type) => this.performTaskActions(type)}
+                navFrom={navFrom}
+                // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>
           </>

@@ -49,8 +49,6 @@ function LeadsNavigator(props) {
 
   useEffect(() => {
 
-    console.log("Leads", screen)
-    console.log("Leads", navFrom)
 
     if (screen == 'Leads' && navFrom != 'viewing' && navFrom != 'follow_up' && navFrom != 'meeting') {
 

@@ -1378,7 +1378,7 @@ class AddClient extends Component {
     const { update, client, screenName } = route.params
     const { investmentProjects, CMFormLoading } = this.props
 
-    let btnText = update ? 'UPDATE' : 'ADD'
+    let btnText = update ? 'UPDATE' : 'Register Client'
 
     return (
       <View style={[[AppStyles.container,]]}>

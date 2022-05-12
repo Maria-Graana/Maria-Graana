@@ -48,10 +48,10 @@ function LeadsNavigator(props) {
   }, [])
 
   useEffect(() => {
-  
 
 
-    if (screen == 'Leads' && navFrom != 'viewing' &&  navFrom !=  'follow_up'&  navFrom !=  'meeting' &&typeof (navFrom) != "undefined" ) {
+
+    if (screen == 'Leads' && navFrom != 'viewing' && navFrom != 'follow_up' && navFrom != 'meeting' && typeof (navFrom) != "undefined") {
 
       navigation.setOptions({
         headerRight: (props) => (

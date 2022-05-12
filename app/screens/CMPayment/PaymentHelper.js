@@ -33,7 +33,7 @@ const PaymentHelper = {
       possessionCharges: 0,
       possessionChargesPercentage: '',
       downPayment: 0,
-      downPaymentPercenatage: '',
+      downPaymentPercentage: '',
       noOfInstallment: '',
     }
   },

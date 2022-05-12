@@ -54,6 +54,7 @@ function LeadsNavigator(props) {
 
     if (screen == 'Leads' && navFrom != 'viewing' && navFrom != 'follow_up' && navFrom != 'meeting') {
 
+      
       navigation.setOptions({
         title: '',
         headerRight: (props) => (

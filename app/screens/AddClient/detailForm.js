@@ -723,7 +723,7 @@ class DetailForm extends Component {
         }
 
         < View >
-          <TouchableInput
+       {!update &&   <TouchableInput
             semiBold={true}
             arrowType={this.state.addLeadRequirements}
             placeholder="Add Lead Requirements"
@@ -736,7 +736,7 @@ class DetailForm extends Component {
             }}
             value={'Add Lead Requirements'}
 
-          />
+          />}
 
           {((formData.purpose == 'Invest' && checkValidations)
             || (formData.purpose == 'Rent' && checkRentValidation) ||

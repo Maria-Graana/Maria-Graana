@@ -399,7 +399,7 @@ class AddDiary extends Component {
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route, slotsData, navigation } = this.props
-    const { lead, property, navFrom } = route.params
+    const { lead, property, navFrom, rcmLeadId } = route.params
 
     return (
       <KeyboardAwareScrollView
@@ -432,6 +432,7 @@ class AddDiary extends Component {
                 property={property}
                 navigation={navigation}
                 navFrom={navFrom}
+                rcmLeadId={rcmLeadId}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>

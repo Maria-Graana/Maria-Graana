@@ -36,6 +36,7 @@ class DetailForm extends Component {
         selectedProperty: null,
       },
       buttonText: 'ADD TASK',
+      editableField: true,
     }
   }
 
@@ -43,13 +44,21 @@ class DetailForm extends Component {
     const { editableData, navigation } = this.props
 
     navigation.addListener('focus', () => {
-      const { lead, property } = this.props
+      const { lead, property, navFrom, rcmLeadId } = this.props
       const { formData } = this.state
       if (editableData != null) {
         this.setFormValues(editableData)
       } else {
         let copyObject = Object.assign({}, formData)
         if (lead) copyObject.selectedLead = lead
+        if (navFrom) {
+          copyObject.taskType = 'meeting'
+          this.setState({ editableField: false })
+        }
+        if (rcmLeadId) {
+          copyObject.taskType = 'follow_up'
+          this.setState({ editableField: false })
+        }
         this.setState({ formData: copyObject })
         if (property) {
           copyObject.selectedProperty = property
@@ -119,7 +128,7 @@ class DetailForm extends Component {
       selectedLead,
       selectedProperty,
     } = this.state.formData
-    const { formData, buttonText } = this.state
+    const { formData, buttonText, editableField } = this.state
     const {
       formSubmit,
       checkValidation,
@@ -147,7 +156,7 @@ class DetailForm extends Component {
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
-                enabled={editableData === null}
+                enabled={editableData === null && editableField}
                 onValueChange={this.handleForm}
                 selectedItem={taskType}
                 data={taskValues}

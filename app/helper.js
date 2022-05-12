@@ -436,7 +436,7 @@ const helper = {
   deleteAndUpdateNotification(data, start, id) {
     Notifications.getAllScheduledNotificationsAsync().then((notifications) => {
       this.deleteNotification(notifications, id)
-      TimerNotification(data, start)
+    //  TimerNotification(data, start)
     })
   },
   deleteLocalNotification(id) {

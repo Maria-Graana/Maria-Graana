@@ -354,7 +354,7 @@ function TimeSlotManagement(props) {
             }
           }
 
-          TimerNotification(notificationPayload, start)
+        //  TimerNotification(notificationPayload, start)
 
           navigation.goBack()
         } else {
@@ -430,7 +430,7 @@ function TimeSlotManagement(props) {
             }
           }
 
-          TimerNotification(notificationPayload, start)
+         // TimerNotification(notificationPayload, start)
 
           navigation.goBack()
         } else {

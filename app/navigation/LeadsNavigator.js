@@ -1,12 +1,13 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React, { useEffect } from 'react'
+import React, { useEffect, useLayoutEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import DropdownHeader from '../components/HeaderRight/DropdownHeader'
+import HeaderRight from '../components/HeaderRight/index'
 import { getPermissionValue } from '../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../hoc/PermissionsTypes'
 import BuyLeads from '../screens/BuyLeads/index'
@@ -34,12 +35,28 @@ function LeadsNavigator(props) {
   //unmount
 
 
-  useEffect(() => {
+  useLayoutEffect(() => {
 
-    if (screen == 'Leads') {
+    if (navFrom == 'viewing' || typeof (navFrom) == "undefined") {
 
       navigation.setOptions({
+        headerRight: (props) => <HeaderRight navigation={navigation} />,
+        title: 'SELECT LEAD'
+      })
+
+    }
+  }, [])
+
+  useEffect(() => {
+
+
+    if (screen == 'Leads' && navFrom != 'viewing' && navFrom != 'follow_up' && navFrom != 'meeting') {
+
+      
+      navigation.setOptions({
+        title: '',
         headerRight: (props) => (
+
           <DropdownHeader
             leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
             hasBooking={false} pageType={''} navigation={navigation} />
@@ -50,8 +67,6 @@ function LeadsNavigator(props) {
     }
 
 
-
-
     if (screen == 'MyDeals') {
 
 
@@ -59,6 +74,7 @@ function LeadsNavigator(props) {
         headerRight: (props) => (
           <DropdownHeader
             leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
+
             hasBooking={true} pageType={''} navigation={navigation} />
 
         ),
@@ -78,9 +94,17 @@ function LeadsNavigator(props) {
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: '' })
   } else if (hideCloseLostFilter) {
-    navigation.setOptions({ title: '' })
+
+
+    navigation.setOptions({
+      headerRight: (props) => <HeaderRight navigation={navigation} />,
+      title: 'SELECT LEAD'
+    })
+
+
+    //  navigation.setOptions({ title: 'SELECT LEAD' })
   }
-    if (navFrom == 'follow_up' || navFrom =='meeting') {
+  if (navFrom == 'follow_up' || navFrom == 'meeting') {
     return (
       <Tab.Navigator
         tabBarOptions={{

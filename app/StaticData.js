@@ -1557,6 +1557,7 @@ export default StaticData = {
     { name: 'Inbound Client', value: 'Inbound Client' },
     { name: 'Walk-In', value: 'Walk-In' },
     { name: 'Event', value: 'Event' },
+    { name: 'Others', value: 'Others' },
   ],
   provincePickerData: [
     { name: 'Punjab', value: 'Punjab' },

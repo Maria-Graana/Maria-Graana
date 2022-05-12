@@ -8,6 +8,7 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import DetailForm from './detailForm'
 import helper from '../../helper'
+import HeaderRight from '../../components/HeaderRight/index'
 import AppStyles from '../../AppStyles'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
@@ -239,7 +240,7 @@ class AddDiary extends Component {
               body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
             }
 
-            TimerNotification(notificationPayload, start)
+            //  TimerNotification(notificationPayload, start)
 
 
           }
@@ -256,7 +257,7 @@ class AddDiary extends Component {
                 body: moment(new Date(notificationData.start)).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
               }
 
-              TimerNotification(notificationPayload, start)
+              // TimerNotification(notificationPayload, start)
             }
 
             else {
@@ -268,7 +269,7 @@ class AddDiary extends Component {
                 ),
                 body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
               }
-              TimerNotification(notificationPayload, start)
+              //  TimerNotification(notificationPayload, start)
             }
 
           }
@@ -394,7 +395,15 @@ class AddDiary extends Component {
   }
 
   goToLeads = (data) => {
+
+
     const { navigation } = this.props
+
+    navigation.setOptions({
+      headerRight: (props) => <HeaderRight navigation={navigation} />,
+      title: 'SELECT LEAD'
+    })
+ 
     navigation.dispatch(
       StackActions.push('Leads', {
         screen: 'Leads',

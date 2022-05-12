@@ -236,16 +236,16 @@ function MainStack() {
         component={Lead}
         options={({ navigation, route }) => ({
           //  headerShown:false,
-          // title: 'LEADS',
-          title: '',
+         // title: 'LEADS',
+            title: '',
           headerLeft: (props) => (
             <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
           ),
           headerRight: (props) => <DropdownHeader
-          leadType={false}
+            leadType={false}
             hasBooking={true} navigation={navigation} />,
 
-          headerTitleAlign: 'left',
+          headerTitleAlign: 'center',
         })}
       />
 

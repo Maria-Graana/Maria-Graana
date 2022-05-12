@@ -9,7 +9,7 @@ export default class HeaderLeftLogo extends React.Component {
     render() {
         const { leftBool, navigation } = this.props
         return (
-            <View>
+            <View style={{}}>
                 {
                     leftBool ?
                         <View style={styles.viewWrap}>

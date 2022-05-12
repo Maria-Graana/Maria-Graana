@@ -24,8 +24,12 @@ import CountriesPicker from "./../../components/CountriesPicker";
 class DetailForm extends Component {
 
 
+
+
   constructor(props) {
     super(props)
+    this.scrollRef = React.createRef();
+    this.AddInfoRef = React.createRef();
     this.state = {
       relationStatus: '',
       openAdditionalInfo: false,
@@ -41,6 +45,14 @@ class DetailForm extends Component {
     navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
   }
 
+  onPressTouch = () => {
+    // console.log("this.AddInfoRef.current?.offsetTop", this.AddInfoRef.current?.offsetTop);
+    this.scrollRef.current?.scrollTo({
+      x: 0, y: this.AddInfoRef.current?.offsetTop
+      //600
+      , animated: true
+    })
+  }
 
 
   render() {
@@ -121,112 +133,145 @@ class DetailForm extends Component {
 
     return (
 
-      <View style={{ flex: 1 }} >
-        {!this.state.openAdditionalInfo && !this.state.addLeadRequirements &&
-          <>
-            <View style={[AppStyles.mainInputWrap]}>
-              <View style={[AppStyles.inputWrap]}>
-                <TextInput
-                  placeholderTextColor={'#a8a8aa'}
-                  value={formData.firstName}
-                  onChangeText={(text) => {
-                    handleForm(text, 'firstName')
-                  }}
-                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                  name={'firstName'}
-                  placeholder={'First Name *'}
-                />
-                {checkValidation === true && formData.firstName === '' && (
-                  <ErrorMessage errorMessage={'Required'} />
-                )}
-              </View>
-            </View>
+      <ScrollView stickyHeaderIndices={this.state.addLeadRequirements ? [2] : [1]} style={{ flex: 1 }}// ref={this.scrollRef}
+      >
 
-            <View style={[AppStyles.mainInputWrap]}>
-              <View style={[AppStyles.inputWrap]}>
-                <TextInput
-                  placeholderTextColor={'#a8a8aa'}
-                  value={formData.lastName}
-                  onChangeText={(text) => {
-                    handleForm(text, 'lastName')
-                  }}
-                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                  name={'lastName'}
-                  placeholder={'Last Name *'}
-                />
-                {checkValidation === true && formData.lastName === '' && (
-                  <ErrorMessage errorMessage={'Required'} />
-                )}
-              </View>
-            </View>
-            <View style={[AppStyles.mainInputWrap]}>
-              {screenName === 'Payments' ? (
-                <View style={[AppStyles.inputWrap]}>
-                  <PhoneInputComponent
-                    phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
-                    countryCodeValue={countryCode}
-                    containerStyle={AppStyles.phoneInputStyle}
-                    setPhone={(value) => validate(value, 'phone')}
-                    setFlagObject={(object) => {
-                      hello(object, 'contactNumber')
-                    }}
-                    editable={client ? client.assigned_to_armsuser_id === user.id : true}
-                    onChangeHandle={handleForm}
-                    name={'contactNumber'}
-                    placeholder={'Contact Number'}
-                  />
-                  {contact1Validate == true && (
-                    <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-                  )}
-                </View>
-              ) : (
-                <View style={[AppStyles.inputWrap]}>
-                  <PhoneInputComponent
-                    phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
-                    countryCodeValue={countryCode}
-                    containerStyle={AppStyles.phoneInputStyle}
-                    setPhone={(value) => validate(value, 'phone')}
-                    setFlagObject={(object) => {
-                      hello(object, 'contactNumber')
-                    }}
-                    editable={client ? client.assigned_to_armsuser_id === user.id : true}
-                    onChangeHandle={handleForm}
-                    name={'contactNumber'}
-                    placeholder={'Contact Number*'}
-                  />
-                  {phoneValidate == true && (
-                    <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-                  )}
-                  {phoneValidate == false &&
-                    checkValidation === true &&
-                    formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />}
-                </View>
+        <>
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                value={formData.firstName}
+                onChangeText={(text) => {
+                  handleForm(text, 'firstName')
+                }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                name={'firstName'}
+                placeholder={'First Name *'}
+              />
+              {checkValidation === true && formData.firstName === '' && (
+                <ErrorMessage errorMessage={'Required'} />
               )}
             </View>
-          </>
-        }
+          </View>
 
-        {((!this.state.openAdditionalInfo && !this.state.addLeadRequirements) || (this.state.openAdditionalInfo && !this.state.addLeadRequirements)) && <View>
-          <TouchableInput
-            semiBold={true}
-            placeholder="Additional Info"
-            label={'Additional Info'}
-            arrowType={this.state.openAdditionalInfo}
-            onPress={() => {
-              this.setState({
-                openAdditionalInfo: !this.state.openAdditionalInfo
-              });
-            }}
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                value={formData.lastName}
+                onChangeText={(text) => {
+                  handleForm(text, 'lastName')
+                }}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                name={'lastName'}
+                placeholder={'Last Name *'}
+              />
+              {checkValidation === true && formData.lastName === '' && (
+                <ErrorMessage errorMessage={'Required'} />
+              )}
+            </View>
+          </View>
+          <View style={[AppStyles.mainInputWrap]}>
+            {screenName === 'Payments' ? (
+              <View style={[AppStyles.inputWrap]}>
+                <PhoneInputComponent
+                  phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
+                  countryCodeValue={countryCode}
+                  containerStyle={AppStyles.phoneInputStyle}
+                  setPhone={(value) => validate(value, 'phone')}
+                  setFlagObject={(object) => {
+                    hello(object, 'contactNumber')
+                  }}
+                  editable={client ? client.assigned_to_armsuser_id === user.id : true}
+                  onChangeHandle={handleForm}
+                  name={'contactNumber'}
+                  placeholder={'Contact Number'}
+                />
+                {contact1Validate == true && (
+                  <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+                )}
+              </View>
+            ) : (
+              <View style={[AppStyles.inputWrap]}>
+                <PhoneInputComponent
+                  phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
+                  countryCodeValue={countryCode}
+                  containerStyle={AppStyles.phoneInputStyle}
+                  setPhone={(value) => validate(value, 'phone')}
+                  setFlagObject={(object) => {
+                    hello(object, 'contactNumber')
+                  }}
+                  editable={client ? client.assigned_to_armsuser_id === user.id : true}
+                  onChangeHandle={handleForm}
+                  name={'contactNumber'}
+                  placeholder={'Contact Number*'}
+                />
+                {phoneValidate == true && (
+                  <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+                )}
+                {phoneValidate == false &&
+                  checkValidation === true &&
+                  formData.contactNumber === '' && <ErrorMessage errorMessage={'Required'} />}
+              </View>
+            )}
+          </View>
 
-            value={'Additional Info'}
 
-          />
-        </View>
+          <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
+            color: AppStyles.colors.textColor,
+            fontFamily: 'OpenSans_semi_bold'
+          },]}>Client Source</Text>
+
+          < View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <PickerComponent
+                onValueChange={handleForm}
+                data={StaticData.clientTypePickerData}
+                name={'clientSource'}
+                placeholder="Client Source"
+                selectedItem={formData.clientSource}
+
+              />
+            </View>
+          </View>
+        </>
+
+
+        {
+
+          <View>
+            <TouchableInput
+              semiBold={true}
+              ref={this.AddInfoRef}
+              placeholder="Additional Info"
+              label={'Additional Info'}
+              arrowType={this.state.openAdditionalInfo}
+              onPress={() => {
+
+                this.setState({
+                  openAdditionalInfo: !this.state.openAdditionalInfo,
+                  addLeadRequirements: false
+                })
+                this.onPressTouch()
+              }}
+
+              value={'Additional Info'}
+
+            />
+          </View>
         }
 
         {
-          this.state.openAdditionalInfo && !this.state.addLeadRequirements &&
-          <ScrollView contentContainerStyle={{ flexGrow: 1, }} keyboardShouldPersistTaps="always">
+          this.state.openAdditionalInfo &&
+        
+          <ScrollView
+      
+            horizontal={false}
+
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1, }} keyboardShouldPersistTaps="always"
+          >
             <View onStartShouldSetResponder={() => true}>
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -354,6 +399,7 @@ class DetailForm extends Component {
                   />
                 </View>
               </View>
+
 
 
               <View style={[AppStyles.mainInputWrap]}>
@@ -602,56 +648,56 @@ class DetailForm extends Component {
 
 
               {/* <View style={[AppStyles.mainInputWrap]}>
-              <View style={[AppStyles.inputWrap]}>
-                <TextInput
-                  placeholderTextColor={'#a8a8aa'}
-                  value={formData.accountTitle}
-                  onChangeText={(text) => {
-                    handleForm(text, 'accountTitle')
-                  }}
-                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                  name={'accountTitle'}
-                  placeholder={'Account Title'}
-                />
-                {accountsOptionFields && formData.accountTitle === '' ? (
-                  <ErrorMessage errorMessage={'Required'} />
-                ) : null}
+                <View style={[AppStyles.inputWrap]}>
+                  <TextInput
+                    placeholderTextColor={'#a8a8aa'}
+                    value={formData.accountTitle}
+                    onChangeText={(text) => {
+                      handleForm(text, 'accountTitle')
+                    }}
+                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                    name={'accountTitle'}
+                    placeholder={'Account Title'}
+                  />
+                  {accountsOptionFields && formData.accountTitle === '' ? (
+                    <ErrorMessage errorMessage={'Required'} />
+                  ) : null}
+                </View>
               </View>
-            </View>
-            <View style={[AppStyles.mainInputWrap]}>
-              <View style={[AppStyles.inputWrap]}>
-                <TextInput
-                  placeholderTextColor={'#a8a8aa'}
-                  value={formData.iBan}
-                  onChangeText={(text) => {
-                    handleForm(text, 'iBan')
-                  }}
-                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                  name={'iBan'}
-                  placeholder={'IBAN'}
-                />
-                {accountsOptionFields && formData.iBan === '' ? (
-                  <ErrorMessage errorMessage={'Required'} />
-                ) : null}
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <TextInput
+                    placeholderTextColor={'#a8a8aa'}
+                    value={formData.iBan}
+                    onChangeText={(text) => {
+                      handleForm(text, 'iBan')
+                    }}
+                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                    name={'iBan'}
+                    placeholder={'IBAN'}
+                  />
+                  {accountsOptionFields && formData.iBan === '' ? (
+                    <ErrorMessage errorMessage={'Required'} />
+                  ) : null}
+                </View>
               </View>
-            </View>
-            <View style={[AppStyles.mainInputWrap]}>
-              <View style={[AppStyles.inputWrap]}>
-                <TextInput
-                  placeholderTextColor={'#a8a8aa'}
-                  value={formData.bank}
-                  onChangeText={(text) => {
-                    handleForm(text, 'bank')
-                  }}
-                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                  name={'bank'}
-                  placeholder={'Bank'}
-                />
-                {accountsOptionFields && formData.bank === '' ? (
-                  <ErrorMessage errorMessage={'Required'} />
-                ) : null}
-              </View>
-            </View> */}
+              <View style={[AppStyles.mainInputWrap]}>
+                <View style={[AppStyles.inputWrap]}>
+                  <TextInput
+                    placeholderTextColor={'#a8a8aa'}
+                    value={formData.bank}
+                    onChangeText={(text) => {
+                      handleForm(text, 'bank')
+                    }}
+                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                    name={'bank'}
+                    placeholder={'Bank'}
+                  />
+                  {accountsOptionFields && formData.bank === '' ? (
+                    <ErrorMessage errorMessage={'Required'} />
+                  ) : null}
+                </View>
+              </View> */}
               <View style={[AppStyles.mainInputWrap]}>
                 <Textarea
                   placeholderTextColor={AppStyles.colors.subTextColor}
@@ -667,89 +713,42 @@ class DetailForm extends Component {
                   value={formData.address}
                 />
               </View>
-              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
-                color: AppStyles.colors.textColor,
-                fontFamily: 'OpenSans_semi_bold'
-              },]}>Client Type</Text>
-
-              < View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent
-                    onValueChange={handleForm}
-                    data={StaticData.clientTypePickerData}
-                    name={'clientSource'}
-                    placeholder="Client Type"
-                    selectedItem={formData.clientSource}
-
-                  />
-                </View>
-              </View>
 
 
-              {!update && ((!this.state.addLeadRequirements) || (!this.state.openAdditionalInfo && this.state.addLeadRequirements)) &&
-
-                < View >
-                  <TouchableInput
-                    semiBold={true}
-                    arrowType={this.state.addLeadRequirements}
-                    placeholder="Add Lead Requirements"
-                    label={'Add Lead Requirements'}
-                    onPress={() => {
-                      this.setState({
-                        addLeadRequirements: !this.state.addLeadRequirements,
-                        openAdditionalInfo: !this.state.openAdditionalInfo
-                      })
-                    }}
-                    value={'Add Lead Requirements'}
-
-                  />
-
-                  {((formData.purpose == 'Invest' && checkValidations)
-                    || (formData.purpose == 'Rent' && checkRentValidation) ||
-                    (formData.purpose == 'Buy' && checkRentValidation))
-                    ?
-                    <ErrorMessage errorMessage={'Please fill out all required fields.'} />
-                    : null
-
-                  }
-                </View >
 
 
-              }
             </View>
 
           </ScrollView>
         }
 
-        {!update && ((!this.state.openAdditionalInfo && !this.state.addLeadRequirements) || (!this.state.openAdditionalInfo && this.state.addLeadRequirements)) &&
+        < View >
+       {!update &&   <TouchableInput
+            semiBold={true}
+            arrowType={this.state.addLeadRequirements}
+            placeholder="Add Lead Requirements"
+            label={'Add Lead Requirements'}
+            onPress={() => {
+              this.setState({
+                addLeadRequirements: !this.state.addLeadRequirements,
+                openAdditionalInfo: false
+              })
+            }}
+            value={'Add Lead Requirements'}
 
-          < View >
-            <TouchableInput
-              semiBold={true}
-              arrowType={this.state.addLeadRequirements}
-              placeholder="Add Lead Requirements"
-              label={'Add Lead Requirements'}
-              onPress={() => {
-                this.setState({
-                  addLeadRequirements: !this.state.addLeadRequirements
-                })
-              }}
-              value={'Add Lead Requirements'}
+          />}
 
-            />
+          {((formData.purpose == 'Invest' && checkValidations)
+            || (formData.purpose == 'Rent' && checkRentValidation) ||
+            (formData.purpose == 'Buy' && checkRentValidation))
+            ?
+            <ErrorMessage errorMessage={'Please fill out all required fields.'} />
+            : null
 
-            {((formData.purpose == 'Invest' && checkValidations)
-              || (formData.purpose == 'Rent' && checkRentValidation) ||
-              (formData.purpose == 'Buy' && checkRentValidation))
-              ?
-              <ErrorMessage errorMessage={'Please fill out all required fields.'} />
-              : null
-
-            }
-          </View >
+          }
+        </View >
 
 
-        }
         {
           this.state.addLeadRequirements &&
           <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
@@ -770,7 +769,7 @@ class DetailForm extends Component {
                     }}
                     data={
                       StaticData.leadTypePickerData.filter(function (el) {
-                   
+
                         if (!getPermissionValue(
                           PermissionFeatures.BUY_RENT_LEADS,
                           PermissionActions.CREATE,
@@ -871,7 +870,7 @@ class DetailForm extends Component {
 
 
 
-      </View >
+      </ScrollView >
 
 
 

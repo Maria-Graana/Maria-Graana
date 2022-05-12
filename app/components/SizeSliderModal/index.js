@@ -54,7 +54,6 @@ const SizeSliderModal = ({
   useEffect(() => {
     setMinValue(initialValue)
     setMaxValue(finalValue)
-    setUnit(unit)
     setStringValues({
       ...stringValues,
       sizeMin:
@@ -71,6 +70,10 @@ const SizeSliderModal = ({
       )
     )
   }, [initialValue, finalValue])
+
+  useEffect(() => {
+    setUnit(sizeUnit)
+  }, [sizeUnit])
 
   const onSliderValueChange = (values) => {
     const start = values[0]

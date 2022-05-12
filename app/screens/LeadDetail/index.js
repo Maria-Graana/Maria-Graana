@@ -584,13 +584,17 @@ class LeadDetail extends React.Component {
     }
   }
   goToAddEditDiaryScreen = (update, data = null) => {
-    const { navigation, dispatch } = this.props
-    const { selectedDate } = this.state
+    const { navigation, dispatch, lead, permissions } = this.props
     // dispatch(clearDiaries())
     // if (data) {
     //   dispatch(setSlotData(moment(data.date).format('YYYY-MM-DD'), data.start, data.end, []))
     // }
-    navigation.navigate('AddDiary', { update, data, selectedDate, navFrom: 'meeting' })
+    navigation.navigate('AddDiary', {
+      lead: lead && helper.getAiraPermission(permissions) ? lead : null,
+      cmLeadId: lead ? lead.id : null,
+      customerName: lead?.customer?.customerName,
+      navFrom: 'meeting',
+    })
   }
 
   render() {

@@ -50,11 +50,13 @@ function LeadsNavigator(props) {
   useEffect(() => {
 
 
+    if (screen == 'Leads' && navFrom != 'viewing' && navFrom != 'follow_up' && navFrom != 'meeting') {
 
-    if (screen == 'Leads' && navFrom != 'viewing' && navFrom != 'follow_up' && navFrom != 'meeting' && typeof (navFrom) != "undefined") {
-
+      
       navigation.setOptions({
+        title: '',
         headerRight: (props) => (
+
           <DropdownHeader
             leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
             hasBooking={false} pageType={''} navigation={navigation} />
@@ -102,7 +104,7 @@ function LeadsNavigator(props) {
 
     //  navigation.setOptions({ title: 'SELECT LEAD' })
   }
-    if (navFrom == 'follow_up' || navFrom =='meeting') {
+  if (navFrom == 'follow_up' || navFrom == 'meeting') {
     return (
       <Tab.Navigator
         tabBarOptions={{

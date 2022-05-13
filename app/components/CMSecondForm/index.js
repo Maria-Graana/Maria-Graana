@@ -1,8 +1,7 @@
 /** @format */
 
 import React from 'react'
-import { Text, View } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
+import { Text, View, Image, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { connect } from 'react-redux'
 import RoundPlus from '../../../assets/img/roundPlus.png'
@@ -11,6 +10,7 @@ import CMBTN from '../../components/CMBTN'
 import PaymentTile from '../../components/PaymentTile'
 import SimpleInputText from '../../components/SimpleInputField'
 import styles from './style'
+import PendingTokenImg from '../../../assets/img/booking_pending.png'
 
 class CMSecondForm extends React.Component {
   constructor(props) {
@@ -33,8 +33,8 @@ class CMSecondForm extends React.Component {
     } = this.props
     const { payment, projectProduct } = lead
     return (
-      <SafeAreaView style={[styles.removePad,]}>
-        <View style={[styles.mainFormWrap,]}>
+      <SafeAreaView style={[styles.removePad]}>
+        <View style={[styles.mainFormWrap]}>
           <View
             style={{
               flexDirection: 'row',
@@ -65,9 +65,9 @@ class CMSecondForm extends React.Component {
               checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
           </View>
-          <View style={{ padding: 5, marginVertical:5 }} />
+          <View style={{ padding: 5, marginVertical: 5 }} />
           <Text style={styles.paymentsHeading}>PAYMENTS</Text>
-          <View style={[styles.mainPaymentWrap,{marginVertical:10 }]}>
+          <View style={[styles.mainPaymentWrap, { marginVertical: 10 }]}>
             <View style={styles.paymentTileMain}>
               <View style={[styles.scrollHeight]}>
                 <ScrollView>
@@ -90,7 +90,15 @@ class CMSecondForm extends React.Component {
                       ) : null
                     })
                   ) : (
-                    <Text style={{ padding: 0, fontWeight: 'bold', textAlign: 'center' }}></Text>
+                    <View>
+                      <Image source={PendingTokenImg} style={styles.tokenPendingImg} />
+                      <Text style={{ fontWeight: 'bold', textAlign: 'center', padding: 15 }}>
+                        Booking Confirmation is Pending
+                      </Text>
+                      <Text>
+                        Booking will be confirmed after Token/Payment added by accounts user
+                      </Text>
+                    </View>
                   )}
                 </ScrollView>
               </View>
@@ -116,7 +124,7 @@ class CMSecondForm extends React.Component {
             />
           </View> */}
 
-          <View style={{ flexDirection: 'row' , position:'absolute', bottom:0}}>
+          <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0 }}>
             <View style={{ width: '49%', marginRight: 7 }}>
               <SimpleInputText
                 name={'remainingPayment'}

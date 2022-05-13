@@ -33,12 +33,15 @@ class CMSecondForm extends React.Component {
     } = this.props
     const { payment, projectProduct } = lead
     return (
-      <SafeAreaView style={[styles.removePad]}>
-        <View style={[styles.mainFormWrap]}>
+
+      <SafeAreaView style={[styles.removePad, { flex: 1 }]}>
+      
+        <View style={[styles.mainFormWrap, { flex: 1 }]}>
           <View
             style={{
               flexDirection: 'row',
-              flex: 1,
+              //flex: 1,
+
               marginHorizontal: 10,
               justifyContent: 'space-between',
             }}
@@ -65,12 +68,13 @@ class CMSecondForm extends React.Component {
               checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
           </View>
-          <View style={{ padding: 5, marginVertical: 5 }} />
+
+          <View style={{ padding: 5}} />
           <Text style={styles.paymentsHeading}>PAYMENTS</Text>
-          <View style={[styles.mainPaymentWrap, { marginVertical: 10 }]}>
-            <View style={styles.paymentTileMain}>
-              <View style={[styles.scrollHeight]}>
-                <ScrollView>
+          <View style={[styles.mainPaymentWrap, {  flex: 1, }]}>
+            <View style={[styles.paymentTileMain, { flex: 1, }]}>
+              <View style={[styles.scrollHeight,]}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1, }}>
                   {paymentPreviewLoading === true ? (
                     <Text style={{ padding: 10 }}>Loading...</Text>
                   ) : payment && payment.length > 0 ? (
@@ -105,27 +109,11 @@ class CMSecondForm extends React.Component {
             </View>
           </View>
 
-          {/* <View style={{ backgroundColor: '#fff', marginHorizontal: 10 }}>
-            <CMBTN
-              onClick={() => {
-                if (updatePermission) addPaymentModalToggle(true, 'payment')
-              }}
-              btnImage={RoundPlus}
-              btnText={'ADD PAYMENT'}
-              checkLeadClosedOrNot={checkLeadClosedOrNot}
-            />
-            <CMBTN
-              onClick={() => {
-                if (updatePermission) addPaymentModalToggle(true, 'tax')
-              }}
-              btnImage={RoundPlus}
-              btnText={'ADD TAX'}
-              checkLeadClosedOrNot={checkLeadClosedOrNot}
-            />
-          </View> */}
+        
 
-          <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0 }}>
-            <View style={{ width: '49%', marginRight: 7 }}>
+
+          <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0}}>
+            <View style={{ width: '49%', marginRight: 7,paddingBottom:10 }}>
               <SimpleInputText
                 name={'remainingPayment'}
                 fromatName={'remainingPayment'}

@@ -33,10 +33,11 @@ class DropdownHeader extends React.Component {
 
             <View style={{
                 flexDirection: 'row', flex: 1,
-                // backgroundColor:'red'
+
             }}>
                 {!isInternetConnected ? (
                     <TouchableOpacity
+                
                         onPress={() => {
                             this.showToast()
                         }}
@@ -51,15 +52,11 @@ class DropdownHeader extends React.Component {
                 </View>
                 <View style={{
                     flexDirection: 'row',
-
-
                     width: 300,
                     justifyContent: 'space-between',
                     alignItems: 'center'
                 }}>
                     <View style={{
-
-                        //  backgroundColor: 'red',
                         alignItems: 'center',
                         width: 250,
 

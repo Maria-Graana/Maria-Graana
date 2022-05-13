@@ -1950,6 +1950,17 @@ class CMPayment extends Component {
     )
   }
 
+
+  openModalInFollowupMode = (value) => {
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      lead,
+      rcmLeadId: lead ? lead.id : null,
+    })
+  }
+
+
   render() {
     const {
       checkLeadClosedOrNot,

@@ -38,6 +38,10 @@ function LeadsNavigator(props) {
       navigation.setOptions({
         headerRight: (props) => <HeaderRight navigation={navigation} />,
         title: 'SELECT LEAD',
+        headerLeft: (props) => (
+          <HeaderLeftLogo navigation={navigation} //leftClientScreen={'Client'}
+           leftBool={true} />
+        ),
       })
     }
   }, [])
@@ -90,6 +94,10 @@ function LeadsNavigator(props) {
     navigation.setOptions({
       headerRight: (props) => <HeaderRight navigation={navigation} />,
       title: 'SELECT LEAD',
+      headerLeft: (props) => (
+        <HeaderLeftLogo navigation={navigation} //leftClientScreen={'Client'}
+         leftBool={true} />
+      ),
     })
 
     //  navigation.setOptions({ title: 'SELECT LEAD' })

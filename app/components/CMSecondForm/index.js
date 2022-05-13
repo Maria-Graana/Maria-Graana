@@ -34,12 +34,13 @@ class CMSecondForm extends React.Component {
     } = this.props
     const { payment, projectProduct } = lead
     return (
+
       <SafeAreaView style={[styles.removePad, { flex: 1 }]}>
+      
         <View style={[styles.mainFormWrap, { flex: 1 }]}>
           <View
             style={{
               flexDirection: 'row',
-
               marginHorizontal: 10,
               justifyContent: 'space-between',
             }}

@@ -44,7 +44,7 @@ class DetailForm extends Component {
     const { editableData, navigation } = this.props
 
     navigation.addListener('focus', () => {
-      const { lead, property, navFrom, rcmLeadId } = this.props
+      const { lead, property, navFrom } = this.props
       const { formData } = this.state
       if (editableData != null) {
         this.setFormValues(editableData)
@@ -53,10 +53,6 @@ class DetailForm extends Component {
         if (lead) copyObject.selectedLead = lead
         if (navFrom) {
           copyObject.taskType = 'meeting'
-          this.setState({ editableField: false })
-        }
-        if (rcmLeadId) {
-          copyObject.taskType = 'follow_up'
           this.setState({ editableField: false })
         }
         this.setState({ formData: copyObject })

@@ -436,30 +436,33 @@ class CMBottomNav extends React.Component {
     return (
       <View style={styles.bottomNavMain}>
         {screenName === 'InvestDetailScreen' ? (
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateToBookUnit()}>
-            <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity
+            style={styles.followBtn}
+            //style={styles.bottomNavBtn} 
+            onPress={() => navigateToBookUnit()}>
+            <View style={styles.align}>
               <Image
                 style={styles.bottomNavImg}
-                source={require('../../../assets/img/black/bookUnit.png')}
+                source={require('../../../assets/img/BookUnit.png')}
               />
               <Text style={styles.followText}>Book Unit</Text>
             </View>
           </TouchableOpacity>
         ) : screenName === 'BuyRentDetailScreen' ? (
           <TouchableOpacity
-            style={[styles.bottomNavBtn, { width: '33.4%' }]}
+            style={[styles.followBtn, {width: '33.4%' }]}
             onPress={() => navigateToOpenWorkFlow(lead)}
           >
-            <View style={{ alignItems: 'center' }}>
+             <View style={styles.align}>
               <Image
-                style={[styles.bottomNavImg, { width: 22, height: 25 }]}
+                style={[styles.bottomNavImg,]}
                 source={require('../../../assets/img/black/workflow.png')}
               />
               <Text style={styles.followText}>WorkFlow</Text>
             </View>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.bottomNavBtn} onPress={() => navigateTo()}>
+          <TouchableOpacity style={styles.followBtn} onPress={() => navigateTo()}>
             <View style={{ alignItems: 'center' }}>
               <Image
                 style={styles.bottomNavImg}
@@ -479,7 +482,7 @@ class CMBottomNav extends React.Component {
             <View style={styles.align}>
               <Image
                 style={styles.bottomNavImg}
-                source={require('../../../assets/img/black/meeting.png')}
+                source={require('../../../assets/img/meeting.png')}
               />
               <Text style={styles.followText}>+ Meeting</Text>
             </View>
@@ -494,7 +497,7 @@ class CMBottomNav extends React.Component {
             <View style={styles.align}>
               <Image
                 style={styles.bottomNavImg}
-                source={require('../../../assets/img/black/tasks.png')}
+                source={require('../../../assets/img/tasks.png')}
               />
               <Text style={styles.followText}>Tasks</Text>
             </View>
@@ -511,7 +514,7 @@ class CMBottomNav extends React.Component {
             <View style={styles.align}>
               <Image
                 style={styles.bottomNavImg}
-                source={require('../../../assets/img/black/feedback.png')}
+                source={require('../../../assets/img/Feedback.png')}
               />
               <Text style={styles.followText}>Feedback</Text>
             </View>
@@ -556,8 +559,8 @@ class CMBottomNav extends React.Component {
           <TouchableOpacity
             style={
               screenName === 'BuyRentDetailScreen'
-                ? [styles.rejectBtn, { width: '33.3%' }]
-                : styles.rejectBtn
+                ? [styles.followBtn, { width: '33.3%' }]
+                : styles.followBtn
             }
             onPress={() => {
               navigateFromMenu()
@@ -566,7 +569,7 @@ class CMBottomNav extends React.Component {
             <View style={styles.align}>
               <Image
                 style={styles.bottomNavImg}
-                source={require('../../../assets/img/black/SCA.png')}
+                source={require('../../../assets/img/tasks.png')}
               />
               <Text style={styles.followText}>Tasks</Text>
             </View>
@@ -574,9 +577,10 @@ class CMBottomNav extends React.Component {
         ) : screenName === 'InvestDetailScreen' ? (
           <TouchableOpacity
             style={
+
               screenName === 'BuyRentDetailScreen'
-                ? [styles.rejectBtn, { width: '33.3%' }]
-                : styles.rejectBtn
+                ? [styles.rejectBtn, styles.followBtn, { width: '33.3%' }]
+                : [styles.followBtn,]
             }
             onPress={() => {
               navigateToAddDiary()
@@ -585,7 +589,7 @@ class CMBottomNav extends React.Component {
             <View style={styles.align}>
               <Image
                 style={styles.bottomNavImg}
-                source={require('../../../assets/img/black/SCA.png')}
+                source={require('../../../assets/img/tasks.png')}
               />
               <Text style={styles.followText}>Tasks</Text>
             </View>
@@ -611,40 +615,50 @@ class CMBottomNav extends React.Component {
           </TouchableOpacity>
         )}
         <View style={[styles.bottomNavBtn2, visible === true]}>
+
+          
           <Menu
             visible={visible}
+
             onDismiss={() => this.openMenu(false)}
             anchor={
               <TouchableOpacity
                 onPress={() => !helper.getAiraPermission(permissions) && this.openMenu(true)}
-                style={styles.align}
+
               >
-                {visible === true ? (
-                  <Image
+
+                <View style={[styles.align, {
+         
+                  marginBottom:12,
+                
+                }]}>
+                  {visible === true ? (
+                    <Image
+                      style={[
+                        styles.bottomNavImg,
+                        screenName === 'BuyRentDetailScreen' && { left: 25 },
+                      ]}
+                      source={require('../../../assets/img/Blue/menu.png')}
+                    />
+                  ) : (
+                    <Image
+                      style={[
+                        [styles.bottomNavImg,],
+                        screenName === 'BuyRentDetailScreen' && { left: 25 ,},
+                      ]}
+                      source={require('../../../assets/img/actions.png')}
+                    />
+                  )}
+                  <Text
                     style={[
-                      styles.bottomNavImg,
+                      styles.followText,
+                      visible === true && { color: '#348ceb' },
                       screenName === 'BuyRentDetailScreen' && { left: 25 },
                     ]}
-                    source={require('../../../assets/img/Blue/menu.png')}
-                  />
-                ) : (
-                  <Image
-                    style={[
-                      styles.bottomNavImg,
-                      screenName === 'BuyRentDetailScreen' && { left: 25 },
-                    ]}
-                    source={require('../../../assets/img/black/menu.png')}
-                  />
-                )}
-                <Text
-                  style={[
-                    styles.followText,
-                    visible === true && { color: '#348ceb' },
-                    screenName === 'BuyRentDetailScreen' && { left: 25 },
-                  ]}
-                >
-                  Menu
-                </Text>
+                  >
+                    Menu
+                  </Text>
+                </View>
               </TouchableOpacity>
             }
           >
@@ -701,22 +715,22 @@ class CMBottomNav extends React.Component {
                   onPress={() => {
                     this.canMarkCloseAsLost(lead, lead.armsProjectTypeId ? 'Project' : 'BuyRent')
                       ? dispatch(
-                          getDiaryFeedbacks({
-                            taskType: 'Connect',
-                            leadType: 'Project',
+                        getDiaryFeedbacks({
+                          taskType: 'Connect',
+                          leadType: 'Project',
+                          actionType: 'Connect',
+                          section: 'Reject',
+                        })
+                      )
+                        .then((res) => {
+                          this.props.navigation.navigate('DiaryFeedback', {
                             actionType: 'Connect',
-                            section: 'Reject',
                           })
-                        )
-                          .then((res) => {
-                            this.props.navigation.navigate('DiaryFeedback', {
-                              actionType: 'Connect',
-                            })
-                          })
-                          .catch((err) => console.error('An error occurred', err))
+                        })
+                        .catch((err) => console.error('An error occurred', err))
                       : helper.errorToast(
-                          `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
-                        )
+                        `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
+                      )
                     this.openMenu(false)
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}

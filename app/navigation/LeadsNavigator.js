@@ -15,7 +15,6 @@ import WantedLeads from './../screens/WantedLeads/index'
 import InvestLeads from '../screens/InvestLeads/index'
 import RentLeads from '../screens/RentLeads/index'
 
-
 import PickerComponent from './../components/Picker/index'
 
 const Tab = createMaterialTopTabNavigator()
@@ -34,52 +33,50 @@ function LeadsNavigator(props) {
 
   //unmount
 
-
   useLayoutEffect(() => {
-
-    if (navFrom == 'viewing' || typeof (navFrom) == "undefined") {
-
+    if (navFrom == 'viewing' || typeof navFrom == 'undefined') {
       navigation.setOptions({
         headerRight: (props) => <HeaderRight navigation={navigation} />,
-        title: 'SELECT LEAD'
+        title: 'SELECT LEAD',
+        headerLeft: (props) => (
+          <HeaderLeftLogo navigation={navigation} //leftClientScreen={'Client'}
+           leftBool={true} />
+        ),
       })
-
     }
   }, [])
 
   useEffect(() => {
-
-
-    if (screen == 'Leads' && navFrom != 'viewing' && navFrom != 'follow_up' && navFrom != 'meeting') {
-
-      
+    if (
+      screen == 'Leads' &&
+      navFrom != 'viewing' &&
+      navFrom != 'follow_up' &&
+      navFrom != 'meeting'
+    ) {
       navigation.setOptions({
         title: '',
         headerRight: (props) => (
-
           <DropdownHeader
             leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
-            hasBooking={false} pageType={''} navigation={navigation} />
-
+            hasBooking={false}
+            pageType={''}
+            navigation={navigation}
+          />
         ),
       })
-
     }
 
-
     if (screen == 'MyDeals') {
-
-
       navigation.setOptions({
         headerRight: (props) => (
           <DropdownHeader
             leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
-
-            hasBooking={true} pageType={''} navigation={navigation} />
-
+            hasBooking={true}
+            pageType={''}
+            navigation={navigation}
+          />
         ),
       })
-
     }
 
     if (screenName == 'AddClient') {
@@ -94,13 +91,14 @@ function LeadsNavigator(props) {
   if (screen == 'MyDeals') {
     navigation.setOptions({ title: '' })
   } else if (hideCloseLostFilter) {
-
-
     navigation.setOptions({
       headerRight: (props) => <HeaderRight navigation={navigation} />,
-      title: 'SELECT LEAD'
+      title: 'SELECT LEAD',
+      headerLeft: (props) => (
+        <HeaderLeftLogo navigation={navigation} //leftClientScreen={'Client'}
+         leftBool={true} />
+      ),
     })
-
 
     //  navigation.setOptions({ title: 'SELECT LEAD' })
   }
@@ -129,21 +127,21 @@ function LeadsNavigator(props) {
         }}
       >
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
             name="Rent"
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  count={count.rentLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.rentLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
@@ -154,8 +152,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -166,34 +164,34 @@ function LeadsNavigator(props) {
               navFrom: navFrom,
               hideCloseLostFilter: hideCloseLostFilter,
             }}
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  count={count.buyLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.buyLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             component={BuyLeads}
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.PROJECT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.PROJECT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
             name="Invest"
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  count={count.projectLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.projectLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
@@ -230,21 +228,21 @@ function LeadsNavigator(props) {
         }}
       >
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
             name="Rent"
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  count={count.rentLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.rentLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
@@ -255,8 +253,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -267,30 +265,26 @@ function LeadsNavigator(props) {
               navFrom: navFrom,
               hideCloseLostFilter: hideCloseLostFilter,
             }}
-            options={{
-              tabBarIcon: (props) => (
-                <TabBarBadge
-                  color={props.focused ? 'red' : '#ddd'}
-                  count={count.buyLeads}
-                  screen={screen}
-                />
-              ),
-            }}
+            // options={{
+            //   tabBarIcon: (props) => (
+            //     <TabBarBadge
+            //       color={props.focused ? 'red' : '#ddd'}
+            //       count={count.buyLeads}
+            //       screen={screen}
+            //     />
+            //   ),
+            // }}
             component={BuyLeads}
           />
         ) : null}
       </Tab.Navigator>
     )
   } else {
-
-
-
     return user.subRole === 'business_centre_manager' ||
       user.subRole === 'business_centre_agent' ||
       user.subRole === 'call_centre_manager' ||
       user.subRole === 'call_centre_warrior' ||
       user.subRole === 'call_centre_agent' ? (
-
       <Tab.Navigator
         tabBarOptions={{
           scrollEnabled: false,
@@ -314,8 +308,8 @@ function LeadsNavigator(props) {
         }}
       >
         {getPermissionValue(
-          PermissionFeatures.PROJECT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.PROJECT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -337,8 +331,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -360,8 +354,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -384,10 +378,8 @@ function LeadsNavigator(props) {
         ) : null}
         {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
       </Tab.Navigator>
-
     ) : (
       <>
-
         <Tab.Navigator
           tabBarOptions={{
             scrollEnabled: false,
@@ -411,8 +403,8 @@ function LeadsNavigator(props) {
           }}
         >
           {getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ? (
             <Tab.Screen
@@ -434,8 +426,8 @@ function LeadsNavigator(props) {
             />
           ) : null}
           {getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ? (
             <Tab.Screen
@@ -457,8 +449,11 @@ function LeadsNavigator(props) {
             />
           ) : null}
           {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
-          {getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions) &&
-            route.params.screen != 'MyDeals' ? (
+          {getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.WANTED_LEADS_PAGE_VIEW,
+            permissions
+          ) && route.params.screen != 'MyDeals' ? (
             <Tab.Screen
               name="Wanted"
               initialParams={{
@@ -531,4 +526,3 @@ mapStateToProps = (store) => {
 }
 
 export default connect(mapStateToProps)(LeadsNavigator)
-

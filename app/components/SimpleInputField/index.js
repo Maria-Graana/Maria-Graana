@@ -58,6 +58,7 @@ class SimpleInputField extends React.Component {
       onPress = false,
       onClicked,
       maxLength = 50,
+      paddingBottomValue
     } = this.props
     const val = value != null || '' ? value.toString() : ''
     return (
@@ -67,6 +68,7 @@ class SimpleInputField extends React.Component {
           noMargin === true && { marginBottom: 0, marginTop: 0 },
           !showLable ? { marginTop: 0 } : null,
           { backgroundColor: '#fff' },
+          paddingBottomValue ? {marginBottom : 0} : null
         ]}
       >
         {showLable ? <Text style={[styles.labelStyle]}>{label}</Text> : null}

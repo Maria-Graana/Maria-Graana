@@ -102,7 +102,7 @@ export default StaticData = {
   ],
   diaryTasksCM: [
     {
-      name: 'Meeting',
+      name: 'Meeting with Client',
       value: 'meeting',
     },
     {

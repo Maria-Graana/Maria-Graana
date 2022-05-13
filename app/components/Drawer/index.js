@@ -11,8 +11,8 @@ import { setSlotData } from '../../actions/slotManagement'
 import { logoutUser } from '../../actions/user'
 import AppStyles from '../../AppStyles'
 import config from '../../config'
-import helper from '../../helper';
-import { StackActions } from '@react-navigation/native';
+import helper from '../../helper'
+import { StackActions } from '@react-navigation/native'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import * as RootNavigation from '../../navigation/RootNavigation'
@@ -93,26 +93,26 @@ class CustomDrawerContent extends React.Component {
           )} */}
           <View style={{ width: '100%' }}>
             {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) ||
-              getPermissionValue(
-                PermissionFeatures.PROPERTIES,
-                PermissionActions.CREATE,
-                permissions
-              ) ||
-              getPermissionValue(
-                PermissionFeatures.BUY_RENT_LEADS,
-                PermissionActions.CREATE,
-                permissions
-              ) ||
-              getPermissionValue(
-                PermissionFeatures.PROJECT_LEADS,
-                PermissionActions.CREATE,
-                permissions
-              ) ||
-              getPermissionValue(
-                PermissionFeatures.CLIENTS,
-                PermissionActions.CREATE,
-                permissions
-              ) ? (
+            getPermissionValue(
+              PermissionFeatures.PROPERTIES,
+              PermissionActions.CREATE,
+              permissions
+            ) ||
+            getPermissionValue(
+              PermissionFeatures.BUY_RENT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) ||
+            getPermissionValue(
+              PermissionFeatures.PROJECT_LEADS,
+              PermissionActions.CREATE,
+              permissions
+            ) ||
+            getPermissionValue(
+              PermissionFeatures.CLIENTS,
+              PermissionActions.CREATE,
+              permissions
+            ) ? (
               <DrawerIconItem
                 screen={'+ Create '}
                 navigateTo={() => {
@@ -249,60 +249,108 @@ class CustomDrawerContent extends React.Component {
             />
           )} */}
           {getPermissionValue(
-            PermissionFeatures.PROJECT_LEADS,
+            PermissionFeatures.BUY_RENT_LEADS,
             PermissionActions.READ,
             permissions
           ) ||
-            getPermissionValue(
-              PermissionFeatures.BUY_RENT_LEADS,
-              PermissionActions.READ,
-              permissions
-            ) ||
-            getPermissionValue(
-              PermissionFeatures.WANTED_LEADS,
-              PermissionActions.READ,
-              permissions
-            ) ? (
+          getPermissionValue(
+            PermissionFeatures.WANTED_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
             <DrawerIconItem
-              screen={user && user.organization && user.organization.isPP ? 'Leads' : 'Leads'}
-              badges={count.leads}
+              screen={
+                user && user.organization && user.organization.isPP
+                  ? 'Buy/Rent Leads'
+                  : 'Buy/Rent Leads'
+              }
+              // badges={count.leads}
               navigation={this.props.navigation}
               navigateTo={() => {
-                this.props.navigation.closeDrawer();
+                this.props.navigation.closeDrawer()
                 this.props.navigation.dispatch(
                   StackActions.push('Leads', {
-                    screen: 'Leads', hasBooking: false
+                    screen: 'Leads',
+                    hasBooking: false,
                   })
-                );
-
+                )
               }}
             />
           ) : null}
+
+          {getPermissionValue(
+            PermissionFeatures.BUY_RENT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
+            <DrawerIconItem
+              screen={
+                user && user.organization && user.organization.isPP
+                  ? 'Buy/Rent Deals'
+                  : 'Buy/Rent Deals'
+              }
+              // badges={count.leads}
+              navigateTo={() => {
+                this.props.navigation.closeDrawer()
+                this.props.navigation.dispatch(
+                  StackActions.push('Leads', {
+                    screen: 'MyDeals',
+                    hasBooking: true,
+                  })
+                )
+              }}
+            />
+          ) : null}
+
           {getPermissionValue(
             PermissionFeatures.PROJECT_LEADS,
             PermissionActions.READ,
             permissions
-          ) ||
-            getPermissionValue(
-              PermissionFeatures.BUY_RENT_LEADS,
-              PermissionActions.READ,
-              permissions
-            ) ? (
+          ) ? (
             <DrawerIconItem
-              screen={user && user.organization && user.organization.isPP ? 'Deals' : 'Deals'}
-              badges={count.leads}
-
+              screen={
+                user && user.organization && user.organization.isPP
+                  ? 'Project Leads'
+                  : 'Project Leads'
+              }
+              // badges={count.leads}
+              navigation={this.props.navigation}
               navigateTo={() => {
-                this.props.navigation.closeDrawer();
+                this.props.navigation.closeDrawer()
                 this.props.navigation.dispatch(
-                  StackActions.push('Leads', {
-                    screen: 'MyDeals', hasBooking: true
+                  StackActions.push('ProjectLeads', {
+                    screen: 'Leads',
+                    hasBooking: false,
                   })
-                );
+                )
               }}
-         
             />
           ) : null}
+
+          {getPermissionValue(
+            PermissionFeatures.PROJECT_LEADS,
+            PermissionActions.READ,
+            permissions
+          ) ? (
+            <DrawerIconItem
+              screen={
+                user && user.organization && user.organization.isPP
+                  ? 'Project Deals'
+                  : 'Project Deals'
+              }
+              // badges={count.leads}
+              navigateTo={() => {
+                this.props.navigation.closeDrawer()
+                this.props.navigation.dispatch(
+                  StackActions.push('ProjectLeads', {
+                    screen: 'MyDeals',
+                    hasBooking: true,
+                  })
+                )
+              }}
+            />
+          ) : null}
+
           {getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.READ, permissions) && (
             <DrawerItem
               screen={'Clients'}
@@ -316,28 +364,28 @@ class CustomDrawerContent extends React.Component {
             PermissionActions.READ,
             permissions
           ) && (
-              <DrawerIconItem
-                screen={
-                  user && user.organization && user.organization.isPP ? 'Properties' : 'Properties'
-                }
-                badges={count.inventory}
-                navigateTo={() => {
-                  this.navigateToProperties()
-                }}
-              />
-            )}
+            <DrawerIconItem
+              screen={
+                user && user.organization && user.organization.isPP ? 'Properties' : 'Properties'
+              }
+              badges={count.inventory}
+              navigateTo={() => {
+                this.navigateToProperties()
+              }}
+            />
+          )}
           {getPermissionValue(
             PermissionFeatures.APP_PAGES,
             PermissionActions.PROJECT_INVENTORY_PAGE_VIEW,
             permissions
           ) && (
-              <DrawerItem
-                screen={'Inventory'}
-                navigateTo={() => {
-                  this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
-                }}
-              />
-            )}
+            <DrawerItem
+              screen={'Inventory'}
+              navigateTo={() => {
+                this.navigateTo('AvailableInventory', { screen: 'AvailableInventory' })
+              }}
+            />
+          )}
           {getPermissionValue(PermissionFeatures.TARGETS, PermissionActions.READ, permissions) && (
             <DrawerItem
               screen={'Targets'}

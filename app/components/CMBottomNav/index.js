@@ -431,7 +431,7 @@ class CMBottomNav extends React.Component {
       PermissionActions.UPDATE,
       permissions
     )
-    // console.log("closedWon" , closedWon)
+   
 
     return (
       <View style={styles.bottomNavMain}>

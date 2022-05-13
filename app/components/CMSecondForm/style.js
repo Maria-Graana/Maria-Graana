@@ -61,7 +61,9 @@ export default styles = StyleSheet.create({
     paddingBottom: 10,
   },
   scrollHeight: {
-    height: 300,
+  // flex:1,
+  //height:'50%'
+  height: 300,
   },
   removePad: {
     padding: 0,

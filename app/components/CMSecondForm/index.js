@@ -11,6 +11,7 @@ import PaymentTile from '../../components/PaymentTile'
 import SimpleInputText from '../../components/SimpleInputField'
 import styles from './style'
 import PendingTokenImg from '../../../assets/img/booking_pending.png'
+import { heightPercentageToDP } from 'react-native-responsive-screen'
 
 class CMSecondForm extends React.Component {
   constructor(props) {
@@ -40,8 +41,6 @@ class CMSecondForm extends React.Component {
           <View
             style={{
               flexDirection: 'row',
-              //flex: 1,
-
               marginHorizontal: 10,
               justifyContent: 'space-between',
             }}
@@ -69,51 +68,60 @@ class CMSecondForm extends React.Component {
             />
           </View>
 
-          <View style={{ padding: 5}} />
-          <Text style={styles.paymentsHeading}>PAYMENTS</Text>
-          <View style={[styles.mainPaymentWrap, {  flex: 1, }]}>
-            <View style={[styles.paymentTileMain, { flex: 1, }]}>
-              <View style={[styles.scrollHeight,]}>
-                <ScrollView contentContainerStyle={{ flexGrow: 1, }}>
-                  {paymentPreviewLoading === true ? (
-                    <Text style={{ padding: 10 }}>Loading...</Text>
-                  ) : payment && payment.length > 0 ? (
-                    payment.map((item, index) => {
-                      return item && item.installmentAmount ? (
-                        <PaymentTile
-                          onPaymentLongPress={() => onPaymentLongPress(item)}
-                          tileForToken={false}
-                          currencyConvert={currencyConvert}
-                          key={index}
-                          count={index}
-                          data={item}
-                          editTile={editTile}
-                          checkLeadClosedOrNot={checkLeadClosedOrNot}
-                          call={call}
-                        />
-                      ) : null
-                    })
-                  ) : (
-                    <View>
-                      <Image source={PendingTokenImg} style={styles.tokenPendingImg} />
-                      <Text style={{ fontWeight: 'bold', textAlign: 'center', padding: 15 }}>
-                        Booking Confirmation is Pending
-                      </Text>
-                      <Text>
-                        Booking will be confirmed after Token/Payment added by accounts user
-                      </Text>
-                    </View>
-                  )}
-                </ScrollView>
+          <View style={{ padding: 5 }} />
+
+          {payment && payment.length > 0 ? (
+            <>
+              <Text style={styles.paymentsHeading}>PAYMENTS</Text>
+              <View style={[styles.mainPaymentWrap, { flex: 1 }]}>
+                <View style={[styles.paymentTileMain, { flex: 1 }]}>
+                  <View style={[styles.scrollHeight]}>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                      {paymentPreviewLoading === true ? (
+                        <Text style={{ padding: 10 }}>Loading...</Text>
+                      ) : payment && payment.length > 0 ? (
+                        payment.map((item, index) => {
+                          return item && item.installmentAmount ? (
+                            <PaymentTile
+                              onPaymentLongPress={() => onPaymentLongPress(item)}
+                              tileForToken={false}
+                              currencyConvert={currencyConvert}
+                              key={index}
+                              count={index}
+                              data={item}
+                              editTile={editTile}
+                              checkLeadClosedOrNot={checkLeadClosedOrNot}
+                              call={call}
+                            />
+                          ) : null
+                        })
+                      ) : null}
+                    </ScrollView>
+                  </View>
+                </View>
               </View>
+            </>
+          ) : (
+            <View
+              style={{
+                alignItems: 'center',
+                padding: 10,
+                backgroundColor: 'white',
+                height: heightPercentageToDP('50%'),
+              }}
+            >
+              <Image source={PendingTokenImg} style={styles.tokenPendingImg} />
+              <Text style={{ fontWeight: 'bold', textAlign: 'center', padding: 15 }}>
+                Booking Confirmation is Pending
+              </Text>
+              <Text style={{ textAlign: 'center', padding: 10 }}>
+                Booking will be confirmed after Token/Payment added by accounts user
+              </Text>
             </View>
-          </View>
+          )}
 
-        
-
-
-          <View style={{ flexDirection: 'row', position: 'absolute', bottom: 0}}>
-            <View style={{ width: '49%', marginRight: 7,paddingBottom:10 }}>
+          <View style={{ flexDirection: 'row', bottom: 0 }}>
+            <View style={{ width: '49%', marginRight: 7, paddingBottom: 10 }}>
               <SimpleInputText
                 name={'remainingPayment'}
                 fromatName={'remainingPayment'}

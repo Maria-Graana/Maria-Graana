@@ -119,8 +119,8 @@ function LeadsNavigator(props) {
         }}
       >
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -144,8 +144,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -169,8 +169,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.PROJECT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.PROJECT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -220,8 +220,8 @@ function LeadsNavigator(props) {
         }}
       >
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -245,8 +245,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -300,8 +300,8 @@ function LeadsNavigator(props) {
         }}
       >
         {getPermissionValue(
-          PermissionFeatures.PROJECT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.PROJECT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -323,8 +323,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -346,8 +346,8 @@ function LeadsNavigator(props) {
           />
         ) : null}
         {getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.READ,
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
           permissions
         ) ? (
           <Tab.Screen
@@ -395,8 +395,8 @@ function LeadsNavigator(props) {
           }}
         >
           {getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ? (
             <Tab.Screen
@@ -418,8 +418,8 @@ function LeadsNavigator(props) {
             />
           ) : null}
           {getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ? (
             <Tab.Screen
@@ -442,8 +442,8 @@ function LeadsNavigator(props) {
           ) : null}
           {/* <Tab.Screen name="Sell/Rent Out" component={PropertyLead} /> */}
           {getPermissionValue(
-            PermissionFeatures.WANTED_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.WANTED_LEADS_PAGE_VIEW,
             permissions
           ) && route.params.screen != 'MyDeals' ? (
             <Tab.Screen

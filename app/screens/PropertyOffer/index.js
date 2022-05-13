@@ -23,7 +23,7 @@ import StaticData from '../../StaticData'
 class PropertyOffer extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions , shortlistedData } = this.props
     this.state = {
       open: false,
       loading: true,
@@ -42,7 +42,7 @@ class PropertyOffer extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.propertyCheckAssignedSharedStatus(user, lead, permissions, shortlistedData),
       callModal: false,
       meetings: [],
       matchData: [],
@@ -310,11 +310,12 @@ class PropertyOffer extends React.Component {
   }
 
   checkStatus = (property) => {
-    const { lead, user, permissions } = this.props
-    let leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, permissions , shortlistedData} = this.props
+    let leadAssignedSharedStatus = helper.propertyCheckAssignedSharedStatus(user, lead, permissions , shortlistedData)
     const leadAssignedSharedStatusAndReadOnly = helper.checkAssignedSharedStatusANDReadOnly(
       user,
-      lead
+      lead,
+      shortlistedData
     )
     leadAssignedSharedStatus = true
     if (property.agreedOffer.length) {
@@ -771,6 +772,8 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
+
   }
 }
 

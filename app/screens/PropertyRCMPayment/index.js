@@ -40,7 +40,7 @@ var CANCEL_INDEX = 1
 class PropertyRCMPayment extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       loading: true,
       isVisible: false,
@@ -67,7 +67,7 @@ class PropertyRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -1539,6 +1539,7 @@ mapStateToProps = (store) => {
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

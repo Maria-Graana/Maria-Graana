@@ -58,7 +58,7 @@ class DropdownHeader extends React.Component {
                 }}>
                     <View style={{
                         alignItems: 'center',
-                        width: 240,
+                        width: 250,
 
                     }}>
                         <View style={{

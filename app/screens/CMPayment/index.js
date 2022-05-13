@@ -2165,7 +2165,10 @@ class CMPayment extends Component {
             showHideModal={(val) => this.showHideDeletePayment(val)}
           />
           <KeyboardAvoidingView>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              scrollEnabled={firstForm ? true : false}
+            >
               <View style={{ flex: 1, marginBottom: 60 }}>
                 {firstForm && (
                   <CMFirstForm

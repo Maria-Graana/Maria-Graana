@@ -33,8 +33,8 @@ class CMSecondForm extends React.Component {
     } = this.props
     const { payment, projectProduct } = lead
     return (
-      <SafeAreaView style={styles.removePad}>
-        <View style={styles.mainFormWrap}>
+      <SafeAreaView style={[styles.removePad,]}>
+        <View style={[styles.mainFormWrap,]}>
           <View
             style={{
               flexDirection: 'row',
@@ -65,9 +65,9 @@ class CMSecondForm extends React.Component {
               checkLeadClosedOrNot={checkLeadClosedOrNot}
             />
           </View>
-          <View style={{ padding: 5 }} />
+          <View style={{ padding: 5, marginVertical:5 }} />
           <Text style={styles.paymentsHeading}>PAYMENTS</Text>
-          <View style={styles.mainPaymentWrap}>
+          <View style={[styles.mainPaymentWrap,{marginVertical:10 }]}>
             <View style={styles.paymentTileMain}>
               <View style={[styles.scrollHeight]}>
                 <ScrollView>
@@ -116,7 +116,7 @@ class CMSecondForm extends React.Component {
             />
           </View> */}
 
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row' , position:'absolute', bottom:0}}>
             <View style={{ width: '49%', marginRight: 7 }}>
               <SimpleInputText
                 name={'remainingPayment'}

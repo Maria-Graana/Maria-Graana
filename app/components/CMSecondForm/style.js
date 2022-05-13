@@ -92,4 +92,9 @@ export default styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  tokenPendingImg: {
+    width: '100%',
+    height: 200,
+    flex: 1,
+  },
 })

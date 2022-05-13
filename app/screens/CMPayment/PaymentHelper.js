@@ -216,7 +216,7 @@ const PaymentHelper = {
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
       cnic: firstFormData.cnic,
-      customerId: lead.customer.id,
+      customerId: selectedClient ? selectedClient.id : lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       instrumentId: instrument.id,
       isPrimary,
@@ -270,7 +270,7 @@ const PaymentHelper = {
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
       cnic: firstFormData.cnic,
-      customerId: lead.customer.id,
+      customerId: selectedClient ? selectedClient.id : lead.customer.id,
       taxIncluded: CMPayment.taxIncluded,
       productId: firstFormData.productId,
       installmentFrequency: Number(firstFormData.installmentFrequency),

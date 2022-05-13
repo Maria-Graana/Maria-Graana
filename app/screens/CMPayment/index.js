@@ -1197,6 +1197,7 @@ class CMPayment extends Component {
       let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
       if ((paidProject && paidProject.id) || (project && project.id)) {
         this.getFloors(projectID)
+        this.getSites(projectID)
       }
     }
     var newcheckPaymentPlan = { ...checkPaymentPlan }
@@ -1225,6 +1226,15 @@ class CMPayment extends Component {
         })
       }
     )
+  }
+
+  getSites = (projectId) => {
+    axios
+      .get(`/api/leads/getProjectSites?projectId=${projectId}`)
+      .then((res) => {
+        this.setState({ siteData: res.data })
+      })
+      .catch((err) => console.log(err))
   }
 
   handleFirstForm = (value, name) => {
@@ -1269,14 +1279,7 @@ class CMPayment extends Component {
     if (name === 'project') {
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, value)
-
-      axios
-        .get(`/api/leads/getProjectSites?projectId=${value}`)
-        .then((res) => {
-          this.setState({ siteData: res.data })
-        })
-        .catch((err) => console.log(err))
-
+      this.getSites(value)
       newData['parkingCharges'] =
         parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
           ? parkingObj?.parkingCharges
@@ -1950,7 +1953,6 @@ class CMPayment extends Component {
     )
   }
 
-
   openModalInFollowupMode = (value) => {
     const { navigation, lead } = this.props
 
@@ -1959,7 +1961,6 @@ class CMPayment extends Component {
       rcmLeadId: lead ? lead.id : null,
     })
   }
-
 
   render() {
     const {

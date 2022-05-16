@@ -716,7 +716,7 @@ class InvestLeads extends React.Component {
               style={[
                 styles.filterRow,
                 {
-                  //paddingHorizontal: 15,
+                  paddingHorizontal: 15,
                   justifyContent: 'space-between',
                 },
               ]}
@@ -728,8 +728,8 @@ class InvestLeads extends React.Component {
                     hasBooking
                       ? StaticData.investmentFilterDeals
                       : hideCloseLostFilter
-                      ? StaticData.investmentFilterLeadsAddTask
-                      : StaticData.investmentFilterLeads
+                        ? StaticData.investmentFilterLeadsAddTask
+                        : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -760,7 +760,7 @@ class InvestLeads extends React.Component {
                   showPickerArrow={false}
                 />
               </View>*/}
-              <View style={styles.verticleLine} /> 
+              <View style={styles.verticleLine} />
 
               <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
@@ -823,8 +823,8 @@ class InvestLeads extends React.Component {
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
         {(createProjectLead || createBuyRentLead) &&
-        (screen === 'Leads' || screen === 'ProjectLeads') &&
-        !hideCloseLostFilter ? (
+          (screen === 'Leads' || screen === 'ProjectLeads') &&
+          !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

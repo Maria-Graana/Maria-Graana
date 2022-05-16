@@ -51,13 +51,11 @@ class DropdownHeader extends React.Component {
                 </View>
                 <View style={{
                     flexDirection: 'row',
-
                     width: 300,
                     justifyContent: 'space-between',
                     alignItems: 'center'
                 }}>
                     <View style={{
-
                         width: '85%',
                     }}>
                         <View style={{

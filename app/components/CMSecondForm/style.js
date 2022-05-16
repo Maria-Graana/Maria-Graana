@@ -61,12 +61,14 @@ export default styles = StyleSheet.create({
     paddingBottom: 10,
   },
   scrollHeight: {
-  // flex:1,
-  //height:'50%'
-  height: 300,
+    // flex:1,
+    //height:'50%'
+    height: 300,
   },
   removePad: {
     padding: 0,
+    marginTop: 15,
+    marginBottom: 15,
   },
   scheduleExtraStyle: {
     marginHorizontal: 0,

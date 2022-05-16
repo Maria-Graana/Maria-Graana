@@ -7,6 +7,9 @@ export default styles = StyleSheet.create({
   container: {
     backgroundColor: '#FFFFFF',
   },
+  mainContainer: {
+    flex: 1,
+  },
   cardContainer: {
     flex: 1,
     borderColor: AppStyles.colors.subTextColor,

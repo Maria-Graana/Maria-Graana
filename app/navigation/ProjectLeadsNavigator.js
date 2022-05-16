@@ -32,35 +32,30 @@ function ProjectLeadsNavigator(props) {
   //unmount
 
   useEffect(() => {
-
-
-
     if (screen == 'ProjectLeads') {
-
-      navigation.setOptions({
-        headerRight: (props) => (
-          <DropdownHeader 
-          leadType={'ProjectLeads'}
-          hasBooking={false} pageType={''} navigation={navigation} />
-
-        ),
-      })
-
-    }
-
-
-    if (screen == 'ProjectDeals') {
-
-
       navigation.setOptions({
         headerRight: (props) => (
           <DropdownHeader
-          leadType={'ProjectLeads'}
-          hasBooking={true} pageType={''} navigation={navigation} />
-
+            leadType={'ProjectLeads'}
+            hasBooking={false}
+            pageType={''}
+            navigation={navigation}
+          />
         ),
       })
+    }
 
+    if (screen == 'ProjectDeals') {
+      navigation.setOptions({
+        headerRight: (props) => (
+          <DropdownHeader
+            leadType={'ProjectLeads'}
+            hasBooking={true}
+            pageType={''}
+            navigation={navigation}
+          />
+        ),
+      })
     }
 
     if (screenName == 'AddClient') {
@@ -70,8 +65,6 @@ function ProjectLeadsNavigator(props) {
         ),
       })
     }
-
- 
   }, [navigation])
 
   if (screen == 'ProjectDeals') {
@@ -264,7 +257,16 @@ function ProjectLeadsNavigator(props) {
             component={WantedLeads}
           />
         ) : null} */}
-      {getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.READ, permissions) ? (
+      {getPermissionValue(
+        PermissionFeatures.APP_PAGES,
+        PermissionActions.PROJECT_LEADS_PAGE_VIEW,
+        permissions
+      ) ||
+      getPermissionValue(
+        PermissionFeatures.APP_PAGES,
+        PermissionActions.MY_DEALS_PROJECT,
+        permissions
+      ) ? (
         <Tab.Screen
           name="Invest"
           // options={{

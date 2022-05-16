@@ -249,13 +249,13 @@ class CustomDrawerContent extends React.Component {
             />
           )} */}
           {getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ||
           getPermissionValue(
-            PermissionFeatures.WANTED_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.WANTED_LEADS_PAGE_VIEW,
             permissions
           ) ? (
             <DrawerIconItem
@@ -279,8 +279,8 @@ class CustomDrawerContent extends React.Component {
           ) : null}
 
           {getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_BUY_RENT,
             permissions
           ) ? (
             <DrawerIconItem
@@ -303,8 +303,8 @@ class CustomDrawerContent extends React.Component {
           ) : null}
 
           {getPermissionValue(
-            PermissionFeatures.PROJECT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.PROJECT_LEADS_PAGE_VIEW,
             permissions
           ) ? (
             <DrawerIconItem
@@ -328,8 +328,8 @@ class CustomDrawerContent extends React.Component {
           ) : null}
 
           {getPermissionValue(
-            PermissionFeatures.PROJECT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_PROJECT,
             permissions
           ) ? (
             <DrawerIconItem

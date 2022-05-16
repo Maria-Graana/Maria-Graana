@@ -623,262 +623,265 @@ class LeadDetail extends React.Component {
     let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
     let setCustomerName = this.setCustomerName()
     return !loading ? (
-      <View style={[AppStyles.container, styles.container]}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.cardContainer}>
-            <View style={styles.cardItemGrey}>
-              <View style={styles.rowContainer}>
-                <View>
-                  <Text style={styles.headingText}>Client Name </Text>
-                  {route.params.lead.requiredProperties ? (
-                    <Text style={styles.labelText}>---</Text>
-                  ) : screenName === 'diary' ? (
-                    <Text style={styles.labelText}>
-                      {setCustomerName === 'undefined'
-                        ? setCustomerName
-                        : lead.customer && lead.customer.customerName}
-                    </Text>
-                  ) : (
-                    <Text style={styles.labelText}>
-                      {lead.customer && lead.customer.customerName}
-                    </Text>
+      <View style={styles.mainContainer}>
+        <View style={[AppStyles.container, styles.container]}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.cardContainer}>
+              <View style={styles.cardItemGrey}>
+                <View style={styles.rowContainer}>
+                  <View>
+                    <Text style={styles.headingText}>Client Name </Text>
+                    {route.params.lead.requiredProperties ? (
+                      <Text style={styles.labelText}>---</Text>
+                    ) : screenName === 'diary' ? (
+                      <Text style={styles.labelText}>
+                        {setCustomerName === 'undefined'
+                          ? setCustomerName
+                          : lead.customer && lead.customer.customerName}
+                      </Text>
+                    ) : (
+                      <Text style={styles.labelText}>
+                        {lead.customer && lead.customer.customerName}
+                      </Text>
+                    )}
+                  </View>
+
+                  {purposeTab !== 'property' && (
+                    <TouchableOpacity
+                      onPress={() => this.goToClientsDetail()}
+                      style={styles.roundButtonView}
+                      activeOpacity={0.6}
+                      disabled={route.params.lead.requiredProperties}
+                    >
+                      <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
+                    </TouchableOpacity>
                   )}
                 </View>
+              </View>
 
-                {purposeTab !== 'property' && (
-                  <TouchableOpacity
-                    onPress={() => this.goToClientsDetail()}
-                    style={styles.roundButtonView}
-                    activeOpacity={0.6}
-                    disabled={route.params.lead.requiredProperties}
-                  >
-                    <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
-                  </TouchableOpacity>
+              <View style={styles.cardItemWhite}>
+                <Text style={styles.headingText}>Requirement </Text>
+                <Text style={styles.labelText}>
+                  {!lead.projectId && leadSize}
+                  {!lead.projectId && type !== 'Investment'
+                    ? `${helper.capitalize(lead.subtype)} to ${type}`
+                    : lead.projectName
+                    ? `Looking to Invest in ${lead.projectName} `
+                    : `Looking to Invest in Any Project `}
+                  {lead.projectId && (lead.projectType ? helper.capitalize(lead.projectType) : '-')}
+                </Text>
+              </View>
+
+              <View style={styles.cardItemGrey}>
+                <Text style={styles.headingText}>Price Range </Text>
+                {!lead.projectId &&
+                (lead.min_price !== null || lead.min_price !== undefined) &&
+                (lead.price !== null || lead.price !== undefined) ? (
+                  <Text style={styles.labelText}>
+                    {helper.convertPriceToStringLead(
+                      lead.min_price,
+                      lead.price,
+                      StaticData.Constants.any_value
+                    )}
+                  </Text>
+                ) : null}
+                {lead.projectId &&
+                (lead.minPrice !== null || lead.minPrice !== undefined) &&
+                (lead.maxPrice !== null || lead.maxPrice !== undefined) ? (
+                  <Text style={styles.labelText}>
+                    {helper.convertPriceToStringLead(
+                      lead.minPrice,
+                      lead.maxPrice,
+                      StaticData.Constants.any_value
+                    )}
+                  </Text>
+                ) : null}
+              </View>
+
+              <View style={styles.cardItemWhite}>
+                <Text style={styles.headingText}>
+                  {type === 'Investment' ? 'Project' : 'Area'}{' '}
+                </Text>
+                {purposeTab === 'invest' ? (
+                  <Text style={styles.labelText}>{projectName ? projectName : 'Any Project'}</Text>
+                ) : (
+                  <Text style={styles.labelText}>
+                    {!lead.projectId &&
+                    lead.armsLeadAreas &&
+                    lead.armsLeadAreas.length &&
+                    lead.armsLeadAreas[0].area
+                      ? lead.armsLeadAreas[0].area &&
+                        // lead.armsLeadAreas[0].area.name
+                        lead.armsLeadAreas.map((item, index) => {
+                          var comma = index > 0 ? ', ' : ''
+                          return comma + item.area.name
+                        })
+                      : 'Area not specified'}
+                    {!lead.projectId && lead.city && ' - ' + lead.city.name}
+                  </Text>
                 )}
               </View>
-            </View>
 
-            <View style={styles.cardItemWhite}>
-              <Text style={styles.headingText}>Requirement </Text>
-              <Text style={styles.labelText}>
-                {!lead.projectId && leadSize}
-                {!lead.projectId && type !== 'Investment'
-                  ? `${helper.capitalize(lead.subtype)} to ${type}`
-                  : lead.projectName
-                  ? `Looking to Invest in ${lead.projectName} `
-                  : `Looking to Invest in Any Project `}
-                {lead.projectId && (lead.projectType ? helper.capitalize(lead.projectType) : '-')}
-              </Text>
-            </View>
-
-            <View style={styles.cardItemGrey}>
-              <Text style={styles.headingText}>Price Range </Text>
-              {!lead.projectId &&
-              (lead.min_price !== null || lead.min_price !== undefined) &&
-              (lead.price !== null || lead.price !== undefined) ? (
-                <Text style={styles.labelText}>
-                  {helper.convertPriceToStringLead(
-                    lead.min_price,
-                    lead.price,
-                    StaticData.Constants.any_value
-                  )}
-                </Text>
+              {additionalInformation.length > 0 ? (
+                <View style={styles.cardItemWhite}>
+                  <Text style={styles.headingText}>Additional Details </Text>
+                  <Text style={styles.labelText}>{additionalInformation}</Text>
+                </View>
               ) : null}
-              {lead.projectId &&
-              (lead.minPrice !== null || lead.minPrice !== undefined) &&
-              (lead.maxPrice !== null || lead.maxPrice !== undefined) ? (
-                <Text style={styles.labelText}>
-                  {helper.convertPriceToStringLead(
-                    lead.minPrice,
-                    lead.maxPrice,
-                    StaticData.Constants.any_value
-                  )}
-                </Text>
+
+              {lead.projectId && lead.guideReference ? (
+                <View style={styles.cardItemWhite}>
+                  <Text style={styles.headingText}>Reference Guide#</Text>
+                  <Text style={styles.labelText}>{lead.guideReference}</Text>
+                </View>
+              ) : null}
+
+              {lead.wanted && lead.wanted.voiceLead && lead.wanted.voiceLead.voiceNoteLink ? (
+                <View style={styles.cardItemWhite}>
+                  <Text style={styles.headingText}>Voice Note</Text>
+                  <VoicePlayer
+                    audioFile={lead.wanted.voiceLead.voiceNoteLink}
+                    voiceLead={lead.wanted.voiceLead}
+                  />
+                </View>
+              ) : null}
+
+              {lead.description ? (
+                <View style={styles.cardItemGrey}>
+                  <Text style={styles.headingText}>Description</Text>
+                  <Text style={[styles.labelText, { color: AppStyles.colors.textColor }]}>
+                    {lead.description && lead.description !== ''
+                      ? lead.description.replace(regex, '')
+                      : null}
+                  </Text>
+                </View>
               ) : null}
             </View>
 
-            <View style={styles.cardItemWhite}>
-              <Text style={styles.headingText}>{type === 'Investment' ? 'Project' : 'Area'} </Text>
-              {purposeTab === 'invest' ? (
-                <Text style={styles.labelText}>{projectName ? projectName : 'Any Project'}</Text>
-              ) : (
-                <Text style={styles.labelText}>
-                  {!lead.projectId &&
-                  lead.armsLeadAreas &&
-                  lead.armsLeadAreas.length &&
-                  lead.armsLeadAreas[0].area
-                    ? lead.armsLeadAreas[0].area &&
-                      // lead.armsLeadAreas[0].area.name
-                      lead.armsLeadAreas.map((item, index) => {
-                        var comma = index > 0 ? ', ' : ''
-                        return comma + item.area.name
-                      })
-                    : 'Area not specified'}
-                  {!lead.projectId && lead.city && ' - ' + lead.city.name}
-                </Text>
-              )}
-            </View>
-
-            {additionalInformation.length > 0 ? (
-              <View style={styles.cardItemWhite}>
-                <Text style={styles.headingText}>Additional Details </Text>
-                <Text style={styles.labelText}>{additionalInformation}</Text>
-              </View>
-            ) : null}
-
-            {lead.projectId && lead.guideReference ? (
-              <View style={styles.cardItemWhite}>
-                <Text style={styles.headingText}>Reference Guide#</Text>
-                <Text style={styles.labelText}>{lead.guideReference}</Text>
-              </View>
-            ) : null}
-
-            {lead.wanted && lead.wanted.voiceLead && lead.wanted.voiceLead.voiceNoteLink ? (
-              <View style={styles.cardItemWhite}>
-                <Text style={styles.headingText}>Voice Note</Text>
-                <VoicePlayer
-                  audioFile={lead.wanted.voiceLead.voiceNoteLink}
-                  voiceLead={lead.wanted.voiceLead}
-                />
-              </View>
-            ) : null}
-
-            {lead.description ? (
-              <View style={styles.cardItemGrey}>
-                <Text style={styles.headingText}>Description</Text>
-                <Text style={[styles.labelText, { color: AppStyles.colors.textColor }]}>
-                  {lead.description && lead.description !== ''
-                    ? lead.description.replace(regex, '')
-                    : null}
-                </Text>
-              </View>
-            ) : null}
-          </View>
-
-          <View style={styles.cardContainer}>
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Lead Type</Text>
-              <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
-              <View style={styles.statusView}>
-                <Text style={styles.textStyle} numberOfLines={1}>
-                  {leadStatus}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Classification</Text>
-              <Text style={styles.labelTextTypeTwo}>
-                {lead.leadCategory ? lead.leadCategory : '-'}
-              </Text>
-            </View>
-
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Assigned To </Text>
-              <Text style={styles.labelTextTypeTwo}>
-                {lead.armsuser && lead.armsuser.firstName
-                  ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName
-                  : '-'}
-              </Text>
-            </View>
-
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Assigned</Text>
-              <Text style={styles.labelTextTypeTwo}>
-                {lead.assigned_at ? moment(lead.assigned_at).format('MMM DD YYYY, hh:mm A') : '-'}{' '}
-              </Text>
-            </View>
-
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Created </Text>
-              <Text style={styles.labelTextTypeTwo}>
-                {moment(lead.createdAt).format('MMM DD YYYY, hh:mm A')}{' '}
-              </Text>
-            </View>
-
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Modified</Text>
-              <Text style={styles.labelTextTypeTwo}>
-                {moment(lead.updatedAt).format('MMM DD YYYY, hh:mm A')}{' '}
-              </Text>
-            </View>
-
-            {lead.shared_with_armsuser_id &&
-            user.id !== lead.shared_with_armsuser_id &&
-            lead.shareUser ? (
+            <View style={styles.cardContainer}>
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Reffered to</Text>
+                <Text style={styles.headingTextTypeTwo}>Lead Type</Text>
+                <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
+                <View style={styles.statusView}>
+                  <Text style={styles.textStyle} numberOfLines={1}>
+                    {leadStatus}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Classification</Text>
                 <Text style={styles.labelTextTypeTwo}>
-                  {lead.shareUser.firstName +
-                    ' ' +
-                    lead.shareUser.lastName +
-                    ', ' +
-                    lead.shareUser.phoneNumber}{' '}
+                  {lead.leadCategory ? lead.leadCategory : '-'}
                 </Text>
               </View>
-            ) : null}
 
-            {lead.shared_with_armsuser_id &&
-            user.id === lead.shared_with_armsuser_id &&
-            lead.armsuser ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Reffered by</Text>
+                <Text style={styles.headingTextTypeTwo}>Assigned To </Text>
                 <Text style={styles.labelTextTypeTwo}>
-                  {lead.armsuser.firstName +
-                    ' ' +
-                    lead.armsuser.lastName +
-                    ', ' +
-                    (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
+                  {lead.armsuser && lead.armsuser.firstName
+                    ? lead.armsuser.firstName + ' ' + lead.armsuser.lastName
+                    : '-'}
                 </Text>
               </View>
-            ) : null}
 
-            {lead.sharedAt ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Shared at</Text>
+                <Text style={styles.headingTextTypeTwo}>Assigned</Text>
                 <Text style={styles.labelTextTypeTwo}>
-                  {moment(lead.sharedAt).format('MMM DD YYYY, hh:mm A')}{' '}
+                  {lead.assigned_at ? moment(lead.assigned_at).format('MMM DD YYYY, hh:mm A') : '-'}{' '}
                 </Text>
               </View>
-            ) : null}
 
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Lead Source </Text>
-              <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
-                {leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}
-              </Text>
-            </View>
-
-            {assignedByName ? (
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
+                <Text style={styles.headingTextTypeTwo}>Created </Text>
+                <Text style={styles.labelTextTypeTwo}>
+                  {moment(lead.createdAt).format('MMM DD YYYY, hh:mm A')}{' '}
+                </Text>
+              </View>
+
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Modified</Text>
+                <Text style={styles.labelTextTypeTwo}>
+                  {moment(lead.updatedAt).format('MMM DD YYYY, hh:mm A')}{' '}
+                </Text>
+              </View>
+
+              {lead.shared_with_armsuser_id &&
+              user.id !== lead.shared_with_armsuser_id &&
+              lead.shareUser ? (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Reffered to</Text>
+                  <Text style={styles.labelTextTypeTwo}>
+                    {lead.shareUser.firstName +
+                      ' ' +
+                      lead.shareUser.lastName +
+                      ', ' +
+                      lead.shareUser.phoneNumber}{' '}
+                  </Text>
+                </View>
+              ) : null}
+
+              {lead.shared_with_armsuser_id &&
+              user.id === lead.shared_with_armsuser_id &&
+              lead.armsuser ? (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Reffered by</Text>
+                  <Text style={styles.labelTextTypeTwo}>
+                    {lead.armsuser.firstName +
+                      ' ' +
+                      lead.armsuser.lastName +
+                      ', ' +
+                      (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
+                  </Text>
+                </View>
+              ) : null}
+
+              {lead.sharedAt ? (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Shared at</Text>
+                  <Text style={styles.labelTextTypeTwo}>
+                    {moment(lead.sharedAt).format('MMM DD YYYY, hh:mm A')}{' '}
+                  </Text>
+                </View>
+              ) : null}
+
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Lead Source </Text>
                 <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
-                  {assignedByName}
+                  {leadSource} {lead.projectId && lead.bulk && '(Bulk uploaded)'}
                 </Text>
               </View>
-            ) : null}
 
-            {lead && lead.city ? (
+              {assignedByName ? (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
+                  <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
+                    {assignedByName}
+                  </Text>
+                </View>
+              ) : null}
+
+              {lead && lead.city ? (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Lead City </Text>
+                  <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
+                    {lead.city.name}
+                  </Text>
+                </View>
+              ) : null}
+
               <View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Lead City </Text>
-                <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
-                  {lead.city.name}
-                </Text>
+                <Text style={styles.headingTextTypeTwo}>Lead ID</Text>
+                <Text style={styles.labelTextTypeTwo}>{lead.id ? lead.id : ''} </Text>
               </View>
-            ) : null}
 
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Lead ID</Text>
-              <Text style={styles.labelTextTypeTwo}>{lead.id ? lead.id : ''} </Text>
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Additional Info</Text>
+                <Text style={styles.labelTextTypeTwo}>{lead.category ? lead.category : 'NA'} </Text>
+              </View>
             </View>
-
-            <View style={styles.rowContainerType2}>
-              <Text style={styles.headingTextTypeTwo}>Additional Info</Text>
-              <Text style={styles.labelTextTypeTwo}>{lead.category ? lead.category : 'NA'} </Text>
-            </View>
-          </View>
-        </ScrollView>
-        {/* {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
+          </ScrollView>
+          {/* {screen === 'MenuLead' || screenName === 'MyDeals' || purposeTab == 'wanted' || screenName === "Leads" ? null : (
           <View style={styles.bottom}>
             <Button
               onPress={() => {
@@ -890,17 +893,18 @@ class LeadDetail extends React.Component {
             </Button>
           </View>
         )} */}
-        <ReferenceGuideModal
-          isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
-          hideReferenceGuideModal={() =>
-            dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
-          }
-          addInvestmentGuide={(guideNo, attachments) =>
-            dispatch(addInvestmentGuide({ guideNo, attachments }, lead))
-          }
-          referenceGuideLoading={referenceGuide.referenceGuideLoading}
-          referenceErrorMessage={referenceGuide.referenceErrorMessage}
-        />
+          <ReferenceGuideModal
+            isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
+            hideReferenceGuideModal={() =>
+              dispatch(setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: false }))
+            }
+            addInvestmentGuide={(guideNo, attachments) =>
+              dispatch(addInvestmentGuide({ guideNo, attachments }, lead))
+            }
+            referenceGuideLoading={referenceGuide.referenceGuideLoading}
+            referenceErrorMessage={referenceGuide.referenceErrorMessage}
+          />
+        </View>
         {showBottomNav && (
           <View style={AppStyles.mainCMBottomNav}>
             <CMBottomNav

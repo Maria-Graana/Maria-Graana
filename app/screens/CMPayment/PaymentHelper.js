@@ -205,7 +205,7 @@ const PaymentHelper = {
           ? null
           : firstFormData.approvedDiscountPrice,
       unitStatus: 'hold',
-      reason: 'pending_token',
+      reasons: 'pending_token',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
@@ -562,7 +562,7 @@ const PaymentHelper = {
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
       unitStatus: 'hold',
-      reason: 'pending_token',
+      reasons: 'pending_token',
       installmentAmount: CMPayment.installmentAmount,
       purchaserId: selectedClient ? selectedClient.id : lead.customer.id,
       downPaymentMax: projectProduct.downPaymentMax,

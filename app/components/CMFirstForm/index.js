@@ -538,33 +538,38 @@ class CMFirstForm extends Component {
           }
         />
 
-        <Text style={styles.parkingAvaiable}>PARKING AVAILABLE </Text>
-        <View style={{ paddingVertical: 10 }}>
-          <PickerComponent
-            onValueChange={handleFirstForm}
-            data={StaticData.parkingAvailable}
-            name={'parkingAvailable'}
-            placeholder="Parking Available"
-            selectedItem={firstFormData.parkingAvailable}
-            enabled={updatePermission}
-          />
-          {firstFormValidate === true &&
-            !firstFormData.parkingAvailable &&
-            firstFormData.parkingAvailable === '' && <ErrorMessage errorMessage={'Required'} />}
-        </View>
+        {firstFormData.productId ? (
+          <>
+            <Text style={styles.parkingAvaiable}>PARKING AVAILABLE </Text>
+            <View style={{ paddingVertical: 10 }}>
+              <PickerComponent
+                onValueChange={handleFirstForm}
+                data={StaticData.parkingAvailable}
+                name={'parkingAvailable'}
+                placeholder="Parking Available"
+                selectedItem={firstFormData.parkingAvailable}
+                enabled={updatePermission}
+              />
+              {firstFormValidate === true &&
+                !firstFormData.parkingAvailable &&
+                firstFormData.parkingAvailable === '' && <ErrorMessage errorMessage={'Required'} />}
+            </View>
 
-        {firstFormData.parkingAvailable === 'yes' && (
-          <SimpleInputText
-            name={'parkingCharges'}
-            placeholder={'Parking Charges'}
-            label={'PARKING CHARGES'}
-            value={firstFormData.parkingCharges}
-            // value={lead?.project?.parkingCharges != null && lead?.project?.parkingCharges != "" ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
-            formatValue={''}
-            editable={false}
-            fromatName={false}
-          />
-        )}
+            {firstFormData.parkingAvailable === 'yes' && (
+              <SimpleInputText
+                name={'parkingCharges'}
+                placeholder={'Parking Charges'}
+                label={'PARKING CHARGES'}
+                value={firstFormData.parkingCharges}
+                // value={lead?.project?.parkingCharges != null && lead?.project?.parkingCharges != "" ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
+                formatValue={''}
+                editable={false}
+                fromatName={false}
+              />
+            )}
+          </>
+        ) : null}
+
         {/* **************************************** */}
         <View style={{ paddingVertical: 10 }}>
           <View style={styles.backgroundBlue}>
@@ -576,20 +581,24 @@ class CMFirstForm extends Component {
             <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
-        <View>
-          <TouchableInput
-            placeholder="Primary Applicant"
-            label={'Primary Applicant'}
-            onPress={() => {
-              if (updatePermission) handleClientClick()
-            }}
-            value={firstFormData.clientName}
-            showError={checkValidation === true && firstFormData.customerId === ''}
-            errorMessage="Required"
-          />
-        </View>
+        {firstFormData.productId ? (
+          <View>
+            <Text style={styles.parkingAvaiable}>PRIMARY APPLICANT </Text>
+            <TouchableInput
+              placeholder="Primary Applicant"
+              label={'Primary Applicant'}
+              onPress={() => {
+                if (updatePermission) handleClientClick()
+              }}
+              value={firstFormData.clientName}
+              showError={checkValidation === true && firstFormData.customerId === ''}
+              errorMessage="Required"
+            />
+          </View>
+        ) : null}
+
         {/* **************************************** */}
-        {cnicEditable && (
+        {cnicEditable && firstFormData.productId && (
           <SimpleInputText
             name={'cnic'}
             placeholder={'Client CNIC/NTN'}
@@ -610,19 +619,22 @@ class CMFirstForm extends Component {
           <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />
         ) : null}
 
-        <View style={{ paddingVertical: 10 }}>
-          <PickerComponent
-            onValueChange={handleFirstForm}
-            data={AllSiteRender}
-            name={'projectSiteId'}
-            placeholder="Deal Site"
-            selectedItem={firstFormData.projectSiteId}
-            enabled={updatePermission}
-          />
-          {firstFormValidate === true && !firstFormData.projectSiteId && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
-        </View>
+        {firstFormData.productId ? (
+          <View style={{ paddingVertical: 10 }}>
+            <PickerComponent
+              onValueChange={handleFirstForm}
+              data={AllSiteRender}
+              name={'projectSiteId'}
+              placeholder="Deal Site"
+              selectedItem={firstFormData.projectSiteId}
+              enabled={updatePermission}
+            />
+            {firstFormValidate === true && !firstFormData.projectSiteId && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
+        ) : null}
+
         <View
           style={{
             flexDirection: 'row',

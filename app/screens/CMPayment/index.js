@@ -94,10 +94,10 @@ class CMPayment extends Component {
           route.params?.unitData != null
             ? route.params?.unitData.projectId
             : lead.paidProject != null
-              ? lead.paidProject.id
-              : lead.project
-                ? lead.project.id
-                : '',
+            ? lead.paidProject.id
+            : lead.project
+            ? lead.project.id
+            : '',
         floor: route.params?.unitData != null ? route.params?.unitData.floorId : '',
         unitType: route.params?.unitData != null ? 'fullUnit' : null,
         pearl: route.params?.unitData != null ? null : '',
@@ -105,8 +105,8 @@ class CMPayment extends Component {
           route.params?.unitData != null
             ? route.params?.unitData.id
             : lead.unit != null
-              ? lead.unit.id
-              : '',
+            ? lead.unit.id
+            : '',
         unitPrice: route.params?.unitData != null ? route.params?.unitData.unit_price : 0,
         cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
         paymentPlan: 'no',
@@ -835,8 +835,8 @@ class CMPayment extends Component {
       payment && payment.officeLocationId
         ? payment.officeLocationId
         : user && user.officeLocation
-          ? user.officeLocation.id
-          : null
+        ? user.officeLocation.id
+        : null
     if (officeLocations[0] && officeLocations.length === 1) {
       locationId = officeLocations[0].value
     }
@@ -1041,8 +1041,8 @@ class CMPayment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = CMPayment.paymentAttachments
           ? _.filter(CMPayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1265,17 +1265,6 @@ class CMPayment extends Component {
     let downPaymentValue = null
     let possessionChargesValue = null
 
-    if (name === 'parkingAvailable') {
-      const { allProjects } = this.state
-      const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
-      newData['parkingAvailable'] = value
-
-      newData['parkingCharges'] =
-        parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
-          ? parkingObj?.parkingCharges
-          : 0
-    }
-
     if (name === 'project') {
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, value)
@@ -1324,16 +1313,7 @@ class CMPayment extends Component {
       value = oneUnit.id
       newData['unitName'] = oneUnit.name
     }
-    if (name === 'approvedDiscount') {
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      if (Number(value) > 100) return
-      newData['approvedDiscountPrice'] = PaymentMethods.findApprovedDiscountAmount(oneUnit, value)
-    }
-    if (name === 'approvedDiscountPrice') {
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      value = value.replace(/,/g, '')
-      newData['approvedDiscount'] = PaymentMethods.findApprovedDiscountPercentage(oneUnit, value)
-    }
+
     if (name === 'paymentPlan' && value === 'Sold on Investment Plan') {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       let fullPaymentDiscountPrice = PaymentHelper.findPaymentPlanDiscount(lead, oneUnit)
@@ -1347,20 +1327,63 @@ class CMPayment extends Component {
     }
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
     newData[name] = value
-    if (name === 'productId') {
+    if (
+      name === 'productId' ||
+      name === 'parkingAvailable' ||
+      name === 'approvedDiscount' ||
+      name === 'approvedDiscountPrice'
+    ) {
       // set default values for product here
-      oneProduct = _.find(projectProducts, (item) => {
-        return item.projectProductId === value
-      })
+      const { allProjects } = this.state
+      const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
+      if (name === 'parkingAvailable') {
+        newData['parkingAvailable'] = value
+        newData['parkingCharges'] =
+          parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
+            ? parkingObj?.parkingCharges
+            : 0
+      }
 
-      discountedAmount = PaymentMethods.findProductDiscountAmount(oneUnit, oneProduct)
+      if (
+        name === 'parkingAvailable' ||
+        name === 'approvedDiscount' ||
+        name === 'approvedDiscountPrice'
+      ) {
+        oneProduct = _.find(projectProducts, (item) => {
+          return item.projectProductId === newData['productId']
+        })
+      } else {
+        oneProduct = _.find(projectProducts, (item) => {
+          return item.projectProductId === value
+        })
+      }
 
-      newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(
-        oneProduct.projectProduct.discount
-      )
+      if (name === 'approvedDiscount' || name === 'approvedDiscountPrice') {
+        if (name === 'approvedDiscount') {
+          if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+          if (Number(value) > 100) return
+          newData['approvedDiscountPrice'] = PaymentMethods.findApprovedDiscountAmount(
+            oneUnit,
+            value
+          )
+        } else {
+          if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+          value = value.replace(/,/g, '')
+          newData['approvedDiscount'] = PaymentMethods.findApprovedDiscountPercentage(
+            oneUnit,
+            value
+          )
+        }
+      } else {
+        discountedAmount = PaymentMethods.findProductDiscountAmount(oneUnit, oneProduct)
 
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      newData['approvedDiscountPrice'] = discountedAmount
+        newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.discount
+        )
+
+        if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+        newData['approvedDiscountPrice'] = discountedAmount
+      }
 
       if (oneUnit) {
         if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
@@ -1552,8 +1575,8 @@ class CMPayment extends Component {
       firstFormData.possessionChargesPercentage &&
       firstFormData.downPaymentPercentage &&
       Number(firstFormData.possessionChargesPercentage) +
-      Number(firstFormData.downPaymentPercentage) >
-      100
+        Number(firstFormData.downPaymentPercentage) >
+        100
     ) {
       alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
       return
@@ -1644,24 +1667,24 @@ class CMPayment extends Component {
     const { firstFormData, oneProductData, isPrimary, selectedClient } = this.state
     let body = noProduct
       ? PaymentHelper.generateApiPayload(
-        firstFormData,
-        lead,
-        unitId,
-        CMPayment,
-        addInstrument,
-        isPrimary,
-        selectedClient
-      )
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          addInstrument,
+          isPrimary,
+          selectedClient
+        )
       : PaymentHelper.generateProductApiPayload(
-        firstFormData,
-        lead,
-        unitId,
-        CMPayment,
-        oneProductData,
-        addInstrument,
-        isPrimary,
-        selectedClient
-      )
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          oneProductData,
+          addInstrument,
+          isPrimary,
+          selectedClient
+        )
     let leadId = []
     body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
@@ -1739,8 +1762,8 @@ class CMPayment extends Component {
       firstFormData.possessionChargesPercentage &&
       firstFormData.downPaymentPercentage &&
       Number(firstFormData.possessionChargesPercentage) +
-      Number(firstFormData.downPaymentPercentage) >
-      100
+        Number(firstFormData.downPaymentPercentage) >
+        100
     ) {
       alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
       return
@@ -2041,7 +2064,7 @@ class CMPayment extends Component {
     let updatePermission = this.updatePermission()
 
     return (
-      <View style={{ flex: 1, }}>
+      <View style={{ flex: 1 }}>
         <ProgressBar
           style={{ backgroundColor: '#ffffff' }}
           progress={progressValue}
@@ -2165,7 +2188,11 @@ class CMPayment extends Component {
             showHideModal={(val) => this.showHideDeletePayment(val)}
           />
           <KeyboardAvoidingView style={{ flex: 1 }}>
-            <ScrollView scrollEnabled={firstForm ? true : false} contentContainerStyle={{ flexGrow: 1, }} showsVerticalScrollIndicator={false}>
+            <ScrollView
+              scrollEnabled={firstForm ? true : false}
+              contentContainerStyle={{ flexGrow: 1 }}
+              showsVerticalScrollIndicator={false}
+            >
               <View style={{ flex: 1, marginBottom: 45 }}>
                 {firstForm && (
                   <CMFirstForm

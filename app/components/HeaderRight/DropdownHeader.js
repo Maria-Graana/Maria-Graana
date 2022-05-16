@@ -1,7 +1,7 @@
 /** @format */
 
 import React from 'react'
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native'
+import { TouchableOpacity, Platform, Text, StyleSheet, View } from 'react-native'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { connect } from 'react-redux';
 
@@ -57,23 +57,22 @@ class DropdownHeader extends React.Component {
                     alignItems: 'center'
                 }}>
                     <View style={{
-                        width: '85%',
-                        alignItems: 'center',
-                        width: 250,
+                        width: '65%',
                     }}>
                         <View style={{
-
-                            marginRight: '18%',
 
                         }}>
 
                             <View style={{
+                                width: Platform.OS === 'ios' ? null : 185,
 
                                 alignSelf: 'center',
                             }}>
                                 {leadType == 'ProjectLeads' ?
 
+
                                     <PickerComponent
+
                                         placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
                                         data={
                                             hasBooking
@@ -84,7 +83,8 @@ class DropdownHeader extends React.Component {
                                                     ? StaticData.filterLeadsValueProjectTerminal
                                                     : StaticData.filterLeadsValueProject
                                         }
-                                        customStyle={styles.pickerStyle}
+
+                                        customStyle={[styles.pickerStyle]}
                                         customIconStyle={styles.customIconStyle}
                                         onValueChange={(value) => {
 
@@ -92,10 +92,12 @@ class DropdownHeader extends React.Component {
                                         }
                                         }
                                         selectedItem={leadsDropdown}
-                                        showPickerArrow={true}
+                                        showPickerArrow={Platform.OS === 'ios' ? false : true}
                                     />
+
                                     :
                                     <PickerComponent
+                                        showPickerArrow={Platform.OS === 'ios' ? false : true}
 
                                         data={
                                             hasBooking

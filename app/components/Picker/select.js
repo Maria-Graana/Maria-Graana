@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Platform, View } from 'react-native'
-import { Item, Picker } from 'native-base'
+import { Item, Picker, Right, Left } from 'native-base'
 import { StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import AppStyles from '../../AppStyles'
@@ -67,32 +67,44 @@ class PickerComponent extends React.Component {
         }
         return (
             <View style={[styles.pickerMain, { backgroundColor: '#fff', }]}>
-              
 
-                <Picker
-                    headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff' }}
-                    headerBackButtonTextStyle={{ color: '#fff' }}
-                    headerTitleStyle={{ color: '#fff' }}
-                    textStyle={[AppStyles.formFontSettings]}
-                    iosIcon={<Ionicons
+                {showPickerArrow && (
+                    <Ionicons
                         style={[styles.arrowIcon, customIconStyle]}
                         name="chevron-down-outline"
                         size={26}
                         color={AppStyles.colors.subTextColor}
-                    />}
-                    mode="dropdown"
-                    enabled={enabled}
-                    style={[
-                        AppStyles.formControlForPicker,
-                        { backgroundColor: enabled ? '#fff' : '#ddd' },
-                        customStyle,
-                    ]}
-                    placeholder={placeholderLabel}
-                    selectedValue={selectedValue}
-                    onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
-                >
-                    {pickerItems}
-                </Picker>
+                    />
+                )}
+  
+                    <Picker
+                        headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff' }}
+                        headerBackButtonTextStyle={{ color: '#fff' }}
+                        headerTitleStyle={{ color: '#fff' }}
+                        itemTextStyle={[AppStyles.formFontSettings]}
+                  
+                        iosIcon={
+                            <Ionicons
+                                style={[styles.arrowIcon, customIconStyle]}
+                                name="chevron-down-outline"
+                                size={26}
+                                color={AppStyles.colors.subTextColor}
+                            />}
+                        mode="dropdown"
+                        enabled={enabled}
+                        style={[
+                            AppStyles.formControlForPicker,
+                            { backgroundColor: enabled ? '#fff' : '#ddd' , },
+                            customStyle,
+                        ]}
+                   
+                        placeholder={placeholderLabel}
+                        selectedValue={selectedValue}
+                        onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
+                    >
+                        {pickerItems}
+                    </Picker>
+             
             </View>
         )
     }
@@ -110,6 +122,8 @@ const styles = StyleSheet.create({
         top: 8,
         zIndex: 2,
     },
+
+    
 })
 
 export default PickerComponent

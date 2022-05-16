@@ -37,6 +37,7 @@ class DropdownHeader extends React.Component {
             }}>
                 {!isInternetConnected ? (
                     <TouchableOpacity
+                
                         onPress={() => {
                             this.showToast()
                         }}
@@ -57,6 +58,8 @@ class DropdownHeader extends React.Component {
                 }}>
                     <View style={{
                         width: '85%',
+                        alignItems: 'center',
+                        width: 250,
                     }}>
                         <View style={{
 

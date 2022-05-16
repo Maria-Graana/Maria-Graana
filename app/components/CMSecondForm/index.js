@@ -34,9 +34,7 @@ class CMSecondForm extends React.Component {
     } = this.props
     const { payment, projectProduct } = lead
     return (
-
-      <SafeAreaView style={[styles.removePad, { flex: 1 }]}>
-      
+      <View style={[styles.removePad, { flex: 1 }]}>
         <View style={[styles.mainFormWrap, { flex: 1 }]}>
           <View
             style={{
@@ -107,7 +105,8 @@ class CMSecondForm extends React.Component {
                 alignItems: 'center',
                 padding: 10,
                 backgroundColor: 'white',
-                height: heightPercentageToDP('50%'),
+                // height: heightPercentageToDP('50%'),
+                flex: 1,
               }}
             >
               <Image source={PendingTokenImg} style={styles.tokenPendingImg} />
@@ -147,7 +146,7 @@ class CMSecondForm extends React.Component {
             </View>
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     )
   }
 }

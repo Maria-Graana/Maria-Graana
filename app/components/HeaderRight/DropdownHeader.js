@@ -4,7 +4,7 @@ import React from 'react'
 import { TouchableOpacity, Platform, Text, StyleSheet, View } from 'react-native'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { connect } from 'react-redux';
-
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import helper from '../../helper'
 import Loader from '../loader'
 
@@ -37,7 +37,7 @@ class DropdownHeader extends React.Component {
             }}>
                 {!isInternetConnected ? (
                     <TouchableOpacity
-                
+
                         onPress={() => {
                             this.showToast()
                         }}
@@ -64,8 +64,7 @@ class DropdownHeader extends React.Component {
                         }}>
 
                             <View style={{
-                                width: Platform.OS === 'ios' ? null :leadsDropdown==='&pageType=myLeads&hasBooking=false' ||leadsDropdown=== '&pageType=myDeals&hasBooking=true'?110: 165, //160,
-
+                                width: Platform.OS === 'ios' ? null : leadsDropdown === '&pageType=myLeads&hasBooking=false' || leadsDropdown === '&pageType=myDeals&hasBooking=true' ? wp('28') : wp('38'), //160,
                                 alignSelf: 'center',
                             }}>
                                 {leadType == 'ProjectLeads' ?

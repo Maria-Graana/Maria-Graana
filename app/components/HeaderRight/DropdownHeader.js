@@ -57,70 +57,75 @@ class DropdownHeader extends React.Component {
                     alignItems: 'center'
                 }}>
                     <View style={{
+                        width: '85%',
                         alignItems: 'center',
                         width: 250,
-
                     }}>
                         <View style={{
 
-                            //  width: 160, 
-                            justifyContent: 'center', alignSelf: 'center',
-                            // marginRight: 20
+                            marginRight: '18%',
+
                         }}>
 
+                            <View style={{
 
-                            {leadType == 'ProjectLeads' ?
+                                alignSelf: 'center',
+                            }}>
+                                {leadType == 'ProjectLeads' ?
 
-                                <PickerComponent
-                                    placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
-                                    data={
-                                        hasBooking
-                                            ? getIsTerminalUser
-                                                ? StaticData.filterDealsValueProjectTerminal
-                                                : StaticData.filterDealsValueProject
-                                            : getIsTerminalUser
-                                                ? StaticData.filterLeadsValueProjectTerminal
-                                                : StaticData.filterLeadsValueProject
-                                    }
-                                    customStyle={styles.pickerStyle}
-                                    customIconStyle={styles.customIconStyle}
-                                    onValueChange={(value) => {
+                                    <PickerComponent
+                                        placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                                        data={
+                                            hasBooking
+                                                ? getIsTerminalUser
+                                                    ? StaticData.filterDealsValueProjectTerminal
+                                                    : StaticData.filterDealsValueProject
+                                                : getIsTerminalUser
+                                                    ? StaticData.filterLeadsValueProjectTerminal
+                                                    : StaticData.filterLeadsValueProject
+                                        }
+                                        customStyle={styles.pickerStyle}
+                                        customIconStyle={styles.customIconStyle}
+                                        onValueChange={(value) => {
 
-                                        dispatch(setLeadsDropdown(value))
-                                    }
-                                    }
-                                    selectedItem={leadsDropdown}
-                                    showPickerArrow={true}
-                                />
-                                :
-                                <PickerComponent
+                                            dispatch(setLeadsDropdown(value))
+                                        }
+                                        }
+                                        selectedItem={leadsDropdown}
+                                        showPickerArrow={true}
+                                    />
+                                    :
+                                    <PickerComponent
 
-                                    data={
-                                        hasBooking
-                                            ? getIsTerminalUser
-                                                ? StaticData.filterDealsValueTerminal
-                                                : StaticData.filterDealsValue
-                                            : getIsTerminalUser
-                                                ? StaticData.filterLeadsValueTerminal
-                                                : StaticData.filterLeadsValue
-                                    }
-                                    customStyle={styles.pickerStyle}
-                                    customIconStyle={styles.customIconStyle}
+                                        data={
+                                            hasBooking
+                                                ? getIsTerminalUser
+                                                    ? StaticData.filterDealsValueTerminal
+                                                    : StaticData.filterDealsValue
+                                                : getIsTerminalUser
+                                                    ? StaticData.filterLeadsValueTerminal
+                                                    : StaticData.filterLeadsValue
+                                        }
+                                        customStyle={styles.pickerStyle}
+                                        customIconStyle={styles.customIconStyle}
 
-                                    placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
-                                    onValueChange={(value) => {
+                                        placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
+                                        onValueChange={(value) => {
 
-                                        dispatch(setLeadsDropdown(value))
-                                    }
-                                    }
-                                    selectedItem={leadsDropdown}
+                                            dispatch(setLeadsDropdown(value))
+                                        }
+                                        }
+                                        selectedItem={leadsDropdown}
 
-                                />}
+                                    />}
+
+                            </View>
 
 
                         </View>
                     </View>
                     <TouchableOpacity
+                        style={{ width: '15%', alignSelf: 'flex-end' }}
                         onPress={() => {
                             dispatch(setDrawerInternalMenu(false))
                             navigation.openDrawer()

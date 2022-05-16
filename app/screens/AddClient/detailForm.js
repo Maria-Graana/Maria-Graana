@@ -226,6 +226,7 @@ class DetailForm extends Component {
           < View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
+                enabled={update ? false : true}
                 onValueChange={handleForm}
                 data={StaticData.clientTypePickerData}
                 name={'clientSource'}
@@ -264,9 +265,9 @@ class DetailForm extends Component {
 
         {
           this.state.openAdditionalInfo &&
-        
+
           <ScrollView
-      
+
             horizontal={false}
 
             showsVerticalScrollIndicator={false}
@@ -723,7 +724,7 @@ class DetailForm extends Component {
         }
 
         < View >
-       {!update &&   <TouchableInput
+          {!update && <TouchableInput
             semiBold={true}
             arrowType={this.state.addLeadRequirements}
             placeholder="Add Lead Requirements"

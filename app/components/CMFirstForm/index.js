@@ -311,7 +311,11 @@ class CMFirstForm extends Component {
             <SimpleInputText
               name={'downPaymentPercentage'}
               placeholder={'Down Payment %'}
-              label={`Down Payment % (${oneProduct.downPaymentMin}% - ${oneProduct.downPaymentMax}%)`}
+              label={
+                oneProduct.downPaymentMin === oneProduct.downPaymentMax
+                  ? `Down Payment %`
+                  : `Down Payment (${oneProduct.downPaymentMin}% - ${oneProduct.downPaymentMax}%)`
+              }
               value={firstFormData.downPaymentPercentage}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}
@@ -362,7 +366,11 @@ class CMFirstForm extends Component {
             <SimpleInputText
               name={'noOfInstallment'}
               placeholder={'Number of Installments'}
-              label={`Number of Installments (Range ${oneProduct.noInstallmentsMin}-${oneProduct.noInstallmentsMax}) `}
+              label={
+                oneProduct.noInstallmentsMin === oneProduct.noInstallmentsMax
+                  ? `No of Installments`
+                  : `No of Installments (${oneProduct.noInstallmentsMin}-${oneProduct.noInstallmentsMax}) `
+              }
               value={firstFormData.noOfInstallment}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}
@@ -392,7 +400,11 @@ class CMFirstForm extends Component {
             <SimpleInputText
               name={'installmentFrequency'}
               placeholder={'Frequency(Months)'}
-              label={`Frequency (${oneProduct.installmentFrequencyMin} - ${oneProduct.installmentFrequencyMax} Months)`}
+              label={
+                oneProduct.installmentFrequencyMin === oneProduct.installmentFrequencyMax
+                  ? `Frequency (Months)`
+                  : `Frequency (${oneProduct.installmentFrequencyMin} - ${oneProduct.installmentFrequencyMax} Months)`
+              }
               value={firstFormData.installmentFrequency}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}
@@ -420,7 +432,11 @@ class CMFirstForm extends Component {
             <SimpleInputText
               name={'possessionChargesPercentage'}
               placeholder={'Possession Charges %'}
-              label={`Possession Charges % (${oneProduct.possessionChargesMin}%-${oneProduct.possessionChargesMax}%) `}
+              label={
+                oneProduct.possessionChargesMin === oneProduct.possessionChargesMax
+                  ? `Possession Charges %`
+                  : `Possession Charges (${oneProduct.possessionChargesMin}%-${oneProduct.possessionChargesMax}%) `
+              }
               value={firstFormData.possessionChargesPercentage}
               keyboardType={'numeric'}
               onChangeHandle={handleFirstForm}

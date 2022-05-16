@@ -94,10 +94,10 @@ class CMPayment extends Component {
           route.params?.unitData != null
             ? route.params?.unitData.projectId
             : lead.paidProject != null
-            ? lead.paidProject.id
-            : lead.project
-            ? lead.project.id
-            : '',
+              ? lead.paidProject.id
+              : lead.project
+                ? lead.project.id
+                : '',
         floor: route.params?.unitData != null ? route.params?.unitData.floorId : '',
         unitType: route.params?.unitData != null ? 'fullUnit' : null,
         pearl: route.params?.unitData != null ? null : '',
@@ -105,8 +105,8 @@ class CMPayment extends Component {
           route.params?.unitData != null
             ? route.params?.unitData.id
             : lead.unit != null
-            ? lead.unit.id
-            : '',
+              ? lead.unit.id
+              : '',
         unitPrice: route.params?.unitData != null ? route.params?.unitData.unit_price : 0,
         cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
         paymentPlan: 'no',
@@ -835,8 +835,8 @@ class CMPayment extends Component {
       payment && payment.officeLocationId
         ? payment.officeLocationId
         : user && user.officeLocation
-        ? user.officeLocation.id
-        : null
+          ? user.officeLocation.id
+          : null
     if (officeLocations[0] && officeLocations.length === 1) {
       locationId = officeLocations[0].value
     }
@@ -1041,8 +1041,8 @@ class CMPayment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = CMPayment.paymentAttachments
           ? _.filter(CMPayment.paymentAttachments, (item) => {
-              return !_.has(item, 'id')
-            })
+            return !_.has(item, 'id')
+          })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1197,6 +1197,7 @@ class CMPayment extends Component {
       let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
       if ((paidProject && paidProject.id) || (project && project.id)) {
         this.getFloors(projectID)
+        this.getSites(projectID)
       }
     }
     var newcheckPaymentPlan = { ...checkPaymentPlan }
@@ -1225,6 +1226,15 @@ class CMPayment extends Component {
         })
       }
     )
+  }
+
+  getSites = (projectId) => {
+    axios
+      .get(`/api/leads/getProjectSites?projectId=${projectId}`)
+      .then((res) => {
+        this.setState({ siteData: res.data })
+      })
+      .catch((err) => console.log(err))
   }
 
   handleFirstForm = (value, name) => {
@@ -1269,14 +1279,7 @@ class CMPayment extends Component {
     if (name === 'project') {
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, value)
-
-      axios
-        .get(`/api/leads/getProjectSites?projectId=${value}`)
-        .then((res) => {
-          this.setState({ siteData: res.data })
-        })
-        .catch((err) => console.log(err))
-
+      this.getSites(value)
       newData['parkingCharges'] =
         parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
           ? parkingObj?.parkingCharges
@@ -1549,8 +1552,8 @@ class CMPayment extends Component {
       firstFormData.possessionChargesPercentage &&
       firstFormData.downPaymentPercentage &&
       Number(firstFormData.possessionChargesPercentage) +
-        Number(firstFormData.downPaymentPercentage) >
-        100
+      Number(firstFormData.downPaymentPercentage) >
+      100
     ) {
       alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
       return
@@ -1641,24 +1644,24 @@ class CMPayment extends Component {
     const { firstFormData, oneProductData, isPrimary, selectedClient } = this.state
     let body = noProduct
       ? PaymentHelper.generateApiPayload(
-          firstFormData,
-          lead,
-          unitId,
-          CMPayment,
-          addInstrument,
-          isPrimary,
-          selectedClient
-        )
+        firstFormData,
+        lead,
+        unitId,
+        CMPayment,
+        addInstrument,
+        isPrimary,
+        selectedClient
+      )
       : PaymentHelper.generateProductApiPayload(
-          firstFormData,
-          lead,
-          unitId,
-          CMPayment,
-          oneProductData,
-          addInstrument,
-          isPrimary,
-          selectedClient
-        )
+        firstFormData,
+        lead,
+        unitId,
+        CMPayment,
+        oneProductData,
+        addInstrument,
+        isPrimary,
+        selectedClient
+      )
     let leadId = []
     body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
@@ -1736,8 +1739,8 @@ class CMPayment extends Component {
       firstFormData.possessionChargesPercentage &&
       firstFormData.downPaymentPercentage &&
       Number(firstFormData.possessionChargesPercentage) +
-        Number(firstFormData.downPaymentPercentage) >
-        100
+      Number(firstFormData.downPaymentPercentage) >
+      100
     ) {
       alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
       return
@@ -1950,7 +1953,6 @@ class CMPayment extends Component {
     )
   }
 
-
   openModalInFollowupMode = (value) => {
     const { navigation, lead } = this.props
 
@@ -1959,7 +1961,6 @@ class CMPayment extends Component {
       rcmLeadId: lead ? lead.id : null,
     })
   }
-
 
   render() {
     const {
@@ -2040,7 +2041,7 @@ class CMPayment extends Component {
     let updatePermission = this.updatePermission()
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, }}>
         <ProgressBar
           style={{ backgroundColor: '#ffffff' }}
           progress={progressValue}
@@ -2163,9 +2164,9 @@ class CMPayment extends Component {
             deletePayment={(reason) => this.deletePayment(reason)}
             showHideModal={(val) => this.showHideDeletePayment(val)}
           />
-          <KeyboardAvoidingView>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View style={{ flex: 1, marginBottom: 60 }}>
+          <KeyboardAvoidingView style={{ flex: 1 }}>
+            <ScrollView scrollEnabled={firstForm ? true : false} contentContainerStyle={{ flexGrow: 1, }} showsVerticalScrollIndicator={false}>
+              <View style={{ flex: 1, marginBottom: 45 }}>
                 {firstForm && (
                   <CMFirstForm
                     allProjects={allProjects}

@@ -29,9 +29,10 @@ export default function CMLeadTabs(props) {
     >
       {/* <Tab.Screen name="Meetings" options={{ title: 'Nurture' }} component={Meetings} /> */}
       <Tab.Screen
-        name={screenName === 'ProjectLeads' ? 'Book Unit' : 'Payments'}
+        name={'Payments'}
         component={CMPayment}
         initialParams={{ screenName: screenName }}
+        options={{ title: screenName === 'ProjectLeads' ? 'Book Unit' : 'Payments' }}
       />
     </Tab.Navigator>
   )

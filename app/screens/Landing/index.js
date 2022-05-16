@@ -214,23 +214,88 @@ class Landing extends React.Component {
       if (oneTile.tile === 'Contacts') {
         getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
       }
-      if (oneTile.tile === 'Leads' || oneTile.tile === 'My Deals') {
+      if (oneTile.tile === 'Project Leads') {
         if (
           getPermissionValue(
-            PermissionFeatures.PROJECT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.PROJECT_LEADS_PAGE_VIEW,
+            permissions
+          )
+        ) {
+          if (label === 'Team Diary') label = "Team's Diary"
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
+        }
+      } else if (oneTile.tile === 'Leads') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ||
           getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.WANTED_LEADS_PAGE_VIEW,
             permissions
-          ) ||
-          getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions)
+          )
         ) {
           if (label === 'Team Diary') label = "Team's Diary"
           if (tile === 'Leads') label = 'Buy/Rent Leads'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
+        }
+      } else if (oneTile.tile === 'My Deals') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_BUY_RENT,
+            permissions
+          )
+        ) {
+          if (label === 'Team Diary') label = "Team's Diary"
           if (tile === 'MyDeals') label = 'Buy/Rent Deals'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
+        }
+      } else if (oneTile.tile === 'Project Deals') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_PROJECT,
+            permissions
+          )
+        ) {
+          if (label === 'Team Diary') label = "Team's Diary"
           let oneTile = {
             id: counter,
             label: label,

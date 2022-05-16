@@ -39,8 +39,10 @@ function LeadsNavigator(props) {
         headerRight: (props) => <HeaderRight navigation={navigation} />,
         title: 'SELECT LEAD',
         headerLeft: (props) => (
-          <HeaderLeftLogo navigation={navigation} //leftClientScreen={'Client'}
-           leftBool={true} />
+          <HeaderLeftLogo
+            navigation={navigation} //leftClientScreen={'Client'}
+            leftBool={true}
+          />
         ),
       })
     }
@@ -95,8 +97,10 @@ function LeadsNavigator(props) {
       headerRight: (props) => <HeaderRight navigation={navigation} />,
       title: 'SELECT LEAD',
       headerLeft: (props) => (
-        <HeaderLeftLogo navigation={navigation} //leftClientScreen={'Client'}
-         leftBool={true} />
+        <HeaderLeftLogo
+          navigation={navigation} //leftClientScreen={'Client'}
+          leftBool={true}
+        />
       ),
     })
 
@@ -406,6 +410,11 @@ function LeadsNavigator(props) {
             PermissionFeatures.APP_PAGES,
             PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_BUY_RENT,
+            permissions
           ) ? (
             <Tab.Screen
               name="Rent"
@@ -428,6 +437,11 @@ function LeadsNavigator(props) {
           {getPermissionValue(
             PermissionFeatures.APP_PAGES,
             PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
+            permissions
+          ) ||
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_BUY_RENT,
             permissions
           ) ? (
             <Tab.Screen

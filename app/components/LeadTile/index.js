@@ -186,7 +186,9 @@ class LeadTile extends React.Component {
           ]}
         >
           <View style={[styles.rightContentView]}>
-            <View style={[styles.topIcons, screen === 'Leads' && { top: 12, right: 10 }]}>
+            <View
+              style={[styles.topIcons, screen === 'Leads' && { top: 12, right: wanted ? 30 : 10 }]}
+            >
               <View style={styles.extraStatus}>
                 <Text
                   style={[changeStatusColor, AppStyles.mrFive, styles.viewStyle]}

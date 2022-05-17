@@ -431,15 +431,15 @@ class CMBottomNav extends React.Component {
       PermissionActions.UPDATE,
       permissions
     )
-   
 
     return (
       <View style={styles.bottomNavMain}>
         {screenName === 'InvestDetailScreen' ? (
           <TouchableOpacity
             style={styles.followBtn}
-            //style={styles.bottomNavBtn} 
-            onPress={() => navigateToBookUnit()}>
+            //style={styles.bottomNavBtn}
+            onPress={() => navigateToBookUnit()}
+          >
             <View style={styles.align}>
               <Image
                 style={styles.bottomNavImg}
@@ -450,12 +450,12 @@ class CMBottomNav extends React.Component {
           </TouchableOpacity>
         ) : screenName === 'BuyRentDetailScreen' ? (
           <TouchableOpacity
-            style={[styles.followBtn, {width: '33.4%' }]}
+            style={[styles.followBtn, { width: '33.4%' }]}
             onPress={() => navigateToOpenWorkFlow(lead)}
           >
-             <View style={styles.align}>
+            <View style={styles.align}>
               <Image
-                style={[styles.bottomNavImg,]}
+                style={[styles.bottomNavImg]}
                 source={require('../../../assets/img/black/workflow.png')}
               />
               <Text style={styles.followText}>WorkFlow</Text>
@@ -577,10 +577,9 @@ class CMBottomNav extends React.Component {
         ) : screenName === 'InvestDetailScreen' ? (
           <TouchableOpacity
             style={
-
               screenName === 'BuyRentDetailScreen'
                 ? [styles.rejectBtn, styles.followBtn, { width: '33.3%' }]
-                : [styles.followBtn,]
+                : [styles.followBtn]
             }
             onPress={() => {
               navigateToAddDiary()
@@ -615,23 +614,21 @@ class CMBottomNav extends React.Component {
           </TouchableOpacity>
         )}
         <View style={[styles.bottomNavBtn2, visible === true]}>
-
-          
           <Menu
             visible={visible}
-
             onDismiss={() => this.openMenu(false)}
             anchor={
               <TouchableOpacity
                 onPress={() => !helper.getAiraPermission(permissions) && this.openMenu(true)}
-
               >
-
-                <View style={[styles.align, {
-         
-                  marginBottom:12,
-                
-                }]}>
+                <View
+                  style={[
+                    styles.align,
+                    {
+                      marginBottom: 12,
+                    },
+                  ]}
+                >
                   {visible === true ? (
                     <Image
                       style={[
@@ -643,8 +640,8 @@ class CMBottomNav extends React.Component {
                   ) : (
                     <Image
                       style={[
-                        [styles.bottomNavImg,],
-                        screenName === 'BuyRentDetailScreen' && { left: 25 ,},
+                        [styles.bottomNavImg],
+                        screenName === 'BuyRentDetailScreen' && { left: 25 },
                       ]}
                       source={require('../../../assets/img/actions.png')}
                     />
@@ -715,22 +712,22 @@ class CMBottomNav extends React.Component {
                   onPress={() => {
                     this.canMarkCloseAsLost(lead, lead.armsProjectTypeId ? 'Project' : 'BuyRent')
                       ? dispatch(
-                        getDiaryFeedbacks({
-                          taskType: 'Connect',
-                          leadType: 'Project',
-                          actionType: 'Connect',
-                          section: 'Reject',
-                        })
-                      )
-                        .then((res) => {
-                          this.props.navigation.navigate('DiaryFeedback', {
+                          getDiaryFeedbacks({
+                            taskType: 'Connect',
+                            leadType: 'Project',
                             actionType: 'Connect',
+                            section: 'Reject',
                           })
-                        })
-                        .catch((err) => console.error('An error occurred', err))
+                        )
+                          .then((res) => {
+                            this.props.navigation.navigate('DiaryFeedback', {
+                              actionType: 'Connect',
+                            })
+                          })
+                          .catch((err) => console.error('An error occurred', err))
                       : helper.errorToast(
-                        `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
-                      )
+                          `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
+                        )
                     this.openMenu(false)
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}

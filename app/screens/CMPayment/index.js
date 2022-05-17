@@ -1980,8 +1980,12 @@ class CMPayment extends Component {
     const { navigation, lead } = this.props
 
     navigation.navigate('ScheduledTasks', {
-      lead,
-      rcmLeadId: lead ? lead.id : null,
+      // lead,
+      // rcmLeadId: lead ? lead.id : null,
+      lead: lead,
+      purposeTab: 'invest',
+      screen: 'InvestLeads',
+      cmLeadId: lead.id,
     })
   }
 

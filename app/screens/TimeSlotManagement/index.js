@@ -928,34 +928,58 @@ function TimeSlotManagement(props) {
     if (from == 'end') {
       let tempStartPick = moment(timeStart).format('H:mm:ss')
       let tempEndPick = moment(time).format('H:mm:ss')
+      let tempStartPick2 = moment(timeStart).format('H:mm')
+      let tempEndPick2 = moment(time).format('H:mm')
 
-      if (timeStart && time && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
-        onEditSlots(tempStartPick, tempEndPick, true)
-        setDisabled(false)
-      } else {
+      if (tempStartPick2 == tempEndPick2) {
         setTimeStart(null)
-        // setTimeEnd(null)
         setSlotsData([])
         setSlots([])
         setIsSelected([])
-        // helper.errorToast(`End Time should be greater than Start Time`)
-        helper.errorToast(`Start Time should be less than End Time`)
+        helper.errorToast(`Start Time should be not equal to End Time`)
+      } else {
+        if (
+          timeStart &&
+          time &&
+          moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')
+        ) {
+          onEditSlots(tempStartPick, tempEndPick, true)
+          setDisabled(false)
+        } else {
+          setTimeStart(null)
+          // setTimeEnd(null)
+          setSlotsData([])
+          setSlots([])
+          setIsSelected([])
+          // helper.errorToast(`End Time should be greater than Start Time`)
+          helper.errorToast(`Start Time should be less than End Time`)
+        }
       }
     } else {
       let tempStartPick = moment(time).format('H:mm:ss')
       let tempEndPick = moment(timeEnd).format('H:mm:ss')
+      let tempStartPick2 = moment(timeStart).format('H:mm')
+      let tempEndPick2 = moment(time).format('H:mm')
 
-      if (time && timeEnd && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
-        onEditSlots(tempStartPick, tempEndPick, true)
-        setDisabled(false)
-      } else {
-        // setTimeStart(null)
+      if (tempStartPick2 == tempEndPick2) {
         setTimeEnd(null)
         setSlotsData([])
         setSlots([])
         setIsSelected([])
-        // helper.errorToast(`Start Time should be less than End Time`)
-        helper.errorToast(`End Time should be greater than Start Time`)
+        helper.errorToast(`Start Time should be not equal to End Time`)
+      } else {
+        if (time && timeEnd && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
+          onEditSlots(tempStartPick, tempEndPick, true)
+          setDisabled(false)
+        } else {
+          // setTimeStart(null)
+          setTimeEnd(null)
+          setSlotsData([])
+          setSlots([])
+          setIsSelected([])
+          // helper.errorToast(`Start Time should be less than End Time`)
+          helper.errorToast(`End Time should be greater than Start Time`)
+        }
       }
     }
   }

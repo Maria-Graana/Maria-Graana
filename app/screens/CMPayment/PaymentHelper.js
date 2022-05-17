@@ -397,8 +397,8 @@ const PaymentHelper = {
             firstFormData.paymentPlan != 'no' &&
             firstFormData.productId &&
             firstFormData.noOfInstallment &&
-            firstFormData.downPayment &&
-            firstFormData.possessionCharges &&
+            firstFormData.downPayment !== '' &&
+            firstFormData.possessionCharges !== '' &&
             firstFormData.installmentFrequency &&
             firstFormData.paymentPlanDuration)
         ) {
@@ -432,8 +432,8 @@ const PaymentHelper = {
             cnicValidate === false &&
             firstFormData.productId &&
             firstFormData.noOfInstallment &&
-            firstFormData.downPayment &&
-            firstFormData.possessionCharges &&
+            firstFormData.downPayment !== '' &&
+            firstFormData.possessionCharges !== '' &&
             firstFormData.installmentFrequency) ||
           (firstFormData.project != null &&
             firstFormData.floor != null &&

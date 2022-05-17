@@ -352,7 +352,7 @@ class CMFirstForm extends Component {
                   : false
               }
             />
-            {firstFormValidate === true && !firstFormData.downPayment && (
+            {firstFormValidate === true && !firstFormData.downPayment === '' && (
               <ErrorMessage errorMessage={'Required'} />
             )}
             {firstFormData.downPaymentPercentage !== '' &&
@@ -479,7 +479,7 @@ class CMFirstForm extends Component {
               }
             />
 
-            {firstFormValidate === true && !firstFormData.possessionCharges && (
+            {firstFormValidate === true && !firstFormData.possessionCharges === '' && (
               <ErrorMessage errorMessage={'Required'} />
             )}
 
@@ -499,32 +499,11 @@ class CMFirstForm extends Component {
           name={'approvedDiscount'}
           placeholder={'Approved Discount'}
           label={'APPROVED DISCOUNT%'}
-          value={firstFormData.approvedDiscount}
+          value={firstFormData.approvedDiscount ? firstFormData.approvedDiscount.toFixed(2) : null}
           keyboardType={'numeric'}
           onChangeHandle={handleFirstForm}
           formatValue={''}
-          editable={
-            (updatePermission &&
-              firstFormData.unit != null &&
-              firstFormData.unit != '' &&
-              firstFormData.productId != null &&
-              firstFormData.productId != '') ||
-            (updatePermission &&
-              pearlUnit &&
-              firstFormData.productId != null &&
-              firstFormData.productId != '')
-          }
           fromatName={false}
-        />
-        <SimpleInputText
-          name={'approvedDiscountPrice'}
-          fromatName={'approvedDiscountPrice'}
-          placeholder={'APPROVED DISCOUNT AMOUNT'}
-          label={'APPROVED DISCOUNT AMOUNT'}
-          value={firstFormData.approvedDiscountPrice}
-          onChangeHandle={handleFirstForm}
-          formatValue={''}
-          keyboardType={'numeric'}
           editable={
             (updatePermission &&
               firstFormData.unit != null &&
@@ -537,6 +516,34 @@ class CMFirstForm extends Component {
               firstFormData.productId != '')
           }
         />
+        <View style={{ paddingVertical: 10 }}>
+          <SimpleInputText
+            name={'approvedDiscountPrice'}
+            placeholder={'APPROVED DISCOUNT AMOUNT'}
+            label={'APPROVED DISCOUNT AMOUNT'}
+            value={firstFormData.approvedDiscountPrice}
+            onChangeHandle={handleFirstForm}
+            formatValue={''}
+            fromatName={false}
+            keyboardType={'numeric'}
+            editable={
+              (updatePermission &&
+                firstFormData.unit != null &&
+                firstFormData.unit != '' &&
+                firstFormData.productId != null &&
+                firstFormData.productId != '') ||
+              (updatePermission &&
+                pearlUnit &&
+                firstFormData.productId != null &&
+                firstFormData.productId != '')
+            }
+          />
+
+          {firstFormData.approvedDiscountPrice >
+          (pearlModal ? pearlUnitPrice : PaymentMethods.findUnitPrice(oneUnitData)) ? (
+            <ErrorMessage errorMessage={'Invalid input'} />
+          ) : null}
+        </View>
 
         {firstFormData.productId ? (
           <>

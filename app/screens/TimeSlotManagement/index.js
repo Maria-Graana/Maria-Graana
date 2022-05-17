@@ -354,7 +354,7 @@ function TimeSlotManagement(props) {
             }
           }
 
-        //  TimerNotification(notificationPayload, start)
+          //  TimerNotification(notificationPayload, start)
 
           navigation.goBack()
         } else {
@@ -430,7 +430,7 @@ function TimeSlotManagement(props) {
             }
           }
 
-         // TimerNotification(notificationPayload, start)
+          // TimerNotification(notificationPayload, start)
 
           navigation.goBack()
         } else {
@@ -933,12 +933,13 @@ function TimeSlotManagement(props) {
         onEditSlots(tempStartPick, tempEndPick, true)
         setDisabled(false)
       } else {
-        // setTimeStart(null)
-        setTimeEnd(null)
+        setTimeStart(null)
+        // setTimeEnd(null)
         setSlotsData([])
         setSlots([])
         setIsSelected([])
-        helper.errorToast(`End Time should be greater than Start Time`)
+        // helper.errorToast(`End Time should be greater than Start Time`)
+        helper.errorToast(`Start Time should be less than End Time`)
       }
     } else {
       let tempStartPick = moment(time).format('H:mm:ss')

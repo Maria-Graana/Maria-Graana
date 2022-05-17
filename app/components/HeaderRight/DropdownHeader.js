@@ -64,7 +64,7 @@ class DropdownHeader extends React.Component {
                         }}>
 
                             <View style={{
-                                width: Platform.OS === 'ios' ? null : leadsDropdown === '&pageType=myLeads&hasBooking=false' || leadsDropdown === '&pageType=myDeals&hasBooking=true' ? wp('28') : wp('38'), //160,
+                                width: Platform.OS === 'ios' ? null : leadsDropdown === '&pageType=myLeads&hasBooking=false' || leadsDropdown === '&pageType=myDeals&hasBooking=true' ? wp('30') : wp('42'), //160,
                                 alignSelf: 'center',
                             }}>
                                 {leadType == 'ProjectLeads' ?
@@ -132,7 +132,7 @@ class DropdownHeader extends React.Component {
                             navigation.openDrawer()
                         }}
                     >
-                        <Ionicons name="ios-menu" size={40} color="#484848" style={styles.icon} />
+                        <Ionicons name="ios-menu" size={40} color="#484848" style={styles.sideIcon} />
                     </TouchableOpacity>
 
                 </View>
@@ -155,6 +155,11 @@ mapStateToProps = (store) => {
 const styles = StyleSheet.create({
     icon: {
         paddingRight: 15,
+        top:10
+    },
+    sideIcon: {
+        paddingRight: 15,
+      
     },
     customIconStyle: {
         fontSize: 24,

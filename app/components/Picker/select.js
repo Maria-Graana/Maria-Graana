@@ -66,7 +66,36 @@ class PickerComponent extends React.Component {
             })
         }
         return (
-            <View style={[styles.pickerMain, { backgroundColor: '#fff', }]}>
+            <View style={[styles.pickerMain, { backgroundColor: '#fff', flexDirection: 'row' }]}>
+
+
+                <Picker
+                    headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff' }}
+                    headerBackButtonTextStyle={{ color: '#fff' }}
+                    headerTitleStyle={{ color: '#fff' }}
+                    itemTextStyle={[AppStyles.formFontSettings]}
+
+                    iosIcon={
+                        <Ionicons
+                            style={[styles.arrowIcon, customIconStyle]}
+                            name="chevron-down-outline"
+                            size={26}
+                            color={AppStyles.colors.subTextColor}
+                        />}
+                    mode="dropdown"
+                    enabled={enabled}
+                    style={[
+                        AppStyles.formControlForPicker,
+                        { backgroundColor: enabled ? '#fff' : '#ddd', },
+                        customStyle,
+                    ]}
+
+                    placeholder={placeholderLabel}
+                    selectedValue={selectedValue}
+                    onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
+                >
+                    {pickerItems}
+                </Picker>
 
                 {showPickerArrow && (
                     <Ionicons
@@ -76,35 +105,6 @@ class PickerComponent extends React.Component {
                         color={AppStyles.colors.subTextColor}
                     />
                 )}
-  
-                    <Picker
-                        headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff' }}
-                        headerBackButtonTextStyle={{ color: '#fff' }}
-                        headerTitleStyle={{ color: '#fff' }}
-                        itemTextStyle={[AppStyles.formFontSettings]}
-                  
-                        iosIcon={
-                            <Ionicons
-                                style={[styles.arrowIcon, customIconStyle]}
-                                name="chevron-down-outline"
-                                size={26}
-                                color={AppStyles.colors.subTextColor}
-                            />}
-                        mode="dropdown"
-                        enabled={enabled}
-                        style={[
-                            AppStyles.formControlForPicker,
-                            { backgroundColor: enabled ? '#fff' : '#ddd' , },
-                            customStyle,
-                        ]}
-                   
-                        placeholder={placeholderLabel}
-                        selectedValue={selectedValue}
-                        onValueChange={(itemValue, itemIndex) => this.onChange(itemValue, itemIndex, name)}
-                    >
-                        {pickerItems}
-                    </Picker>
-             
             </View>
         )
     }
@@ -117,13 +117,13 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     arrowIcon: {
-        position: 'absolute',
+        // position: 'absolute',
         right: 10,
-        top: 8,
+         top: 8,
         zIndex: 2,
     },
 
-    
+
 })
 
 export default PickerComponent

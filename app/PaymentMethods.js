@@ -71,7 +71,7 @@ const PaymentMethods = {
   findApprovedDiscountPercentage(unit, price) {
     if (unit && price) {
       price = PaymentMethods.handleEmptyValue(price)
-      return (price / PaymentMethods.findUnitPrice(unit)) * 100
+      return ((price / PaymentMethods.findUnitPrice(unit)) * 100).toFixed(2)
     }
   },
 

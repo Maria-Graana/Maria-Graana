@@ -499,7 +499,7 @@ class CMFirstForm extends Component {
           name={'approvedDiscount'}
           placeholder={'Approved Discount'}
           label={'APPROVED DISCOUNT%'}
-          value={firstFormData.approvedDiscount ? firstFormData.approvedDiscount.toFixed(2) : null}
+          value={firstFormData.approvedDiscount}
           keyboardType={'numeric'}
           onChangeHandle={handleFirstForm}
           formatValue={''}

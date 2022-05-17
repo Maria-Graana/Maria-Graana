@@ -319,7 +319,7 @@ class CustomDrawerContent extends React.Component {
                 this.props.navigation.closeDrawer()
                 this.props.navigation.dispatch(
                   StackActions.push('ProjectLeads', {
-                    screen: 'Leads',
+                    screen: 'ProjectLeads',
                     hasBooking: false,
                   })
                 )

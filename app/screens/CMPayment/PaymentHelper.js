@@ -260,6 +260,7 @@ const PaymentHelper = {
           ? null
           : firstFormData.approvedDiscountPrice,
       unitStatus: 'hold',
+      reasons: 'pending_token',
       installmentDue: firstFormData.paymentPlan,
       finalPrice:
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''

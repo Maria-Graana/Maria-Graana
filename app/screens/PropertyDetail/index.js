@@ -392,9 +392,7 @@ class PropertyDetail extends React.Component {
                           size={24}
                           color={AppStyles.colors.primaryColor}
                         />
-                        <Text style={styles.featureText} style={{ padding: 5 }}>
-                          {item}
-                        </Text>
+                        <Text style={[styles.featureText, { padding: 5 }]}>{item}</Text>
                       </View>
                     )}
                   />

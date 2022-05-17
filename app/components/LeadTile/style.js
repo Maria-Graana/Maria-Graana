@@ -62,7 +62,10 @@ export default styles = StyleSheet.create({
   },
   phoneMain: {
     width: '15%',
+
+    padding: 10,
   },
+
   tokenLabel: {
     borderWidth: 1,
     borderColor: '#2A7EF0',

@@ -47,7 +47,7 @@ class LegalAttachment extends Component {
   attachments = []
   constructor(props) {
     super(props)
-    const { lead, user, permissions } = this.props
+    const { lead, user, permissions, shortlistedData } = this.props
     this.state = {
       isVisible: false,
       checkValidation: false,
@@ -83,7 +83,7 @@ class LegalAttachment extends Component {
       selectedDocument: null,
       transferDate: null,
       viewCommentsCheck: false,
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
     }
   }
 
@@ -249,7 +249,8 @@ class LegalAttachment extends Component {
     const { route, lead } = this.props
     axios
       .post(
-        `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${legalType === 'internal' ? 'agent' : legalDescription
+        `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
+          legalType === 'internal' ? 'agent' : legalDescription
         }&addedBy=${route.params.addedBy}`
       )
       .then((res) => {
@@ -257,7 +258,8 @@ class LegalAttachment extends Component {
       })
       .catch((error) => {
         console.log(
-          `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${legalType === 'internal' ? 'agent' : legalDescription
+          `/api/legal/updateService?leadId=${lead.id}&legalType=${legalType}&legalDescription=${
+            legalType === 'internal' ? 'agent' : legalDescription
           }}&addedBy=${route.params.addedBy}`,
           error
         )
@@ -282,7 +284,6 @@ class LegalAttachment extends Component {
   }
 
   handleForm = (formData) => {
-
     const { currentItem } = this.state
     formData.category = currentItem.category
     this.setState(
@@ -340,11 +341,11 @@ class LegalAttachment extends Component {
     const { route, lead } = this.props
     const { checkListDoc, currentItem } = this.state
     let attachment = {
-      uri:legalAttachment.uri,
+      uri: legalAttachment.uri,
       type: 'file/' + legalAttachment.fileName.split('.').pop(),
       name: legalAttachment.fileName,
     }
- 
+
     let fd = new FormData()
     fd.append('file', attachment)
     // ====================== API call for Attachments base on Payment ID
@@ -718,8 +719,8 @@ class LegalAttachment extends Component {
           data && data.officeLocationId
             ? data.officeLocationId
             : user && user.officeLocation
-              ? user.officeLocation.id
-              : null,
+            ? user.officeLocation.id
+            : null,
       })
     )
 
@@ -884,8 +885,8 @@ class LegalAttachment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = legalPayment.paymentAttachments
           ? _.filter(legalPayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1306,8 +1307,8 @@ class LegalAttachment extends Component {
                 />
               </View>
               {leadPurpose === 'sale' &&
-                addedBy !== 'seller' &&
-                firstFormData.legalService === 'internal' ? (
+              addedBy !== 'seller' &&
+              firstFormData.legalService === 'internal' ? (
                 <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
                   {!mailCheck ? (
                     <RCMBTN
@@ -1387,9 +1388,9 @@ class LegalAttachment extends Component {
                         <LegalTile
                           data={checkListDoc}
                           index={null}
-                          submitMenu={() => { }}
-                          getAttachmentFromStorage={() => { }}
-                          downloadLegalDocs={() => { }}
+                          submitMenu={() => {}}
+                          getAttachmentFromStorage={() => {}}
+                          downloadLegalDocs={() => {}}
                           isLeadClosed={isLeadClosed}
                           addBorder={true}
                         />
@@ -1416,6 +1417,7 @@ mapStateToProps = (store) => {
     lead: store.lead.lead,
     user: store.user.user,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 export default connect(mapStateToProps)(LegalAttachment)

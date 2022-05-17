@@ -96,7 +96,7 @@ class Client extends React.Component {
     const clientName = searchText.replace(' ', '%20')
     searchText !== ''
       ? (url = `/api/customer/find?searchBy=name&q=${clientName}`)
-      : (url = `/api/customer/find?pageSize=${pageSize}&page=${page}`)
+      : (url = `/api/customer/find?clientType=my_clients&pageSize=${pageSize}&page=${page}`)
     axios
       .get(url)
       .then((res) => {

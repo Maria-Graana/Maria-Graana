@@ -5,6 +5,8 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 
 import styles from './style'
+
+import TimerNotification from '../../LocalNotifications'
 import TouchableButton from '../../components/TouchableButton'
 import DateControl from '../../components/DateControl'
 import CalendarComponent from '../../components/CalendarComponent'
@@ -96,7 +98,6 @@ function TimeSlotManagement(props) {
 
   useEffect(() => {
     const { dispatch, route } = props
-    //console.log(route.params)
 
     dispatch(setSlotDiaryData(selectedDate))
 
@@ -321,11 +322,40 @@ function TimeSlotManagement(props) {
 
   const createViewing = (body) => {
     const { navigation } = props
+
+    let copyData = {
+      ...body,
+    }
+
+    delete copyData.customer
+
     axios
-      .post(`/api/leads/viewing`, body)
+      .post(`/api/leads/viewing`, copyData)
       .then((res) => {
         if (res) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')
+
+          let start = new Date(body.start)
+          let end = new Date(body.end)
+
+          let notificationPayload
+          if (body.taskCategory == 'leadTask') {
+            notificationPayload = {
+              clientName: body?.customer?.customerName,
+              id: body.userId,
+              title: diaryHelper.showTaskType(body?.taskType),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          } else {
+            notificationPayload = {
+              id: body.userId,
+              title: diaryHelper.showTaskType(body.taskType),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+
+          //  TimerNotification(notificationPayload, start)
+
           navigation.goBack()
         } else {
           helper.errorToast('SOMETHING WENT WRONG!')
@@ -370,9 +400,38 @@ function TimeSlotManagement(props) {
       copyData.start = startTime
       copyData.end = endTime
       copyData.slots = tempSlot
+      delete copyData.selectedLead
       saveOrUpdateDiaryTask(copyData).then((response) => {
         if (response) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')
+
+          let notificationData
+
+          for (let i in response.data[1]) {
+            notificationData = response.data[1][i]
+          }
+
+          let start = new Date(notificationData.start)
+          let end = new Date(notificationData.end)
+
+          let notificationPayload
+          if (notificationData.taskCategory == 'leadTask') {
+            notificationPayload = {
+              clientName: `${data.selectedLead.customer.first_name} ${data.selectedLead.customer.last_name}`,
+              id: notificationData.id,
+              title: diaryHelper.showTaskType(notificationData?.taskType),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          } else {
+            notificationPayload = {
+              id: notificationData.id,
+              title: diaryHelper.showTaskType(notificationData.taskType),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+          }
+
+          // TimerNotification(notificationPayload, start)
+
           navigation.goBack()
         } else {
           helper.errorToast('SOMETHING WENT WRONG!')
@@ -849,7 +908,7 @@ function TimeSlotManagement(props) {
     navigation.navigate('ScheduledTasks', {
       fromDate: startDate,
       toDate: toDate,
-      isFromTimeSlot: true
+      isFromTimeSlot: true,
     })
   }
 
@@ -869,18 +928,58 @@ function TimeSlotManagement(props) {
     if (from == 'end') {
       let tempStartPick = moment(timeStart).format('H:mm:ss')
       let tempEndPick = moment(time).format('H:mm:ss')
+      let tempStartPick2 = moment(timeStart).format('H:mm')
+      let tempEndPick2 = moment(time).format('H:mm')
 
-      if (timeStart && time && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
-        onEditSlots(tempStartPick, tempEndPick, true)
-        setDisabled(false)
+      if (tempStartPick2 == tempEndPick2) {
+        setTimeStart(null)
+        setSlotsData([])
+        setSlots([])
+        setIsSelected([])
+        helper.errorToast(`Start Time should be not equal to End Time`)
+      } else {
+        if (
+          timeStart &&
+          time &&
+          moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')
+        ) {
+          onEditSlots(tempStartPick, tempEndPick, true)
+          setDisabled(false)
+        } else {
+          setTimeStart(null)
+          // setTimeEnd(null)
+          setSlotsData([])
+          setSlots([])
+          setIsSelected([])
+          // helper.errorToast(`End Time should be greater than Start Time`)
+          helper.errorToast(`Start Time should be less than End Time`)
+        }
       }
     } else {
       let tempStartPick = moment(time).format('H:mm:ss')
       let tempEndPick = moment(timeEnd).format('H:mm:ss')
+      let tempStartPick2 = moment(timeStart).format('H:mm')
+      let tempEndPick2 = moment(time).format('H:mm')
 
-      if (time && timeEnd && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
-        onEditSlots(tempStartPick, tempEndPick, true)
-        setDisabled(false)
+      if (tempStartPick2 == tempEndPick2) {
+        setTimeEnd(null)
+        setSlotsData([])
+        setSlots([])
+        setIsSelected([])
+        helper.errorToast(`Start Time should be not equal to End Time`)
+      } else {
+        if (time && timeEnd && moment(tempEndPick, 'H:mm:ss') > moment(tempStartPick, 'H:mm:ss')) {
+          onEditSlots(tempStartPick, tempEndPick, true)
+          setDisabled(false)
+        } else {
+          // setTimeStart(null)
+          setTimeEnd(null)
+          setSlotsData([])
+          setSlots([])
+          setIsSelected([])
+          // helper.errorToast(`Start Time should be less than End Time`)
+          helper.errorToast(`End Time should be greater than Start Time`)
+        }
       }
     }
   }

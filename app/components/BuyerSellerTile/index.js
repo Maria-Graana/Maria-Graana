@@ -160,7 +160,7 @@ class BuyerSellerTile extends React.Component {
                 <View style={{ paddingTop: 10 }}>
                   <RCMBTN
                     onClick={() => {
-                      if (updatePermission && closedLeadEdit)
+                      if (closedLeadEdit)
                         onAddCommissionPayment(tileType, 'commission')
                     }}
                     btnImage={RoundPlus}
@@ -205,7 +205,7 @@ class BuyerSellerTile extends React.Component {
                 <View style={{ paddingTop: 10 }}>
                   <RCMBTN
                     onClick={() => {
-                      if (updatePermission && closedLeadEdit)
+                      if (closedLeadEdit)
                         onAddCommissionPayment(tileType, 'commission')
                     }}
                     btnImage={RoundPlus}

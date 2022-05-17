@@ -5,6 +5,7 @@ import axios from 'axios'
 import { ActionSheet } from 'native-base'
 import React from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
+import { setLeadsDropdown } from '../../actions/leadsDropdown'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import SortImg from '../../../assets/img/sort.png'
@@ -52,6 +53,7 @@ class InvestLeads extends React.Component {
     const { permissions } = this.props
     const { hasBooking = false } = this.props.route.params
     this.state = {
+      phoneModelDataLoader: false,
       leadsData: [],
       purposeTab: 'invest',
       statusFilter: '',
@@ -99,6 +101,13 @@ class InvestLeads extends React.Component {
   componentDidMount() {
     const { dispatch, route } = this.props
     const { client } = route.params
+    const { hasBooking = false } = this.props.route.params
+
+    dispatch(
+      setLeadsDropdown(
+        hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
+      )
+    )
 
     if (client) {
       this.fetchAddedLeads(client)
@@ -133,6 +142,9 @@ class InvestLeads extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
+      this.changePageType(this.props.leadsDropdown)
+    }
     if (this.props.referenceGuide !== prevProps.referenceGuide) {
       // reload page when reference guide is added
       this.fetchLeads()
@@ -325,7 +337,7 @@ class InvestLeads extends React.Component {
   }
 
   navigateFromMenu = (data, name) => {
-    const { screen } = this.props.route.params
+    const { screen, navFrom } = this.props.route.params
     this.props.dispatch(setlead(data))
     this.props.navigation.navigate(name, {
       lead: data,
@@ -333,6 +345,8 @@ class InvestLeads extends React.Component {
       screen: 'InvestLeads',
       cmLeadId: data.id,
       screenName: screen,
+      navFrom: navFrom,
+      showBottomNav: true,
     })
     this.setIsMenuVisible(false, data)
   }
@@ -389,9 +403,9 @@ class InvestLeads extends React.Component {
   }
   navigateTo = (data) => {
     const { screen, navFrom } = this.props.route.params
+    console.log('params', this.props.route.params)
     const { navigation, route } = this.props
     const unitData = route.params.unitData
-
     if (navFrom) {
       this.props.dispatch(setlead(data))
       navigation.navigate('AddDiary', {
@@ -406,6 +420,8 @@ class InvestLeads extends React.Component {
           lead: data,
           purposeTab: 'invest',
           screenName: screen,
+          navFrom: navFrom,
+          showBottomNav: true,
         })
       } else {
         if (
@@ -415,14 +431,27 @@ class InvestLeads extends React.Component {
           data.status === 'closed_lost'
         ) {
           page = 'Payments'
+
+          navigation.navigate('CMLeadTabs', {
+            screen: unitData ? 'Payments' : page,
+            params: { lead: data, unitData: unitData, screenName: screen },
+          })
+        } else if (data.status === 'open' || data.status === 'in_progress') {
+          this.props.navigation.navigate('LeadDetail', {
+            lead: data,
+            purposeTab: 'invest',
+            screenName: screen,
+            navFrom: navFrom,
+            showBottomNav: true,
+          })
         } else {
           page = 'Meetings'
-        }
 
-        navigation.navigate('CMLeadTabs', {
-          screen: unitData ? 'Payments' : page,
-          params: { lead: data, unitData: unitData, screenName: screen },
-        })
+          navigation.navigate('CMLeadTabs', {
+            screen: unitData ? 'Payments' : page,
+            params: { lead: data, unitData: unitData, screenName: screen },
+          })
+        }
       }
     }
   }
@@ -564,6 +593,48 @@ class InvestLeads extends React.Component {
     this.setState({ activeSortModal: !this.state.activeSortModal })
   }
 
+  renderItem = ({ item }) => {
+    return (
+      <LeadTile
+        dispatch={this.props.dispatch}
+        purposeTab={'invest'}
+        user={this.props.user}
+        data={item}
+        navigateTo={this.navigateTo}
+        navigateToDetailScreen={this.navigateToDetailScreen}
+        navigateFromMenu={this.navigateFromMenu}
+        pageType={this.state.pageType}
+        callNumber={(data) => {
+          // getting complete project lead object that contains customer contacts as well
+          this.setState({ phoneModelDataLoader: true })
+
+          this.showMultiPhoneModal(true)
+          axios.get(`api/leads/project/byId?id=${data.id}`).then((lead) => {
+            this.props.dispatch(callNumberFromLeads(lead.data, 'Project')).then((res) => {
+              if (res !== null) {
+                // this.showMultiPhoneModal(true)
+                this.setState({ phoneModelDataLoader: false })
+              }
+            })
+          })
+        }}
+        handleLongPress={this.handleLongPress}
+        serverTime={this.state.serverTime}
+        screen={this.props.route.params.navFrom ? 'AddDiary' : this.props.route.params.screen}
+        navFrom={this.props.route.params.navFrom}
+        isMenuVisible={this.state.isMenuVisible}
+        setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
+        checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
+        navigateToShareScreen={(data) => this.navigateToShareScreen(data)}
+        addGuideReference={() =>
+          this.props.dispatch(
+            setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true })
+          )
+        }
+      />
+    )
+  }
+
   render() {
     const {
       leadsData,
@@ -583,6 +654,7 @@ class InvestLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
+      phoneModelDataLoader,
     } = this.state
     const {
       user,
@@ -640,7 +712,15 @@ class InvestLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+            <View
+              style={[
+                styles.filterRow,
+                {
+                  paddingHorizontal: 15,
+                  justifyContent: 'space-between',
+                },
+              ]}
+            >
               <View style={styles.pickerMain}>
                 <PickerComponent
                   placeholder={'Lead Status'}
@@ -648,8 +728,8 @@ class InvestLeads extends React.Component {
                     hasBooking
                       ? StaticData.investmentFilterDeals
                       : hideCloseLostFilter
-                      ? StaticData.investmentFilterLeadsAddTask
-                      : StaticData.investmentFilterLeads
+                        ? StaticData.investmentFilterLeadsAddTask
+                        : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -658,7 +738,7 @@ class InvestLeads extends React.Component {
                 />
               </View>
 
-              <View style={styles.iconRow}>
+              {/* <View style={styles.iconRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
               </View>
               <View style={styles.pageTypeRow}>
@@ -670,8 +750,8 @@ class InvestLeads extends React.Component {
                         ? StaticData.filterDealsValueProjectTerminal
                         : StaticData.filterDealsValueProject
                       : getIsTerminalUser
-                      ? StaticData.filterLeadsValueProjectTerminal
-                      : StaticData.filterLeadsValueProject
+                        ? StaticData.filterLeadsValueProjectTerminal
+                        : StaticData.filterLeadsValueProject
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -679,10 +759,10 @@ class InvestLeads extends React.Component {
                   selectedItem={pageType}
                   showPickerArrow={false}
                 />
-              </View>
+              </View>*/}
               <View style={styles.verticleLine} />
 
-              <View style={styles.stylesMainSort}>
+              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
                   style={styles.sortBtn}
                   onPress={() => {
@@ -721,40 +801,7 @@ class InvestLeads extends React.Component {
           <FlatList
             data={leadsData}
             contentContainerStyle={styles.paddingHorizontal}
-            renderItem={({ item }) => (
-              <LeadTile
-                dispatch={this.props.dispatch}
-                purposeTab={'invest'}
-                user={user}
-                data={item}
-                navigateTo={this.navigateTo}
-                navigateFromMenu={this.navigateFromMenu}
-                pageType={pageType}
-                callNumber={(data) => {
-                  // getting complete project lead object that contains customer contacts as well
-                  axios.get(`api/leads/project/byId?id=${data.id}`).then((lead) => {
-                    dispatch(callNumberFromLeads(lead.data, 'Project')).then((res) => {
-                      if (res !== null) {
-                        this.showMultiPhoneModal(true)
-                      }
-                    })
-                  })
-                }}
-                handleLongPress={this.handleLongPress}
-                serverTime={serverTime}
-                screen={navFrom ? 'AddDiary' : screen}
-                navFrom={navFrom}
-                isMenuVisible={isMenuVisible}
-                setIsMenuVisible={(value, data) => this.setIsMenuVisible(value, data)}
-                checkAssignedLead={(lead) => this.checkAssignedLead(lead)}
-                navigateToShareScreen={(data) => this.navigateToShareScreen(data)}
-                addGuideReference={() =>
-                  dispatch(
-                    setReferenceGuideData({ ...referenceGuide, isReferenceModalVisible: true })
-                  )
-                }
-              />
-            )}
+            renderItem={this.renderItem}
             onEndReached={() => {
               if (leadsData.length < totalLeads) {
                 this.setState(
@@ -775,7 +822,9 @@ class InvestLeads extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
+        {(createProjectLead || createBuyRentLead) &&
+          (screen === 'Leads' || screen === 'ProjectLeads') &&
+          !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"
@@ -795,6 +844,7 @@ class InvestLeads extends React.Component {
         />
 
         <MultiplePhoneOptionModal
+          modelDataLoading={phoneModelDataLoader}
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}
@@ -813,6 +863,7 @@ mapStateToProps = (store) => {
     referenceGuide: store.diary.referenceGuide,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     getIsTerminalUser: store.user.getIsTerminalUser,
+    leadsDropdown: store.leadsDropdown.leadsDropdown,
   }
 }
 export default connect(mapStateToProps)(InvestLeads)

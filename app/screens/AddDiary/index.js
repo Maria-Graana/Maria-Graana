@@ -8,9 +8,11 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import DetailForm from './detailForm'
 import helper from '../../helper'
+import HeaderRight from '../../components/HeaderRight/index'
 import AppStyles from '../../AppStyles'
 import TimerNotification from '../../LocalNotifications'
 import StaticData from '../../StaticData'
+import DiaryHelper from './../Diary/diaryHelper'
 import { getGoogleAuth } from '../../actions/user'
 import AppRatingModalPP from '../../components/AppRatingModalPP'
 import {
@@ -23,6 +25,7 @@ import {
 import { getDiaryTasks, setDiaryFilterReason } from '../../actions/diary'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import { StackActions } from '@react-navigation/native'
 
 const _today = moment(new Date()).format('YYYY-MM-DD')
 
@@ -39,8 +42,17 @@ class AddDiary extends Component {
 
   componentDidMount() {
     const { route, navigation, dispatch, user, permissions } = this.props
-    let { tasksList = StaticData.diaryTasks, rcmLeadId, cmLeadId, lead } = route.params
-    if (
+    let {
+      tasksList = StaticData.diaryTasks,
+      rcmLeadId,
+      cmLeadId,
+      lead,
+      navFrom,
+      screenName = '',
+    } = route.params
+    if (navFrom) {
+      tasksList = StaticData.diaryTasksMeetingWithClient
+    } else if (
       getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.UPDATE, permissions) &&
       getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.UPDATE, permissions)
     ) {
@@ -69,11 +81,13 @@ class AddDiary extends Component {
       dispatch(getTimeShifts())
       dispatch(setSlotDiaryData(_today))
     }
-    if (rcmLeadId) {
+
+    if (rcmLeadId && screenName == 'ScheduledTasks') {
       tasksList = StaticData.diaryTasksRCM
-    } else if (cmLeadId) {
+    } else if (cmLeadId && screenName == 'ScheduledTasks') {
       tasksList = StaticData.diaryTasksCM
     }
+
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT TASK' })
     } else {
@@ -187,22 +201,76 @@ class AddDiary extends Component {
 
   addDiary = (data) => {
     const { route, navigation, dispatch } = this.props
-    const { screenName = 'Diary', cmLeadId, rcmLeadId, property } = route.params
+
+    const {
+      screenName = 'Diary',
+      cmLeadId,
+      rcmLeadId,
+      property,
+      customerName = null,
+    } = route.params
+
     let diary = this.generatePayload(data)
+
     let query = property ? `/api/leads/viewing` : `/api/leads/task`
     axios
       .post(query, diary)
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           helper.successToast('TASK ADDED SUCCESSFULLY!')
-          let start = new Date(res.data.start)
-          let end = new Date(res.data.end)
-          let data = {
-            id: res.data.id,
-            title: res.data.subject,
-            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+
+          let notificationData
+
+          for (let i in res.data[1]) {
+            notificationData = res.data[1][i]
           }
-          TimerNotification(data, start)
+
+          let start = new Date(notificationData.start)
+          let end = new Date(notificationData.end)
+
+          let notificationPayload
+
+          if (diary.taskType == 'viewing') {
+            start = new Date(diary.start)
+            end = new Date(diary.end)
+
+            notificationPayload = {
+              clientName:
+                screenName == 'ScheduledTasks'
+                  ? customerName
+                  : data?.selectedLead?.customer?.customerName,
+              id: diary.userId,
+              title: DiaryHelper.showTaskType(diary?.taskType),
+              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            }
+
+            //  TimerNotification(notificationPayload, start)
+          } else {
+            if (notificationData.taskCategory == 'leadTask') {
+              notificationPayload = {
+                clientName:
+                  screenName == 'ScheduledTasks'
+                    ? customerName
+                    : data?.selectedLead?.customer?.customerName,
+                id: notificationData.id,
+                title: DiaryHelper.showTaskType(notificationData?.taskType),
+                body:
+                  moment(new Date(notificationData.start)).format('hh:mm A') +
+                  ' - ' +
+                  moment(end).format('hh:mm A'),
+              }
+
+              // TimerNotification(notificationPayload, start)
+            } else {
+              notificationPayload = {
+                id: notificationData.id,
+                title: DiaryHelper.showTaskType(notificationData.taskType),
+                body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+              }
+              //  TimerNotification(notificationPayload, start)
+            }
+          }
+
           if (screenName === 'Diary') {
             dispatch(
               getDiaryTasks({
@@ -240,14 +308,33 @@ class AddDiary extends Component {
       .patch(`/api/diary/update?id=${diary.id}`, diary)
       .then((res) => {
         helper.successToast('TASK UPDATED SUCCESSFULLY!')
+
         let start = new Date(res.data.start)
         let end = new Date(res.data.end)
-        let data = {
+        let newData = {
           id: res.data.id,
           title: res.data.subject,
           body: moment(start).format('hh:mm') + ' - ' + moment(end).format('hh:mm'),
         }
-        helper.deleteAndUpdateNotification(data, start, res.data.id)
+
+        let notificationPayload
+        if (res?.data?.taskCategory == 'leadTask') {
+          notificationPayload = {
+            clientName: data?.selectedLead?.customer?.customerName,
+            id: res?.data?.id,
+            title: DiaryHelper.showTaskType(res?.data?.taskType),
+            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+          }
+        } else {
+          notificationPayload = {
+            id: res?.data?.id,
+            title: DiaryHelper.showTaskType(res?.data?.taskType),
+            body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+          }
+        }
+
+        helper.deleteAndUpdateNotification(notificationPayload, start, res.data.id)
+
         if (screenName === 'Diary') {
           dispatch(
             getDiaryTasks({
@@ -289,13 +376,21 @@ class AddDiary extends Component {
 
   goToLeads = (data) => {
     const { navigation } = this.props
-    navigation.navigate('Leads', {
-      screen: 'Leads',
-      screenName: 'AddDiary',
-      navFrom: data.taskType,
-      hasBooking: false,
-      hideCloseLostFilter: true,
+
+    navigation.setOptions({
+      headerRight: (props) => <HeaderRight navigation={navigation} />,
+      title: 'SELECT LEAD',
     })
+
+    navigation.dispatch(
+      StackActions.push('Leads', {
+        screen: 'Leads',
+        screenName: 'AddDiary',
+        navFrom: data.taskType,
+        hasBooking: false,
+        hideCloseLostFilter: true,
+      })
+    )
   }
 
   goToLeadProperties = () => {
@@ -311,7 +406,7 @@ class AddDiary extends Component {
   render() {
     const { checkValidation, taskValues, loading, isAppRatingModalVisible } = this.state
     const { route, slotsData, navigation } = this.props
-    const { lead, property } = route.params
+    const { lead, property, navFrom } = route.params
 
     return (
       <KeyboardAwareScrollView
@@ -343,6 +438,7 @@ class AddDiary extends Component {
                 lead={lead}
                 property={property}
                 navigation={navigation}
+                navFrom={navFrom}
                 // performTaskActions={(type) => this.performTaskActions(type)}
               />
             </SafeAreaView>

@@ -378,7 +378,7 @@ class PropMatchTile extends React.Component {
             <View style={{ flexDirection: 'row-reverse' }}>
               <FontAwesome
                 onPress={() => {
-                  this.call(data)
+                  // this.call(data)
                 }}
                 name="phone"
                 size={30}

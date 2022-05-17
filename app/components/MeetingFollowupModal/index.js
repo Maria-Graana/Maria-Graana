@@ -168,7 +168,7 @@ const MeetingFollowupModal = ({
                 title: res.data.subject,
                 body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
               }
-              TimerNotification(data, start)
+            //  TimerNotification(data, start)
               getMeetingLead && getMeetingLead()
               closeModal()
               clearFormData()

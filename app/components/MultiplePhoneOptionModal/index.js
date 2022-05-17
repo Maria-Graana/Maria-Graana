@@ -1,10 +1,11 @@
 /** @format */
 
-import React from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Linking } from 'react-native'
+import React, {  useState } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator } from 'react-native'
 import Modal from 'react-native-modal'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
+
 import close from '../../../assets/img/times.png'
 import { BottomNavigation, Divider, HelperText } from 'react-native-paper'
 import phone from '../../../assets/img/phone2.png'
@@ -17,13 +18,17 @@ import diaryHelper from '../../screens/Diary/diaryHelper'
 const MultiplePhoneOptionModal = ({
   isMultiPhoneModalVisible,
   showMultiPhoneModal,
+  modelDataLoading,
   connectFeedback,
   contacts,
   navigation,
   selectedDiary,
 }) => {
+
   const { contactsInformation } = connectFeedback
   const dispatch = useDispatch()
+  const [loader, setLoader] = useState(true);
+
 
   const callOnSelectedNumber = (item, calledOn, title = 'ARMS') => {
     let url = null
@@ -52,6 +57,7 @@ const MultiplePhoneOptionModal = ({
         }
         Linking.openURL(url)
         showMultiPhoneModal(false)
+
         dispatch(
           getDiaryFeedbacks({
             taskType: selectedDiary.taskType,
@@ -84,34 +90,40 @@ const MultiplePhoneOptionModal = ({
           </TouchableOpacity>
         </View>
         <Text style={styles.title}>{contactsInformation ? contactsInformation.name : ''}</Text>
-        <FlatList
-          data={contactsInformation ? contactsInformation.payload : []}
-          keyExtractor={(item, index) => String(index)}
-          renderItem={({ item, index }) => (
-            <View style={styles.row}>
-              <TouchableOpacity
-                onPress={() => callOnSelectedNumber(item, 'whatsapp')}
-                style={styles.itemRow}
-              >
-                <Image style={[styles.whatsapp, { marginRight: 10 }]} source={whatsapp} />
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => callOnSelectedNumber(item, 'phone')}
-                style={[
-                  styles.itemRow,
-                  { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                ]}
-              >
-                <Image style={[styles.closeImg]} source={phone} />
-                <Text style={[styles.number]}>{item.number}</Text>
-              </TouchableOpacity>
-              {contactsInformation && contactsInformation.payload.length - 1 !== index && (
-                <Divider />
-              )}
-            </View>
-          )}
-        />
+
+        { !contactsInformation?.payload  ? <ActivityIndicator style={{
+           alignSelf: 'center', marginBottom: 20 
+        }} color={AppStyles.colors.primaryColor} size="large" /> :
+          <FlatList
+            data={contactsInformation ? contactsInformation.payload : []}
+            keyExtractor={(item, index) => String(index)}
+            renderItem={({ item, index }) => (
+              <View style={styles.row}>
+                <TouchableOpacity
+                  onPress={() => callOnSelectedNumber(item, 'whatsapp')}
+                  style={styles.itemRow}
+                >
+                  <Image style={[styles.whatsapp, { marginRight: 10 }]} source={whatsapp} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => callOnSelectedNumber(item, 'phone')}
+                  style={[
+                    styles.itemRow,
+                    { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+                  ]}
+                >
+                  <Image style={[styles.closeImg]} source={phone} />
+                  <Text style={[styles.number]}>{item.number}</Text>
+                </TouchableOpacity>
+                {contactsInformation && contactsInformation.payload.length - 1 !== index && (
+                  <Divider />
+                )}
+              </View>
+            )}
+          />
+        }
       </View>
     </Modal>
   )
@@ -126,10 +138,11 @@ mapStateToProps = (store) => {
   }
 }
 
-export default connect(mapStateToProps)(MultiplePhoneOptionModal)
+export default connect(mapStateToProps)(React.memo(MultiplePhoneOptionModal))
 
 const styles = StyleSheet.create({
   modalMain: {
+    //   backgroundColor:'red',
     backgroundColor: '#fff',
     borderRadius: 7,
     overflow: 'hidden',

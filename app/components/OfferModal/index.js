@@ -264,6 +264,7 @@ class OfferModal extends React.Component {
             <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
               <TouchableButton
                 disabled={offerReadOnly}
+                containerBackgroundColor={offerReadOnly ? '#999' : '#0f73ee'}
                 containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
                 label={'ACCEPT OFFER'}
                 onPress={() => agreedAmount(showBuyerSide === true ? 'showCustomer' : 'showSeller')}

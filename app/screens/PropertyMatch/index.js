@@ -30,7 +30,7 @@ import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsMo
 class PropertyMatch extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions , shortlistedData} = this.props
     this.state = {
       open: false,
       organization: 'graana',
@@ -86,7 +86,7 @@ class PropertyMatch extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions , shortlistedData),
       callModal: false,
       meetings: [],
       legalDocLoader: false,
@@ -252,7 +252,7 @@ class PropertyMatch extends React.Component {
     if ('armsLeadAreas' in lead) {
       if (lead.armsLeadAreas.length) {
         areas = lead.armsLeadAreas.map((area) => {
-          if ('area' in area) return area.area.id
+          if ('area' in area) return area?.area?.id
         })
       }
     }
@@ -457,8 +457,8 @@ class PropertyMatch extends React.Component {
 
   displayChecks = () => {
     const { showCheckBoxes } = this.state
-    const { lead, user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { lead, user, permissions , shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions , shortlistedData)
     if (leadAssignedSharedStatus) {
       if (showCheckBoxes) {
         this.unSelectAll()
@@ -475,8 +475,8 @@ class PropertyMatch extends React.Component {
 
   addProperty = (property) => {
     const { showCheckBoxes, matchData, selectedProperties, organization } = this.state
-    const { user, lead, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { user, lead, permissions , shortlistedData} = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions , shortlistedData)
     if (leadAssignedSharedStatus) {
       if (showCheckBoxes) {
         if (showCheckBoxes) this.changeComBool()
@@ -798,7 +798,7 @@ class PropertyMatch extends React.Component {
   }
 
   render() {
-    const { lead, user, navigation, permissions } = this.props
+    const { lead, user, navigation, permissions , shortlistedData } = this.props
     const {
       meetings,
       callModal,
@@ -829,7 +829,7 @@ class PropertyMatch extends React.Component {
       newActionModal,
       shortListedProperties,
     } = this.state
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions , shortlistedData)
     return !loading ? (
       <View
         style={[
@@ -1104,6 +1104,8 @@ mapStateToProps = (store) => {
     user: store.user.user,
     lead: store.lead.lead,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
+
   }
 }
 

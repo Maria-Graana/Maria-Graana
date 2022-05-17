@@ -9,7 +9,7 @@ import ErrorMessage from '../ErrorMessage'
 import TouchableButton from '../TouchableButton'
 import { CheckBox } from 'native-base'
 
-const RWRModal = ({ isVisible, selectedReason = '', showHideModal, rejectLead }) => {
+const RWRModal = ({ isVisible, selectedReason = '', showHideModal, rejectLead, message = '' }) => {
   // const [validate, checkValidation] = useState(false)
   const [isBlacklist, setIsBlacklist] = useState(false)
   const rejectLeadAndClear = () => {
@@ -27,7 +27,9 @@ const RWRModal = ({ isVisible, selectedReason = '', showHideModal, rejectLead })
             color: AppStyles.colors.textColor,
           }}
         >
-          Do you really want to reject this lead? This process cannot be undone.
+          {message == ''
+            ? 'Do you really want to reject this lead? This process cannot be undone.'
+            : message}
         </Text>
         <View style={[AppStyles.mainInputWrap]}>
           <View style={[AppStyles.inputWrap]}>

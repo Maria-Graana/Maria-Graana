@@ -129,12 +129,15 @@ export function clearDiaries() {
 
 export function getDiaryFeedbacks(payload) {
   return (dispatch, getsState) => {
-    const { leadType = null, taskType = null, actionType = null } = payload
+    const { leadType = null, taskType = null, actionType = null, section = null } = payload
     let url = `/api/feedbacks/fetch?taskType=${
       taskType === 'follow_up' && actionType != 'Done'
         ? 'Connect'
         : capitalizeWordsWithoutUnderscore(taskType, true)
     }&actionType=${actionType}&leadType=${leadType}`
+    if (section) {
+      url = url + `&section=${section}`
+    }
     //console.log(url)
     axios
       .get(url)
@@ -565,20 +568,23 @@ export const markDiaryTaskAsDone = (data) => {
       overdue = false,
       leadId = null,
       leadType = null,
+      comment = null,
     } = data
     let endPoint = ``
     endPoint = `/api/diary/update?id=${selectedDiary.id}`
-    axios
-      .patch(endPoint, {
-        status: 'completed',
-      })
-      .then(function (response) {
-        if (response.status == 200) {
-          dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
-          helper.successToast(`Task completed`)
-          helper.deleteLocalNotification(response.data.id)
-        }
-      })
+    let body = {
+      status: 'completed',
+      comments: comment,
+      response: comment,
+    }
+    let promise = axios.patch(endPoint, body).then(function (response) {
+      if (response.status == 200) {
+        dispatch(getDiaryTasks({ selectedDate, agentId, overdue, leadId, leadType }))
+        helper.successToast(`Task completed`)
+        helper.deleteLocalNotification(response.data.id)
+      }
+    })
+    return promise
   }
 }
 

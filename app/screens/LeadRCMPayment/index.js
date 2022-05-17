@@ -60,7 +60,7 @@ var CANCEL_INDEX = 1
 class LeadRCMPayment extends React.Component {
   constructor(props) {
     super(props)
-    const { user, lead, permissions } = this.props
+    const { user, lead, permissions, shortlistedData } = this.props
     this.state = {
       loading: true,
       isVisible: false,
@@ -93,7 +93,7 @@ class LeadRCMPayment extends React.Component {
       checkReasonValidation: false,
       selectedReason: '',
       reasons: [],
-      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions),
+      closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
       showStyling: '',
       tokenDateStatus: false,
       tokenPriceFromat: true,
@@ -696,8 +696,13 @@ class LeadRCMPayment extends React.Component {
   showConfirmationDialog = (item) => {
     console.log('showConfirmationDialog')
     const { lead } = this.state
-    const { user, permissions } = this.props
-    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { user, permissions, shortlistedData } = this.props
+    const leadAssignedSharedStatus = helper.checkAssignedSharedStatus(
+      user,
+      lead,
+      permissions,
+      shortlistedData
+    )
     if (leadAssignedSharedStatus) {
       if (lead && lead.commissions && lead.commissions.length > 0) {
         let count = 0
@@ -2103,8 +2108,8 @@ class LeadRCMPayment extends React.Component {
       legalSellerListing,
       legalBuyListing,
     } = this.state
-    const { navigation, user, contacts, permissions } = this.props
-    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions)
+    const { navigation, user, contacts, permissions, shortlistedData } = this.props
+    const showMenuItem = helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData)
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
     return !loading ? (
@@ -2384,6 +2389,7 @@ mapStateToProps = (store) => {
     instruments: store.Instruments.instruments,
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
+    shortlistedData: store.drawer.shortlistedData,
   }
 }
 

@@ -9,8 +9,8 @@ const submitNotification = (body, date) => {
   Keyboard.dismiss()
   const trigger = convertTimeZone(date)
   let localNotification = {
-    title: body.title,
-    body: body.body,
+    title:` ${body.title} ${body.clientName ? "with " + body.clientName : ''}`,
+    body: ` Time: ${body.body}`,
     data: {
       type: 'local',
       date: date,
@@ -47,7 +47,27 @@ const askNotification = async (body, date) => {
       finalStatus = status
     }
     if (finalStatus !== 'granted') {
-      return
+
+      if (Platform.OS === 'ios') {
+
+        const checkPermissions = await this.allowsNotificationsAsync();
+
+        if (!checkPermissions) {
+
+          const reqResponse = await this.requestPermissionsAsync()
+        
+          if(reqResponse.status=='denied')
+          {
+            Alert.alert('Please allow push notifications. ')
+          }
+        }
+      }
+      else {
+
+
+        Alert.alert('Failed to get push token for push notification!')
+        return
+      }
     }
     submitNotification(body, date)
   } else {
@@ -56,7 +76,10 @@ const askNotification = async (body, date) => {
 }
 
 const TimerNotification = (body, date) => {
+
+
   askNotification(body, date)
 }
 
 export default TimerNotification
+

@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
+import { setLeadsDropdown } from '../../actions/leadsDropdown'
+
 import React from 'react'
 import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
@@ -45,12 +47,15 @@ var BUTTONS = [
 ]
 var CANCEL_INDEX = 3
 
+
+
 class RentLeads extends React.Component {
   constructor(props) {
     super(props)
     const { permissions } = this.props
     const { hasBooking = false } = this.props.route.params
     this.state = {
+      phoneModelDataLoader: false,
       leadsData: [],
       statusFilter: '',
       open: false,
@@ -89,14 +94,23 @@ class RentLeads extends React.Component {
     }
   }
 
+
+
+
   componentDidMount() {
-    const { dispatch } = this.props
+
+    const { hasBooking = false } = this.props.route.params
+    const { dispatch, navigation } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       this.getServerTime()
       this.onFocus()
       this.setFabActions()
     })
+
+    dispatch(setLeadsDropdown(hasBooking
+      ? '&pageType=myDeals&hasBooking=true'
+      : '&pageType=myLeads&hasBooking=false'))
   }
 
   componentWillUnmount() {
@@ -108,7 +122,14 @@ class RentLeads extends React.Component {
     if (this.props.isMultiPhoneModalVisible !== prevProps.isMultiPhoneModalVisible) {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
+    if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
+
+      this.changePageType(this.props.leadsDropdown)
+    }
+
   }
+
+
 
   getServerTime = () => {
     axios
@@ -285,54 +306,59 @@ class RentLeads extends React.Component {
         rcmLeadId: data.id,
       })
     } else {
-      let page = ''
-      if (this.props.route.params?.screen === 'MyDeals') {
-        this.props.navigation.navigate('LeadDetail', {
-          lead: data,
-          purposeTab: 'rent',
-          screenName: screen,
-        })
-      } else if (data.readAt === null) {
-        this.props.navigation.navigate('LeadDetail', {
-          lead: data,
-          purposeTab: 'rent',
-          screenName: screen,
-        })
-      } else {
-        if (data.status === 'open') {
-          page = 'Match'
-        }
-        if (data.status === 'viewing') {
-          page = 'Viewing'
-        }
-        if (data.status === 'offer') {
-          page = 'Offer'
-        }
-        if (data.status === 'propsure') {
-          page = 'Propsure'
-        }
-        if (data.status === 'payment') {
-          page = 'Payment'
-        }
-        if (
-          data.status === 'payment' ||
-          data.status === 'closed_won' ||
-          data.status === 'closed_lost'
-        ) {
-          page = 'Payment'
-        }
-        if (data && data.requiredProperties) {
-          this.props.navigation.navigate('PropertyTabs', {
-            screen: page,
-            params: { lead: data },
-          })
-        } else {
-          this.props.navigation.navigate('RCMLeadTabs', {
-            screen: page,
-            params: { lead: data },
-          })
-        }
-      }
+      this.props.navigation.navigate('LeadDetail', {
+        lead: data,
+        purposeTab: 'rent',
+        screenName: screen,
+      })
+      // let page = ''
+      // if (this.props.route.params?.screen === 'MyDeals') {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'rent',
+      //     screenName: screen,
+      //   })
+      // } else if (data.readAt === null) {
+      //   this.props.navigation.navigate('LeadDetail', {
+      //     lead: data,
+      //     purposeTab: 'rent',
+      //     screenName: screen,
+      //   })
+      // } else {
+      //   if (data.status === 'open') {
+      //     page = 'Match'
+      //   }
+      //   if (data.status === 'viewing') {
+      //     page = 'Viewing'
+      //   }
+      //   if (data.status === 'offer') {
+      //     page = 'Offer'
+      //   }
+      //   if (data.status === 'propsure') {
+      //     page = 'Propsure'
+      //   }
+      //   if (data.status === 'payment') {
+      //     page = 'Payment'
+      //   }
+      //   if (
+      //     data.status === 'payment' ||
+      //     data.status === 'closed_won' ||
+      //     data.status === 'closed_lost'
+      //   ) {
+      //     page = 'Payment'
+      //   }
+      //   if (data && data.requiredProperties) {
+      //     this.props.navigation.navigate('PropertyTabs', {
+      //       screen: page,
+      //       params: { lead: data },
+      //     })
+      //   } else {
+      //     this.props.navigation.navigate('RCMLeadTabs', {
+      //       screen: page,
+      //       params: { lead: data },
+      //     })
+      //   }
+      // }
     }
   }
 
@@ -584,6 +610,7 @@ class RentLeads extends React.Component {
     })
   }
 
+
   render() {
     const {
       leadsData,
@@ -605,9 +632,9 @@ class RentLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
+      phoneModelDataLoader
     } = this.state
-    const { user, navigation, permissions, dispatch, isMultiPhoneModalVisible, getIsTerminalUser } =
-      this.props
+    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser, leadsDropdown } = this.props
     const {
       screen,
       hasBooking = false,
@@ -618,7 +645,11 @@ class RentLeads extends React.Component {
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
+
+
     return (
+
+
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {user.organization && user.organization.isPP && (
           <AndroidNotifications navigation={navigation} />
@@ -664,7 +695,10 @@ class RentLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+            <View style={[styles.filterRow, {
+              paddingLeft: 15, 
+              justifyContent: 'space-between'
+            }]}>
               {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
               ) : ( */}
@@ -675,8 +709,8 @@ class RentLeads extends React.Component {
                     hasBooking
                       ? StaticData.buyRentFilterDeals
                       : hideCloseLostFilter
-                      ? StaticData.buyRentFilterAddTask
-                      : StaticData.buyRentFilter
+                        ? StaticData.buyRentFilterAddTask
+                        : StaticData.buyRentFilter
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -686,11 +720,11 @@ class RentLeads extends React.Component {
               </View>
               {/* )} */}
 
-              <View style={styles.iconRow}>
+              {/*      <View style={styles.iconRow}>
                 <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
               </View>
 
-              <View style={styles.pageTypeRow}>
+             <View style={styles.pageTypeRow}>
                 <PickerComponent
                   placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
                   data={
@@ -699,8 +733,8 @@ class RentLeads extends React.Component {
                         ? StaticData.filterDealsValueTerminal
                         : StaticData.filterDealsValue
                       : getIsTerminalUser
-                      ? StaticData.filterLeadsValueTerminal
-                      : StaticData.filterLeadsValue
+                        ? StaticData.filterLeadsValueTerminal
+                        : StaticData.filterLeadsValue
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -708,9 +742,9 @@ class RentLeads extends React.Component {
                   selectedItem={pageType}
                   showPickerArrow={false}
                 />
-              </View>
+              </View> */}
               <View style={styles.verticleLine} />
-              <View style={styles.stylesMainSort}>
+              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
                 <TouchableOpacity
                   style={styles.sortBtn}
                   onPress={() => {
@@ -742,7 +776,7 @@ class RentLeads extends React.Component {
               <View>
                 {/* {console.log(user)} */}
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                (user.organization && !user.organization.isPP) ? (
+                  (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
@@ -752,11 +786,15 @@ class RentLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        : dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
-                            if (res !== null) {
-                              this.showMultiPhoneModal(true)
-                            }
-                          })
+                        :
+                        this.setState({ phoneModelDataLoader: true })
+                      this.showMultiPhoneModal(true)
+                      dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
+                        if (res !== null) {
+                          this.setState({ phoneModelDataLoader: false })
+
+                        }
+                      })
                     }}
                     handleLongPress={this.handleLongPress}
                     navFrom={navFrom}
@@ -821,6 +859,7 @@ class RentLeads extends React.Component {
         ) : null}
 
         <MultiplePhoneOptionModal
+          modelDataLoading={phoneModelDataLoader}
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}
@@ -834,18 +873,25 @@ class RentLeads extends React.Component {
           sort={sort}
         />
       </View>
+
     )
   }
 }
 
 mapStateToProps = (store) => {
+
+
   return {
+
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
     getIsTerminalUser: store.user.getIsTerminalUser,
+
+    leadsDropdown: store.leadsDropdown.leadsDropdown,
+
   }
 }
 export default connect(mapStateToProps)(RentLeads)

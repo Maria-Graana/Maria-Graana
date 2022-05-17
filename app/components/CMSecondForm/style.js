@@ -61,10 +61,14 @@ export default styles = StyleSheet.create({
     paddingBottom: 10,
   },
   scrollHeight: {
-    height: 280,
+    // flex:1,
+    //height:'50%'
+    height: 300,
   },
   removePad: {
     padding: 0,
+    marginTop: 15,
+    marginBottom: 15,
   },
   scheduleExtraStyle: {
     marginHorizontal: 0,
@@ -89,5 +93,10 @@ export default styles = StyleSheet.create({
     flex: 0.49,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  tokenPendingImg: {
+    width: '100%',
+    height: 200,
+    flex: 1,
   },
 })

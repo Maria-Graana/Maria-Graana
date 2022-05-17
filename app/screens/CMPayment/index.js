@@ -27,8 +27,6 @@ import DeleteModal from '../../components/DeleteModal'
 import FirstScreenConfirmModal from '../../components/FirstScreenConfirmModal'
 import HistoryModal from '../../components/HistoryModal'
 import LeadRCMPaymentPopup from '../../components/LeadRCMPaymentModal/index'
-import MeetingFollowupModal from '../../components/MeetingFollowupModal'
-import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import UnitDetailsModal from '../../components/UnitDetailsModal'
 import ProductDetailsModal from '../../components/ProductDetailsModal'
 import helper from '../../helper'
@@ -86,20 +84,20 @@ class CMPayment extends Component {
       meetings: [],
       pickerUnits: [],
       firstFormData: {
-
         parkingAvailable:
           lead.project && lead.project.parkingAvailable ? lead.project.parkingAvailable : 'no',
-        parkingCharges: lead.project && lead.project.parkingCharges ? lead.project.parkingCharges : null,
+        parkingCharges:
+          lead.project && lead.project.parkingCharges ? lead.project.parkingCharges : null,
         customerId: lead.customerId != null ? lead.customerId : '',
         clientName: lead.customer.customerName != null ? lead.customer.customerName : '',
         project:
           route.params?.unitData != null
             ? route.params?.unitData.projectId
             : lead.paidProject != null
-              ? lead.paidProject.id
-              : lead.project
-                ? lead.project.id
-                : '',
+            ? lead.paidProject.id
+            : lead.project
+            ? lead.project.id
+            : '',
         floor: route.params?.unitData != null ? route.params?.unitData.floorId : '',
         unitType: route.params?.unitData != null ? 'fullUnit' : null,
         pearl: route.params?.unitData != null ? null : '',
@@ -107,8 +105,8 @@ class CMPayment extends Component {
           route.params?.unitData != null
             ? route.params?.unitData.id
             : lead.unit != null
-              ? lead.unit.id
-              : '',
+            ? lead.unit.id
+            : '',
         unitPrice: route.params?.unitData != null ? route.params?.unitData.unit_price : 0,
         cnic: lead.customer && lead.customer.cnic != null ? lead.customer.cnic : null,
         paymentPlan: 'no',
@@ -118,11 +116,17 @@ class CMPayment extends Component {
         fullPaymentDiscountPrice: 0,
         pearlName: 'New Pearl',
         productId: null,
-        installmentFrequency: null,
-        paymentPlanDuration: null,
+        installmentFrequency: '',
+        possessionCharges: 0,
+        downPayment: 0,
+        possessionChargesPercentage: '',
+        downPaymentPercentage: '',
+        siteData: null,
+        noOfInstallment: '',
         unitName: route.params?.unitData != null ? route.params?.unitData.name : '',
         projectName: route.params?.unitData != null ? route.params?.unitData.project.name : '',
         floorName: route.params?.unitData != null ? route.params?.unitData.floor.name : '',
+        projectSiteId: null,
       },
       unitPearlDetailsData: route.params?.unitData != null ? route.params?.unitData.floor : {},
       oneUnitData: route.params?.unitData != null ? route.params?.unitData : {},
@@ -162,7 +166,6 @@ class CMPayment extends Component {
       selectedReason: '',
       leadCloseToggle: false,
       progressValue: 0,
-      checkFirstFormToken: false,
       officeLocations: [],
       assignToAccountsLoading: false,
       active: false,
@@ -176,7 +179,6 @@ class CMPayment extends Component {
       productDetailModal: false,
       oneProductData: {},
       showInstallmentFields: false,
-      paymentPlanDuration: [],
       installmentFrequency: [],
       comment: null,
       showSchedule: false,
@@ -201,6 +203,7 @@ class CMPayment extends Component {
       endYear: 2050,
       selectedYear: date.getFullYear(),
       selectedMonth: date.getMonth() + 1,
+      siteData: [],
     }
   }
 
@@ -319,13 +322,27 @@ class CMPayment extends Component {
   // **************** Fetch API's Calls Start *******************
   fetchLead = async (functionCallingFor) => {
     const { lead } = this.props
-    const { payment, unit } = lead
-    const { cmProgressBar } = StaticData
     const { secondForm, firstForm } = this.state
     axios
       .get(`/api/leads/project/byId?id=${lead.id}`)
       .then((res) => {
-        let responseData = res.data
+        let responseData = { ...res.data }
+        let bookingFormsData =
+          responseData.bookingForms.length > 0 ? responseData.bookingForms[0] : null
+        if (bookingFormsData) {
+          let { unit } = responseData
+          unit['finalPrice'] = bookingFormsData.finalPrice
+          unit['type'] = bookingFormsData.projectType
+          unit['discount_amount'] = bookingFormsData.discountedAmount
+          unit['discounted_price'] = bookingFormsData.discountedPrice
+          responseData.unit.category_charges =
+            bookingFormsData.unitCategoryCharges === null ? 0 : bookingFormsData.unitCategoryCharges
+          responseData.unit.pricePerSqFt = bookingFormsData.unitRatePerSqrFt
+          responseData.unit.area = bookingFormsData.unitArea
+          responseData.unit.unit_price = bookingFormsData.price
+          responseData.unit.bookingStatus = bookingFormsData.unitStatus
+          responseData.unit.finalPrice = bookingFormsData.finalPrice
+        }
         if (!responseData.paidProject) responseData.paidProject = responseData.project
         this.props.dispatch(setlead(responseData))
         this.fetchProducts(responseData)
@@ -356,7 +373,10 @@ class CMPayment extends Component {
       fullPaymentDiscount,
       unit.type === 'regular' ? false : true
     )
-    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(payment, lead.unit.finalPrice)
+    let { remainingPayment, remainingTax } = PaymentMethods.findRemaningPayment(
+      payment,
+      lead.unit.finalPrice
+    )
     let outStandingTax = PaymentMethods.findRemainingTax(payment, remainingTax)
     this.setState({
       remainingPayment: remainingPayment,
@@ -584,9 +604,6 @@ class CMPayment extends Component {
         paymentCategory: paymentType,
       })
     )
-    this.setState({
-      checkFirstFormToken: secondForm ? false : true,
-    })
   }
 
   showHideDeletePayment = (val) => {
@@ -770,7 +787,6 @@ class CMPayment extends Component {
       addPaymentLoading: false,
       editable: false,
       totalReportPrice: 0,
-      checkFirstFormToken: false,
       assignToAccountsLoading: false,
     })
   }
@@ -819,8 +835,8 @@ class CMPayment extends Component {
       payment && payment.officeLocationId
         ? payment.officeLocationId
         : user && user.officeLocation
-          ? user.officeLocation.id
-          : null
+        ? user.officeLocation.id
+        : null
     if (officeLocations[0] && officeLocations.length === 1) {
       locationId = officeLocations[0].value
     }
@@ -987,18 +1003,6 @@ class CMPayment extends Component {
 
   addCMPayment = (body) => {
     const { CMPayment, user, lead, dispatch, addInstrument } = this.props
-    if (CMPayment.paymentType === 'token') {
-      dispatch(
-        setCMPayment({
-          ...CMPayment,
-          visible: false,
-          paymentCategory: CMPayment.paymentType,
-        })
-      )
-      dispatch(setInstrumentInformation({ ...addInstrument, id: body.instrumentId }))
-      this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
-      return
-    }
 
     body.paymentCategory = CMPayment.paymentType
     body.officeLocationId = this.setDefaultOfficeLocation()
@@ -1030,13 +1034,6 @@ class CMPayment extends Component {
 
   updateCMPayment = (body) => {
     const { CMPayment, lead, dispatch } = this.props
-    if (CMPayment.paymentType === 'token' && CMPayment.firstForm) {
-      dispatch(
-        setCMPayment({ ...CMPayment, visible: false, paymentCategory: CMPayment.paymentType })
-      )
-      this.setState({ addPaymentLoading: false, checkFirstFormPayment: true })
-      return
-    }
     body.paymentCategory = CMPayment.paymentType
     axios
       .patch(`/api/leads/project/payment?id=${body.id}`, body)
@@ -1044,8 +1041,8 @@ class CMPayment extends Component {
         // upload only the new attachments that do not have id with them in object.
         const filterAttachmentsWithoutId = CMPayment.paymentAttachments
           ? _.filter(CMPayment.paymentAttachments, (item) => {
-            return !_.has(item, 'id')
-          })
+              return !_.has(item, 'id')
+            })
           : []
         if (filterAttachmentsWithoutId.length > 0) {
           filterAttachmentsWithoutId.map((item, index) => {
@@ -1165,17 +1162,6 @@ class CMPayment extends Component {
       })
   }
 
-  editTokenPayment = () => {
-    const { CMPayment, dispatch, addInstrument } = this.props
-    dispatch(setCMPayment({ ...CMPayment, visible: true }))
-    dispatch(
-      setInstrumentInformation({
-        ...addInstrument,
-        editable: addInstrument && addInstrument.id ? false : true,
-      })
-    )
-  }
-
   assignToAccounts = () => {
     Alert.alert(
       'Assign to Accounts',
@@ -1211,6 +1197,7 @@ class CMPayment extends Component {
       let projectID = paidProject && paidProject.id ? paidProject.id : project && project.id
       if ((paidProject && paidProject.id) || (project && project.id)) {
         this.getFloors(projectID)
+        this.getSites(projectID)
       }
     }
     var newcheckPaymentPlan = { ...checkPaymentPlan }
@@ -1241,44 +1228,13 @@ class CMPayment extends Component {
     )
   }
 
-  callAgain = () => {
-    const { lead, contacts } = this.props
-    if (lead && lead.customer) {
-      let selectedClientContacts = helper.createContactPayload(lead.customer)
-      this.setState({ selectedClientContacts, calledOn: 'phone' }, () => {
-        if (selectedClientContacts.payload && selectedClientContacts.payload.length > 1) {
-          //  multiple numbers to select
-          this.showMultiPhoneModal(true)
-        } else {
-          helper.callNumber(selectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
+  getSites = (projectId) => {
+    axios
+      .get(`/api/leads/getProjectSites?projectId=${projectId}`)
+      .then((res) => {
+        this.setState({ siteData: res.data })
       })
-    }
-  }
-
-  setNewActionModal = (value) => {
-    this.setState({ newActionModal: value })
-  }
-
-  showMultiPhoneModal = (value) => {
-    this.setState({ isMultiPhoneModalVisible: value })
-  }
-
-  handlePhoneSelectDone = (phone) => {
-    const { contacts } = this.props
-    const copySelectedClientContacts = { ...this.state.selectedClientContacts }
-    if (phone) {
-      copySelectedClientContacts.phone = phone.number
-      copySelectedClientContacts.url = 'tel:' + phone.number
-      this.setState(
-        { selectedClientContacts: copySelectedClientContacts, isMultiPhoneModalVisible: false },
-        () => {
-          helper.callNumber(copySelectedClientContacts, contacts)
-          this.showStatusFeedbackModal(true, 'call')
-        }
-      )
-    }
+      .catch((err) => console.log(err))
   }
 
   handleFirstForm = (value, name) => {
@@ -1293,8 +1249,6 @@ class CMPayment extends Component {
       oneProductData,
       projectProducts,
       showInstallmentFields,
-      paymentPlanDuration,
-      installmentFrequency,
       pickerProjects,
     } = this.state
     const { lead } = this.props
@@ -1307,32 +1261,21 @@ class CMPayment extends Component {
     let copyPearlUnitPrice = pearlUnitPrice
     let oneProduct = oneProductData
     let newShowInstallmentFields = showInstallmentFields
-    let newPaymentPlanDuration = paymentPlanDuration
-    let newInstallmentFrequency = installmentFrequency
-
-    if (name === 'parkingAvailable') {
-
-      const { allProjects } = this.state
-      const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
-      newData['parkingAvailable'] = value
-
-      newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
-    }
-
-    const { allProjects } = this.state
-    const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
-
-    newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
+    let discountedAmount = null
+    let downPaymentValue = null
+    let possessionChargesValue = null
 
     if (name === 'project') {
-
       const { allProjects } = this.state
       const parkingObj = this.getParkingDetails(allProjects, value)
-      
-      newData['parkingCharges'] = parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== "" ? parkingObj?.parkingCharges : 0
-       newData['parkingAvailable'] = (parkingObj.parkingAvailable).toLowerCase()
+      this.getSites(value)
+      newData['parkingCharges'] =
+        parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
+          ? parkingObj?.parkingCharges
+          : 0
+      newData['parkingAvailable'] = parkingObj.parkingAvailable.toLowerCase()
+      newData['projectSiteId'] = null
       this.changeProject(value)
-      // }
       this.getFloors(value)
       newData = PaymentHelper.refreshFirstFormData(newData, name, lead)
       copyPearlUnit = false
@@ -1370,16 +1313,7 @@ class CMPayment extends Component {
       value = oneUnit.id
       newData['unitName'] = oneUnit.name
     }
-    if (name === 'approvedDiscount') {
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      if (Number(value) > 100) return
-      newData['approvedDiscountPrice'] = PaymentMethods.findApprovedDiscountAmount(oneUnit, value)
-    }
-    if (name === 'approvedDiscountPrice') {
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      value = value.replace(/,/g, '')
-      newData['approvedDiscount'] = PaymentMethods.findApprovedDiscountPercentage(oneUnit, value)
-    }
+
     if (name === 'paymentPlan' && value === 'Sold on Investment Plan') {
       if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
       let fullPaymentDiscountPrice = PaymentHelper.findPaymentPlanDiscount(lead, oneUnit)
@@ -1393,69 +1327,184 @@ class CMPayment extends Component {
     }
     if (name === 'pearl') this.pearlCalculations(oneFloor, value)
     newData[name] = value
-    if (name === 'productId') {
-      oneProduct = _.find(projectProducts, (item) => {
-        return item.projectProductId === value
-      })
-      newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(
-        oneProduct.projectProduct.discount
-      )
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      newData['approvedDiscountPrice'] = PaymentMethods.findProductDiscountAmount(
-        oneUnit,
-        oneProduct
-      )
-      newShowInstallmentFields = PaymentHelper.setProductPaymentPlan(oneProduct)
-      newPaymentPlanDuration = PaymentHelper.setPaymentPlanDuration(oneProduct)
-      newInstallmentFrequency = PaymentHelper.setInstallmentFrequency(oneProduct)
-      if (newPaymentPlanDuration && newPaymentPlanDuration.length === 1)
-        newData.paymentPlanDuration = newPaymentPlanDuration[0].value
-      if (newInstallmentFrequency && newInstallmentFrequency.length === 1)
-        newData.installmentFrequency = newInstallmentFrequency[0].value
-      newData.paymentPlan = oneProduct.projectProduct.paymentPlan
-    }
-    if (oneUnit) {
+    if (
+      name === 'productId' ||
+      name === 'parkingAvailable' ||
+      name === 'approvedDiscount' ||
+      name === 'approvedDiscountPrice'
+    ) {
+      // set default values for product here
+      const { allProjects } = this.state
+      const parkingObj = this.getParkingDetails(allProjects, firstFormData.project)
+      if (name === 'parkingAvailable') {
+        newData['parkingAvailable'] = value
+        newData['parkingCharges'] =
+          parkingObj?.parkingCharges !== null && parkingObj?.parkingCharges !== ''
+            ? parkingObj?.parkingCharges
+            : 0
+      }
 
-      if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
-      newData['finalPrice'] = Math.ceil(
-        PaymentMethods.findFinalPrice(
-          newData['parkingAvailable'] === 'yes' && newData['parkingCharges'] != "" && newData['parkingCharges'] != null
-            ? newData['parkingCharges']
-            : 0,
-          oneUnit,
-          newData['approvedDiscountPrice'],
-          newData['fullPaymentDiscountPrice'],
-          copyPearlUnit ? true : false
+      if (
+        name === 'parkingAvailable' ||
+        name === 'approvedDiscount' ||
+        name === 'approvedDiscountPrice'
+      ) {
+        oneProduct = _.find(projectProducts, (item) => {
+          return item.projectProductId === newData['productId']
+        })
+      } else {
+        oneProduct = _.find(projectProducts, (item) => {
+          return item.projectProductId === value
+        })
+      }
+
+      if (name === 'approvedDiscount' || name === 'approvedDiscountPrice') {
+        if (name === 'approvedDiscount') {
+          if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+          if (Number(value) > 100) return
+          newData['approvedDiscountPrice'] = PaymentMethods.findApprovedDiscountAmount(
+            oneUnit,
+            value
+          )
+        } else {
+          if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+          value = value.replace(/,/g, '')
+          newData['approvedDiscount'] = PaymentMethods.findApprovedDiscountPercentage(
+            oneUnit,
+            value
+          )
+        }
+      } else {
+        discountedAmount = PaymentMethods.findProductDiscountAmount(oneUnit, oneProduct)
+
+        newData['approvedDiscount'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.discount
         )
-      )
-    }
-    this.setState({
-      firstFormData: { ...newData },
-      unitPearlDetailsData: { ...oneFloor },
-      oneUnitData: copyPearlUnit ? { ...oneFloor } : { ...oneUnit },
-      pearlUnit: copyPearlUnit,
-      oneProductData: oneProduct,
-      showInstallmentFields: newShowInstallmentFields,
-      installmentFrequency: newInstallmentFrequency,
-      paymentPlanDuration: newPaymentPlanDuration,
-      toggleUnitsTable: false,
-    })
-  }
 
+        if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+        newData['approvedDiscountPrice'] = discountedAmount
+      }
 
+      if (oneUnit) {
+        if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, newData['pearl'])
+        newData['finalPrice'] = Math.ceil(
+          PaymentMethods.findFinalPrice(
+            newData['parkingAvailable'] === 'yes' &&
+              newData['parkingCharges'] != '' &&
+              newData['parkingCharges'] != null
+              ? newData['parkingCharges']
+              : 0,
+            oneUnit,
+            newData['approvedDiscountPrice'],
+            newData['fullPaymentDiscountPrice'],
+            copyPearlUnit ? true : false
+          )
+        )
+      }
 
-  getParkingDetails = (allProjects, value) => {
-    let parkingObj;
-    allProjects.map(project => {
-      if (project.id == value) {
-        parkingObj = { parkingAvailable: project.parkingAvailable, parkingCharges: project.parkingCharges };
-        return parkingObj
+      if (name === 'productId') {
+        newData['noOfInstallment'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.noInstallmentsMin
+        )
+        newData['installmentFrequency'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.installmentFrequencyMin
+        )
+
+        downPaymentValue = PaymentMethods.calculateDownPayment(
+          { ...oneProduct.projectProduct, downPayment: oneProduct.projectProduct.downPaymentMin },
+          newData.finalPrice, // final price including discount
+          0
+        )
+
+        newData['downPayment'] = downPaymentValue
+
+        newData['downPaymentPercentage'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.downPaymentMin
+        )
+
+        newData['possessionCharges'] = PaymentMethods.calculatePossessionCharges(
+          {
+            ...oneProduct.projectProduct,
+            possessionCharges: oneProduct.projectProduct.possessionChargesMin,
+          },
+          newData.finalPrice, // final price including discount
+          0
+        )
+        newData['possessionChargesPercentage'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.possessionChargesMin
+        )
+        newShowInstallmentFields = PaymentHelper.setProductPaymentPlan(oneProduct)
+        newData.paymentPlan = oneProduct.projectProduct.paymentPlan
       }
     }
-    );
-    return parkingObj
+
+    if (name === 'downPaymentPercentage') {
+      downPaymentValue = PaymentMethods.calculateDownPayment(
+        { ...oneProductData.projectProduct, downPayment: value },
+        newData.finalPrice, // final price including discount
+        0
+      )
+      newData['downPayment'] = downPaymentValue
+      newData['downPaymentPercentage'] = value
+    }
+
+    if (name === 'downPayment') {
+      newData['downPayment'] = value
+      newData['downPaymentPercentage'] = PaymentMethods.calculateDownPaymentPercentage(
+        newData.finalPrice, // final price including discount
+        value,
+        0
+      )
+    }
+
+    if (name === 'possessionChargesPercentage') {
+      possessionChargesValue = PaymentMethods.calculatePossessionCharges(
+        { ...oneProductData.projectProduct, possessionCharges: value },
+        newData.finalPrice, // final price including discount
+        0
+      )
+      newData['possessionCharges'] = possessionChargesValue
+      newData['possessionChargesPercentage'] = value
+    }
+
+    if (name === 'possessionCharges') {
+      newData['possessionCharges'] = value
+      newData['possessionChargesPercentage'] = PaymentMethods.calculatePossessionChargesPercentage(
+        newData.finalPrice, // final price including discount
+        value,
+        0
+      )
+    }
+
+    this.setState(
+      {
+        firstFormData: { ...newData },
+        unitPearlDetailsData: { ...oneFloor },
+        oneUnitData: copyPearlUnit ? { ...oneFloor } : { ...oneUnit },
+        pearlUnit: copyPearlUnit,
+        oneProductData: oneProduct,
+        showInstallmentFields: newShowInstallmentFields,
+        toggleUnitsTable: false,
+      },
+      () => {
+        //console.log('firstForm', this.state.firstFormData)
+      }
+    )
   }
 
+  getParkingDetails = (allProjects, value) => {
+    let parkingObj
+    allProjects.map((project) => {
+      if (project.id == value) {
+        parkingObj = {
+          parkingAvailable: project.parkingAvailable,
+          parkingCharges: project.parkingCharges,
+        }
+        return parkingObj
+      }
+    })
+    return parkingObj
+  }
 
   pearlCalculations = (oneFloor, value) => {
     let totalSqft = oneFloor.pearlArea
@@ -1524,6 +1573,17 @@ class CMPayment extends Component {
     } = this.state
     const { lead } = this.props
     const { noProduct } = lead
+    if (
+      firstFormData.possessionChargesPercentage &&
+      firstFormData.downPaymentPercentage &&
+      Number(firstFormData.possessionChargesPercentage) +
+        Number(firstFormData.downPaymentPercentage) >
+        100
+    ) {
+      alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
+      return
+    }
+
     if (!noProduct && firstFormData.paymentPlan === 'no') firstFormData.paymentPlan = null
     const validationValues = PaymentHelper.firstFormValidation(
       lead,
@@ -1570,6 +1630,7 @@ class CMPayment extends Component {
   submitFirstForm = () => {
     const { lead, user } = this.props
     const { firstFormData, pearlUnitPrice, unitPearlDetailsData } = this.state
+
     this.setState({
       firstScreenConfirmLoading: true,
     })
@@ -1608,28 +1669,28 @@ class CMPayment extends Component {
     const { firstFormData, oneProductData, isPrimary, selectedClient } = this.state
     let body = noProduct
       ? PaymentHelper.generateApiPayload(
-        firstFormData,
-        lead,
-        unitId,
-        CMPayment,
-        addInstrument,
-        isPrimary,
-        selectedClient
-      )
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          addInstrument,
+          isPrimary,
+          selectedClient
+        )
       : PaymentHelper.generateProductApiPayload(
-        firstFormData,
-        lead,
-        unitId,
-        CMPayment,
-        oneProductData,
-        addInstrument,
-        isPrimary,
-        selectedClient
-      )
+          firstFormData,
+          lead,
+          unitId,
+          CMPayment,
+          oneProductData,
+          addInstrument,
+          isPrimary,
+          selectedClient
+        )
     let leadId = []
     body.officeLocationId = this.setDefaultOfficeLocation()
     leadId.push(lead.id)
-  
+
     axios
       .patch(`/api/leads/project`, body, { params: { id: leadId } })
       .then((res) => {
@@ -1691,98 +1752,24 @@ class CMPayment extends Component {
     this.setState({ selectedReason: value })
   }
 
-  onHandleCloseLead = () => {
-    const { lead, navigation } = this.props
-    let body = {
-      reasons: 'payment_done',
-    }
-    var leadId = []
-    leadId.push(lead.id)
-    axios
-      .patch(`/api/leads/project`, body, { params: { id: leadId } })
-      .then((res) => {
-        this.setState({ isVisible: false }, () => {
-          helper.successToast(`Lead Closed`)
-          navigation.navigate('Leads')
-        })
-      })
-      .catch((error) => {
-        console.log('/api/leads/project - Error', error)
-        helper.errorToast('Closed lead API failed!!')
-      })
-  }
-
   handleOfficeLocation = (value) => {
     const { CMPayment, dispatch } = this.props
     dispatch(setCMPayment({ ...CMPayment, officeLocationId: value }))
   }
 
-  // ************ Function for Reject modal ************
-
-  goToRejectForm = () => {
-    const { statusfeedbackModalVisible } = this.state
-    this.setState({ modalMode: 'reject', statusfeedbackModalVisible: !statusfeedbackModalVisible })
-  }
-
-  rejectLead = (body) => {
-    const { navigation, lead } = this.props
-    var leadId = []
-    leadId.push(lead.id)
-    axios
-      .patch(`/api/leads/project`, body, { params: { id: leadId } })
-      .then((res) => {
-        helper.successToast(`Lead Closed`)
-        navigation.navigate('Leads')
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
-  showStatusFeedbackModal = (value, modalMode) => {
-    this.setState({ statusfeedbackModalVisible: value, modalMode })
-  }
-
-  //  ************ Function for open modal ************
-  openModalInMeetingMode = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  closeMeetingFollowupModal = () => {
-    this.setState({
-      active: !this.state.active,
-      isFollowUpMode: false,
-    })
-  }
-
-  //  ************ Function for open Follow up modal ************
-  // openModalInFollowupMode = (value) => {
-  //   this.setState({
-  //     active: !this.state.active,
-  //     isFollowUpMode: true,
-  //     comment: value,
-  //   })
-  // }
-  openModalInFollowupMode = (value) => {
-    const { navigation, lead } = this.props
-
-    navigation.navigate('ScheduledTasks', {
-      lead,
-      cmLeadId: lead ? lead.id : null,
-    })
-    // this.setState({
-    //   active: !this.state.active,
-    //   isFollowUpMode: true,
-    //   comment: value,
-    // })
-  }
-
   //  ************ SCHEDULE OF PAYMENT WORKFLOW **************
   toggleSchedulePayment = () => {
-    const { showSchedule } = this.state
+    const { showSchedule, firstFormData } = this.state
+    if (
+      firstFormData.possessionChargesPercentage &&
+      firstFormData.downPaymentPercentage &&
+      Number(firstFormData.possessionChargesPercentage) +
+        Number(firstFormData.downPaymentPercentage) >
+        100
+    ) {
+      alert('Sum of Down Payment and Posession Charges cannot be greater than Final Price')
+      return
+    }
     if (!showSchedule) this.fetchScheduleData()
     this.setState({
       showSchedule: !showSchedule,
@@ -1836,6 +1823,7 @@ class CMPayment extends Component {
           firstFormData.unit === null || firstFormData.unit === '' || firstFormData.unit === 'no'
             ? null
             : firstFormData.unit
+
         body = PaymentHelper.generateProductApiPayload(
           firstFormData,
           lead,
@@ -1846,16 +1834,6 @@ class CMPayment extends Component {
           isPrimary,
           selectedClient
         )
-        downPayment = PaymentMethods.calculateDownPayment(
-          oneProductData,
-          firstFormData.finalPrice,
-          CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
-        )
-        possessionCharges = PaymentMethods.calculatePossessionCharges(
-          oneProductData,
-          firstFormData.finalPrice,
-          CMPayment.paymentCategory === 'token' ? CMPayment.installmentAmount : 0
-        )
       }
       let leadId = []
       leadId.push(lead.id)
@@ -1864,8 +1842,8 @@ class CMPayment extends Component {
         .then((res) => {
           this.setState({
             SchedulePaymentData: helper.addID(res.data),
-            downPayment: downPayment,
-            possessionCharges: possessionCharges,
+            downPayment: firstFormData.downPayment,
+            possessionCharges: firstFormData.possessionCharges,
           })
         })
         .catch((error) => {
@@ -2000,6 +1978,19 @@ class CMPayment extends Component {
     )
   }
 
+  openModalInFollowupMode = (value) => {
+    const { navigation, lead } = this.props
+
+    navigation.navigate('ScheduledTasks', {
+      // lead,
+      // rcmLeadId: lead ? lead.id : null,
+      lead: lead,
+      purposeTab: 'invest',
+      screen: 'InvestLeads',
+      cmLeadId: lead.id,
+    })
+  }
+
   render() {
     const {
       checkLeadClosedOrNot,
@@ -2037,7 +2028,6 @@ class CMPayment extends Component {
       leadCloseToggle,
       leftPearlSqft,
       progressValue,
-      checkFirstFormToken,
       assignToAccountsLoading,
       officeLocations,
       active,
@@ -2050,7 +2040,6 @@ class CMPayment extends Component {
       productDetailModal,
       oneProductData,
       showInstallmentFields,
-      paymentPlanDuration,
       installmentFrequency,
       comment,
       showSchedule,
@@ -2073,6 +2062,7 @@ class CMPayment extends Component {
       setLeadDetail,
       selectedMonth,
       selectedYear,
+      siteData,
     } = this.state
     const { lead, navigation, contacts, route, CMPayment, dispatch } = this.props
     const { screenName } = this.props.route.params
@@ -2186,7 +2176,6 @@ class CMPayment extends Component {
             addPaymentLoading={addPaymentLoading}
             lead={lead}
             paymentNotZero={buyerNotZero}
-            checkFirstFormToken={checkFirstFormToken}
             assignToAccounts={() => this.assignToAccounts()}
             officeLocations={officeLocations}
             handleOfficeLocationChange={this.handleOfficeLocation}
@@ -2204,9 +2193,13 @@ class CMPayment extends Component {
             deletePayment={(reason) => this.deletePayment(reason)}
             showHideModal={(val) => this.showHideDeletePayment(val)}
           />
-          <KeyboardAvoidingView>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View style={{ flex: 1, marginBottom: 60 }}>
+          <KeyboardAvoidingView style={{ flex: 1 }}>
+            <ScrollView
+              scrollEnabled={firstForm ? true : false}
+              contentContainerStyle={{ flexGrow: 1 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={{ flex: 1, marginBottom: 45 }}>
                 {firstForm && (
                   <CMFirstForm
                     allProjects={allProjects}
@@ -2230,20 +2223,24 @@ class CMPayment extends Component {
                     addPaymentModalToggle={this.addPaymentModalToggle}
                     checkFirstFormPayment={checkFirstFormPayment}
                     currencyConvert={PaymentHelper.currencyConvert}
-                    editTokenPayment={this.editTokenPayment}
                     cnicEditable={cnicEditable}
                     leftPearlSqft={leftPearlSqft}
                     projectProducts={projectProducts}
                     productsPickerData={productsPickerData}
                     openProductDetailsModal={this.openProductDetailsModal}
                     showInstallmentFields={showInstallmentFields}
-                    paymentPlanDuration={paymentPlanDuration}
                     installmentFrequency={installmentFrequency}
                     lead={lead}
                     openUnitsTable={this.openUnitsTable}
                     checkValidation={checkValidation}
                     handleClientClick={this.handleClientClick}
                     updatePermission={updatePermission}
+                    siteData={siteData}
+                    oneProduct={
+                      oneProductData && oneProductData.projectProduct
+                        ? oneProductData.projectProduct
+                        : null
+                    }
                   />
                 )}
                 {secondForm && (
@@ -2267,32 +2264,6 @@ class CMPayment extends Component {
             </ScrollView>
           </KeyboardAvoidingView>
 
-          <SubmitFeedbackOptionsModal
-            showModal={newActionModal}
-            setShowModal={(value) => this.setNewActionModal(value)}
-            performMeeting={() => this.openModalInMeetingMode()}
-            performFollowUp={this.openModalInFollowupMode}
-            performReject={this.goToRejectForm}
-            call={this.callAgain}
-            modalMode={modalMode}
-            leadType={'CM'}
-          />
-
-          <StatusFeedbackModal
-            visible={statusfeedbackModalVisible}
-            showFeedbackModal={(value, modalMode) => this.showStatusFeedbackModal(value, modalMode)}
-            commentsList={
-              modalMode === 'call'
-                ? StaticData.commentsFeedbackCall
-                : modalMode === 'meeting'
-                  ? StaticData.commentsFeedbackMeeting
-                  : StaticData.leadClosedCommentsFeedback
-            }
-            modalMode={modalMode}
-            rejectLead={(body) => this.rejectLead(body)}
-            setNewActionModal={(value) => this.setNewActionModal(value)}
-            leadType={'CM'}
-          />
           <HistoryModal
             getCallHistory={this.getCallHistory}
             navigation={navigation}
@@ -2300,43 +2271,36 @@ class CMPayment extends Component {
             closePopup={this.goToHistory}
             openPopup={callModal}
           />
-
-          <MeetingFollowupModal
-            closeModal={() => this.closeMeetingFollowupModal()}
-            active={active}
-            isFollowUpMode={isFollowUpMode}
-            lead={lead}
-            leadType={'CM'}
-          />
-
-          <View style={AppStyles.mainCMBottomNav}>
-            <CMBottomNav
-              goToAttachments={this.goToAttachments}
-              navigateTo={this.navigateTo}
-              goToDiaryForm={this.goToDiaryForm}
-              goToComments={this.goToComments}
-              closedLeadEdit={checkLeadClosedOrNot}
-              alreadyClosedLead={this.closedLead}
-              closeLead={this.fetchLead}
-              closeLeadFor={'leadClose'}
-              goToFollowUp={(value) => this.openModalInFollowupMode(value)}
-              goToRejectForm={this.goToRejectForm}
-              closedWon={closedWon}
-              showStatusFeedbackModal={(value, modalMode) =>
-                this.showStatusFeedbackModal(value, modalMode)
-              }
-              addMeeting={() => this.openModalInMeetingMode()}
-              leadType={'CM'}
-              navigation={navigation}
-              customer={lead.customer}
-              goToHistory={this.goToHistory}
-              onHandleCloseLead={this.onHandleCloseLead}
-              fetchLead={this.fetchLead}
-              screenName={screenName}
-              lead={lead}
-              closeWonOptionVisibleFromInvest={true}
-            />
-          </View>
+          {secondForm && (
+            <View style={AppStyles.mainCMBottomNav}>
+              <CMBottomNav
+                goToAttachments={this.goToAttachments}
+                navigateTo={this.navigateTo}
+                goToDiaryForm={this.goToDiaryForm}
+                goToComments={this.goToComments}
+                closedLeadEdit={checkLeadClosedOrNot}
+                alreadyClosedLead={this.closedLead}
+                closeLead={this.fetchLead}
+                closeLeadFor={'leadClose'}
+                goToFollowUp={(value) => this.openModalInFollowupMode(value)}
+                goToRejectForm={this.goToRejectForm}
+                closedWon={closedWon}
+                showStatusFeedbackModal={(value, modalMode) =>
+                  this.showStatusFeedbackModal(value, modalMode)
+                }
+                addMeeting={() => this.openModalInMeetingMode()}
+                leadType={'CM'}
+                navigation={navigation}
+                customer={lead.customer}
+                goToHistory={this.goToHistory}
+                onHandleCloseLead={this.onHandleCloseLead}
+                fetchLead={this.fetchLead}
+                screenName={screenName}
+                lead={lead}
+                closeWonOptionVisibleFromInvest={true}
+              />
+            </View>
+          )}
         </View>
       </View>
     )

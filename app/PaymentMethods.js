@@ -71,19 +71,19 @@ const PaymentMethods = {
   findApprovedDiscountPercentage(unit, price) {
     if (unit && price) {
       price = PaymentMethods.handleEmptyValue(price)
-      return (price / PaymentMethods.findUnitPrice(unit)) * 100
+      return ((price / PaymentMethods.findUnitPrice(unit)) * 100).toFixed(2)
     }
   },
-  
-  
+
   findFinalPrice(parkingCharges, unit, approvedDiscountPrice, fullPaymentDiscountPrice, isPearl) {
     if (unit) {
-      
       approvedDiscountPrice = PaymentMethods.handleEmptyValue(approvedDiscountPrice)
       fullPaymentDiscountPrice = PaymentMethods.handleEmptyValue(fullPaymentDiscountPrice)
       let totalDiscountPrice = approvedDiscountPrice + fullPaymentDiscountPrice
       if (isPearl) {
-        return PaymentMethods.pearlCalculations(unit) - totalDiscountPrice + parseInt(parkingCharges)
+        return (
+          PaymentMethods.pearlCalculations(unit) - totalDiscountPrice + parseInt(parkingCharges)
+        )
       } else {
         return PaymentMethods.findUnitPrice(unit) - totalDiscountPrice + parseInt(parkingCharges)
       }
@@ -108,7 +108,6 @@ const PaymentMethods = {
     return Math.ceil(payment * (taxAmount / 100))
   },
   findRemaningPayment(payment, finalPrice) {
-    
     finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
     let totalPayments = 0
     let remainingTax = 0
@@ -216,13 +215,23 @@ const PaymentMethods = {
     }
   },
   calculateDownPayment(oneProduct, finalPrice, token) {
-    if (oneProduct && finalPrice && token) {
-      let { downPayment } = oneProduct.projectProduct
+    if (oneProduct && finalPrice) {
+      let { downPayment } = oneProduct
       downPayment = PaymentMethods.handleEmptyValue(downPayment)
       finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
       token = PaymentMethods.handleEmptyValue(token)
       return (finalPrice * downPayment) / 100
     } else return null
+  },
+  calculateDownPaymentPercentage(finalPrice, price, token) {
+    finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
+    token = PaymentMethods.handleEmptyValue(token)
+    return (price * 100) / finalPrice - token
+  },
+  calculatePossessionChargesPercentage(finalPrice, price, token) {
+    finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
+    token = PaymentMethods.handleEmptyValue(token)
+    return (100 * price) / finalPrice - token
   },
   calculateNoOfInstallments(oneProduct, firstFormData) {
     if (oneProduct && firstFormData) {
@@ -234,8 +243,8 @@ const PaymentMethods = {
     } else return null
   },
   calculatePossessionCharges(oneProduct, finalPrice, token) {
-    if (oneProduct && finalPrice && token) {
-      let { possessionCharges } = oneProduct.projectProduct
+    if (oneProduct && finalPrice) {
+      let { possessionCharges } = oneProduct
       possessionCharges = PaymentMethods.handleEmptyValue(possessionCharges)
       finalPrice = PaymentMethods.handleEmptyValue(finalPrice)
       token = PaymentMethods.handleEmptyValue(token)

@@ -20,8 +20,10 @@ import Ability from './hoc/Ability'
 import TimerNotification from './LocalNotifications'
 import { formatPrice } from './PriceFormate'
 import StaticData from './StaticData'
-import LeadIcon from '../assets/img/leads.png'
-import DealIcon from '../assets/img/deals.png'
+import LeadIcon from '../assets/icons/BuyRentLeads.png'
+import DealIcon from '../assets/icons/RentDeals.png'
+import ProjectDealIcon from '../assets/icons/ProjectDeals.png'
+import ProjectLeadIcon from '../assets/icons/ProjectLeads.png'
 import ProjectInventoryIcon from '../assets/img/project-inventory.png'
 import { getPermissionValue } from './hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from './hoc/PermissionsTypes'
@@ -241,6 +243,10 @@ const helper = {
           return DashboardImg
         case 'MyDeals':
           return DealIcon
+        case 'ProjectDeals':
+          return ProjectDealIcon
+        case 'ProjectLeads':
+          return ProjectLeadIcon
         case 'ProjectInventory':
           return ProjectInventoryIcon
         case 'Contacts':
@@ -430,7 +436,7 @@ const helper = {
   deleteAndUpdateNotification(data, start, id) {
     Notifications.getAllScheduledNotificationsAsync().then((notifications) => {
       this.deleteNotification(notifications, id)
-      TimerNotification(data, start)
+    //  TimerNotification(data, start)
     })
   },
   deleteLocalNotification(id) {
@@ -473,7 +479,7 @@ const helper = {
       }
     } else return false
   },
-  checkAssignedSharedStatus(user, lead, permissions) {
+  checkAssignedSharedStatus(user, lead, permissions, shortlistedData) {
     if (user && lead) {
       if (helper.getAiraPermission(permissions) && user.id !== lead.assigned_to_armsuser_id) {
         this.leadAiraToast(lead.armsuser)
@@ -489,18 +495,29 @@ const helper = {
       if (
         user.id === lead.assigned_to_armsuser_id ||
         user.id === lead.shared_with_armsuser_id ||
-        (lead && lead.requiredProperties)
-      )
+        (lead && lead.requiredProperties) ||
+        (shortlistedData &&
+          shortlistedData.find(function (e) {
+            return e === user.id
+          }) === user.id)
+      ) {
         return true
-      else {
+      } else {
         this.leadNotAssignedToast()
         return false
       }
     } else return false
   },
-  checkAssignedSharedStatusANDReadOnly(user, lead) {
+  checkAssignedSharedStatusANDReadOnly(user, lead, shortlistedData) {
     if (user && lead) {
-      if (user.id === lead.assigned_to_armsuser_id || user.id === lead.shared_with_armsuser_id)
+      if (
+        user.id === lead.assigned_to_armsuser_id ||
+        user.id === lead.shared_with_armsuser_id ||
+        (shortlistedData &&
+          shortlistedData.find(function (e) {
+            return e === user.id
+          }) === user.id)
+      )
         return true
       else {
         this.leadNotAssignedToast()

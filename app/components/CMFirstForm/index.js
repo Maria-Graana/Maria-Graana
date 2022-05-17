@@ -36,7 +36,7 @@ class CMFirstForm extends Component {
         firstFormData.unit != null &&
         firstFormData.unit != 'no' &&
         checkLeadClosedOrNot === true) ||
-        (firstFormData.pearl != null && firstFormData.pearl != '')
+      (firstFormData.pearl != null && firstFormData.pearl != '')
         ? true
         : false
     return checkForUnitIdavail
@@ -78,28 +78,41 @@ class CMFirstForm extends Component {
       addPaymentModalToggle,
       checkFirstFormPayment,
       currencyConvert,
-      editTokenPayment,
       cnicEditable,
       productsPickerData,
       openProductDetailsModal,
       showInstallmentFields,
       installmentFrequency,
-      paymentPlanDuration,
       lead,
       openUnitsTable,
       checkValidation,
       handleClientClick,
       updatePermission,
+      oneProduct,
+      siteData,
     } = this.props
-
-
 
     let unitTypeData = this.checkUnitPearl()
     const checkUnitDetail = this.checkForUnitDetail()
     const dataForPaymentTile = this.setPaymentTile()
-    const { noProduct } = lead;
+    const { noProduct } = lead
 
-
+    let obj1 = {}
+    obj1 = siteData
+    siteData &&
+      Object.values(obj1).forEach((key, index) => {
+        if (key.siteName === null) {
+          delete obj1[index]
+        }
+      })
+    const AllSiteRender =
+      obj1 &&
+      obj1.map((item) => {
+        return {
+          name: item.siteName,
+          value: item.id,
+        }
+      })
 
     return (
       <View style={styles.mainFormWrap}>
@@ -214,7 +227,7 @@ class CMFirstForm extends Component {
                   keyboardType={'numeric'}
                   onClicked={openUnitsTable}
                   onPress={true}
-                  onChangeHandle={() => { }}
+                  onChangeHandle={() => {}}
                 />
               </View>
             )}
@@ -295,42 +308,192 @@ class CMFirstForm extends Component {
         ) : null}
         {showInstallmentFields ? (
           <View>
-            <View style={{ paddingVertical: 10 }}>
-              <PickerComponent
-                onValueChange={handleFirstForm}
-                data={paymentPlanDuration}
-                name={'paymentPlanDuration'}
-                placeholder="Payment Plan Duration"
-                selectedItem={firstFormData.paymentPlanDuration}
-                enabled={
-                  updatePermission && paymentPlanDuration && paymentPlanDuration.length === 1
-                    ? false
-                    : true
-                }
-              />
-              {firstFormValidate === true && !firstFormData.paymentPlanDuration && (
-                <ErrorMessage errorMessage={'Required'} />
+            <SimpleInputText
+              name={'downPaymentPercentage'}
+              placeholder={'Down Payment %'}
+              label={
+                oneProduct.downPaymentMin === oneProduct.downPaymentMax
+                  ? `Down Payment %`
+                  : `Down Payment (${oneProduct.downPaymentMin}% - ${oneProduct.downPaymentMax}%)`
+              }
+              value={firstFormData.downPaymentPercentage}
+              keyboardType={'numeric'}
+              onChangeHandle={handleFirstForm}
+              paddingBottomValue={true}
+              editable={
+                updatePermission && oneProduct.downPaymentMin !== oneProduct.downPaymentMax
+                  ? true
+                  : false
+              }
+              formatValue={''}
+              fromatName={false}
+            />
+
+            {firstFormData.downPaymentPercentage !== '' &&
+              (Number(firstFormData.downPaymentPercentage) > oneProduct.downPaymentMax ||
+                Number(firstFormData.downPaymentPercentage) < oneProduct.downPaymentMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
               )}
-            </View>
-            <View style={{ paddingVertical: 10 }}>
-              <PickerComponent
-                onValueChange={handleFirstForm}
-                data={installmentFrequency}
-                name={'installmentFrequency'}
-                placeholder="Installment Frequency"
-                selectedItem={firstFormData.installmentFrequency}
-                enabled={
-                  updatePermission && installmentFrequency && installmentFrequency.length === 1
-                    ? false
-                    : true
-                }
-              />
-              {firstFormValidate === true && !firstFormData.installmentFrequency && (
-                <ErrorMessage errorMessage={'Required'} />
+            {/* **************************************** */}
+
+            <SimpleInputText
+              name={'downPayment'}
+              placeholder={'Down Payment'}
+              label={`Down Payment`}
+              value={firstFormData.downPayment}
+              keyboardType={'numeric'}
+              onChangeHandle={handleFirstForm}
+              formatValue={''}
+              fromatName={false}
+              paddingBottomValue={true}
+              editable={
+                updatePermission && oneProduct.downPaymentMin !== oneProduct.downPaymentMax
+                  ? true
+                  : false
+              }
+            />
+            {firstFormValidate === true && !firstFormData.downPayment === '' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+            {firstFormData.downPaymentPercentage !== '' &&
+              firstFormValidate === false &&
+              (Number(firstFormData.downPaymentPercentage) > oneProduct.downPaymentMax ||
+                Number(firstFormData.downPaymentPercentage) < oneProduct.downPaymentMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
               )}
-            </View>
+            {/* **************************************** */}
+
+            <SimpleInputText
+              name={'noOfInstallment'}
+              placeholder={'Number of Installments'}
+              label={
+                oneProduct.noInstallmentsMin === oneProduct.noInstallmentsMax
+                  ? `No of Installments`
+                  : `No of Installments (${oneProduct.noInstallmentsMin}-${oneProduct.noInstallmentsMax}) `
+              }
+              value={firstFormData.noOfInstallment}
+              keyboardType={'numeric'}
+              onChangeHandle={handleFirstForm}
+              formatValue={''}
+              fromatName={false}
+              paddingBottomValue={true}
+              editable={
+                updatePermission && oneProduct.noInstallmentsMin !== oneProduct.noInstallmentsMax
+                  ? true
+                  : false
+              }
+            />
+
+            {firstFormValidate === true && !firstFormData.noOfInstallment && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+
+            {firstFormData.noOfInstallment !== '' &&
+              firstFormValidate === false &&
+              (Number(firstFormData.noOfInstallment) > oneProduct.noInstallmentsMax ||
+                Number(firstFormData.noOfInstallment) < oneProduct.noInstallmentsMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
+
+            {/* **************************************** */}
+
+            <SimpleInputText
+              name={'installmentFrequency'}
+              placeholder={'Frequency(Months)'}
+              label={
+                oneProduct.installmentFrequencyMin === oneProduct.installmentFrequencyMax
+                  ? `Frequency (Months)`
+                  : `Frequency (${oneProduct.installmentFrequencyMin} - ${oneProduct.installmentFrequencyMax} Months)`
+              }
+              value={firstFormData.installmentFrequency}
+              keyboardType={'numeric'}
+              onChangeHandle={handleFirstForm}
+              formatValue={''}
+              paddingBottomValue={true}
+              editable={
+                updatePermission &&
+                oneProduct.installmentFrequencyMin !== oneProduct.installmentFrequencyMax
+                  ? true
+                  : false
+              }
+              fromatName={false}
+            />
+            {firstFormValidate === true && !firstFormData.installmentFrequency && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+            {firstFormData.installmentFrequency !== '' &&
+              firstFormValidate === false &&
+              (Number(firstFormData.installmentFrequency) > oneProduct.installmentFrequencyMax ||
+                Number(firstFormData.installmentFrequency) <
+                  oneProduct.installmentFrequencyMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
+
+            <SimpleInputText
+              name={'possessionChargesPercentage'}
+              placeholder={'Possession Charges %'}
+              label={
+                oneProduct.possessionChargesMin === oneProduct.possessionChargesMax
+                  ? `Possession Charges %`
+                  : `Possession Charges (${oneProduct.possessionChargesMin}%-${oneProduct.possessionChargesMax}%) `
+              }
+              value={firstFormData.possessionChargesPercentage}
+              keyboardType={'numeric'}
+              onChangeHandle={handleFirstForm}
+              formatValue={''}
+              fromatName={false}
+              paddingBottomValue={true}
+              editable={
+                updatePermission &&
+                oneProduct.possessionChargesMin !== oneProduct.possessionChargesMax
+                  ? true
+                  : false
+              }
+            />
+
+            {firstFormData.possessionChargesPercentage !== '' &&
+              (Number(firstFormData.possessionChargesPercentage) >
+                oneProduct.possessionChargesMax ||
+                Number(firstFormData.possessionChargesPercentage) <
+                  oneProduct.possessionChargesMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
+
+            {/* **************************************** */}
+
+            <SimpleInputText
+              name={'possessionCharges'}
+              placeholder={'Possession Charges'}
+              label={`Possession Charges`}
+              value={firstFormData.possessionCharges}
+              keyboardType={'numeric'}
+              onChangeHandle={handleFirstForm}
+              formatValue={''}
+              fromatName={false}
+              paddingBottomValue={true}
+              editable={
+                updatePermission &&
+                oneProduct.possessionChargesMin !== oneProduct.possessionChargesMax
+                  ? true
+                  : false
+              }
+            />
+
+            {firstFormValidate === true && !firstFormData.possessionCharges === '' && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+
+            {firstFormData.possessionChargesPercentage !== '' &&
+              firstFormValidate === false &&
+              (Number(firstFormData.possessionChargesPercentage) >
+                oneProduct.possessionChargestMax ||
+                Number(firstFormData.possessionChargesPercentage) <
+                  oneProduct.possessionChargesMin) && (
+                <ErrorMessage errorMessage={'Invalid Input'} />
+              )}
           </View>
         ) : null}
+
         {/* **************************************** */}
         <SimpleInputText
           name={'approvedDiscount'}
@@ -340,28 +503,7 @@ class CMFirstForm extends Component {
           keyboardType={'numeric'}
           onChangeHandle={handleFirstForm}
           formatValue={''}
-          editable={
-            (updatePermission &&
-              firstFormData.unit != null &&
-              firstFormData.unit != '' &&
-              firstFormData.productId != null &&
-              firstFormData.productId != '') ||
-            (updatePermission &&
-              pearlUnit &&
-              firstFormData.productId != null &&
-              firstFormData.productId != '')
-          }
           fromatName={false}
-        />
-        <SimpleInputText
-          name={'approvedDiscountPrice'}
-          fromatName={'approvedDiscountPrice'}
-          placeholder={'APPROVED DISCOUNT AMOUNT'}
-          label={'APPROVED DISCOUNT AMOUNT'}
-          value={firstFormData.approvedDiscountPrice}
-          onChangeHandle={handleFirstForm}
-          formatValue={''}
-          keyboardType={'numeric'}
           editable={
             (updatePermission &&
               firstFormData.unit != null &&
@@ -374,52 +516,66 @@ class CMFirstForm extends Component {
               firstFormData.productId != '')
           }
         />
-
-        <Text style={styles.parkingAvaiable}>PARKING AVAILABLE </Text>
         <View style={{ paddingVertical: 10 }}>
-
-          <PickerComponent
-            onValueChange={handleFirstForm}
-            data={StaticData.parkingAvailable}
-            name={'parkingAvailable'}
-            placeholder="Parking Available"
-            selectedItem={firstFormData.parkingAvailable}
-            enabled={updatePermission}
+          <SimpleInputText
+            name={'approvedDiscountPrice'}
+            placeholder={'APPROVED DISCOUNT AMOUNT'}
+            label={'APPROVED DISCOUNT AMOUNT'}
+            value={firstFormData.approvedDiscountPrice}
+            onChangeHandle={handleFirstForm}
+            formatValue={''}
+            fromatName={false}
+            keyboardType={'numeric'}
+            editable={
+              (updatePermission &&
+                firstFormData.unit != null &&
+                firstFormData.unit != '' &&
+                firstFormData.productId != null &&
+                firstFormData.productId != '') ||
+              (updatePermission &&
+                pearlUnit &&
+                firstFormData.productId != null &&
+                firstFormData.productId != '')
+            }
           />
-          {firstFormValidate === true && !firstFormData.parkingAvailable && firstFormData.parkingAvailable === '' && (
-            <ErrorMessage errorMessage={'Required'} />
-          )}
 
+          {firstFormData.approvedDiscountPrice >
+          (pearlModal ? pearlUnitPrice : PaymentMethods.findUnitPrice(oneUnitData)) ? (
+            <ErrorMessage errorMessage={'Invalid input'} />
+          ) : null}
         </View>
 
-        {firstFormData.parkingAvailable === 'yes' &&
+        {firstFormData.productId ? (
+          <>
+            <Text style={styles.parkingAvaiable}>PARKING AVAILABLE </Text>
+            <View style={{ paddingVertical: 10 }}>
+              <PickerComponent
+                onValueChange={handleFirstForm}
+                data={StaticData.parkingAvailable}
+                name={'parkingAvailable'}
+                placeholder="Parking Available"
+                selectedItem={firstFormData.parkingAvailable}
+                enabled={updatePermission}
+              />
+              {firstFormValidate === true &&
+                !firstFormData.parkingAvailable &&
+                firstFormData.parkingAvailable === '' && <ErrorMessage errorMessage={'Required'} />}
+            </View>
 
-          <SimpleInputText
-            name={'parkingCharges'}
-            placeholder={'Parking Charges'}
-            label={'PARKING CHARGES'}
-            value={firstFormData.parkingCharges}
-            // value={lead?.project?.parkingCharges != null && lead?.project?.parkingCharges != "" ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
-            formatValue={''}
-            editable={false}
-            fromatName={false}
-          />
-
-        }
-        {checkFirstFormPayment && (
-          <View>
-            <PaymentTile
-              currencyConvert={currencyConvert}
-              count={''}
-              data={dataForPaymentTile}
-              editTileForscreenOne={updatePermission ? () => editTokenPayment() : null}
-              tileForToken={true}
-            />
-            {/* {firstFormValidate === true && checkFirstFormPayment ? (
-              <ErrorMessage errorMessage={'Token Required'} />
-            ) : null} */}
-          </View>
-        )}
+            {firstFormData.parkingAvailable === 'yes' && (
+              <SimpleInputText
+                name={'parkingCharges'}
+                placeholder={'Parking Charges'}
+                label={'PARKING CHARGES'}
+                value={firstFormData.parkingCharges}
+                // value={lead?.project?.parkingCharges != null && lead?.project?.parkingCharges != "" ? helper.currencyConvert(lead?.project?.parkingCharges) : 0}
+                formatValue={''}
+                editable={false}
+                fromatName={false}
+              />
+            )}
+          </>
+        ) : null}
 
         {/* **************************************** */}
         <View style={{ paddingVertical: 10 }}>
@@ -432,20 +588,24 @@ class CMFirstForm extends Component {
             <Text style={styles.sidePriceFormat}>{formatPrice(firstFormData.finalPrice)}</Text>
           </View>
         </View>
-        <View>
-          <TouchableInput
-            placeholder="Client"
-            label={'clientName'}
-            onPress={() => {
-              if (updatePermission) handleClientClick()
-            }}
-            value={firstFormData.clientName}
-            showError={checkValidation === true && firstFormData.customerId === ''}
-            errorMessage="Required"
-          />
-        </View>
+        {firstFormData.productId ? (
+          <View>
+            <Text style={styles.parkingAvaiable}>PRIMARY APPLICANT </Text>
+            <TouchableInput
+              placeholder="Primary Applicant"
+              label={'Primary Applicant'}
+              onPress={() => {
+                if (updatePermission) handleClientClick()
+              }}
+              value={firstFormData.clientName}
+              showError={checkValidation === true && firstFormData.customerId === ''}
+              errorMessage="Required"
+            />
+          </View>
+        ) : null}
+
         {/* **************************************** */}
-        {cnicEditable && (
+        {cnicEditable && firstFormData.productId && (
           <SimpleInputText
             name={'cnic'}
             placeholder={'Client CNIC/NTN'}
@@ -457,54 +617,39 @@ class CMFirstForm extends Component {
             formatValue={''}
             editable={cnicEditable && updatePermission}
             fromatName={false}
+            paddingBottomValue={true}
           />
         )}
-        {/* {cnicEditable != false && firstFormData.cnic === null && (
-         <ErrorMessage errorMessage={'Required'} />
-        )}
-        // {cnicValidate ? (
-        //   <ErrorMessage errorMessage={'Enter a Valid CNIC Number'} />
-        // ) : null} */}
         {firstFormData.cnic === null && firstFormValidate ? (
           <ErrorMessage errorMessage={'Required'} />
         ) : cnicValidate ? (
           <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />
         ) : null}
+
+        {firstFormData.productId ? (
+          <View style={{ paddingVertical: 10 }}>
+            <PickerComponent
+              onValueChange={handleFirstForm}
+              data={AllSiteRender}
+              name={'projectSiteId'}
+              placeholder="Deal Site"
+              selectedItem={firstFormData.projectSiteId}
+              enabled={updatePermission}
+            />
+            {firstFormValidate === true && !firstFormData.projectSiteId && (
+              <ErrorMessage errorMessage={'Required'} />
+            )}
+          </View>
+        ) : null}
+
         <View
           style={{
             flexDirection: 'row',
             flex: 1,
             // marginHorizontal: 10,
-            justifyContent: 'space-between',
           }}
         >
-          {!checkFirstFormPayment && (
-            <View style={[styles.btnView, showInstallmentFields ? { flex: 0.9 } : null]}>
-              <TouchableOpacity
-                style={[styles.bookNowBtn]}
-                onPress={() => {
-                  checkUnitDetail === true &&
-                    updatePermission &&
-                    addPaymentModalToggle(true, 'token')
-                }}
-              >
-                <Text
-                  style={[
-                    styles.bookNowBtnText,
-                    showInstallmentFields
-                      ? { fontSize: 12, fontFamily: AppStyles.fonts.boldFont }
-                      : { fontSize: 12, fontFamily: AppStyles.fonts.boldFont },
-                  ]}
-                >
-                  ADD TOKEN
-                </Text>
-              </TouchableOpacity>
-              {firstFormValidate === true && !checkFirstFormPayment ? (
-                <ErrorMessage errorMessage={'Token Required'} />
-              ) : null}
-            </View>
-          )}
-          <View style={[styles.btnView, !checkFirstFormPayment ? { paddingLeft: 10 } : null]}>
+          <View style={[styles.btnView]}>
             <TouchableOpacity
               style={styles.bookNowBtn}
               onPress={() => {

@@ -209,6 +209,7 @@ class DiaryFeedback extends Component {
         saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
           if (res) {
             let copyObj = { ...this.props.connectFeedback }
+            copyObj.selectedLead = selectedLead
             copyObj.status = 'pending'
             copyObj.reasonId = copyObj.feedbackId
             copyObj.reasonTag = copyObj.tag
@@ -584,6 +585,9 @@ class DiaryFeedback extends Component {
               this.handleNextAction({ type: 'reject', reason, isBlacklist })
             }
             selectedReason={connectFeedback.tag ? connectFeedback.tag : null}
+            message={
+              'Lead will be closed as lost with this action. Are you sure you want to continue?'
+            }
           />
 
           {actionType &&

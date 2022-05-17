@@ -4,9 +4,11 @@ import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import { Text, TouchableOpacity } from 'react-native'
 import AppStyles from '../AppStyles'
+import { Feather } from '@expo/vector-icons'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import HeaderRight from '../components/HeaderRight/index'
+import DropdownHeader from '../components/HeaderRight/DropdownHeader'
 import HeaderTitle from '../components/HeaderTitle/index'
 import WhiteLogo from '../components/WhiteLogo/index'
 import WhiteMenu from '../components/WhiteMenu/index'
@@ -50,6 +52,7 @@ import TeamTargets from '../screens/TeamTargets'
 import CMLeadTabs from './CMTabNavigator'
 import InventoryTabs from './InventoryTabNavigators'
 import Lead from './LeadsNavigator'
+import ProjectLead from './ProjectLeadsNavigator'
 import PropertyTabs from './PropertyTabNavigator'
 import RCMLeadTabs from './RCMTabNavigator'
 import TimeSlotManagement from '../screens/TimeSlotManagement' //ARMS-2180
@@ -62,6 +65,7 @@ import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 import Dialer from '../screens/Dialer'
 import ContactRegistrationFeedback from '../screens/ContactRegistrationFeedback'
 import PropertyList from '../screens/PropertyList'
+import lead from '../reducers/lead'
 
 const Stack = createStackNavigator()
 
@@ -231,14 +235,40 @@ function MainStack() {
         name="Leads"
         component={Lead}
         options={({ navigation, route }) => ({
-          title: 'LEADS',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation}
-            leftScreen={'Landing'}
-            leftBool={true} />,
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          //  headerShown:false,
+         // title: 'LEADS',
+            title: '',
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          ),
+          headerRight: (props) => <DropdownHeader
+            leadType={false}
+            hasBooking={true} navigation={navigation} />,
+
           headerTitleAlign: 'center',
         })}
       />
+
+      <Stack.Screen
+        name="ProjectLeads"
+        component={ProjectLead}
+        options={({ navigation, route }) => ({
+          //  title: 'LEADS',
+          title: '',
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          ),
+
+          headerRight: (props) => <DropdownHeader
+
+            hasBooking={true}
+            leadType={'ProjectLeads'}
+            navigation={navigation} />,
+
+          headerTitleAlign: 'left',
+        })}
+      />
+
       <Stack.Screen
         name="AddDiary"
         component={AddDiary}
@@ -284,7 +314,9 @@ function MainStack() {
         component={Client}
         options={({ navigation, route }) => ({
           title: 'CLIENTS',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          ),
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
@@ -329,7 +361,64 @@ function MainStack() {
             route.params && route.params.isFromLeadWorkflow
               ? (props) => <HeaderLeftLeadDetail route={route} navigation={navigation} />
               : (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
-          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerRight: (props) =>
+            route && route.params?.lead && route.params.lead.status === 'open' ? (
+              <TouchableOpacity
+                onPress={() => {
+                  if (route && route.params && route.params.type) {
+                    let selectedCity = null
+                    if (route.params.lead && route.params.lead.city) {
+                      selectedCity = {
+                        ...route.params.lead.city,
+                        value: route.params.lead.city.id,
+                      }
+                    }
+                    if (route.params && route.params.type === 'Investment') {
+                      navigation.navigate('AddCMLead', {
+                        pageName: 'CM',
+                        client:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer
+                            : null,
+                        name:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer.customerName
+                            : null,
+                        lead: route.params.lead ? route.params.lead : null,
+                        selectedCity,
+                        update: true,
+                      })
+                    } else {
+                      navigation.navigate('AddRCMLead', {
+                        pageName: 'RCM',
+                        client:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer
+                            : null,
+                        name:
+                          route.params.lead && route.params.lead.customer
+                            ? route.params.lead.customer.customerName
+                            : null,
+                        lead: route.params.lead ? route.params.lead : null,
+                        selectedCity,
+                        update: true,
+                        purpose:
+                          route.params.lead && route.params.lead.purpose
+                            ? route.params.lead.purpose
+                            : '',
+                      })
+                    }
+                  }
+                }}
+              >
+                <Feather
+                  style={{ marginHorizontal: 15 }}
+                  name="edit"
+                  size={24}
+                  color={AppStyles.colors.primaryColor}
+                />
+              </TouchableOpacity>
+            ) : null,
           headerTitleAlign: 'center',
         })}
       />
@@ -621,3 +710,4 @@ function MainStack() {
 }
 
 export default MainStack
+

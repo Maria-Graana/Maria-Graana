@@ -87,18 +87,20 @@ class ManualMap extends Component {
     this.getLocation()
 
     if (this.props.addPropertyParams?.latitude) {
+      const region = {
+        latitude: this.props.addPropertyParams.latitude,
+        longitude: this.props.addPropertyParams.longitude,
+        latitudeDelta,
+        longitudeDelta,
+      }
       this.setState({
         marker_lat: this.props.addPropertyParams.latitude,
         marker_long: this.props.addPropertyParams.longitude,
-        region: {
-          latitude: this.props.addPropertyParams.latitude,
-          longitude: this.props.addPropertyParams.longitude,
-          latitudeDelta,
-          longitudeDelta,
-        },
+        region: region,
         placeSearch: '',
         placesList: [],
       })
+      mapRef.current.animateToRegion(region, 500)
     }
 
     LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
@@ -119,8 +121,9 @@ class ManualMap extends Component {
       latitudeDelta: 0.012,
       longitudeDelta: 0.01,
     }
-
-    mapRef.current.animateToRegion(region, 500)
+    if (!this.props.addPropertyParams?.latitude) {
+      mapRef.current.animateToRegion(region, 500)
+    }
     this.setState({
       plots: '',
       chosen_plot: '',

@@ -21,7 +21,7 @@ import { FAB } from 'react-native-paper'
 import UpdateApp from '../../UpdateApp'
 import styles from './style'
 import { clearDiaries } from '../../actions/diary'
-import { setSlotData } from '../../actions/slotManagement'
+import { getTimeShifts, setSlotData } from '../../actions/slotManagement'
 import moment from 'moment'
 
 const _format = 'YYYY-MM-DD'
@@ -34,8 +34,20 @@ class Landing extends React.Component {
       tiles: [],
       tileNames: [
         {
+          tile: 'Clients',
+          actions: 'CLIENTS',
+        },
+        {
           tile: 'Diary',
           actions: 'DIARY',
+        },
+        {
+          tile: 'Project Leads',
+          actions: 'PROJECT_LEADS',
+        },
+        {
+          tile: 'Project Deals',
+          actions: 'PROJECT_LEADS',
         },
         {
           tile: 'Leads',
@@ -44,10 +56,6 @@ class Landing extends React.Component {
         {
           tile: 'My Deals',
           actions: 'PROJECT_LEADS',
-        },
-        {
-          tile: 'Clients',
-          actions: 'CLIENTS',
         },
         {
           tile: 'Properties',
@@ -78,6 +86,7 @@ class Landing extends React.Component {
 
   async componentDidMount() {
     const { navigation, dispatch } = this.props
+    dispatch(getTimeShifts())
     this.props.dispatch(setContacts())
     this._unsubscribe = navigation.addListener('focus', () => {
       dispatch(getListingsCount())
@@ -205,23 +214,88 @@ class Landing extends React.Component {
       if (oneTile.tile === 'Contacts') {
         getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
       }
-      if (oneTile.tile === 'Leads' || oneTile.tile === 'My Deals') {
+      if (oneTile.tile === 'Project Leads') {
         if (
           getPermissionValue(
-            PermissionFeatures.PROJECT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.PROJECT_LEADS_PAGE_VIEW,
+            permissions
+          )
+        ) {
+          if (label === 'Team Diary') label = "Team's Diary"
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
+        }
+      } else if (oneTile.tile === 'Leads') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ||
           getPermissionValue(
-            PermissionFeatures.BUY_RENT_LEADS,
-            PermissionActions.READ,
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.WANTED_LEADS_PAGE_VIEW,
             permissions
-          ) ||
-          getPermissionValue(PermissionFeatures.WANTED_LEADS, PermissionActions.READ, permissions)
+          )
         ) {
           if (label === 'Team Diary') label = "Team's Diary"
-          if (tile === 'Leads') label = 'Leads'
-          if (tile === 'MyDeals') label = 'Deals'
+          if (tile === 'Leads') label = 'Buy/Rent Leads'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
+        }
+      } else if (oneTile.tile === 'My Deals') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_BUY_RENT,
+            permissions
+          )
+        ) {
+          if (label === 'Team Diary') label = "Team's Diary"
+          if (tile === 'MyDeals') label = 'Buy/Rent Deals'
+          let oneTile = {
+            id: counter,
+            label: label,
+            pagePath: tile,
+            buttonImg: helper.tileImage(tile),
+            screenName: tile,
+          }
+          if (tile.toLocaleLowerCase() in count) oneTile.badges = count[tile.toLocaleLowerCase()]
+          else oneTile.badges = 0
+          if (oneTile.badges > 99) oneTile.badges = '99+'
+          tileData.push(oneTile)
+          counter++
+        }
+      } else if (oneTile.tile === 'Project Deals') {
+        if (
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.MY_DEALS_PROJECT,
+            permissions
+          )
+        ) {
+          if (label === 'Team Diary') label = "Team's Diary"
           let oneTile = {
             id: counter,
             label: label,
@@ -257,8 +331,8 @@ class Landing extends React.Component {
           if (label === 'Project Inventory') label = 'Inventory'
           if (label === 'InventoryTabs') label = 'Properties'
           if (label === 'Team Diary') label = "Team's Diary"
-          if (tile === 'Leads') label = 'Leads'
-          if (tile === 'MyDeals') label = 'Deals'
+          if (tile === 'Leads') label = 'Buy/Rent Leads'
+          if (tile === 'MyDeals') label = 'Buy/Rent Deals'
           let oneTile = {
             id: counter,
             label: label,
@@ -294,6 +368,16 @@ class Landing extends React.Component {
       navigation.navigate('Leads', {
         screen: screenName,
         hasBooking: true,
+      })
+    } else if (screenName === 'ProjectDeals') {
+      navigation.navigate('ProjectLeads', {
+        screen: screenName,
+        hasBooking: true,
+      })
+    } else if (screenName === 'ProjectLeads') {
+      navigation.navigate('ProjectLeads', {
+        screen: screenName,
+        hasBooking: false,
       })
     } else if (screenName === 'ProjectInventory') {
       navigation.navigate('AvailableInventory', {
@@ -433,7 +517,7 @@ class Landing extends React.Component {
                 navigateFunction={this.navigateFunction}
                 pagePath={item.item.pagePath}
                 screenName={item.item.screenName}
-                badges={item.item.badges} // temporarily hiding count for diary
+                // badges={item.item.badges} // temporarily hiding count for diary
                 label={item.item.label}
                 imagePath={item.item.buttonImg}
               />

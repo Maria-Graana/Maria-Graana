@@ -14,7 +14,7 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
   },
   pickerMain: {
-    width: '37%',
+    width: '70%',
     borderWidth: 1,
     borderRadius: 4,
     borderColor: '#ebebeb',

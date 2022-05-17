@@ -115,7 +115,7 @@ const AddAttachmentPopup = (props) => {
               loading={doneLoading}
               onPress={() => {
                 formSubmit()
-                purpose == 'addSCA' && formData.fileName && closeModal()
+                // purpose == 'addSCA' && formData.fileName && closeModal()
               }}
               containerStyle={styles.button}
             />

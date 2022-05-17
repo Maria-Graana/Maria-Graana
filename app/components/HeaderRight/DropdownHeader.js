@@ -64,7 +64,7 @@ class DropdownHeader extends React.Component {
                         }}>
 
                             <View style={{
-                                width: Platform.OS === 'ios' ? null : leadsDropdown === '&pageType=myLeads&hasBooking=false' || leadsDropdown === '&pageType=myDeals&hasBooking=true' ? wp('30') : wp('52%'), //160,
+                                width: Platform.OS === 'ios' ? null : leadsDropdown === '&pageType=myLeads&hasBooking=false' || leadsDropdown === '&pageType=myDeals&hasBooking=true' ? wp('30') : leadsDropdown ===  '&pageType=referredLeads&hasBooking=false'?wp('43%') :wp('50%'), 
                                 alignSelf: 'center',
                             }}>
                                 {leadType == 'ProjectLeads' ?

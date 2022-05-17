@@ -66,7 +66,7 @@ class PickerComponent extends React.Component {
       })
     }
     return (
-      <View style={[styles.pickerMain, { backgroundColor: '#fff',}]}>
+      <View style={[styles.pickerMain, { backgroundColor: enabled ? '#fff' : '#ddd', }]}>
         {showPickerArrow && (
           <Ionicons
             style={[styles.arrowIcon, customIconStyle]}

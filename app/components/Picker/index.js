@@ -78,8 +78,11 @@ class PickerComponent extends React.Component {
 
         <Picker
           headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff' }}
-          headerBackButtonTextStyle={{ color: '#fff' }}
-          headerTitleStyle={{ color: '#fff' }}
+          headerBackButtonTextStyle={{
+            color: '#fff',
+            minWidth: 150
+          }}
+          headerTitleStyle={{ color: '#fff', }}
           textStyle={[AppStyles.formFontSettings]}
           // mode='dialog'
           mode="dropdown"

@@ -1402,38 +1402,40 @@ class CMPayment extends Component {
         )
       }
 
-      newData['noOfInstallment'] = PaymentHelper.handleEmptyValue(
-        oneProduct.projectProduct.noInstallmentsMin
-      )
-      newData['installmentFrequency'] = PaymentHelper.handleEmptyValue(
-        oneProduct.projectProduct.installmentFrequencyMin
-      )
+      if (name === 'productId') {
+        newData['noOfInstallment'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.noInstallmentsMin
+        )
+        newData['installmentFrequency'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.installmentFrequencyMin
+        )
 
-      downPaymentValue = PaymentMethods.calculateDownPayment(
-        { ...oneProduct.projectProduct, downPayment: oneProduct.projectProduct.downPaymentMin },
-        newData.finalPrice, // final price including discount
-        0
-      )
+        downPaymentValue = PaymentMethods.calculateDownPayment(
+          { ...oneProduct.projectProduct, downPayment: oneProduct.projectProduct.downPaymentMin },
+          newData.finalPrice, // final price including discount
+          0
+        )
 
-      newData['downPayment'] = downPaymentValue
+        newData['downPayment'] = downPaymentValue
 
-      newData['downPaymentPercentage'] = PaymentHelper.handleEmptyValue(
-        oneProduct.projectProduct.downPaymentMin
-      )
+        newData['downPaymentPercentage'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.downPaymentMin
+        )
 
-      newData['possessionCharges'] = PaymentMethods.calculatePossessionCharges(
-        {
-          ...oneProduct.projectProduct,
-          possessionCharges: oneProduct.projectProduct.possessionChargesMin,
-        },
-        newData.finalPrice, // final price including discount
-        0
-      )
-      newData['possessionChargesPercentage'] = PaymentHelper.handleEmptyValue(
-        oneProduct.projectProduct.possessionChargesMin
-      )
-      newShowInstallmentFields = PaymentHelper.setProductPaymentPlan(oneProduct)
-      newData.paymentPlan = oneProduct.projectProduct.paymentPlan
+        newData['possessionCharges'] = PaymentMethods.calculatePossessionCharges(
+          {
+            ...oneProduct.projectProduct,
+            possessionCharges: oneProduct.projectProduct.possessionChargesMin,
+          },
+          newData.finalPrice, // final price including discount
+          0
+        )
+        newData['possessionChargesPercentage'] = PaymentHelper.handleEmptyValue(
+          oneProduct.projectProduct.possessionChargesMin
+        )
+        newShowInstallmentFields = PaymentHelper.setProductPaymentPlan(oneProduct)
+        newData.paymentPlan = oneProduct.projectProduct.paymentPlan
+      }
     }
 
     if (name === 'downPaymentPercentage') {

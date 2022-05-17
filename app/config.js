@@ -4,8 +4,8 @@ import Constants from 'expo-constants'
 
 const config = {
   development: {
-    apiPath: 'https://stage.arms.graana.rocks',
-    //  apiPath: 'https://dev.arms.graana.rocks',
+    // apiPath: 'https://stage.arms.graana.rocks',
+    apiPath: 'https://dev.arms.graana.rocks',
     graanaUrl: 'https://dev.graana.rocks',
     channel: 'development',
   },

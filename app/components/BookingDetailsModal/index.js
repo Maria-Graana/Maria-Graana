@@ -218,35 +218,35 @@ class BookingDetailsModal extends React.Component {
                   </View>
                 )}
                 <View>
-                  {lead.bookingForms && lead.bookingForms[0].downPaymentPercentage !== null && (
-                    <View style={styles.MainTileView}>
-                      <View>
-                        <Text style={styles.smallText}>Down Payment %</Text>
-                        <Text style={styles.largeText}>
-                          {lead.bookingForms[0].downPaymentPercentage != null
-                            ? this.handleEmptyValue(
-                                lead.bookingForms[0].downPaymentPercentage + '%'
-                              )
-                            : '0%'}
-                        </Text>
+                  {lead.bookingForms &&
+                    lead.bookingForms.length > 0 &&
+                    lead.bookingForms[0].downPaymentPercentage !== null && (
+                      <View style={styles.MainTileView}>
+                        <View>
+                          <Text style={styles.smallText}>Down Payment %</Text>
+                          <Text style={styles.largeText}>
+                            {this.handleEmptyValue(
+                              lead.bookingForms[0].downPaymentPercentage + '%'
+                            )}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  )}
-                  {lead.bookingForms && lead.bookingForms[0].downPayment !== null && (
-                    <View style={styles.MainTileView}>
-                      <View>
-                        <Text style={styles.smallText}>Down Payment Amount</Text>
-                        <Text style={styles.largeText}>
-                          {lead.bookingForms[0].downPayment != null
-                            ? 'PKR ' +
+                    )}
+                  {lead.bookingForms &&
+                    lead.bookingForms.length > 0 &&
+                    lead.bookingForms[0].downPayment !== null && (
+                      <View style={styles.MainTileView}>
+                        <View>
+                          <Text style={styles.smallText}>Down Payment Amount</Text>
+                          <Text style={styles.largeText}>
+                            {'PKR ' +
                               helper.currencyConvert(
                                 this.handleEmptyValue(lead.bookingForms[0].downPayment)
-                              )
-                            : '0'}
-                        </Text>
+                              )}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  )}
+                    )}
                 </View>
                 {data.category_charges !== null && (
                   <View style={styles.MainTileView}>

@@ -7,7 +7,16 @@ import { ActionSheet, Fab } from 'native-base'
 import { setLeadsDropdown } from '../../actions/leadsDropdown'
 
 import React from 'react'
-import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
+import {
+  FlatList,
+  Image,
+  Linking,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
@@ -38,6 +47,7 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import { callNumberFromLeads, callToAgent, setMultipleModalVisible } from '../../actions/diary'
 import { alltimeSlots, setTimeSlots } from '../../actions/slotManagement'
+import RBSheet from 'react-native-raw-bottom-sheet'
 
 var BUTTONS = [
   'Assign to team member',
@@ -46,8 +56,6 @@ var BUTTONS = [
   'Cancel',
 ]
 var CANCEL_INDEX = 3
-
-
 
 class RentLeads extends React.Component {
   constructor(props) {
@@ -94,11 +102,7 @@ class RentLeads extends React.Component {
     }
   }
 
-
-
-
   componentDidMount() {
-
     const { hasBooking = false } = this.props.route.params
     const { dispatch, navigation } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
@@ -108,9 +112,11 @@ class RentLeads extends React.Component {
       this.setFabActions()
     })
 
-    dispatch(setLeadsDropdown(hasBooking
-      ? '&pageType=myDeals&hasBooking=true'
-      : '&pageType=myLeads&hasBooking=false'))
+    dispatch(
+      setLeadsDropdown(
+        hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
+      )
+    )
   }
 
   componentWillUnmount() {
@@ -123,13 +129,9 @@ class RentLeads extends React.Component {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
     if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
-
       this.changePageType(this.props.leadsDropdown)
     }
-
   }
-
-
 
   getServerTime = () => {
     axios
@@ -610,7 +612,6 @@ class RentLeads extends React.Component {
     })
   }
 
-
   render() {
     const {
       leadsData,
@@ -632,9 +633,16 @@ class RentLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
-      phoneModelDataLoader
+      phoneModelDataLoader,
     } = this.state
-    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser, leadsDropdown } = this.props
+    const {
+      user,
+      navigation,
+      dispatch,
+      isMultiPhoneModalVisible,
+      getIsTerminalUser,
+      leadsDropdown,
+    } = this.props
     const {
       screen,
       hasBooking = false,
@@ -645,11 +653,7 @@ class RentLeads extends React.Component {
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
-
-
     return (
-
-
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {user.organization && user.organization.isPP && (
           <AndroidNotifications navigation={navigation} />
@@ -660,114 +664,66 @@ class RentLeads extends React.Component {
           data={shortListedProperties}
           popupLoading={popupLoading}
         />
-        {/* ******************* TOP FILTER MAIN VIEW ********** */}
-        <View style={{ marginBottom: 15 }}>
-          {showSearchBar ? (
-            <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
-              <View style={styles.idPicker}>
-                <PickerComponent
-                  placeholder={'NAME'}
-                  data={buyRentFilterType}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatusType}
-                  selectedItem={statusFilterType}
-                />
-              </View>
-              {statusFilterType === 'name' || statusFilterType === 'id' ? (
-                <Search
-                  containerWidth="75%"
-                  placeholder="Search leads here"
-                  searchText={searchText}
-                  setSearchText={(value) => this.setState({ searchText: value })}
-                  showShadow={false}
-                  showClearButton={true}
-                  returnKeyType={'search'}
-                  onSubmitEditing={() => this.fetchLeads()}
-                  autoFocus={true}
-                  closeSearchBar={() => this.clearAndCloseSearch()}
-                />
-              ) : (
-                <DateSearchFilter
-                  applyFilter={this.fetchLeads}
-                  clearFilter={() => this.clearAndCloseSearch()}
-                />
-              )}
-            </View>
-          ) : (
-            <View style={[styles.filterRow, {
-              paddingLeft: 15, 
-              justifyContent: 'space-between'
-            }]}>
-              {/* {hasBooking ? (
-                <View style={styles.emptyViewWidth}></View>
-              ) : ( */}
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Lead Status'}
-                  data={
-                    hasBooking
-                      ? StaticData.buyRentFilterDeals
-                      : hideCloseLostFilter
-                        ? StaticData.buyRentFilterAddTask
-                        : StaticData.buyRentFilter
-                  }
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
-              {/* )} */}
 
-              {/*      <View style={styles.iconRow}>
-                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
-              </View>
+        <RBSheet
+          ref={(ref) => {
+            this.RBSheet = ref
+          }}
+          height={300}
+          openDuration={250}
+          customStyles={{
+            container: {
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+          }}
+        ></RBSheet>
 
-             <View style={styles.pageTypeRow}>
-                <PickerComponent
-                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
-                  data={
-                    hasBooking
-                      ? getIsTerminalUser
-                        ? StaticData.filterDealsValueTerminal
-                        : StaticData.filterDealsValue
-                      : getIsTerminalUser
-                        ? StaticData.filterLeadsValueTerminal
-                        : StaticData.filterLeadsValue
-                  }
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changePageType}
-                  selectedItem={pageType}
-                  showPickerArrow={false}
-                />
-              </View> */}
-              <View style={styles.verticleLine} />
-              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
-                <TouchableOpacity
-                  style={styles.sortBtn}
-                  onPress={() => {
-                    this.openStatus()
-                  }}
-                >
-                  <Image source={SortImg} style={[styles.sortImg]} />
-                </TouchableOpacity>
-                <Ionicons
-                  style={{ alignSelf: 'center' }}
-                  onPress={() => {
-                    this.setState({ showSearchBar: true }, () => {
-                      this.clearStateValues()
-                    })
-                  }}
-                  name={'ios-search'}
-                  size={26}
-                  color={AppStyles.colors.primaryColor}
-                />
-              </View>
-            </View>
-          )}
+        {/* ******************* TOP FILTER MAIN VIEW START ********** */}
+        <View style={styles.filterMainView}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Lead Status</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Newest First</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>ID</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Name</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Date</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Country</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Email ID</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Phone #</Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>
+                Classification
+              </Text>
+              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            </Pressable>
+          </ScrollView>
         </View>
+        {/* ******************* TOP FILTER MAIN VIEW END ********** */}
+
         {leadsData && leadsData.length > 0 ? (
           <FlatList
             data={_.clone(leadsData)}
@@ -776,7 +732,7 @@ class RentLeads extends React.Component {
               <View>
                 {/* {console.log(user)} */}
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                  (user.organization && !user.organization.isPP) ? (
+                (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
@@ -786,13 +742,11 @@ class RentLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        :
-                        this.setState({ phoneModelDataLoader: true })
+                        : this.setState({ phoneModelDataLoader: true })
                       this.showMultiPhoneModal(true)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
                         if (res !== null) {
                           this.setState({ phoneModelDataLoader: false })
-
                         }
                       })
                     }}
@@ -873,16 +827,12 @@ class RentLeads extends React.Component {
           sort={sort}
         />
       </View>
-
     )
   }
 }
 
 mapStateToProps = (store) => {
-
-
   return {
-
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
@@ -891,7 +841,6 @@ mapStateToProps = (store) => {
     getIsTerminalUser: store.user.getIsTerminalUser,
 
     leadsDropdown: store.leadsDropdown.leadsDropdown,
-
   }
 }
 export default connect(mapStateToProps)(RentLeads)

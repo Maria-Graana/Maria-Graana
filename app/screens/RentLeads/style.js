@@ -85,4 +85,19 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: '3%',
   },
+  filterPressable: {
+    backgroundColor: AppStyles.colors.backgroundColor,
+    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  filterMainView: {
+    marginBottom: 10,
+    paddingVertical: 5,
+    backgroundColor: 'white',
+  },
 })

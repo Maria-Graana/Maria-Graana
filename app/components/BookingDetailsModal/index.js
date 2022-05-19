@@ -217,6 +217,37 @@ class BookingDetailsModal extends React.Component {
                     </View>
                   </View>
                 )}
+                <View>
+                  {lead.bookingForms &&
+                    lead.bookingForms.length > 0 &&
+                    lead.bookingForms[0].downPaymentPercentage !== null && (
+                      <View style={styles.MainTileView}>
+                        <View>
+                          <Text style={styles.smallText}>Down Payment %</Text>
+                          <Text style={styles.largeText}>
+                            {this.handleEmptyValue(
+                              lead.bookingForms[0].downPaymentPercentage + '%'
+                            )}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                  {lead.bookingForms &&
+                    lead.bookingForms.length > 0 &&
+                    lead.bookingForms[0].downPayment !== null && (
+                      <View style={styles.MainTileView}>
+                        <View>
+                          <Text style={styles.smallText}>Down Payment Amount</Text>
+                          <Text style={styles.largeText}>
+                            {'PKR ' +
+                              helper.currencyConvert(
+                                this.handleEmptyValue(lead.bookingForms[0].downPayment)
+                              )}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                </View>
                 {data.category_charges !== null && (
                   <View style={styles.MainTileView}>
                     <View>

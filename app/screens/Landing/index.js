@@ -212,7 +212,7 @@ class Landing extends React.Component {
       let label = tile
       tile = tile.replace(/ /g, '')
       if (oneTile.tile === 'Contacts') {
-        getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
+        getPermissionValue(PermissionFeatures.APP_PAGES, PermissionActions.CONTACTS, permissions)
       }
       if (oneTile.tile === 'Project Leads') {
         if (

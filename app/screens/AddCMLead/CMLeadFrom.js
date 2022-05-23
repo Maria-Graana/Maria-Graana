@@ -99,7 +99,7 @@ class CMLeadFrom extends Component {
             value={clientName}
             showError={checkValidation === true && CMLead.customerId === ''}
             errorMessage="Required"
-            disabled={update}
+            disabled={update || this.props.nonEditableClient}
           />
         )}
 

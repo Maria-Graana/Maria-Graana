@@ -95,17 +95,17 @@ class BuyLeads extends React.Component {
     }
   }
 
-
   fetchAddedLeads = (client) => {
     const { route } = this.props
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
     const { clientDetails } = route.params
-    let url;
+    let url
     if (clientDetails) {
       url = `/api/leads?customerId=${client.id}&customerLeads=true`
+    } else {
+      url = `/api/leads?customerId=${client.id}`
     }
-    else { url = `/api/leads?customerId=${client.id}` }
     axios
       .get(url)
       .then((res) => {
@@ -133,23 +133,17 @@ class BuyLeads extends React.Component {
         dispatch(setPPBuyNotification(false))
       }
 
-      if (client) {
-
-        this.fetchAddedLeads(client)
-      }
-      else {
-        dispatch(getListingsCount())
-        this.getServerTime()
-        this.onFocus()
-
-      }
+      dispatch(getListingsCount())
+      this.getServerTime()
+      this.onFocus()
     })
     this.setFabActions()
 
-
-    dispatch(setLeadsDropdown(hasBooking
-      ? '&pageType=myDeals&hasBooking=true'
-      : '&pageType=myLeads&hasBooking=false'))
+    dispatch(
+      setLeadsDropdown(
+        hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
+      )
+    )
   }
 
   componentWillUnmount() {
@@ -162,7 +156,6 @@ class BuyLeads extends React.Component {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
     if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
-
       this.changePageType(this.props.leadsDropdown)
     }
   }
@@ -244,9 +237,10 @@ class BuyLeads extends React.Component {
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
-    const { hasBooking, navFrom } = this.props.route.params
+    const { hasBooking, navFrom, client } = this.props.route.params
     let isAiraPermission = helper.getAiraPermission(permissions)
     let query = ``
+
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
@@ -272,8 +266,12 @@ class BuyLeads extends React.Component {
           : (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
+
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
+    }
+    if (client) {
+      query = `${query}&customerId=${client.id}`
     }
     axios
       .get(`${query}`)
@@ -309,9 +307,13 @@ class BuyLeads extends React.Component {
       copyClient.id = clientId
     }
     navigation.navigate(page, {
+      noEditableClient: copyClient ? true : false,
       pageName: status,
       client: copyClient,
-      name: copyClient && copyClient.customerName ? copyClient.customerName : `${copyClient?.first_name} ${copyClient?.last_name}`,
+      name:
+        copyClient && copyClient.customerName
+          ? copyClient.customerName
+          : `${copyClient?.first_name} ${copyClient?.last_name}`,
       purpose: 'sale',
     })
   }
@@ -604,7 +606,7 @@ class BuyLeads extends React.Component {
 
   setFabActions = () => {
     const { createBuyRentLead, createProjectLead } = this.state
-    const { route } = this.props;
+    const { route } = this.props
     const { client } = route.params
     let fabActions = []
     if (createBuyRentLead) {
@@ -613,8 +615,9 @@ class BuyLeads extends React.Component {
         label: 'Buy/Rent Lead',
         color: AppStyles.colors.primaryColor,
         onPress: () => {
-          if (client) { this.goToFormPage('AddRCMLead', 'RCM', client, client?.id) }
-          else {
+          if (client) {
+            this.goToFormPage('AddRCMLead', 'RCM', client, client?.id)
+          } else {
             this.goToFormPage('AddRCMLead', 'RCM', null)
           }
         },
@@ -626,8 +629,9 @@ class BuyLeads extends React.Component {
         label: 'Investment Lead',
         color: AppStyles.colors.primaryColor,
         onPress: () => {
-          if (client) { this.goToFormPage('AddCMLead', 'CM', client, client?.id) }
-          else {
+          if (client) {
+            this.goToFormPage('AddCMLead', 'CM', client, client?.id)
+          } else {
             this.goToFormPage('AddCMLead', 'CM', null)
           }
         },
@@ -659,10 +663,17 @@ class BuyLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
-      phoneModelDataLoader
+      phoneModelDataLoader,
     } = this.state
-    const { leadsDropdown, user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
-      this.props
+    const {
+      leadsDropdown,
+      user,
+      permissions,
+      dispatch,
+      navigation,
+      isMultiPhoneModalVisible,
+      getIsTerminalUser,
+    } = this.props
     const {
       screen,
       hasBooking = false,
@@ -674,7 +685,7 @@ class BuyLeads extends React.Component {
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
-      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0, }]}>
+      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
           <ShortlistedProperties
@@ -716,10 +727,15 @@ class BuyLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, {
-              paddingLeft: 15,
-              justifyContent: 'space-between'
-            }]}>
+            <View
+              style={[
+                styles.filterRow,
+                {
+                  paddingLeft: 15,
+                  justifyContent: 'space-between',
+                },
+              ]}
+            >
               {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
               ) : ( */}
@@ -730,8 +746,8 @@ class BuyLeads extends React.Component {
                     hasBooking
                       ? StaticData.buyRentFilterDeals
                       : hideCloseLostFilter
-                        ? StaticData.buyRentFilterAddTask
-                        : StaticData.buyRentFilter
+                      ? StaticData.buyRentFilterAddTask
+                      : StaticData.buyRentFilter
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -795,7 +811,7 @@ class BuyLeads extends React.Component {
             renderItem={({ item }) => (
               <View>
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                  (user.organization && !user.organization.isPP) ? (
+                (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
@@ -831,8 +847,7 @@ class BuyLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        :
-                        this.setState({ phoneModelDataLoader: true })
+                        : this.setState({ phoneModelDataLoader: true })
                       this.showMultiPhoneModal(true)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
                         if (res !== null) {

@@ -355,12 +355,7 @@ class CMBottomNav extends React.Component {
     }
   }
 
-
-
-
   navigateFunction = (screenName) => {
-
-
     const { navigation, client } = this.props
 
     if (screenName === 'Properties') {
@@ -371,10 +366,8 @@ class CMBottomNav extends React.Component {
           client: client,
           clientDetails: true,
         },
-
       })
-    }
-    else if (screenName === 'Leads') {
+    } else if (screenName === 'Leads') {
       navigation.navigate('Leads', {
         screen: screenName,
         hasBooking: false,
@@ -472,10 +465,8 @@ class CMBottomNav extends React.Component {
 
     return (
       <View style={styles.bottomNavMain}>
-
         <TouchableOpacity
           style={[styles.followBtn]}
-
           onPress={() => this.showMultiPhoneModal(!this.state.isMultiPhoneModalVisible)}
         >
           <View style={styles.align}>
@@ -486,52 +477,54 @@ class CMBottomNav extends React.Component {
             <Text style={styles.followText}>Call</Text>
           </View>
         </TouchableOpacity>
+        {getPermissionValue(
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.PROJECT_LEADS_PAGE_VIEW,
+          permissions
+        ) && (
+          <TouchableOpacity
+            style={styles.followBtn}
+            onPress={() => {
+              this.navigateFunction('ProjectLeads')
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/clientBottomTab/ProjectLeads.png')}
+              />
+              <Text style={styles.followText}>Project Leads</Text>
+            </View>
+          </TouchableOpacity>
+        )}
 
-
-
-
+        {(getPermissionValue(
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
+          permissions
+        ) ||
+          getPermissionValue(
+            PermissionFeatures.APP_PAGES,
+            PermissionActions.WANTED_LEADS_PAGE_VIEW,
+            permissions
+          )) && (
+          <TouchableOpacity
+            style={styles.followBtn}
+            onPress={() => {
+              this.navigateFunction('Leads')
+            }}
+          >
+            <View style={styles.align}>
+              <Image
+                style={styles.bottomNavImg}
+                source={require('../../../assets/img/clientBottomTab/RentLeads.png')}
+              />
+              <Text style={styles.followText}>Buy/Rent Leads</Text>
+            </View>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
-          style={
-            styles.followBtn
-          }
-          onPress={() => {
-
-            this.navigateFunction('ProjectLeads')
-          }}
-        >
-          <View style={styles.align}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/clientBottomTab/ProjectLeads.png')}
-            />
-            <Text style={styles.followText}>Project Leads</Text>
-          </View>
-        </TouchableOpacity>
-
-
-
-        <TouchableOpacity
-          style={
-            styles.followBtn
-          }
-          onPress={() => {
-            this.navigateFunction('Leads')
-          }}
-        >
-          <View style={styles.align}>
-            <Image
-              style={styles.bottomNavImg}
-              source={require('../../../assets/img/clientBottomTab/RentLeads.png')}
-            />
-            <Text style={styles.followText}>Buy/Rent Leads</Text>
-          </View>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity
-          style={
-            styles.followBtn
-          }
+          style={styles.followBtn}
           onPress={() => {
             this.navigateFunction('Properties')
           }}
@@ -544,15 +537,12 @@ class CMBottomNav extends React.Component {
             <Text style={styles.followText}>Properties</Text>
           </View>
         </TouchableOpacity>
-
-
         <MultiplePhoneOptionModal
           // modelDataLoading={phoneModelDataLoader}
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={this.props.navigation}
         />
-
       </View>
     )
   }

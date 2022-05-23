@@ -45,9 +45,7 @@ class CMLeadFrom extends Component {
 
       isPriceModalVisible,
 
-      
       isSizeModalVisible,
-    
 
       showSizeModal,
       onModalSizeDonePressed,
@@ -79,6 +77,7 @@ class CMLeadFrom extends Component {
         {/* *********** Main Container *********** */}
         <View style={[AppStyles.container]}>
           <InnerRCMForm
+            nonEditableClient={this.props.nonEditableClient}
             navigation={this.props.navigation}
             sizeUnitList={sizeUnitList}
             organizations={_.clone(organizations)}
@@ -101,7 +100,7 @@ class CMLeadFrom extends Component {
             loading={loading}
             isBedBathModalVisible={isBedBathModalVisible}
             isPriceModalVisible={isPriceModalVisible}
-            isSizeModalVisible={isSizeModalVisible}     
+            isSizeModalVisible={isSizeModalVisible}
             setParentState={setParentState}
           />
         </View>

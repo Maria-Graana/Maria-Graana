@@ -156,13 +156,22 @@ class WantedLeads extends React.Component {
       statusFilterType,
     } = this.state
     this.setState({ loading: true })
-    const { hasBooking } = this.props.route.params
+    const { hasBooking, client } = this.props.route.params
     const { user } = this.props
+
     let query = ''
-    if (user.armsUserRole && user.armsUserRole.groupManger) {
-      query = `/api/wanted?page=1&pageSize=${pageSize}&showAllLeads=true`
+    if (client) {
+      if (user.armsUserRole && user.armsUserRole.groupManger) {
+        query = `/api/wanted?customerId=${client.id}&page=1&pageSize=${pageSize}&showAllLeads=true`
+      } else {
+        query = `/api/wanted?customerId=${client.id}&pageSize=${pageSize}&page=${page}`
+      }
     } else {
-      query = `/api/wanted?pageSize=${pageSize}&page=${page}`
+      if (user.armsUserRole && user.armsUserRole.groupManger) {
+        query = `/api/wanted?page=1&pageSize=${pageSize}&showAllLeads=true`
+      } else {
+        query = `/api/wanted?pageSize=${pageSize}&page=${page}`
+      }
     }
     // if (showSearchBar) {
     //   if (statusFilterType === 'name' && searchText !== '') {
@@ -224,9 +233,13 @@ class WantedLeads extends React.Component {
       copyClient.id = clientId
     }
     navigation.navigate(page, {
+      noEditableClient: copyClient ? true : false,
       pageName: status,
       client: copyClient,
-      name: copyClient && copyClient.customerName,
+      name:
+        copyClient && copyClient.customerName
+          ? copyClient.customerName
+          : `${copyClient?.first_name} ${copyClient?.last_name}`,
       purpose: 'wanted',
     })
   }
@@ -859,13 +872,35 @@ class WantedLeads extends React.Component {
                 icon: 'plus',
                 label: 'Buy/Rent Lead',
                 color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null, null),
+                onPress: () => {
+                  if (this.props.route?.params?.client) {
+                    this.goToFormPage(
+                      'AddRCMLead',
+                      'RCM',
+                      this.props.route?.params?.client,
+                      this.props.route?.params?.client?.id
+                    )
+                  } else {
+                    this.goToFormPage('AddRCMLead', 'RCM', null, null)
+                  }
+                },
               },
               {
                 icon: 'plus',
                 label: 'Investment Lead',
                 color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddCMLead', 'CM', null, null),
+                onPress: () => {
+                  if (this.props.route?.params?.client) {
+                    this.goToFormPage(
+                      'AddRCMLead',
+                      'CM',
+                      this.props.route?.params?.client,
+                      this.props.route?.params?.client?.id
+                    )
+                  } else {
+                    this.goToFormPage('AddCMLead', 'CM', null, null)
+                  }
+                },
               },
             ]}
             onStateChange={({ open }) => this.setState({ open })}

@@ -109,17 +109,12 @@ class InvestLeads extends React.Component {
       )
     )
 
-    if (client) {
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.getServerTime()
+      this.onFocus()
+    })
 
-      this.fetchAddedLeads(client)
-    } else {
-      this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        dispatch(getListingsCount())
-        this.getServerTime()
-        this.onFocus()
-        
-      })
-    }
     this.setFabActions()
   }
 
@@ -154,15 +149,16 @@ class InvestLeads extends React.Component {
   }
 
   fetchAddedLeads = (client) => {
-    const {  route } = this.props
+    const { route } = this.props
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
     const { clientDetails } = route.params
-    let url;
+    let url
     if (clientDetails) {
       url = `/api/leads/projects?customerId=${client.id}&customerLeads=true`
+    } else {
+      url = `/api/leads/projects?customerId=${client.id}`
     }
-    else { url = `/api/leads/projects?customerId=${client.id}` }
     axios
       .get(url)
       .then((res) => {
@@ -259,10 +255,11 @@ class InvestLeads extends React.Component {
       statusFilterType,
       pageType,
     } = this.state
-    const { hasBooking, navFrom } = this.props.route.params
+    const { hasBooking, navFrom, client } = this.props.route.params
     const { user } = this.props
     this.setState({ loading: true })
     let query = ``
+
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
@@ -288,6 +285,11 @@ class InvestLeads extends React.Component {
           : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
+
+    if (client) {
+      query = `${query}&customerId=${client.id}&customerLeads=true`
+    }
+
     axios
       .get(`${query}`)
       .then((res) => {
@@ -319,7 +321,16 @@ class InvestLeads extends React.Component {
 
   goToFormPage = (page, status, client) => {
     const { navigation } = this.props
-    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
+
+    navigation.navigate(page, {
+      noEditableClient: client ? true : false,
+      pageName: status,
+      client,
+      name:
+        client && client.customerName
+          ? client.customerName
+          : `${client?.first_name} ${client?.last_name}`,
+    })
   }
 
   changeStatus = (status) => {
@@ -577,12 +588,16 @@ class InvestLeads extends React.Component {
   setFabActions = () => {
     const { createBuyRentLead, createProjectLead } = this.state
     let fabActions = []
+    const { route } = this.props
+    const { client } = route.params
     if (createBuyRentLead) {
       fabActions.push({
         icon: 'plus',
         label: 'Buy/Rent Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+        onPress: () => {
+          this.goToFormPage('AddRCMLead', 'RCM', client)
+        },
       })
     }
     if (createProjectLead) {
@@ -590,7 +605,7 @@ class InvestLeads extends React.Component {
         icon: 'plus',
         label: 'Investment Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', client),
       })
     }
     this.setState({
@@ -737,8 +752,8 @@ class InvestLeads extends React.Component {
                     hasBooking
                       ? StaticData.investmentFilterDeals
                       : hideCloseLostFilter
-                        ? StaticData.investmentFilterLeadsAddTask
-                        : StaticData.investmentFilterLeads
+                      ? StaticData.investmentFilterLeadsAddTask
+                      : StaticData.investmentFilterLeads
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -832,8 +847,8 @@ class InvestLeads extends React.Component {
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
         {(createProjectLead || createBuyRentLead) &&
-          (screen === 'Leads' || screen === 'ProjectLeads') &&
-          !hideCloseLostFilter ? (
+        (screen === 'Leads' || screen === 'ProjectLeads') &&
+        !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"

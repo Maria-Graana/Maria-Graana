@@ -47,8 +47,6 @@ var BUTTONS = [
 ]
 var CANCEL_INDEX = 3
 
-
-
 class RentLeads extends React.Component {
   constructor(props) {
     super(props)
@@ -99,11 +97,12 @@ class RentLeads extends React.Component {
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
     const { clientDetails } = route.params
-    let url;
+    let url
     if (clientDetails) {
       url = `/api/leads?customerId=${client.id}&customerLeads=true`
+    } else {
+      url = `/api/leads?customerId=${client.id}`
     }
-    else { url = `/api/leads?customerId=${client.id}` }
     axios
       .get(url)
       .then((res) => {
@@ -122,30 +121,24 @@ class RentLeads extends React.Component {
       })
   }
 
-
   componentDidMount() {
-
     const { hasBooking = false } = this.props.route.params
-    const { dispatch, navigation, route } = this.props;
+    const { dispatch, navigation, route } = this.props
 
     const { client } = route.params
-    if (client) {
 
-      this.fetchAddedLeads(client)
-    }
-    else {
-      this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        dispatch(getListingsCount())
-        this.getServerTime()
-        this.onFocus()
-
-      })
-    }
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      this.getServerTime()
+      this.onFocus()
+    })
 
     this.setFabActions()
-    dispatch(setLeadsDropdown(hasBooking
-      ? '&pageType=myDeals&hasBooking=true'
-      : '&pageType=myLeads&hasBooking=false'))
+    dispatch(
+      setLeadsDropdown(
+        hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
+      )
+    )
   }
 
   componentWillUnmount() {
@@ -158,13 +151,9 @@ class RentLeads extends React.Component {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
     if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
-
       this.changePageType(this.props.leadsDropdown)
     }
-
   }
-
-
 
   getServerTime = () => {
     axios
@@ -235,9 +224,10 @@ class RentLeads extends React.Component {
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
-    const { hasBooking, navFrom } = this.props.route.params
+    const { hasBooking, navFrom, client } = this.props.route.params
     let isAiraPermission = helper.getAiraPermission(permissions)
     let query = ``
+
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
@@ -263,10 +253,14 @@ class RentLeads extends React.Component {
           : (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
+
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
     }
-    // console.log(query)
+    if (client) {
+      query = `${query}&customerId=${client.id}`
+    }
+
     axios
       .get(`${query}`)
       .then((res) => {
@@ -294,16 +288,19 @@ class RentLeads extends React.Component {
   }
 
   goToFormPage = (page, status, client, clientId) => {
-
     const { navigation } = this.props
     const copyClient = client ? { ...client } : null
     if (copyClient) {
       copyClient.id = clientId
     }
     navigation.navigate(page, {
+      noEditableClient: copyClient ? true : false,
       pageName: status,
       client: copyClient,
-      name: copyClient && copyClient.customerName ? copyClient.customerName : `${copyClient?.first_name} ${copyClient?.last_name}`,
+      name:
+        copyClient && copyClient.customerName
+          ? copyClient.customerName
+          : `${copyClient?.first_name} ${copyClient?.last_name}`,
       purpose: 'rent',
     })
   }
@@ -624,7 +621,7 @@ class RentLeads extends React.Component {
 
   setFabActions = () => {
     const { createBuyRentLead, createProjectLead } = this.state
-    const { route } = this.props;
+    const { route } = this.props
     const { client } = route.params
     let fabActions = []
     if (createBuyRentLead) {
@@ -633,8 +630,9 @@ class RentLeads extends React.Component {
         label: 'Buy/Rent Lead',
         color: AppStyles.colors.primaryColor,
         onPress: () => {
-          if (client) { this.goToFormPage('AddRCMLead', 'RCM', client, client?.id) }
-          else {
+          if (client) {
+            this.goToFormPage('AddRCMLead', 'RCM', client, client?.id)
+          } else {
             this.goToFormPage('AddRCMLead', 'RCM', null)
           }
         },
@@ -646,8 +644,9 @@ class RentLeads extends React.Component {
         label: 'Investment Lead',
         color: AppStyles.colors.primaryColor,
         onPress: () => {
-          if (client) { this.goToFormPage('AddCMLead', 'CM', client, client?.id) }
-          else {
+          if (client) {
+            this.goToFormPage('AddCMLead', 'CM', client, client?.id)
+          } else {
             this.goToFormPage('AddCMLead', 'CM', null)
           }
         },
@@ -657,7 +656,6 @@ class RentLeads extends React.Component {
       fabActions: fabActions,
     })
   }
-
 
   render() {
     const {
@@ -680,9 +678,16 @@ class RentLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
-      phoneModelDataLoader
+      phoneModelDataLoader,
     } = this.state
-    const { user, navigation, dispatch, isMultiPhoneModalVisible, getIsTerminalUser, leadsDropdown } = this.props
+    const {
+      user,
+      navigation,
+      dispatch,
+      isMultiPhoneModalVisible,
+      getIsTerminalUser,
+      leadsDropdown,
+    } = this.props
     const {
       screen,
       hasBooking = false,
@@ -693,11 +698,7 @@ class RentLeads extends React.Component {
     let buyRentFilterType = StaticData.buyRentFilterType
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
-
-
     return (
-
-
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {user.organization && user.organization.isPP && (
           <AndroidNotifications navigation={navigation} />
@@ -743,10 +744,15 @@ class RentLeads extends React.Component {
               )}
             </View>
           ) : (
-            <View style={[styles.filterRow, {
-              paddingLeft: 15,
-              justifyContent: 'space-between'
-            }]}>
+            <View
+              style={[
+                styles.filterRow,
+                {
+                  paddingLeft: 15,
+                  justifyContent: 'space-between',
+                },
+              ]}
+            >
               {/* {hasBooking ? (
                 <View style={styles.emptyViewWidth}></View>
               ) : ( */}
@@ -757,8 +763,8 @@ class RentLeads extends React.Component {
                     hasBooking
                       ? StaticData.buyRentFilterDeals
                       : hideCloseLostFilter
-                        ? StaticData.buyRentFilterAddTask
-                        : StaticData.buyRentFilter
+                      ? StaticData.buyRentFilterAddTask
+                      : StaticData.buyRentFilter
                   }
                   customStyle={styles.pickerStyle}
                   customIconStyle={styles.customIconStyle}
@@ -824,7 +830,7 @@ class RentLeads extends React.Component {
               <View>
                 {/* {console.log(user)} */}
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                  (user.organization && !user.organization.isPP) ? (
+                (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     dispatch={this.props.dispatch}
                     purposeTab={'rent'}
@@ -834,13 +840,11 @@ class RentLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        :
-                        this.setState({ phoneModelDataLoader: true })
+                        : this.setState({ phoneModelDataLoader: true })
                       this.showMultiPhoneModal(true)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
                         if (res !== null) {
                           this.setState({ phoneModelDataLoader: false })
-
                         }
                       })
                     }}
@@ -921,16 +925,12 @@ class RentLeads extends React.Component {
           sort={sort}
         />
       </View>
-
     )
   }
 }
 
 mapStateToProps = (store) => {
-
-
   return {
-
     user: store.user.user,
     PPBuyNotification: store.Notification.PPBuyNotification,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
@@ -939,7 +939,6 @@ mapStateToProps = (store) => {
     getIsTerminalUser: store.user.getIsTerminalUser,
 
     leadsDropdown: store.leadsDropdown.leadsDropdown,
-
   }
 }
 export default connect(mapStateToProps)(RentLeads)

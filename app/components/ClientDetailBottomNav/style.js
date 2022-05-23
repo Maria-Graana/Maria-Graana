@@ -5,7 +5,6 @@ import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   bottomNavMain: {
-
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
@@ -16,7 +15,8 @@ export default styles = StyleSheet.create({
     zIndex: 10,
     height: 65,
     borderTopWidth: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    //  justifyContent: 'space-between',
     borderTopColor: AppStyles.colors.backgroundColor,
   },
   bottomNavBtn: {
@@ -32,10 +32,8 @@ export default styles = StyleSheet.create({
   align: {
     alignItems: 'center',
     //width:70,
-
   },
   bottomNavImg: {
-
     resizeMode: 'contain',
     width: 25,
     height: 30,

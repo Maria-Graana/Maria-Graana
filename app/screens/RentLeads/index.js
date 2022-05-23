@@ -5,7 +5,6 @@ import axios from 'axios'
 import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import { setLeadsDropdown } from '../../actions/leadsDropdown'
-
 import React from 'react'
 import {
   FlatList,
@@ -50,6 +49,8 @@ import { alltimeSlots, setTimeSlots } from '../../actions/slotManagement'
 import RBSheet from 'react-native-raw-bottom-sheet'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
 import { getCountryCode } from '../../actions/country'
+import FilterLeadsView from '../../components/FilterLeadsView'
+import ListViewComponent from '../../components/ListViewComponent'
 
 var BUTTONS = [
   'Assign to team member',
@@ -341,7 +342,7 @@ class RentLeads extends React.Component {
     })
   }
 
-  searchCountry = (name, value) => {
+  searchCountry = (value, name) => {
     this.clearStateValues()
     this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
       this.fetchLeads()
@@ -349,7 +350,7 @@ class RentLeads extends React.Component {
     this.RBSheet.close()
   }
 
-  setClassification = (name, value) => {
+  setClassification = (value, name) => {
     this.clearStateValues()
     this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
       this.fetchLeads()
@@ -785,44 +786,31 @@ class RentLeads extends React.Component {
           ref={(ref) => {
             this.RBSheet = ref
           }}
-          height={filterType == 'date' ? 500 : filterType == 'country' ? 700 : 300}
+          height={
+            filterType == 'classification'
+              ? 200
+              : filterType == 'date'
+              ? 500
+              : filterType == 'country'
+              ? 700
+              : 300
+          }
           openDuration={250}
         >
           {filterType == 'leadStatus' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <Text style={{ fontSize: 18, marginBottom: 10 }}>Lead Status</Text>
-              <FlatList
-                data={
-                  hasBooking
-                    ? StaticData.buyRentFilterDeals
-                    : hideCloseLostFilter
-                    ? StaticData.buyRentFilterAddTask
-                    : StaticData.buyRentFilter
-                }
-                renderItem={({ item, index }) => (
-                  <Pressable
-                    onPress={() => this.changeStatus(item.value, item.name)}
-                    style={{ justifyContent: 'center' }}
-                  >
-                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
-                  </Pressable>
-                )}
-              />
-            </View>
+            <ListViewComponent
+              name={'Lead Status'}
+              data={
+                hasBooking
+                  ? StaticData.buyRentFilterDeals
+                  : hideCloseLostFilter
+                  ? StaticData.buyRentFilterAddTask
+                  : StaticData.buyRentFilter
+              }
+              onPress={this.changeStatus}
+            />
           ) : filterType == 'sort' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <FlatList
-                data={StaticData.sortData}
-                renderItem={({ item, index }) => (
-                  <Pressable
-                    onPress={() => this.sendStatus(item.value, item.name)}
-                    style={{ justifyContent: 'center' }}
-                  >
-                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
-                  </Pressable>
-                )}
-              />
-            </View>
+            <ListViewComponent data={StaticData.sortData} onPress={this.sendStatus} />
           ) : filterType == 'id' ? (
             <View style={{ padding: 20, justifyContent: 'center' }}>
               <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by ID</Text>
@@ -941,242 +929,30 @@ class RentLeads extends React.Component {
               </Pressable>
             </View>
           ) : filterType == 'country' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <FlatList
-                data={countries}
-                renderItem={({ item, index }) => (
-                  <Pressable
-                    onPress={() => this.searchCountry(item.name, item.phone)}
-                    style={{ justifyContent: 'center' }}
-                  >
-                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
-                  </Pressable>
-                )}
-              />
-            </View>
+            <ListViewComponent data={countries} onPress={this.searchCountry} type={'country'} />
           ) : filterType == 'classification' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <FlatList
-                data={StaticData.classificationFilter}
-                renderItem={({ item, index }) => (
-                  <Pressable
-                    onPress={() => this.setClassification(item.name, item.value)}
-                    style={{ justifyContent: 'center' }}
-                  >
-                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
-                  </Pressable>
-                )}
-              />
-            </View>
+            <ListViewComponent
+              name={'Search by Classification Type'}
+              data={StaticData.classificationFilter}
+              onPress={this.setClassification}
+            />
           ) : null}
         </RBSheet>
         {/* ********** RN Bottom Sheet ********** */}
 
         {/* ******************* TOP FILTER MAIN VIEW START ********** */}
-        <View style={styles.filterMainView}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-            <Pressable
-              onPress={() => this.setBottomSheet('leadStatus')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: statusLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: statusLead ? 'white' : AppStyles.colors.textColor }}
-              >
-                {statusLead ? statusLead : 'Lead Status'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={statusLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('sort')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: sortLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: sortLead ? 'white' : AppStyles.colors.textColor }}
-              >
-                {sortLead ? sortLead : 'Newest First'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={sortLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('id')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: idLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text style={{ fontSize: 12, color: idLead ? 'white' : AppStyles.colors.textColor }}>
-                {idLead ? `ID: ${idLead}` : 'ID'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={idLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('name')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: nameLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: nameLead ? 'white' : AppStyles.colors.textColor }}
-              >
-                {nameLead ? nameLead : 'Name'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={nameLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('date')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: dateLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: dateLead ? 'white' : AppStyles.colors.textColor }}
-              >
-                {dateLead ? dateLead : 'Date'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={dateLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('country')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: countryLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: countryLead ? 'white' : AppStyles.colors.textColor }}
-              >
-                {countryLead ? countryLead : 'Country'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={countryLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('email')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: emailLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: emailLead ? 'white' : AppStyles.colors.textColor }}
-              >
-                {emailLead ? emailLead : 'Email ID'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={emailLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('phone')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: phoneLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: phoneLead ? 'white' : AppStyles.colors.textColor }}
-              >
-                {phoneLead ? phoneLead : 'Phone #'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={phoneLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() => this.setBottomSheet('classification')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: classificationLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                  marginRight: 25,
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: classificationLead ? 'white' : AppStyles.colors.textColor,
-                }}
-              >
-                {classificationLead ? classificationLead : 'Classification'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={classificationLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
-          </ScrollView>
-        </View>
+        <FilterLeadsView
+          statusLead={statusLead}
+          sortLead={sortLead}
+          idLead={idLead}
+          nameLead={nameLead}
+          dateLead={dateLead}
+          countryLead={countryLead}
+          emailLead={emailLead}
+          phoneLead={phoneLead}
+          classificationLead={classificationLead}
+          setBottomSheet={this.setBottomSheet}
+        />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 
         {leadsData && leadsData.length > 0 ? (

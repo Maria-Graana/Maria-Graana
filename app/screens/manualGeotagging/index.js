@@ -108,7 +108,7 @@ class ManualMap extends Component {
   }
 
   getLocation = async () => {
-    const { status } = await Location.requestBackgroundPermissionsAsync()
+    const { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== 'granted') {
       alert(
         'Permission to access location was denied, please go to phone settings and give permission to ARMS app to continue'

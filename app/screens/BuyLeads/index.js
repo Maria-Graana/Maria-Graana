@@ -672,7 +672,7 @@ class BuyLeads extends React.Component {
   changeDateFromTo = (name) => {
     this.clearStateValues()
     const { dateFromTo } = this.state
-    const selectedDate = moment(dateFromTo).format('YYYY-MM-DD')
+    const selectedDate = moment(dateFromTo ? dateFromTo : new Date()).format('YYYY-MM-DD')
     this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
       this.fetchLeads(selectedDate, selectedDate)
       this.RBSheet.close()

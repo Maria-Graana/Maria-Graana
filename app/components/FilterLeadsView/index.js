@@ -110,6 +110,7 @@ export default function FilterLeadsView({
               backgroundColor: dateLead
                 ? AppStyles.colors.primaryColor
                 : AppStyles.colors.backgroundColor,
+              marginRight: hasBooking && 25,
             },
           ]}
         >

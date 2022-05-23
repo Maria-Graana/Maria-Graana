@@ -2,6 +2,7 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
+import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { setLeadsDropdown } from '../../actions/leadsDropdown'
@@ -36,6 +37,13 @@ import Ability from '../../hoc/Ability'
 import StaticData from '../../StaticData'
 import styles from './style'
 import { callNumberFromLeads, callToAgent, setMultipleModalVisible } from '../../actions/diary'
+import RBSheet from 'react-native-raw-bottom-sheet'
+import RNDateTimePicker from '@react-native-community/datetimepicker'
+import { getCountryCode } from '../../actions/country'
+import FilterLeadsView from '../../components/FilterLeadsView'
+import ListViewComponent from '../../components/ListViewComponent'
+import TextFilterComponent from '../../components/TextFilterComponent'
+import DateFilterComponent from '../../components/DateFilterComponent'
 
 var BUTTONS = [
   'Assign to team member',
@@ -79,6 +87,19 @@ class BuyLeads extends React.Component {
       selectedClientContacts: [],
       statusFilterType: 'id',
       fabActions: [],
+      filterType: null,
+      statusLead: null,
+      sortLead: null,
+      idLead: null,
+      nameLead: null,
+      dateLead: null,
+      countryLead: null,
+      emailLead: null,
+      phoneLead: null,
+      classificationLead: null,
+      dateFromTo: null,
+      countryFilter: null,
+      classificationValues: null,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -104,15 +125,17 @@ class BuyLeads extends React.Component {
         dispatch(setPPBuyNotification(false))
       }
       dispatch(getListingsCount())
+      dispatch(getCountryCode())
       this.getServerTime()
       this.onFocus()
       this.setFabActions()
     })
 
-
-    dispatch(setLeadsDropdown(hasBooking
-      ? '&pageType=myDeals&hasBooking=true'
-      : '&pageType=myLeads&hasBooking=false'))
+    dispatch(
+      setLeadsDropdown(
+        hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
+      )
+    )
   }
 
   componentWillUnmount() {
@@ -125,7 +148,6 @@ class BuyLeads extends React.Component {
       this.showMultiPhoneModal(this.props.isMultiPhoneModalVisible)
     }
     if (this.props.leadsDropdown !== prevProps.leadsDropdown) {
-
       this.changePageType(this.props.leadsDropdown)
     }
   }
@@ -153,11 +175,12 @@ class BuyLeads extends React.Component {
     }
   }
 
-  sendStatus = (status) => {
-    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+  sendStatus = (status, name) => {
+    this.setState({ sortLead: name, sort: status }, () => {
       storeItem('sortBuy', status)
       this.fetchLeads()
     })
+    this.RBSheet.close()
   }
 
   getServerTime = () => {
@@ -190,6 +213,17 @@ class BuyLeads extends React.Component {
     this.setState({
       page: 1,
       totalLeads: 0,
+      statusLead: null,
+      sortLead: null,
+      nameLead: null,
+      idLead: null,
+      dateLead: null,
+      countryFilter: null,
+      countryLead: null,
+      emailLead: null,
+      phoneLead: null,
+      classificationLead: null,
+      classificationValues: null,
     })
   }
 
@@ -204,6 +238,8 @@ class BuyLeads extends React.Component {
       statusFilter,
       statusFilterType,
       pageType,
+      countryFilter,
+      classificationValues,
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
@@ -213,16 +249,24 @@ class BuyLeads extends React.Component {
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=buy&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads?purpose[]=buy&searchBy=name&clientName=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&searchBy=name&clientName=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads?purpose[]=buy&id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
           : (query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+      } else if (statusFilterType === 'phone' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&phoneNo=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&phoneNo=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+      } else if (statusFilterType === 'email' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=buy&emailId=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&emailId=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=buy&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads?purpose[]=buy&fromDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&fromDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'shortlisting') {
@@ -234,6 +278,12 @@ class BuyLeads extends React.Component {
           ? (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
           : (query = `/api/leads?purpose[]=buy&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
+    }
+    if (countryFilter) {
+      query = `${query}&countryCode=${countryFilter}`
+    }
+    if (classificationValues) {
+      query = `${query}&leadCategory[]=${classificationValues}`
     }
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
@@ -279,12 +329,13 @@ class BuyLeads extends React.Component {
     })
   }
 
-  changeStatus = (status) => {
+  changeStatus = (status, name = null) => {
     this.clearStateValues()
-    this.setState({ statusFilter: status, leadsData: [] }, () => {
+    this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
       storeItem('statusFilterBuy', status)
       this.fetchLeads()
     })
+    this.RBSheet.close()
   }
 
   changePageType = (value) => {
@@ -561,8 +612,21 @@ class BuyLeads extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  changeStatusType = (status) => {
-    this.setState({ statusFilterType: status })
+  changeStatusType = (status, text) => {
+    this.clearStateValues()
+    if (status == 'id') {
+      this.setState({ idLead: text })
+    } else if (status == 'name') {
+      this.setState({ nameLead: text })
+    } else if (status == 'email') {
+      this.setState({ emailLead: text })
+    } else {
+      this.setState({ phoneLead: text })
+    }
+    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+      this.RBSheet.close()
+      this.fetchLeads()
+    })
   }
 
   setFabActions = () => {
@@ -589,6 +653,56 @@ class BuyLeads extends React.Component {
     })
   }
 
+  clearSearch = () => {
+    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
+  }
+
+  setBottomSheet = (value) => {
+    this.setState(
+      {
+        filterType: value,
+      },
+      () => {
+        this.clearSearch()
+        this.RBSheet.open()
+      }
+    )
+  }
+
+  changeDateFromTo = (name) => {
+    this.clearStateValues()
+    const { dateFromTo } = this.state
+    const selectedDate = moment(dateFromTo).format('YYYY-MM-DD')
+    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+      this.fetchLeads(selectedDate, selectedDate)
+      this.RBSheet.close()
+    })
+  }
+
+  setDateFromTo = (event, date) => {
+    this.setState({ dateFromTo: date })
+  }
+
+  setTextSearch = (text) => {
+    this.setState({ searchText: text })
+  }
+
+  searchCountry = (value, name) => {
+    this.clearStateValues()
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
+    this.RBSheet.close()
+  }
+
+  setClassification = (value, name) => {
+    this.clearStateValues()
+    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
+    this.RBSheet.close()
+  }
+
   render() {
     const {
       leadsData,
@@ -610,10 +724,29 @@ class BuyLeads extends React.Component {
       createBuyRentLead,
       createProjectLead,
       pageType,
-      phoneModelDataLoader
+      phoneModelDataLoader,
+      filterType,
+      statusLead,
+      sortLead,
+      idLead,
+      nameLead,
+      emailLead,
+      countryLead,
+      phoneLead,
+      classificationLead,
+      dateLead,
+      dateFromTo,
     } = this.state
-    const { leadsDropdown, user, permissions, dispatch, navigation, isMultiPhoneModalVisible, getIsTerminalUser } =
-      this.props
+    const {
+      leadsDropdown,
+      user,
+      permissions,
+      dispatch,
+      navigation,
+      isMultiPhoneModalVisible,
+      getIsTerminalUser,
+      countries,
+    } = this.props
     const {
       screen,
       hasBooking = false,
@@ -625,120 +758,113 @@ class BuyLeads extends React.Component {
     if (user.organization && user.organization.isPP) leadStatus = StaticData.ppBuyRentFilter
 
     return (
-      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0, }]}>
-        {/* ******************* TOP FILTER MAIN VIEW ********** */}
-        <View style={{ marginBottom: 15 }}>
-          <ShortlistedProperties
-            openPopup={openPopup}
-            closePopup={this.closePopup}
-            data={shortListedProperties}
-            popupLoading={popupLoading}
-          />
-          {showSearchBar ? (
-            <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
-              <View style={styles.idPicker}>
-                <PickerComponent
-                  placeholder={'NAME'}
-                  data={buyRentFilterType}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatusType}
-                  selectedItem={statusFilterType}
-                />
-              </View>
-              {statusFilterType === 'name' || statusFilterType === 'id' ? (
-                <Search
-                  containerWidth="75%"
-                  placeholder="Search leads here"
-                  searchText={searchText}
-                  setSearchText={(value) => this.setState({ searchText: value })}
-                  showShadow={false}
-                  showClearButton={true}
-                  returnKeyType={'search'}
-                  onSubmitEditing={() => this.fetchLeads()}
-                  autoFocus={true}
-                  closeSearchBar={() => this.clearAndCloseSearch()}
-                />
-              ) : (
-                <DateSearchFilter
-                  applyFilter={this.fetchLeads}
-                  clearFilter={() => this.clearAndCloseSearch()}
-                />
-              )}
-            </View>
-          ) : (
-            <View style={[styles.filterRow, {
-              paddingLeft: 15,
-              justifyContent: 'space-between'
-            }]}>
-              {/* {hasBooking ? (
-                <View style={styles.emptyViewWidth}></View>
-              ) : ( */}
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Lead Status'}
-                  data={
-                    hasBooking
-                      ? StaticData.buyRentFilterDeals
-                      : hideCloseLostFilter
-                        ? StaticData.buyRentFilterAddTask
-                        : StaticData.buyRentFilter
-                  }
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
-              {/* )} */}
+      <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
+        {user.organization && user.organization.isPP && (
+          <AndroidNotifications navigation={navigation} />
+        )}
+        <ShortlistedProperties
+          openPopup={openPopup}
+          closePopup={this.closePopup}
+          data={shortListedProperties}
+          popupLoading={popupLoading}
+        />
 
-              {/* <View style={styles.iconRow}>
-                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
-              </View>
-              <View style={styles.pageTypeRow}>
-                <PickerComponent
-                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
-                  data={
-                    hasBooking
-                      ? getIsTerminalUser
-                        ? StaticData.filterDealsValueTerminal
-                        : StaticData.filterDealsValue
-                      : getIsTerminalUser
-                        ? StaticData.filterLeadsValueTerminal
-                        : StaticData.filterLeadsValue
-                  }
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changePageType}
-                  selectedItem={pageType}
-                  showPickerArrow={false}
-                />
-              </View>*/}
-              <View style={styles.verticleLine} />
-              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
-                <TouchableOpacity
-                  style={styles.sortBtn}
-                  onPress={() => {
-                    this.openStatus()
-                  }}
-                >
-                  <Image source={SortImg} style={[styles.sortImg]} />
-                </TouchableOpacity>
-                <Ionicons
-                  style={{ alignSelf: 'center' }}
-                  onPress={() => {
-                    this.setState({ showSearchBar: true }, () => {
-                      this.clearStateValues()
-                    })
-                  }}
-                  name={'ios-search'}
-                  size={26}
-                  color={AppStyles.colors.primaryColor}
-                />
-              </View>
-            </View>
-          )}
-        </View>
+        {/* ********** RN Bottom Sheet ********** */}
+        <RBSheet
+          ref={(ref) => {
+            this.RBSheet = ref
+          }}
+          height={
+            filterType == 'classification'
+              ? 200
+              : filterType == 'date'
+              ? 500
+              : filterType == 'country'
+              ? 700
+              : 300
+          }
+          openDuration={250}
+        >
+          {filterType == 'leadStatus' ? (
+            <ListViewComponent
+              name={'Lead Status'}
+              data={
+                hasBooking
+                  ? StaticData.buyRentFilterDeals
+                  : hideCloseLostFilter
+                  ? StaticData.buyRentFilterAddTask
+                  : StaticData.buyRentFilter
+              }
+              onPress={this.changeStatus}
+            />
+          ) : filterType == 'sort' ? (
+            <ListViewComponent data={StaticData.sortData} onPress={this.sendStatus} />
+          ) : filterType == 'id' ? (
+            <TextFilterComponent
+              name={'ID'}
+              type={'id'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'name' ? (
+            <TextFilterComponent
+              name={'Name'}
+              type={'name'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'email' ? (
+            <TextFilterComponent
+              name={'Email ID'}
+              type={'email'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'phone' ? (
+            <TextFilterComponent
+              name={'Phone #'}
+              type={'phone'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'date' ? (
+            <DateFilterComponent
+              dateFromTo={dateFromTo}
+              setDateFromTo={this.setDateFromTo}
+              changeDateFromTo={this.changeDateFromTo}
+            />
+          ) : filterType == 'country' ? (
+            <ListViewComponent data={countries} onPress={this.searchCountry} type={'country'} />
+          ) : filterType == 'classification' ? (
+            <ListViewComponent
+              name={'Search by Classification Type'}
+              data={StaticData.classificationFilter}
+              onPress={this.setClassification}
+            />
+          ) : null}
+        </RBSheet>
+        {/* ********** RN Bottom Sheet ********** */}
+
+        {/* ******************* TOP FILTER MAIN VIEW START ********** */}
+        <FilterLeadsView
+          statusLead={statusLead}
+          sortLead={sortLead}
+          idLead={idLead}
+          nameLead={nameLead}
+          dateLead={dateLead}
+          countryLead={countryLead}
+          emailLead={emailLead}
+          phoneLead={phoneLead}
+          classificationLead={classificationLead}
+          setBottomSheet={this.setBottomSheet}
+          hasBooking={hasBooking}
+        />
+        {/* ******************* TOP FILTER MAIN VIEW END ********** */}
+
         {leadsData && leadsData.length > 0 ? (
           <FlatList
             data={leadsData}
@@ -746,7 +872,7 @@ class BuyLeads extends React.Component {
             renderItem={({ item }) => (
               <View>
                 {(!user.organization && user.armsUserRole.groupManger) ||
-                  (user.organization && !user.organization.isPP) ? (
+                (user.organization && !user.organization.isPP) ? (
                   <LeadTile
                     updateStatus={this.updateStatus}
                     dispatch={this.props.dispatch}
@@ -782,8 +908,7 @@ class BuyLeads extends React.Component {
                     callNumber={(data) => {
                       pageType === '&pageType=demandLeads&hasBooking=false'
                         ? callToAgent(data)
-                        :
-                        this.setState({ phoneModelDataLoader: true })
+                        : this.setState({ phoneModelDataLoader: true })
                       this.showMultiPhoneModal(true)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
                         if (res !== null) {
@@ -859,6 +984,7 @@ mapStateToProps = (store) => {
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     permissions: store.user.permissions,
     getIsTerminalUser: store.user.getIsTerminalUser,
+    countries: store.countries.country,
     leadsDropdown: store.leadsDropdown.leadsDropdown,
   }
 }

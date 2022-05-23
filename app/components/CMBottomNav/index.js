@@ -740,10 +740,14 @@ class CMBottomNav extends React.Component {
                   <Menu.Item
                     onPress={() => {
                       let hasError = checkCloseWon
-                      if (hasError.paymentEr != '' || hasError.documentEr != '') {
-                        this.closeWonModel(true)
-                      } else {
+                      if (user && user.organization && user.organization.type === 'Franchise') {
                         onHandleCloseLead(lead)
+                      } else {
+                        if (hasError.paymentEr != '' || hasError.documentEr != '') {
+                          this.closeWonModel(true)
+                        } else {
+                          onHandleCloseLead(lead)
+                        }
                       }
                       this.openMenu(false)
                     }}

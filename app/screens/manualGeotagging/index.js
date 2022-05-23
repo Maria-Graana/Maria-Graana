@@ -19,6 +19,7 @@ import Toast from 'react-native-easy-toast'
 import MapView, { Marker } from 'react-native-maps'
 import GpsIcon from './GpsIcon'
 import styles from './style'
+import helper from '../../helper'
 
 const { width, height } = Dimensions.get('screen')
 

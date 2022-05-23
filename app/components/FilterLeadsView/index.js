@@ -17,6 +17,7 @@ export default function FilterLeadsView({
   phoneLead,
   classificationLead,
   setBottomSheet,
+  hasBooking,
 }) {
   return (
     <View style={styles.filterMainView}>
@@ -121,92 +122,102 @@ export default function FilterLeadsView({
             color={dateLead ? 'white' : AppStyles.colors.textColor}
           />
         </Pressable>
-        <Pressable
-          onPress={() => setBottomSheet('country')}
-          style={[
-            styles.filterPressable,
-            {
-              backgroundColor: countryLead
-                ? AppStyles.colors.primaryColor
-                : AppStyles.colors.backgroundColor,
-            },
-          ]}
-        >
-          <Text style={{ fontSize: 12, color: countryLead ? 'white' : AppStyles.colors.textColor }}>
-            {countryLead ? countryLead : 'Country'}
-          </Text>
-          <Ionicons
-            name="chevron-down-outline"
-            size={20}
-            color={countryLead ? 'white' : AppStyles.colors.textColor}
-          />
-        </Pressable>
-        <Pressable
-          onPress={() => setBottomSheet('email')}
-          style={[
-            styles.filterPressable,
-            {
-              backgroundColor: emailLead
-                ? AppStyles.colors.primaryColor
-                : AppStyles.colors.backgroundColor,
-            },
-          ]}
-        >
-          <Text style={{ fontSize: 12, color: emailLead ? 'white' : AppStyles.colors.textColor }}>
-            {emailLead ? emailLead : 'Email ID'}
-          </Text>
-          <Ionicons
-            name="chevron-down-outline"
-            size={20}
-            color={emailLead ? 'white' : AppStyles.colors.textColor}
-          />
-        </Pressable>
-        <Pressable
-          onPress={() => setBottomSheet('phone')}
-          style={[
-            styles.filterPressable,
-            {
-              backgroundColor: phoneLead
-                ? AppStyles.colors.primaryColor
-                : AppStyles.colors.backgroundColor,
-            },
-          ]}
-        >
-          <Text style={{ fontSize: 12, color: phoneLead ? 'white' : AppStyles.colors.textColor }}>
-            {phoneLead ? phoneLead : 'Phone #'}
-          </Text>
-          <Ionicons
-            name="chevron-down-outline"
-            size={20}
-            color={phoneLead ? 'white' : AppStyles.colors.textColor}
-          />
-        </Pressable>
-        <Pressable
-          onPress={() => setBottomSheet('classification')}
-          style={[
-            styles.filterPressable,
-            {
-              backgroundColor: classificationLead
-                ? AppStyles.colors.primaryColor
-                : AppStyles.colors.backgroundColor,
-              marginRight: 25,
-            },
-          ]}
-        >
-          <Text
-            style={{
-              fontSize: 12,
-              color: classificationLead ? 'white' : AppStyles.colors.textColor,
-            }}
+        {!hasBooking ? (
+          <Pressable
+            onPress={() => setBottomSheet('country')}
+            style={[
+              styles.filterPressable,
+              {
+                backgroundColor: countryLead
+                  ? AppStyles.colors.primaryColor
+                  : AppStyles.colors.backgroundColor,
+              },
+            ]}
           >
-            {classificationLead ? classificationLead : 'Classification'}
-          </Text>
-          <Ionicons
-            name="chevron-down-outline"
-            size={20}
-            color={classificationLead ? 'white' : AppStyles.colors.textColor}
-          />
-        </Pressable>
+            <Text
+              style={{ fontSize: 12, color: countryLead ? 'white' : AppStyles.colors.textColor }}
+            >
+              {countryLead ? countryLead : 'Country'}
+            </Text>
+            <Ionicons
+              name="chevron-down-outline"
+              size={20}
+              color={countryLead ? 'white' : AppStyles.colors.textColor}
+            />
+          </Pressable>
+        ) : null}
+        {!hasBooking ? (
+          <Pressable
+            onPress={() => setBottomSheet('email')}
+            style={[
+              styles.filterPressable,
+              {
+                backgroundColor: emailLead
+                  ? AppStyles.colors.primaryColor
+                  : AppStyles.colors.backgroundColor,
+              },
+            ]}
+          >
+            <Text style={{ fontSize: 12, color: emailLead ? 'white' : AppStyles.colors.textColor }}>
+              {emailLead ? emailLead : 'Email ID'}
+            </Text>
+            <Ionicons
+              name="chevron-down-outline"
+              size={20}
+              color={emailLead ? 'white' : AppStyles.colors.textColor}
+            />
+          </Pressable>
+        ) : null}
+        {!hasBooking ? (
+          <Pressable
+            onPress={() => setBottomSheet('phone')}
+            style={[
+              styles.filterPressable,
+              {
+                backgroundColor: phoneLead
+                  ? AppStyles.colors.primaryColor
+                  : AppStyles.colors.backgroundColor,
+              },
+            ]}
+          >
+            <Text style={{ fontSize: 12, color: phoneLead ? 'white' : AppStyles.colors.textColor }}>
+              {phoneLead ? phoneLead : 'Phone #'}
+            </Text>
+            <Ionicons
+              name="chevron-down-outline"
+              size={20}
+              color={phoneLead ? 'white' : AppStyles.colors.textColor}
+            />
+          </Pressable>
+        ) : null}
+        {!hasBooking ? (
+          <Pressable
+            onPress={() => setBottomSheet('classification')}
+            style={[
+              styles.filterPressable,
+              {
+                backgroundColor: classificationLead
+                  ? AppStyles.colors.primaryColor
+                  : AppStyles.colors.backgroundColor,
+                marginRight: 25,
+              },
+            ]}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                color: classificationLead ? 'white' : AppStyles.colors.textColor,
+              }}
+            >
+              {classificationLead ? classificationLead : 'Classification'}
+            </Text>
+            <Ionicons
+              name="chevron-down-outline"
+              size={20}
+              color={classificationLead ? 'white' : AppStyles.colors.textColor}
+            />
+          </Pressable>
+        ) : null}
       </ScrollView>
     </View>
   )

@@ -879,6 +879,7 @@ class RentLeads extends React.Component {
           phoneLead={phoneLead}
           classificationLead={classificationLead}
           setBottomSheet={this.setBottomSheet}
+          hasBooking={hasBooking}
         />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 

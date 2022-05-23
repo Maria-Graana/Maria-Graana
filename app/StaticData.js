@@ -1572,4 +1572,9 @@ export default StaticData = {
     { name: 'Daughter of', value: 'Daughter of' },
     { name: 'Wife of', value: 'Wife of' },
   ],
+  classificationFilter: [
+    { name: 'Hot', value: 'Hot' },
+    { name: 'Warm', value: 'Warm' },
+    { name: 'Cold', value: 'Cold' },
+  ],
 }

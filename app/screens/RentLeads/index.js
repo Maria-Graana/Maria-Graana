@@ -100,6 +100,7 @@ class RentLeads extends React.Component {
       classificationLead: null,
       dateFromTo: null,
       countryFilter: null,
+      classificationValues: null,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -210,6 +211,7 @@ class RentLeads extends React.Component {
       emailLead: null,
       phoneLead: null,
       classificationLead: null,
+      classificationValues: null,
     })
   }
 
@@ -225,6 +227,7 @@ class RentLeads extends React.Component {
       statusFilterType,
       pageType,
       countryFilter,
+      classificationValues,
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
@@ -266,6 +269,9 @@ class RentLeads extends React.Component {
     }
     if (countryFilter) {
       query = `${query}&countryCode=${countryFilter}`
+    }
+    if (classificationValues) {
+      query = `${query}&leadCategory[]=${classificationValues}`
     }
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
@@ -338,6 +344,14 @@ class RentLeads extends React.Component {
   searchCountry = (name, value) => {
     this.clearStateValues()
     this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
+    this.RBSheet.close()
+  }
+
+  setClassification = (name, value) => {
+    this.clearStateValues()
+    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
       this.fetchLeads()
     })
     this.RBSheet.close()
@@ -941,7 +955,19 @@ class RentLeads extends React.Component {
               />
             </View>
           ) : filterType == 'classification' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}></View>
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <FlatList
+                data={StaticData.classificationFilter}
+                renderItem={({ item, index }) => (
+                  <Pressable
+                    onPress={() => this.setClassification(item.name, item.value)}
+                    style={{ justifyContent: 'center' }}
+                  >
+                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
+                  </Pressable>
+                )}
+              />
+            </View>
           ) : null}
         </RBSheet>
         {/* ********** RN Bottom Sheet ********** */}

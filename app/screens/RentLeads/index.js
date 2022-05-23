@@ -17,7 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { FAB } from 'react-native-paper'
+import { FAB, TextInput } from 'react-native-paper'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import SortImg from '../../../assets/img/sort.png'
@@ -48,6 +48,7 @@ import styles from './style'
 import { callNumberFromLeads, callToAgent, setMultipleModalVisible } from '../../actions/diary'
 import { alltimeSlots, setTimeSlots } from '../../actions/slotManagement'
 import RBSheet from 'react-native-raw-bottom-sheet'
+import RNDateTimePicker from '@react-native-community/datetimepicker'
 
 var BUTTONS = [
   'Assign to team member',
@@ -86,6 +87,17 @@ class RentLeads extends React.Component {
       statusFilterType: 'id',
       comment: null,
       fabActions: [],
+      filterType: null,
+      statusLead: null,
+      sortLead: null,
+      idLead: null,
+      nameLead: null,
+      dateLead: null,
+      countryLead: null,
+      emailLead: null,
+      phoneLead: null,
+      classificationLead: null,
+      dateFromTo: null,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -185,10 +197,16 @@ class RentLeads extends React.Component {
     this.setState({
       page: 1,
       totalLeads: 0,
+      statusLead: null,
+      sortLead: null,
+      nameLead: null,
+      idLead: null,
+      dateLead: null,
     })
   }
 
   fetchLeads = (fromDate = null, toDate = null) => {
+    console.log(fromDate, toDate)
     const {
       sort,
       pageSize,
@@ -200,6 +218,7 @@ class RentLeads extends React.Component {
       statusFilterType,
       pageType,
     } = this.state
+    console.log(showSearchBar)
     const { permissions, user } = this.props
     this.setState({ loading: true })
     const { hasBooking, navFrom } = this.props.route.params
@@ -208,16 +227,24 @@ class RentLeads extends React.Component {
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads?purpose[]=rent&searchBy=name&clientName=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=rent&searchBy=name&clientName=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads?purpose[]=rent&id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
           : (query = `/api/leads?purpose[]=rent&id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+      } else if (statusFilterType === 'phone' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=rent&phoneNo=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=rent&phoneNo=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+      } else if (statusFilterType === 'email' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads?purpose[]=rent&emailId=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=rent&emailId=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads?purpose[]=rent&fromDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=rent&fromDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'shortlisting') {
@@ -233,7 +260,7 @@ class RentLeads extends React.Component {
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
     }
-    // console.log(query)
+    console.log(query)
     axios
       .get(`${query}`)
       .then((res) => {
@@ -274,19 +301,21 @@ class RentLeads extends React.Component {
     })
   }
 
-  sendStatus = (status) => {
-    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+  sendStatus = (status, name) => {
+    this.setState({ sortLead: name, sort: status }, () => {
       storeItem('sortRent', status)
       this.fetchLeads()
     })
+    this.RBSheet.close()
   }
 
-  changeStatus = (status) => {
+  changeStatus = (status, name = null) => {
     this.clearStateValues()
-    this.setState({ statusFilter: status, leadsData: [] }, () => {
+    this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
       storeItem('statusFilterRent', status)
       this.fetchLeads()
     })
+    this.RBSheet.close()
   }
 
   changePageType = (value) => {
@@ -432,6 +461,10 @@ class RentLeads extends React.Component {
       this.clearStateValues()
       this.fetchLeads()
     })
+  }
+
+  clearSearch = () => {
+    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
   }
 
   updateStatus = (data) => {
@@ -584,8 +617,21 @@ class RentLeads extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  changeStatusType = (status) => {
-    this.setState({ statusFilterType: status })
+  changeStatusType = (status, text) => {
+    this.clearStateValues()
+    if (status == 'id') {
+      this.setState({ idLead: text })
+    } else if (status == 'name') {
+      this.setState({ nameLead: text })
+    } else if (status == 'email') {
+      this.setState({ emailLead: text })
+    } else {
+      this.setState({ phoneLead: text })
+    }
+    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+      this.RBSheet.close()
+      this.fetchLeads()
+    })
   }
 
   setFabActions = () => {
@@ -611,6 +657,32 @@ class RentLeads extends React.Component {
       fabActions: fabActions,
     })
   }
+  setBottomSheet = (value) => {
+    this.setState(
+      {
+        filterType: value,
+      },
+      () => {
+        this.clearSearch()
+        this.RBSheet.open()
+        console.log(this.state.filterType)
+      }
+    )
+  }
+
+  changeDateFromTo = (name) => {
+    this.clearStateValues()
+    const { dateFromTo } = this.state
+    const selectedDate = moment(dateFromTo).format('YYYY-MM-DD')
+    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+      this.fetchLeads(selectedDate, selectedDate)
+      this.RBSheet.close()
+    })
+  }
+
+  setDateFromTo = (event, date) => {
+    this.setState({ dateFromTo: date })
+  }
 
   render() {
     const {
@@ -634,6 +706,17 @@ class RentLeads extends React.Component {
       createProjectLead,
       pageType,
       phoneModelDataLoader,
+      filterType,
+      statusLead,
+      sortLead,
+      idLead,
+      nameLead,
+      emailLead,
+      countryLead,
+      phoneLead,
+      classificationLead,
+      dateLead,
+      dateFromTo,
     } = this.state
     const {
       user,
@@ -665,56 +748,341 @@ class RentLeads extends React.Component {
           popupLoading={popupLoading}
         />
 
+        {/* ********** RN Bottom Sheet ********** */}
         <RBSheet
           ref={(ref) => {
             this.RBSheet = ref
           }}
-          height={300}
+          height={filterType == 'date' ? 500 : 300}
           openDuration={250}
-          customStyles={{
-            container: {
-              justifyContent: 'center',
-              alignItems: 'center',
-            },
-          }}
-        ></RBSheet>
+          // customStyles={{
+          //   container: {
+          //     justifyContent: 'center',
+          //     alignItems: 'center',
+          //   },
+          // }}
+        >
+          {filterType == 'leadStatus' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <Text style={{ fontSize: 18, marginBottom: 10 }}>Lead Status</Text>
+              <FlatList
+                data={
+                  hasBooking
+                    ? StaticData.buyRentFilterDeals
+                    : hideCloseLostFilter
+                    ? StaticData.buyRentFilterAddTask
+                    : StaticData.buyRentFilter
+                }
+                renderItem={({ item, index }) => (
+                  <Pressable
+                    onPress={() => this.changeStatus(item.value, item.name)}
+                    style={{ justifyContent: 'center' }}
+                  >
+                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
+                  </Pressable>
+                )}
+              />
+            </View>
+          ) : filterType == 'sort' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <FlatList
+                data={StaticData.sortData}
+                renderItem={({ item, index }) => (
+                  <Pressable
+                    onPress={() => this.sendStatus(item.value, item.name)}
+                    style={{ justifyContent: 'center' }}
+                  >
+                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
+                  </Pressable>
+                )}
+              />
+            </View>
+          ) : filterType == 'id' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by ID</Text>
+              <TextInput
+                mode="outlined"
+                activeOutlineColor={AppStyles.colors.primaryColor}
+                label="ID"
+                value={searchText}
+                onChangeText={(text) => this.setState({ searchText: text })}
+              />
+              <Pressable
+                onPress={() => {
+                  this.changeStatusType('id', searchText)
+                }}
+                style={{
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}
+              >
+                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
+              </Pressable>
+            </View>
+          ) : filterType == 'name' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by Name</Text>
+              <TextInput
+                mode="outlined"
+                activeOutlineColor={AppStyles.colors.primaryColor}
+                label="Name"
+                value={searchText}
+                onChangeText={(text) => this.setState({ searchText: text })}
+              />
+              <Pressable
+                onPress={() => {
+                  this.changeStatusType('name', searchText)
+                }}
+                style={{
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}
+              >
+                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
+              </Pressable>
+            </View>
+          ) : filterType == 'email' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by Email ID</Text>
+              <TextInput
+                mode="outlined"
+                activeOutlineColor={AppStyles.colors.primaryColor}
+                label="Email ID"
+                value={searchText}
+                onChangeText={(text) => this.setState({ searchText: text })}
+              />
+              <Pressable
+                onPress={() => {
+                  this.changeStatusType('email', searchText)
+                }}
+                style={{
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}
+              >
+                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
+              </Pressable>
+            </View>
+          ) : filterType == 'phone' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by Phone #</Text>
+              <TextInput
+                mode="outlined"
+                activeOutlineColor={AppStyles.colors.primaryColor}
+                label="Phone #"
+                value={searchText}
+                onChangeText={(text) => this.setState({ searchText: text })}
+              />
+              <Pressable
+                onPress={() => {
+                  this.changeStatusType('phone', searchText)
+                }}
+                style={{
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}
+              >
+                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
+              </Pressable>
+            </View>
+          ) : filterType == 'date' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <RNDateTimePicker
+                display="inline"
+                value={dateFromTo ? dateFromTo : new Date()}
+                onChange={this.setDateFromTo}
+              />
+              <Pressable
+                onPress={() => {
+                  this.changeDateFromTo('date')
+                }}
+                style={{
+                  backgroundColor: AppStyles.colors.primaryColor,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}
+              >
+                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
+              </Pressable>
+            </View>
+          ) : null}
+        </RBSheet>
+        {/* ********** RN Bottom Sheet ********** */}
 
         {/* ******************* TOP FILTER MAIN VIEW START ********** */}
         <View style={styles.filterMainView}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Lead Status</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+            <Pressable
+              onPress={() => this.setBottomSheet('leadStatus')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: statusLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 12, color: statusLead ? 'white' : AppStyles.colors.textColor }}
+              >
+                {statusLead ? statusLead : 'Lead Status'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={statusLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Newest First</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            <Pressable
+              onPress={() => this.setBottomSheet('sort')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: sortLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 12, color: sortLead ? 'white' : AppStyles.colors.textColor }}
+              >
+                {sortLead ? sortLead : 'Newest First'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={sortLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>ID</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            <Pressable
+              onPress={() => this.setBottomSheet('id')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: idLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text style={{ fontSize: 12, color: idLead ? 'white' : AppStyles.colors.textColor }}>
+                {idLead ? `ID: ${idLead}` : 'ID'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={idLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Name</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            <Pressable
+              onPress={() => this.setBottomSheet('name')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: nameLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 12, color: nameLead ? 'white' : AppStyles.colors.textColor }}
+              >
+                {nameLead ? nameLead : 'Name'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={nameLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Date</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+            <Pressable
+              onPress={() => this.setBottomSheet('date')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: dateLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 12, color: dateLead ? 'white' : AppStyles.colors.textColor }}
+              >
+                {dateLead ? dateLead : 'Date'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={dateLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+            <Pressable
+              onPress={() => this.setBottomSheet('country')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: countryLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
               <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Country</Text>
               <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+            <Pressable
+              onPress={() => this.setBottomSheet('email')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: emailLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
               <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Email ID</Text>
               <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+            <Pressable
+              onPress={() => this.setBottomSheet('phone')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: phoneLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
               <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Phone #</Text>
               <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
             </Pressable>
-            <Pressable onPress={() => this.RBSheet.open()} style={styles.filterPressable}>
+            <Pressable
+              onPress={() => this.setBottomSheet('classification')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: classificationLead
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                  marginRight: 25,
+                },
+              ]}
+            >
               <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>
                 Classification
               </Text>

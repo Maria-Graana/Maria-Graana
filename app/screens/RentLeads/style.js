@@ -86,18 +86,21 @@ export default styles = StyleSheet.create({
     marginLeft: '3%',
   },
   filterPressable: {
-    backgroundColor: AppStyles.colors.backgroundColor,
     borderRadius: 15,
     paddingVertical: 5,
     paddingHorizontal: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 5,
+    marginLeft: 5,
   },
   filterMainView: {
-    marginBottom: 10,
+    marginBottom: 15,
     paddingVertical: 5,
     backgroundColor: 'white',
+  },
+  filterScroll: {
+    marginVertical: 5,
+    padding: 10,
   },
 })

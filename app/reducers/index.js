@@ -21,6 +21,7 @@ import armsContacts from './armsContacts'
 import drawer from './drawer'
 import cmLead from './cmLead'
 import leadsDropdown from './leadsDropdown'
+import countries from './country'
 
 export default combineReducers({
   lead,
@@ -42,5 +43,6 @@ export default combineReducers({
   armsContacts,
   drawer,
   cmLead,
-  leadsDropdown
+  leadsDropdown,
+  countries, // ARMS-3774
 })

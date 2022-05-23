@@ -738,7 +738,8 @@ class CMBottomNav extends React.Component {
               )}
               {closedWonOptionVisible &&
                 leadData.status !== 'closed_won' &&
-                leadData.status !== 'closed_lost' && (
+                leadData.status !== 'closed_lost' &&
+                ((lead && lead.status === 'token') || (lead && lead.status === 'payment')) && (
                   <Menu.Item
                     onPress={() => {
                       let hasError = checkCloseWon

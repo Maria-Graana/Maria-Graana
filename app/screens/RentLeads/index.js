@@ -49,6 +49,7 @@ import { callNumberFromLeads, callToAgent, setMultipleModalVisible } from '../..
 import { alltimeSlots, setTimeSlots } from '../../actions/slotManagement'
 import RBSheet from 'react-native-raw-bottom-sheet'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
+import { getCountryCode } from '../../actions/country'
 
 var BUTTONS = [
   'Assign to team member',
@@ -98,6 +99,7 @@ class RentLeads extends React.Component {
       phoneLead: null,
       classificationLead: null,
       dateFromTo: null,
+      countryFilter: null,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -119,6 +121,7 @@ class RentLeads extends React.Component {
     const { dispatch, navigation } = this.props
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
+      dispatch(getCountryCode())
       this.getServerTime()
       this.onFocus()
       this.setFabActions()
@@ -202,11 +205,15 @@ class RentLeads extends React.Component {
       nameLead: null,
       idLead: null,
       dateLead: null,
+      countryFilter: null,
+      countryLead: null,
+      emailLead: null,
+      phoneLead: null,
+      classificationLead: null,
     })
   }
 
   fetchLeads = (fromDate = null, toDate = null) => {
-    console.log(fromDate, toDate)
     const {
       sort,
       pageSize,
@@ -217,8 +224,8 @@ class RentLeads extends React.Component {
       statusFilter,
       statusFilterType,
       pageType,
+      countryFilter,
     } = this.state
-    console.log(showSearchBar)
     const { permissions, user } = this.props
     this.setState({ loading: true })
     const { hasBooking, navFrom } = this.props.route.params
@@ -257,10 +264,13 @@ class RentLeads extends React.Component {
           : (query = `/api/leads?purpose[]=rent&status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
+    if (countryFilter) {
+      query = `${query}&countryCode=${countryFilter}`
+    }
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
     }
-    console.log(query)
+    // console.log(query)
     axios
       .get(`${query}`)
       .then((res) => {
@@ -323,6 +333,14 @@ class RentLeads extends React.Component {
     this.setState({ pageType: value, leadsData: [] }, () => {
       this.fetchLeads()
     })
+  }
+
+  searchCountry = (name, value) => {
+    this.clearStateValues()
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
+    this.RBSheet.close()
   }
 
   navigateTo = (data) => {
@@ -665,7 +683,6 @@ class RentLeads extends React.Component {
       () => {
         this.clearSearch()
         this.RBSheet.open()
-        console.log(this.state.filterType)
       }
     )
   }
@@ -725,6 +742,7 @@ class RentLeads extends React.Component {
       isMultiPhoneModalVisible,
       getIsTerminalUser,
       leadsDropdown,
+      countries,
     } = this.props
     const {
       screen,
@@ -753,14 +771,8 @@ class RentLeads extends React.Component {
           ref={(ref) => {
             this.RBSheet = ref
           }}
-          height={filterType == 'date' ? 500 : 300}
+          height={filterType == 'date' ? 500 : filterType == 'country' ? 700 : 300}
           openDuration={250}
-          // customStyles={{
-          //   container: {
-          //     justifyContent: 'center',
-          //     alignItems: 'center',
-          //   },
-          // }}
         >
           {filterType == 'leadStatus' ? (
             <View style={{ padding: 20, justifyContent: 'center' }}>
@@ -914,6 +926,22 @@ class RentLeads extends React.Component {
                 <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
               </Pressable>
             </View>
+          ) : filterType == 'country' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <FlatList
+                data={countries}
+                renderItem={({ item, index }) => (
+                  <Pressable
+                    onPress={() => this.searchCountry(item.name, item.phone)}
+                    style={{ justifyContent: 'center' }}
+                  >
+                    <Text style={{ fontSize: 16, paddingVertical: 10 }}>{item.name}</Text>
+                  </Pressable>
+                )}
+              />
+            </View>
+          ) : filterType == 'classification' ? (
+            <View style={{ padding: 20, justifyContent: 'center' }}></View>
           ) : null}
         </RBSheet>
         {/* ********** RN Bottom Sheet ********** */}
@@ -1040,8 +1068,16 @@ class RentLeads extends React.Component {
                 },
               ]}
             >
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Country</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+              <Text
+                style={{ fontSize: 12, color: countryLead ? 'white' : AppStyles.colors.textColor }}
+              >
+                {countryLead ? countryLead : 'Country'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={countryLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
             <Pressable
               onPress={() => this.setBottomSheet('email')}
@@ -1054,8 +1090,16 @@ class RentLeads extends React.Component {
                 },
               ]}
             >
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Email ID</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+              <Text
+                style={{ fontSize: 12, color: emailLead ? 'white' : AppStyles.colors.textColor }}
+              >
+                {emailLead ? emailLead : 'Email ID'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={emailLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
             <Pressable
               onPress={() => this.setBottomSheet('phone')}
@@ -1068,8 +1112,16 @@ class RentLeads extends React.Component {
                 },
               ]}
             >
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>Phone #</Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+              <Text
+                style={{ fontSize: 12, color: phoneLead ? 'white' : AppStyles.colors.textColor }}
+              >
+                {phoneLead ? phoneLead : 'Phone #'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={phoneLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
             <Pressable
               onPress={() => this.setBottomSheet('classification')}
@@ -1083,10 +1135,19 @@ class RentLeads extends React.Component {
                 },
               ]}
             >
-              <Text style={{ fontSize: 12, color: AppStyles.colors.textColor }}>
-                Classification
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: classificationLead ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {classificationLead ? classificationLead : 'Classification'}
               </Text>
-              <Ionicons name="chevron-down-outline" size={20} color={AppStyles.colors.textColor} />
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={classificationLead ? 'white' : AppStyles.colors.textColor}
+              />
             </Pressable>
           </ScrollView>
         </View>
@@ -1207,7 +1268,7 @@ mapStateToProps = (store) => {
     contacts: store.contacts.contacts,
     permissions: store.user.permissions,
     getIsTerminalUser: store.user.getIsTerminalUser,
-
+    countries: store.countries.country,
     leadsDropdown: store.leadsDropdown.leadsDropdown,
   }
 }

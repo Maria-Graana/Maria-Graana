@@ -51,6 +51,8 @@ import RNDateTimePicker from '@react-native-community/datetimepicker'
 import { getCountryCode } from '../../actions/country'
 import FilterLeadsView from '../../components/FilterLeadsView'
 import ListViewComponent from '../../components/ListViewComponent'
+import TextFilterComponent from '../../components/TextFilterComponent'
+import DateFilterComponent from '../../components/DateFilterComponent'
 
 var BUTTONS = [
   'Assign to team member',
@@ -716,6 +718,10 @@ class RentLeads extends React.Component {
     this.setState({ dateFromTo: date })
   }
 
+  setTextSearch = (text) => {
+    this.setState({ searchText: text })
+  }
+
   render() {
     const {
       leadsData,
@@ -812,122 +818,43 @@ class RentLeads extends React.Component {
           ) : filterType == 'sort' ? (
             <ListViewComponent data={StaticData.sortData} onPress={this.sendStatus} />
           ) : filterType == 'id' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by ID</Text>
-              <TextInput
-                mode="outlined"
-                activeOutlineColor={AppStyles.colors.primaryColor}
-                label="ID"
-                value={searchText}
-                onChangeText={(text) => this.setState({ searchText: text })}
-              />
-              <Pressable
-                onPress={() => {
-                  this.changeStatusType('id', searchText)
-                }}
-                style={{
-                  backgroundColor: AppStyles.colors.primaryColor,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 10,
-                }}
-              >
-                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
-              </Pressable>
-            </View>
+            <TextFilterComponent
+              name={'ID'}
+              type={'id'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
           ) : filterType == 'name' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by Name</Text>
-              <TextInput
-                mode="outlined"
-                activeOutlineColor={AppStyles.colors.primaryColor}
-                label="Name"
-                value={searchText}
-                onChangeText={(text) => this.setState({ searchText: text })}
-              />
-              <Pressable
-                onPress={() => {
-                  this.changeStatusType('name', searchText)
-                }}
-                style={{
-                  backgroundColor: AppStyles.colors.primaryColor,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 10,
-                }}
-              >
-                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
-              </Pressable>
-            </View>
+            <TextFilterComponent
+              name={'Name'}
+              type={'name'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
           ) : filterType == 'email' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by Email ID</Text>
-              <TextInput
-                mode="outlined"
-                activeOutlineColor={AppStyles.colors.primaryColor}
-                label="Email ID"
-                value={searchText}
-                onChangeText={(text) => this.setState({ searchText: text })}
-              />
-              <Pressable
-                onPress={() => {
-                  this.changeStatusType('email', searchText)
-                }}
-                style={{
-                  backgroundColor: AppStyles.colors.primaryColor,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 10,
-                }}
-              >
-                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
-              </Pressable>
-            </View>
+            <TextFilterComponent
+              name={'Email ID'}
+              type={'email'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
           ) : filterType == 'phone' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <Text style={{ fontSize: 18, marginBottom: 10 }}>Search by Phone #</Text>
-              <TextInput
-                mode="outlined"
-                activeOutlineColor={AppStyles.colors.primaryColor}
-                label="Phone #"
-                value={searchText}
-                onChangeText={(text) => this.setState({ searchText: text })}
-              />
-              <Pressable
-                onPress={() => {
-                  this.changeStatusType('phone', searchText)
-                }}
-                style={{
-                  backgroundColor: AppStyles.colors.primaryColor,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 10,
-                }}
-              >
-                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
-              </Pressable>
-            </View>
+            <TextFilterComponent
+              name={'Phone #'}
+              type={'phone'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
           ) : filterType == 'date' ? (
-            <View style={{ padding: 20, justifyContent: 'center' }}>
-              <RNDateTimePicker
-                display="inline"
-                value={dateFromTo ? dateFromTo : new Date()}
-                onChange={this.setDateFromTo}
-              />
-              <Pressable
-                onPress={() => {
-                  this.changeDateFromTo('date')
-                }}
-                style={{
-                  backgroundColor: AppStyles.colors.primaryColor,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 10,
-                }}
-              >
-                <Text style={{ fontSize: 18, padding: 15, color: 'white' }}>Search</Text>
-              </Pressable>
-            </View>
+            <DateFilterComponent
+              dateFromTo={dateFromTo}
+              setDateFromTo={this.setDateFromTo}
+              changeDateFromTo={this.changeDateFromTo}
+            />
           ) : filterType == 'country' ? (
             <ListViewComponent data={countries} onPress={this.searchCountry} type={'country'} />
           ) : filterType == 'classification' ? (

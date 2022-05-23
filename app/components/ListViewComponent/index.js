@@ -12,6 +12,7 @@ export default function ({ name, data, onPress, type }) {
         data={data}
         renderItem={({ item, index }) => (
           <Pressable
+            key={index}
             onPress={() => onPress(type ? item.phone : item.value, item.name)}
             style={styles.listButton}
           >

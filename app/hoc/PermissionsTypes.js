@@ -105,4 +105,5 @@ export const PermissionActions = {
   DEACTIVATE_USER_PAGE_VIEW: 'Deactivated users',
   AIRA_MANAGEMENT_PAGE_VIEW: 'Agent - Wanted Leads',
   SET_TARGETS_PAGE_VIEW: 'Set targets',
+  CONTACTS: 'Contacts',
 }

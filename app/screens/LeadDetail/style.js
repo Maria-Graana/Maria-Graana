@@ -18,6 +18,7 @@ export default styles = StyleSheet.create({
     marginVertical: 10,
     padding: 1,
     elevation: 5,
+    paddingBottom:20,
     shadowOffset: { width: 3, height: 3 },
     shadowColor: 'lightgrey',
     shadowOpacity: 1,
@@ -68,6 +69,7 @@ export default styles = StyleSheet.create({
   rowContainerType2: {
     flexDirection: 'row',
     width: '100%',
+    justifyContent:'space-between',
     alignItems: 'center',
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -82,6 +84,20 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 5,
     width: '30%',
+  },
+
+  statusView2: {
+    borderColor: AppStyles.colors.primaryColor,
+    height: 25,
+    borderWidth: 1,
+    borderRadius: 32,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    marginRight: 5,
+    marginLeft:-5,
+  
+    //width: '30%',
   },
   roundButtonView: {
     backgroundColor: AppStyles.colors.primaryColor,

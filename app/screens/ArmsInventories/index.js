@@ -71,7 +71,13 @@ class ArmsInventories extends React.Component {
             this.getPropertyArmsListing()
           })
         }
-      } else {
+      } else if (route.params?.client) {
+  
+        this.getPropertyArmsListing()
+
+      }
+
+      else {
         this.getPropertyArmsListing()
       }
     })
@@ -113,7 +119,14 @@ class ArmsInventories extends React.Component {
     } else if (showSearchBar && searchBy === 'area' && selectedArea) {
       // Search By Area
       query = `/api/inventory/all?propType=arms&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
-    } else {
+    }
+    else if (this.props.route.params?.client) {
+      console.log("clientt", this.props.route.params?.client);
+      //add customer query here
+      query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
+    }
+
+    else {
       // Only Status Filter
       query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
@@ -177,7 +190,7 @@ class ArmsInventories extends React.Component {
     this.setState({ formData: newFormData })
   }
   submitarmsStatusAmount = (check) => {
-    const { PropertyData, formData , propertiesList} = this.state
+    const { PropertyData, formData, propertiesList } = this.state
     var endpoint = ''
     var body = {
       amount: formData.amount,
@@ -189,7 +202,7 @@ class ArmsInventories extends React.Component {
       endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`
     }
     formData['amount'] = ''
-    axios.patch(endpoint , body).then((res) => {
+    axios.patch(endpoint, body).then((res) => {
       this.setState(
         {
           forStatusPrice: false,

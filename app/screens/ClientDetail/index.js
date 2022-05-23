@@ -4,11 +4,13 @@ import React from 'react'
 import styles from './style'
 import { View, Text, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
+import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import AppStyles from '../../AppStyles'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import Ability from '../../hoc/Ability'
 import helper from '../../helper'
 import axios from 'axios'
+import CMBottomNav from '../../components/ClientDetailBottomNav'
 import Loader from '../../components/loader'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
@@ -20,6 +22,7 @@ class ClientDetail extends React.Component {
     super(props)
     const { permissions } = this.props
     this.state = {
+      isMultiPhoneModalVisible: false,
       client: {},
       loading: true,
       clientPhones: {
@@ -115,7 +118,7 @@ class ClientDetail extends React.Component {
         return client.clientSource == null ? 'Personal Client' : client.clientSource
       else return client.assigned_to_organization ? client.assigned_to_organization : ''
     } else {
-      if (client.originalOwner.id === user.id) client.clientSource == null ? 'Personal Client' : client.clientSource 
+      if (client.originalOwner.id === user.id) client.clientSource == null ? 'Personal Client' : client.clientSource
       else {
         if (client.originalOwner.organization) return client.originalOwner.organization.name
         else return client.originalOwner.firstName + ' ' + client.originalOwner.lastName
@@ -170,11 +173,11 @@ class ClientDetail extends React.Component {
         style={[
           AppStyles.container,
           styles.container,
-          { backgroundColor: AppStyles.colors.backgroundColor },
+          { backgroundColor: AppStyles.colors.backgroundColor, paddingHorizontal: 0, backgroundColor:'#fff' },
         ]}
       >
-        <ScrollView>
-          <View style={styles.outerContainer}>
+        <ScrollView >
+          <View style={[styles.outerContainer, {paddingBottom:65}]}>
             <View style={styles.innerContainer}>
               <Text style={styles.headingText}>First Name</Text>
               <Text style={styles.labelText}>{client.first_name}</Text>
@@ -278,7 +281,7 @@ class ClientDetail extends React.Component {
               )}
           </View> */}
         </ScrollView>
-        {createProjectLead || createBuyRentLead ? (
+        {/* {createProjectLead || createBuyRentLead ? (
           <FAB.Group
             open={open}
             icon="plus"
@@ -288,7 +291,23 @@ class ClientDetail extends React.Component {
             actions={fabActions}
             onStateChange={({ open }) => this.setState({ open })}
           />
-        ) : null}
+        ) : null} */}
+
+
+        <View style={[AppStyles.mainCMBottomNav,]}>
+          <CMBottomNav
+            client={client}
+            // navigateFromMenu={this.navigateFromMenu}
+            // navigateToAddDiary={this.navigateToAddDiary}
+            navigation={this.props.navigation}
+            // guideReference={lead && lead.guideReference}
+            screenName={'clientDetails'}
+          // closedLeadEdit={closedLeadEdit}
+          // navigateToOpenWorkFlow={this.navigateToOpenWorkFlow}
+          // requiredProperties={route.params.lead.requiredProperties}
+          />
+        </View>
+
       </View>
     ) : (
       <Loader loading={loading} />

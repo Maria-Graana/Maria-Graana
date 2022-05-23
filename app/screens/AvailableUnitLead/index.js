@@ -93,10 +93,20 @@ class AvailableUnitLead extends React.Component {
 
   fetchAddedLeads = (client) => {
     const { page, leadsData, statusFilter } = this.state
+    const { clientDetails } = this.props.route.params
     this.setState({ loading: true })
+
+    let url;
+    if (clientDetails) {
+      url = `/api/leads/projects?customerId=${client.id}&customerLeads=true`;
+    } else {
+      url = `/api/leads/projects?customerId=${client.id}&status=open`;
+    }
+
     axios
-      .get(`/api/leads/projects?customerId=${client.id}&status=open`)
+      .get(url)
       .then((res) => {
+        
         this.setState({
           leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
           loading: false,
@@ -533,6 +543,7 @@ class AvailableUnitLead extends React.Component {
     const { user, permissions } = this.props
     const screen = this.props.route.params.screen
     let buyRentFilterType = StaticData.buyRentFilterType
+
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
@@ -722,8 +733,8 @@ class AvailableUnitLead extends React.Component {
             modalMode === 'call'
               ? StaticData.commentsFeedbackCall
               : modalMode === 'meeting'
-              ? StaticData.commentsFeedbackMeeting
-              : StaticData.leadClosedCommentsFeedback
+                ? StaticData.commentsFeedbackMeeting
+                : StaticData.leadClosedCommentsFeedback
           }
           modalMode={modalMode}
           rejectLead={(body) => this.rejectLead(body)}

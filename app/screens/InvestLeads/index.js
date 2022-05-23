@@ -110,15 +110,17 @@ class InvestLeads extends React.Component {
     )
 
     if (client) {
+
       this.fetchAddedLeads(client)
     } else {
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         dispatch(getListingsCount())
         this.getServerTime()
         this.onFocus()
-        this.setFabActions()
+        
       })
     }
+    this.setFabActions()
   }
 
   componentWillUnmount() {
@@ -152,10 +154,17 @@ class InvestLeads extends React.Component {
   }
 
   fetchAddedLeads = (client) => {
+    const {  route } = this.props
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
+    const { clientDetails } = route.params
+    let url;
+    if (clientDetails) {
+      url = `/api/leads/projects?customerId=${client.id}&customerLeads=true`
+    }
+    else { url = `/api/leads/projects?customerId=${client.id}` }
     axios
-      .get(`/api/leads/projects?customerId=${client.id}`)
+      .get(url)
       .then((res) => {
         this.setState({
           leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],

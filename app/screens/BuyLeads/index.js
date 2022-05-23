@@ -95,19 +95,56 @@ class BuyLeads extends React.Component {
     }
   }
 
+
+  fetchAddedLeads = (client) => {
+    const { route } = this.props
+    const { page, leadsData, statusFilter } = this.state
+    this.setState({ loading: true })
+    const { clientDetails } = route.params
+    let url;
+    if (clientDetails) {
+      url = `/api/leads?customerId=${client.id}&customerLeads=true`
+    }
+    else { url = `/api/leads?customerId=${client.id}` }
+    axios
+      .get(url)
+      .then((res) => {
+        this.setState({
+          leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
+          loading: false,
+          onEndReachedLoader: false,
+          totalLeads: res.data.count,
+          statusFilter: statusFilter,
+        })
+      })
+      .catch((res) => {
+        this.setState({
+          loading: false,
+        })
+      })
+  }
   componentDidMount() {
     const { hasBooking = false } = this.props.route.params
-    const { dispatch } = this.props
+    const { dispatch, route } = this.props
+    const { client } = route.params
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       const { PPBuyNotification } = this.props
       if (PPBuyNotification) {
         dispatch(setPPBuyNotification(false))
       }
-      dispatch(getListingsCount())
-      this.getServerTime()
-      this.onFocus()
-      this.setFabActions()
+
+      if (client) {
+
+        this.fetchAddedLeads(client)
+      }
+      else {
+        dispatch(getListingsCount())
+        this.getServerTime()
+        this.onFocus()
+
+      }
     })
+    this.setFabActions()
 
 
     dispatch(setLeadsDropdown(hasBooking
@@ -274,7 +311,7 @@ class BuyLeads extends React.Component {
     navigation.navigate(page, {
       pageName: status,
       client: copyClient,
-      name: copyClient && copyClient.customerName,
+      name: copyClient && copyClient.customerName ? copyClient.customerName : `${copyClient?.first_name} ${copyClient?.last_name}`,
       purpose: 'sale',
     })
   }
@@ -567,13 +604,20 @@ class BuyLeads extends React.Component {
 
   setFabActions = () => {
     const { createBuyRentLead, createProjectLead } = this.state
+    const { route } = this.props;
+    const { client } = route.params
     let fabActions = []
     if (createBuyRentLead) {
       fabActions.push({
         icon: 'plus',
         label: 'Buy/Rent Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+        onPress: () => {
+          if (client) { this.goToFormPage('AddRCMLead', 'RCM', client, client?.id) }
+          else {
+            this.goToFormPage('AddRCMLead', 'RCM', null)
+          }
+        },
       })
     }
     if (createProjectLead) {
@@ -581,7 +625,12 @@ class BuyLeads extends React.Component {
         icon: 'plus',
         label: 'Investment Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+        onPress: () => {
+          if (client) { this.goToFormPage('AddCMLead', 'CM', client, client?.id) }
+          else {
+            this.goToFormPage('AddCMLead', 'CM', null)
+          }
+        },
       })
     }
     this.setState({

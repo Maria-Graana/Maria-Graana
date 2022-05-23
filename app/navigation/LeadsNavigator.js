@@ -49,23 +49,40 @@ function LeadsNavigator(props) {
   }, [])
 
   useEffect(() => {
+
+
     if (
       screen == 'Leads' &&
       navFrom != 'viewing' &&
       navFrom != 'follow_up' &&
       navFrom != 'meeting'
     ) {
-      navigation.setOptions({
-        title: '',
-        headerRight: (props) => (
-          <DropdownHeader
-            leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
-            hasBooking={false}
-            pageType={''}
-            navigation={navigation}
-          />
-        ),
-      })
+      if (props.route.params?.client) {
+        navigation.setOptions({
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          title: `${props.route.params?.client?.first_name}'s Leads`,
+          headerLeft: (props) => (
+            <HeaderLeftLogo
+              navigation={navigation}
+              leftBool={true}
+            />
+          ),
+        })
+
+      }
+      else {
+        navigation.setOptions({
+          title: '',
+          headerRight: (props) => (
+            <DropdownHeader
+              leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
+              hasBooking={false}
+              pageType={''}
+              navigation={navigation}
+            />
+          ),
+        })
+      }
     }
 
     if (screen == 'MyDeals') {
@@ -107,6 +124,7 @@ function LeadsNavigator(props) {
     //  navigation.setOptions({ title: 'SELECT LEAD' })
   }
   if (navFrom == 'follow_up' || navFrom == 'meeting') {
+
     return (
       <Tab.Navigator
         tabBarOptions={{
@@ -201,6 +219,7 @@ function LeadsNavigator(props) {
               hasBooking: props.route.params?.hasBooking,
               navFrom: navFrom,
               hideCloseLostFilter: hideCloseLostFilter,
+
             }}
             component={InvestLeads}
           />
@@ -208,6 +227,7 @@ function LeadsNavigator(props) {
       </Tab.Navigator>
     )
   } else if (navFrom == 'viewing') {
+
     return (
       <Tab.Navigator
         tabBarOptions={{
@@ -284,6 +304,8 @@ function LeadsNavigator(props) {
       </Tab.Navigator>
     )
   } else {
+
+
     return user.subRole === 'business_centre_manager' ||
       user.subRole === 'business_centre_agent' ||
       user.subRole === 'call_centre_manager' ||
@@ -330,6 +352,8 @@ function LeadsNavigator(props) {
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
+
+
             }}
             component={InvestLeads}
           />
@@ -353,6 +377,8 @@ function LeadsNavigator(props) {
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
+              client: props.route.params?.client,
+              clientDetails: props.route.params?.clientDetails
             }}
             component={RentLeads}
           />
@@ -368,6 +394,8 @@ function LeadsNavigator(props) {
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
+              client: props.route.params?.client,
+              clientDetails: props.route.params?.clientDetails
             }}
             options={{
               tabBarIcon: (props) => (
@@ -411,11 +439,11 @@ function LeadsNavigator(props) {
             PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ||
-          getPermissionValue(
-            PermissionFeatures.APP_PAGES,
-            PermissionActions.MY_DEALS_BUY_RENT,
-            permissions
-          ) ? (
+            getPermissionValue(
+              PermissionFeatures.APP_PAGES,
+              PermissionActions.MY_DEALS_BUY_RENT,
+              permissions
+            ) ? (
             <Tab.Screen
               name="Rent"
               // options={{
@@ -430,6 +458,8 @@ function LeadsNavigator(props) {
               initialParams={{
                 screen: props.route.params?.screen,
                 hasBooking: props.route.params?.hasBooking,
+                client: props.route.params?.client,
+                clientDetails: props.route.params?.clientDetails
               }}
               component={RentLeads}
             />
@@ -439,16 +469,18 @@ function LeadsNavigator(props) {
             PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
             permissions
           ) ||
-          getPermissionValue(
-            PermissionFeatures.APP_PAGES,
-            PermissionActions.MY_DEALS_BUY_RENT,
-            permissions
-          ) ? (
+            getPermissionValue(
+              PermissionFeatures.APP_PAGES,
+              PermissionActions.MY_DEALS_BUY_RENT,
+              permissions
+            ) ? (
             <Tab.Screen
               name="Buy"
               initialParams={{
                 screen: props.route.params?.screen,
                 hasBooking: props.route.params?.hasBooking,
+                client: props.route.params?.client,
+                clientDetails: props.route.params?.clientDetails
               }}
               // options={{
               //   tabBarIcon: (props) => (
@@ -473,6 +505,8 @@ function LeadsNavigator(props) {
               initialParams={{
                 screen: props.route.params?.screen,
                 hasBooking: props.route.params?.hasBooking,
+                client: props.route.params?.client,
+                clientDetails: props.route.params?.clientDetails
               }}
               // options={{
               //   tabBarIcon: (props) => (

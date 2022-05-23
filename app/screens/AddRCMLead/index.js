@@ -152,6 +152,7 @@ class AddRCMLead extends Component {
   }
 
   setClient = () => {
+   
     const { CMLead, route, dispatch } = this.props
     const { RCMFormData } = this.state
     const { client, name, selectedCity } = route.params
@@ -164,6 +165,7 @@ class AddRCMLead extends Component {
       copyObject.customerId = client.id
       copyObject.phones = phones
     }
+    console.log(" client2323",client)
     setTimeout(() => {
       this.setState({
         RCMFormData: copyObject,
@@ -400,6 +402,9 @@ class AddRCMLead extends Component {
     } = this.state
     const { route } = this.props
     const { update = false } = route.params
+    const { client,name,purpose } = route.params
+   
+    
 
     return (
       <View style={[route.params.pageName === 'CM' && AppStyles.container]}>

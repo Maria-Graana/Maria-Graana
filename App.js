@@ -11,7 +11,9 @@ import * as Notifications from 'expo-notifications'
 import * as SplashScreen from 'expo-splash-screen'
 import { Root } from 'native-base'
 import React from 'react'
-import { AsyncStorage, Linking, LogBox } from 'react-native'
+import { Linking, LogBox } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import {
   setCustomText,
   setCustomTextInput,

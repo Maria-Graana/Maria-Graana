@@ -257,12 +257,12 @@ class BuyLeads extends React.Component {
           : (query = `/api/leads?purpose[]=buy&id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'phone' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=rent&phoneNo=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&phoneNo=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads?purpose[]=buy&phoneNo=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&phoneNo=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'email' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads?purpose[]=rent&emailId=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads?purpose[]=rent&emailId=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads?purpose[]=buy&emailId=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads?purpose[]=buy&emailId=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads?purpose[]=buy&fromDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)

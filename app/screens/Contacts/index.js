@@ -16,6 +16,7 @@ import { widthPercentageToDP } from 'react-native-responsive-screen'
 import fuzzy from 'fuzzy'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import _ from 'underscore'
 
 export class Contacts extends Component {
   constructor(props) {
@@ -90,7 +91,7 @@ export class Contacts extends Component {
       })
       data = data.map((item) => item.original)
     } else {
-      data = armsContacts
+      data = _.sortBy(armsContacts ? armsContacts : [], 'updatedAt')
     }
 
     let createUpdatePermission = getPermissionValue(

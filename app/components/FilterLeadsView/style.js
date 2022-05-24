@@ -12,13 +12,22 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 5,
   },
+  filterPressableForContacts: {
+    borderRadius: 15,
+    paddingVertical: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginLeft: 5,
+    marginRight: 5,
+    width: 168,
+  },
   filterMainView: {
-    marginBottom: 15,
+    marginBottom: 10,
     paddingVertical: 5,
     backgroundColor: 'white',
   },
   filterScroll: {
-    marginVertical: 5,
     padding: 10,
   },
 })

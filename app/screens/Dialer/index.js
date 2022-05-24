@@ -153,6 +153,7 @@ class Dialer extends Component {
             color="black"
             pressMode="string"
             onPress={(val) => this.setState({ numberTxt: val })}
+            clearOnLongPress={true}
           />
         </View>
       </View>
@@ -288,6 +289,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     textAlign: 'center',
     letterSpacing: 0.5,
+    height: heightPercentageToDP('5%'),
   },
   callButton: {
     zIndex: 10,

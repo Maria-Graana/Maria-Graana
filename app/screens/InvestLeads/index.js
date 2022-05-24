@@ -139,9 +139,9 @@ class InvestLeads extends React.Component {
         dispatch(getCountryCode())
         this.getServerTime()
         this.onFocus()
-        this.setFabActions()
       })
     }
+    this.setFabActions()
   }
 
   componentWillUnmount() {

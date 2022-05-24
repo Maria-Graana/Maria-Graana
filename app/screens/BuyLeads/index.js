@@ -6,7 +6,7 @@ import moment from 'moment'
 import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { setLeadsDropdown } from '../../actions/leadsDropdown'
-import { FlatList, Image, Linking, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Linking, Platform, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
 import SortImg from '../../../assets/img/sort.png'
@@ -100,6 +100,7 @@ class BuyLeads extends React.Component {
       dateFromTo: null,
       countryFilter: null,
       classificationValues: null,
+      activeDate: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -715,7 +716,11 @@ class BuyLeads extends React.Component {
       },
       () => {
         this.clearSearch()
-        this.RBSheet.open()
+        if (value == 'date' && Platform.OS == 'android') {
+          this.setState({ activeDate: true })
+        } else {
+          this.RBSheet.open()
+        }
       }
     )
   }
@@ -731,7 +736,11 @@ class BuyLeads extends React.Component {
   }
 
   setDateFromTo = (event, date) => {
-    this.setState({ dateFromTo: date })
+    this.setState({ dateFromTo: date, activeDate: false }, () => {
+      if (Platform.OS == 'android' && event.type == 'set') {
+        this.changeDateFromTo()
+      }
+    })
   }
 
   setTextSearch = (text) => {
@@ -787,6 +796,7 @@ class BuyLeads extends React.Component {
       classificationLead,
       dateLead,
       dateFromTo,
+      activeDate,
     } = this.state
     const {
       leadsDropdown,
@@ -827,14 +837,17 @@ class BuyLeads extends React.Component {
           }}
           height={
             filterType == 'classification'
-              ? 200
+              ? 250
               : filterType == 'date'
               ? 500
               : filterType == 'country'
               ? 700
+              : filterType == 'leadStatus'
+              ? 350
               : 300
           }
           openDuration={250}
+          closeOnDragDown={true}
         >
           {filterType == 'leadStatus' ? (
             <ListViewComponent
@@ -1013,6 +1026,13 @@ class BuyLeads extends React.Component {
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}
         />
+
+        {activeDate && (
+          <RNDateTimePicker
+            value={dateFromTo ? dateFromTo : new Date()}
+            onChange={this.setDateFromTo}
+          />
+        )}
 
         <SortModal
           sendStatus={this.sendStatus}

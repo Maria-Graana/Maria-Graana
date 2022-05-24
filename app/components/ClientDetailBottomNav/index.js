@@ -361,6 +361,7 @@ class CMBottomNav extends React.Component {
     if (screenName === 'Properties') {
       navigation.navigate('InventoryTabs', {
         screen: 'ARMS',
+        client: client,
         params: {
           screen: 'InventoryTabs',
           client: client,

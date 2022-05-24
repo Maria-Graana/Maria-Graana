@@ -1,7 +1,7 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dimensions } from 'react-native'
 import AppStyles from '../AppStyles'
 import Armsinventory from '../screens/ArmsInventories'
@@ -11,7 +11,21 @@ const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
 
-export default function InventoryTabNavigators() {
+export default function InventoryTabNavigators(props) {
+  const { route, navigation } = props
+  const { client } = route.params
+  useEffect(() => {
+    if (client) {
+      props.navigation.setOptions({
+        //  headerRight: (props) => <HeaderRight navigation={navigation} />,
+        title: `${client?.first_name}'s Properties`,
+        // headerLeft: (props) => (
+        //   <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />
+        // ),
+      })
+    }
+  }, [navigation])
+
   return (
     <Tab.Navigator
       tabBarOptions={{

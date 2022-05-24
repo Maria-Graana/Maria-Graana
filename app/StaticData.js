@@ -1554,7 +1554,7 @@ export default StaticData = {
 
   clientTypePickerData: [
     { name: 'Personal Client', value: 'Personal Client' },
-    { name: 'Inbound Client', value: 'Inbound Client' },
+    { name: 'UAN', value: 'UAN' },
     { name: 'Walk-In', value: 'Walk-In' },
     { name: 'Event', value: 'Event' },
     { name: 'Others', value: 'Others' },

@@ -88,7 +88,6 @@ class Client extends React.Component {
     }))
     this.setState({ customers: newCustomers })
   }
-
   fetchCustomer = () => {
     const { customers, searchText, page, pageSize } = this.state
     const { selectedClient, selectedPOC } = this.props.route.params
@@ -96,7 +95,7 @@ class Client extends React.Component {
     const clientName = searchText.replace(' ', '%20')
     searchText !== ''
       ? (url = `/api/customer/find?searchBy=name&q=${clientName}`)
-      : (url = `/api/customer/find?clientType=my_clients&pageSize=${pageSize}&page=${page}`)
+      : (url = `/api/customer/find?pageSize=${pageSize}&page=${page}`)
     axios
       .get(url)
       .then((res) => {
@@ -129,7 +128,6 @@ class Client extends React.Component {
   }
 
   navigateTo = (data) => {
-    console.log("data",data)
     const { route, navigation } = this.props
     const {
       isUnitBooking = false,

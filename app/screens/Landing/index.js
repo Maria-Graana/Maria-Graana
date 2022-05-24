@@ -353,7 +353,6 @@ class Landing extends React.Component {
 
   // ****** Navigate Function
   navigateFunction = (name, screenName) => {
-    console.log("screenName",screenName);
     const { navigation } = this.props
     if (screenName === 'Properties') {
       navigation.navigate('InventoryTabs', {

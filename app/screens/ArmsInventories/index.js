@@ -120,9 +120,9 @@ class ArmsInventories extends React.Component {
       query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
     if (this.props.route.params?.client) {
-      query = `searchBy=`
+      query = `${query}&searchBy=customer&q=${this.props.route.params?.client?.first_name} ${this.props.route.params?.client?.last_name}`
     }
-    console.log('qursy', query)
+
     axios
       .get(query)
       .then((response) => {

@@ -41,9 +41,27 @@ export default function InventoryTabNavigators(props) {
         // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
       }}
     >
-      <Tab.Screen name="ARMS" component={Armsinventory} />
-      <Tab.Screen name="Field App" component={FieldsInventories} />
-      <Tab.Screen name="Graana.com" component={GraanaInventories} />
+      <Tab.Screen
+        name="ARMS"
+        initialParams={{
+          client: props.route.params?.client,
+        }}
+        component={Armsinventory}
+      />
+      <Tab.Screen
+        name="Field App"
+        initialParams={{
+          client: props.route.params?.client,
+        }}
+        component={FieldsInventories}
+      />
+      <Tab.Screen
+        initialParams={{
+          client: props.route.params?.client,
+        }}
+        name="Graana.com"
+        component={GraanaInventories}
+      />
     </Tab.Navigator>
   )
 }

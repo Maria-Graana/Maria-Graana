@@ -421,6 +421,7 @@ class CMBottomNav extends React.Component {
       dispatch,
       navigateToAddDiary,
       requiredProperties,
+      client,
     } = this.props
     const {
       visible,
@@ -539,7 +540,10 @@ class CMBottomNav extends React.Component {
           </View>
         </TouchableOpacity>
         <MultiplePhoneOptionModal
-          // modelDataLoading={phoneModelDataLoader}
+          clientModal={true}
+          customerName={`${client?.first_name} ${client?.last_name}`}
+          customerContacts={client.customerContacts}
+          // modelDataLoading={ sphoneModelDataLoader}
           isMultiPhoneModalVisible={isMultiPhoneModalVisible}
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={this.props.navigation}

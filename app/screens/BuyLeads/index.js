@@ -493,7 +493,6 @@ class BuyLeads extends React.Component {
     const { dispatch } = this.props
     dispatch(setMultipleModalVisible(value))
   }
-
   openStatus = () => {
     this.setState({ activeSortModal: !this.state.activeSortModal })
   }

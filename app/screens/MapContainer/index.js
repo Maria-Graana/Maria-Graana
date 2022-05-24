@@ -1,6 +1,6 @@
 /** @format */
 
-// import PropMap from '@graana/react-native-graana-maps'
+import PropMap from '@graana/react-native-graana-maps'
 import React, { Component } from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
@@ -88,14 +88,13 @@ class MapContainer extends Component {
     return (
       <View style={styles.map}>
         {this.props.route.params?.geotaggingType === 'Propsure' ? (
-          <View/>
-          // <PropMap
-          //   production={config.channel === 'production' ? true : false}
-          //   mapUrl={config.graanaUrl}
-          //   mapValues={mapValues.propsure_id ? mapValues : null}
-          //   onMark={this.handleOnMark}
-          //   onMarkerCreate={() => {}}
-          // />
+          <PropMap
+            production={config.channel === 'production' ? true : false}
+            mapUrl={config.graanaUrl}
+            mapValues={mapValues.propsure_id ? mapValues : null}
+            onMark={this.handleOnMark}
+            onMarkerCreate={() => {}}
+          />
         ) : (
           <ManualMap onMarkerCreate={this.handleOnMarkerCreate} />
         )}

@@ -437,6 +437,9 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
     // { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'intermall adjustment', name: 'Intermall Adjustment' },
+    { value: 'buyback', name: 'Buyback' },
+    { value: 'refund', name: 'Refund' },
   ],
   commentsFeedbackCall: [
     { value: 'no_response', name: 'No Response', colorCode: '#FEC107' },

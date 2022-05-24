@@ -10,6 +10,7 @@ export default function ({ name, data, onPress, type }) {
       {name ? <Text style={styles.listTitle}>{name}</Text> : null}
       <FlatList
         data={data}
+        style={styles.listStyle}
         renderItem={({ item, index }) => (
           <Pressable
             key={index}

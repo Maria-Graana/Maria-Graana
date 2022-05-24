@@ -10,6 +10,7 @@ import {
   FlatList,
   Image,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -104,6 +105,7 @@ class RentLeads extends React.Component {
       dateFromTo: null,
       countryFilter: null,
       classificationValues: null,
+      activeDate: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -724,7 +726,11 @@ class RentLeads extends React.Component {
       },
       () => {
         this.clearSearch()
-        this.RBSheet.open()
+        if (value == 'date' && Platform.OS == 'android') {
+          this.setState({ activeDate: true })
+        } else {
+          this.RBSheet.open()
+        }
       }
     )
   }
@@ -740,7 +746,11 @@ class RentLeads extends React.Component {
   }
 
   setDateFromTo = (event, date) => {
-    this.setState({ dateFromTo: date })
+    this.setState({ dateFromTo: date, activeDate: false }, () => {
+      if (Platform.OS == 'android' && event.type == 'set') {
+        this.changeDateFromTo()
+      }
+    })
   }
 
   setTextSearch = (text) => {
@@ -780,6 +790,7 @@ class RentLeads extends React.Component {
       classificationLead,
       dateLead,
       dateFromTo,
+      activeDate,
     } = this.state
     const {
       user,
@@ -819,14 +830,17 @@ class RentLeads extends React.Component {
           }}
           height={
             filterType == 'classification'
-              ? 200
+              ? 250
               : filterType == 'date'
               ? 500
               : filterType == 'country'
               ? 700
+              : filterType == 'leadStatus'
+              ? 350
               : 300
           }
           openDuration={250}
+          closeOnDragDown={true}
         >
           {filterType == 'leadStatus' ? (
             <ListViewComponent
@@ -1002,6 +1016,13 @@ class RentLeads extends React.Component {
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}
         />
+
+        {activeDate && (
+          <RNDateTimePicker
+            value={dateFromTo ? dateFromTo : new Date()}
+            onChange={this.setDateFromTo}
+          />
+        )}
 
         <SortModal
           sendStatus={this.sendStatus}

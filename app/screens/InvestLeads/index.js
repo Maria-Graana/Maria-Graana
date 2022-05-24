@@ -5,7 +5,7 @@ import axios from 'axios'
 import moment from 'moment'
 import { ActionSheet } from 'native-base'
 import React from 'react'
-import { FlatList, Image, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Platform, TouchableOpacity, View } from 'react-native'
 import { setLeadsDropdown } from '../../actions/leadsDropdown'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -103,6 +103,7 @@ class InvestLeads extends React.Component {
       dateFromTo: null,
       countryFilter: null,
       classificationValues: null,
+      activeDate: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -138,9 +139,9 @@ class InvestLeads extends React.Component {
         dispatch(getCountryCode())
         this.getServerTime()
         this.onFocus()
-        this.setFabActions()
       })
     }
+    this.setFabActions()
   }
 
   componentWillUnmount() {
@@ -476,7 +477,7 @@ class InvestLeads extends React.Component {
   }
   navigateTo = (data) => {
     const { screen, navFrom } = this.props.route.params
-    console.log('params', this.props.route.params)
+
     const { navigation, route } = this.props
     const unitData = route.params.unitData
     if (navFrom) {
@@ -737,7 +738,11 @@ class InvestLeads extends React.Component {
       },
       () => {
         this.clearSearch()
-        this.RBSheet.open()
+        if (value == 'date' && Platform.OS == 'android') {
+          this.setState({ activeDate: true })
+        } else {
+          this.RBSheet.open()
+        }
       }
     )
   }
@@ -753,7 +758,11 @@ class InvestLeads extends React.Component {
   }
 
   setDateFromTo = (event, date) => {
-    this.setState({ dateFromTo: date })
+    this.setState({ dateFromTo: date, activeDate: false }, () => {
+      if (Platform.OS == 'android' && event.type == 'set') {
+        this.changeDateFromTo()
+      }
+    })
   }
 
   setTextSearch = (text) => {
@@ -807,6 +816,7 @@ class InvestLeads extends React.Component {
       classificationLead,
       dateLead,
       dateFromTo,
+      activeDate,
     } = this.state
     const {
       user,
@@ -836,14 +846,17 @@ class InvestLeads extends React.Component {
           }}
           height={
             filterType == 'classification'
-              ? 200
+              ? 250
               : filterType == 'date'
               ? 500
               : filterType == 'country'
               ? 700
+              : filterType == 'leadStatus'
+              ? 350
               : 300
           }
           openDuration={250}
+          closeOnDragDown={true}
         >
           {filterType == 'leadStatus' ? (
             <ListViewComponent
@@ -974,6 +987,7 @@ class InvestLeads extends React.Component {
             onStateChange={({ open }) => this.setState({ open })}
           />
         ) : null}
+
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -981,6 +995,13 @@ class InvestLeads extends React.Component {
           doneStatus={activeSortModal}
           sort={sort}
         />
+
+        {activeDate && (
+          <RNDateTimePicker
+            value={dateFromTo ? dateFromTo : new Date()}
+            onChange={this.setDateFromTo}
+          />
+        )}
 
         <MultiplePhoneOptionModal
           modelDataLoading={phoneModelDataLoader}

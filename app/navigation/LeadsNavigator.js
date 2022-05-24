@@ -59,7 +59,9 @@ function LeadsNavigator(props) {
         navigation.setOptions({
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           title: `${props.route.params?.client?.first_name}'s Leads`,
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />
+          ),
         })
       } else {
         navigation.setOptions({

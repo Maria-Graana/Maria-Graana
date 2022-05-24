@@ -304,7 +304,7 @@ class AddRCMLead extends Component {
   sendPayload = () => {
     const { formType, RCMFormData, organizations } = this.state
     const { user, route } = this.props
-    const { update = false, lead } = route.params
+    const { update = false, lead, noEditableClient, client } = route.params
     if (RCMFormData.size === '') RCMFormData.size = null
     else RCMFormData.size = Number(RCMFormData.size)
     let payLoad = {
@@ -355,10 +355,24 @@ class AddRCMLead extends Component {
           .post(`/api/leads`, payLoad)
           .then((res) => {
             helper.successToast('Lead created successfully')
-            if (payLoad.purpose == 'buy') {
-              RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+
+            if (noEditableClient) {
+              // RootNavigation.navigateTo('ProjectLeads', {
+              //   client: client,
+              //   screen: 'ProjectLeads',
+              // })
+              if (payLoad.purpose == 'buy') {
+                RootNavigation.navigateTo('Leads', { screen: 'Buy', client: client })
+              } else {
+                RootNavigation.navigateTo('Leads', { screen: 'Rent', client: client })
+              }
             } else {
-              RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+              if (payLoad.purpose == 'buy') {
+                RootNavigation.navigateToSpecificTab('Leads', 'Buy')
+              } else {
+                RootNavigation.navigateToSpecificTab('Leads', 'Rent')
+              }
+              //RootNavigation.navigate('ProjectLeads')
             }
           })
           .catch((error) => {

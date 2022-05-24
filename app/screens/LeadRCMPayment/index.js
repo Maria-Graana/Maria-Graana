@@ -1791,7 +1791,7 @@ class LeadRCMPayment extends React.Component {
     let isSellerPropsureServiceNotClear = false
     let buyerCommissionPaymentFound = false
     let sellerCommissionPaymentFound = false
-
+    const { user } = this.props
     const { leadInfo, legalSellerListing, legalBuyListing } = this.state
     const { commissions, propsureOutstandingPayment } = leadInfo
     if (commissions && commissions.length) {
@@ -1828,7 +1828,7 @@ class LeadRCMPayment extends React.Component {
       if (propsureOutstandingPayment > 0)
         paymentsValidationHtml += `Buyer advisor's propsure outstanding payment is not cleared.\n`
 
-      if (legalBuyListing && legalBuyListing.length)
+      if (legalBuyListing && legalBuyListing.length && user.organization.type !== 'Franchise')
         documentsValidationHtml += this.docsValidationHtml(legalBuyListing, "Buyer client's")
     }
 
@@ -1840,7 +1840,7 @@ class LeadRCMPayment extends React.Component {
       if (isSellerPropsureServiceNotClear)
         paymentsValidationHtml += `Seller advisor's propsure payment is not cleared.\n`
 
-      if (legalSellerListing && legalSellerListing.length)
+      if (legalSellerListing && legalSellerListing.length && user.organization.type !== 'Franchise')
         documentsValidationHtml += this.docsValidationHtml(legalSellerListing, "Seller client's")
     }
     return { paymentEr: paymentsValidationHtml, documentEr: documentsValidationHtml }

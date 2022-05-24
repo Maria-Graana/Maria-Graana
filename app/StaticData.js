@@ -437,6 +437,9 @@ export default StaticData = {
     { value: 'payment', name: 'Payment' },
     { value: 'closed_won', name: 'Closed Won' },
     // { value: 'closed_lost', name: 'Closed Lost' },
+    { value: 'intermall adjustment', name: 'Intermall Adjustment' },
+    { value: 'buyback', name: 'Buyback' },
+    { value: 'refund', name: 'Refund' },
   ],
   commentsFeedbackCall: [
     { value: 'no_response', name: 'No Response', colorCode: '#FEC107' },
@@ -1554,7 +1557,7 @@ export default StaticData = {
 
   clientTypePickerData: [
     { name: 'Personal Client', value: 'Personal Client' },
-    { name: 'Inbound Client', value: 'Inbound Client' },
+    { name: 'UAN', value: 'UAN' },
     { name: 'Walk-In', value: 'Walk-In' },
     { name: 'Event', value: 'Event' },
     { name: 'Others', value: 'Others' },
@@ -1571,5 +1574,10 @@ export default StaticData = {
     { name: 'Son of', value: 'Son of' },
     { name: 'Daughter of', value: 'Daughter of' },
     { name: 'Wife of', value: 'Wife of' },
+  ],
+  classificationFilter: [
+    { name: 'Hot', value: 'Hot' },
+    { name: 'Warm', value: 'Warm' },
+    { name: 'Cold', value: 'Cold' },
   ],
 }

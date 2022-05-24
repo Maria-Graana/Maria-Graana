@@ -2,9 +2,10 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
+import moment from 'moment'
 import { ActionSheet } from 'native-base'
 import React from 'react'
-import { FlatList, Image, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Platform, TouchableOpacity, View } from 'react-native'
 import { setLeadsDropdown } from '../../actions/leadsDropdown'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -38,6 +39,13 @@ import {
   setMultipleModalVisible,
   setReferenceGuideData,
 } from '../../actions/diary'
+import RBSheet from 'react-native-raw-bottom-sheet'
+import RNDateTimePicker from '@react-native-community/datetimepicker'
+import { getCountryCode } from '../../actions/country'
+import FilterLeadsView from '../../components/FilterLeadsView'
+import ListViewComponent from '../../components/ListViewComponent'
+import TextFilterComponent from '../../components/TextFilterComponent'
+import DateFilterComponent from '../../components/DateFilterComponent'
 
 var BUTTONS = [
   'Assign to team member',
@@ -82,6 +90,20 @@ class InvestLeads extends React.Component {
       newActionModal: false,
       isMenuVisible: false,
       fabActions: [],
+      filterType: null,
+      statusLead: null,
+      sortLead: null,
+      idLead: null,
+      nameLead: null,
+      dateLead: null,
+      countryLead: null,
+      emailLead: null,
+      phoneLead: null,
+      classificationLead: null,
+      dateFromTo: null,
+      countryFilter: null,
+      classificationValues: null,
+      activeDate: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -114,6 +136,7 @@ class InvestLeads extends React.Component {
     } else {
       this._unsubscribe = this.props.navigation.addListener('focus', () => {
         dispatch(getListingsCount())
+        dispatch(getCountryCode())
         this.getServerTime()
         this.onFocus()
         this.setFabActions()
@@ -152,10 +175,18 @@ class InvestLeads extends React.Component {
   }
 
   fetchAddedLeads = (client) => {
+    const { route } = this.props
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
+    const { clientDetails } = route.params
+    let url
+    if (clientDetails) {
+      url = `/api/leads/projects?customerId=${client.id}&customerLeads=true`
+    } else {
+      url = `/api/leads/projects?customerId=${client.id}`
+    }
     axios
-      .get(`/api/leads/projects?customerId=${client.id}`)
+      .get(url)
       .then((res) => {
         this.setState({
           leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
@@ -235,6 +266,17 @@ class InvestLeads extends React.Component {
     this.setState({
       page: 1,
       totalLeads: 0,
+      statusLead: null,
+      sortLead: null,
+      nameLead: null,
+      idLead: null,
+      dateLead: null,
+      countryFilter: null,
+      countryLead: null,
+      emailLead: null,
+      phoneLead: null,
+      classificationLead: null,
+      classificationValues: null,
     })
   }
 
@@ -249,24 +291,35 @@ class InvestLeads extends React.Component {
       statusFilter,
       statusFilterType,
       pageType,
+      countryFilter,
+      classificationValues,
     } = this.state
-    const { hasBooking, navFrom } = this.props.route.params
+    const { hasBooking, navFrom, client } = this.props.route.params
     const { user } = this.props
     this.setState({ loading: true })
     let query = ``
+
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?searchBy=name&q=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?searchBy=name&q=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads/projects?searchBy=name&clientName=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?searchBy=name&clientName=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else if (statusFilterType === 'id' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
           ? (query = `/api/leads/projects?id=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
           : (query = `/api/leads/projects?id=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+      } else if (statusFilterType === 'phone' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads/projects?phoneNo=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?phoneNo=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
+      } else if (statusFilterType === 'email' && searchText !== '') {
+        user.armsUserRole && user.armsUserRole.groupManger
+          ? (query = `/api/leads/projects?emailId=${searchText}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?emailId=${searchText}&pageSize=${pageSize}&page=${page}${pageType}`)
       } else {
         user.armsUserRole && user.armsUserRole.groupManger
-          ? (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
-          : (query = `/api/leads/projects?startDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
+          ? (query = `/api/leads/projects?fromDate=${fromDate}&endDate=${toDate}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
+          : (query = `/api/leads/projects?fromDate=${fromDate}&endDate=${toDate}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     } else {
       if (statusFilter === 'in_progress') {
@@ -278,6 +331,17 @@ class InvestLeads extends React.Component {
           ? (query = `/api/leads/projects?status=${statusFilter}${sort}&showAllLeads=true&pageSize=${pageSize}&page=${page}`)
           : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
+    }
+
+    if (client) {
+      query = `${query}&customerId=${client.id}&customerLeads=true`
+    }
+
+    if (countryFilter) {
+      query = `${query}&countryCode=${countryFilter}`
+    }
+    if (classificationValues) {
+      query = `${query}&leadCategory[]=${classificationValues}`
     }
     axios
       .get(`${query}`)
@@ -310,23 +374,33 @@ class InvestLeads extends React.Component {
 
   goToFormPage = (page, status, client) => {
     const { navigation } = this.props
-    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
+
+    navigation.navigate(page, {
+      noEditableClient: client ? true : false,
+      pageName: status,
+      client,
+      name:
+        client && client.customerName
+          ? client.customerName
+          : `${client?.first_name} ${client?.last_name}`,
+    })
   }
 
-  changeStatus = (status) => {
+  changeStatus = (status, name = null) => {
     const { hasBooking = false } = this.props.route?.params
     this.clearStateValues()
     if (hasBooking) {
-      this.setState({ statusFilter: status, leadsData: [] }, () => {
+      this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
         storeItem('statusFilterInvestDeals', status)
         this.fetchLeads()
       })
     } else {
-      this.setState({ statusFilter: status, leadsData: [] }, () => {
+      this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
         storeItem('statusFilterInvestLeads', status)
         this.fetchLeads()
       })
     }
+    this.RBSheet.close()
   }
 
   changePageType = (value) => {
@@ -456,11 +530,12 @@ class InvestLeads extends React.Component {
     }
   }
 
-  sendStatus = (status) => {
-    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
+  sendStatus = (status, name) => {
+    this.setState({ sortLead: name, sort: status }, () => {
       storeItem('sortInvest', status)
       this.fetchLeads()
     })
+    this.RBSheet.close()
   }
 
   setKey = (index) => {
@@ -512,8 +587,21 @@ class InvestLeads extends React.Component {
     }
   }
 
-  changeStatusType = (status) => {
-    this.setState({ statusFilterType: status })
+  changeStatusType = (status, text) => {
+    this.clearStateValues()
+    if (status == 'id') {
+      this.setState({ idLead: text })
+    } else if (status == 'name') {
+      this.setState({ nameLead: text })
+    } else if (status == 'email') {
+      this.setState({ emailLead: text })
+    } else {
+      this.setState({ phoneLead: text })
+    }
+    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+      this.RBSheet.close()
+      this.fetchLeads()
+    })
   }
 
   bookUnit = () => {
@@ -568,12 +656,16 @@ class InvestLeads extends React.Component {
   setFabActions = () => {
     const { createBuyRentLead, createProjectLead } = this.state
     let fabActions = []
+    const { route } = this.props
+    const { client } = route.params
     if (createBuyRentLead) {
       fabActions.push({
         icon: 'plus',
         label: 'Buy/Rent Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+        onPress: () => {
+          this.goToFormPage('AddRCMLead', 'RCM', client)
+        },
       })
     }
     if (createProjectLead) {
@@ -581,7 +673,7 @@ class InvestLeads extends React.Component {
         icon: 'plus',
         label: 'Investment Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', client),
       })
     }
     this.setState({
@@ -635,6 +727,64 @@ class InvestLeads extends React.Component {
     )
   }
 
+  clearSearch = () => {
+    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
+  }
+
+  setBottomSheet = (value) => {
+    this.setState(
+      {
+        filterType: value,
+      },
+      () => {
+        this.clearSearch()
+        if (value == 'date' && Platform.OS == 'android') {
+          this.setState({ activeDate: true })
+        } else {
+          this.RBSheet.open()
+        }
+      }
+    )
+  }
+
+  changeDateFromTo = (name) => {
+    this.clearStateValues()
+    const { dateFromTo } = this.state
+    const selectedDate = moment(dateFromTo ? dateFromTo : new Date()).format('YYYY-MM-DD')
+    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+      this.fetchLeads(selectedDate, selectedDate)
+      this.RBSheet.close()
+    })
+  }
+
+  setDateFromTo = (event, date) => {
+    this.setState({ dateFromTo: date, activeDate: false }, () => {
+      if (Platform.OS == 'android' && event.type == 'set') {
+        this.changeDateFromTo()
+      }
+    })
+  }
+
+  setTextSearch = (text) => {
+    this.setState({ searchText: text })
+  }
+
+  searchCountry = (value, name) => {
+    this.clearStateValues()
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
+    this.RBSheet.close()
+  }
+
+  setClassification = (value, name) => {
+    this.clearStateValues()
+    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
+      this.fetchLeads()
+    })
+    this.RBSheet.close()
+  }
+
   render() {
     const {
       leadsData,
@@ -655,6 +805,18 @@ class InvestLeads extends React.Component {
       createProjectLead,
       pageType,
       phoneModelDataLoader,
+      filterType,
+      statusLead,
+      sortLead,
+      idLead,
+      nameLead,
+      emailLead,
+      countryLead,
+      phoneLead,
+      classificationLead,
+      dateLead,
+      dateFromTo,
+      activeDate,
     } = this.state
     const {
       user,
@@ -665,6 +827,7 @@ class InvestLeads extends React.Component {
       navigation,
       isMultiPhoneModalVisible,
       getIsTerminalUser,
+      countries,
     } = this.props
     const {
       screen,
@@ -676,116 +839,105 @@ class InvestLeads extends React.Component {
 
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
-        {/* ******************* TOP FILTER MAIN VIEW ********** */}
-        <View style={{ marginBottom: 15 }}>
-          {showSearchBar ? (
-            <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
-              <View style={styles.idPicker}>
-                <PickerComponent
-                  placeholder={'NAME'}
-                  data={buyRentFilterType}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatusType}
-                  selectedItem={statusFilterType}
-                />
-              </View>
+        {/* ********** RN Bottom Sheet ********** */}
+        <RBSheet
+          ref={(ref) => {
+            this.RBSheet = ref
+          }}
+          height={
+            filterType == 'classification'
+              ? 250
+              : filterType == 'date'
+              ? 500
+              : filterType == 'country'
+              ? 700
+              : filterType == 'leadStatus'
+              ? 350
+              : 300
+          }
+          openDuration={250}
+          closeOnDragDown={true}
+        >
+          {filterType == 'leadStatus' ? (
+            <ListViewComponent
+              name={'Lead Status'}
+              data={
+                hasBooking
+                  ? StaticData.investmentFilterDeals
+                  : hideCloseLostFilter
+                  ? StaticData.investmentFilterLeadsAddTask
+                  : StaticData.investmentFilterLeads
+              }
+              onPress={this.changeStatus}
+            />
+          ) : filterType == 'sort' ? (
+            <ListViewComponent data={StaticData.sortData} onPress={this.sendStatus} />
+          ) : filterType == 'id' ? (
+            <TextFilterComponent
+              name={'ID'}
+              type={'id'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'name' ? (
+            <TextFilterComponent
+              name={'Name'}
+              type={'name'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'email' ? (
+            <TextFilterComponent
+              name={'Email ID'}
+              type={'email'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'phone' ? (
+            <TextFilterComponent
+              name={'Phone #'}
+              type={'phone'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.changeStatusType}
+            />
+          ) : filterType == 'date' ? (
+            <DateFilterComponent
+              dateFromTo={dateFromTo}
+              setDateFromTo={this.setDateFromTo}
+              changeDateFromTo={this.changeDateFromTo}
+            />
+          ) : filterType == 'country' ? (
+            <ListViewComponent data={countries} onPress={this.searchCountry} type={'country'} />
+          ) : filterType == 'classification' ? (
+            <ListViewComponent
+              name={'Search by Classification Type'}
+              data={StaticData.classificationFilter}
+              onPress={this.setClassification}
+            />
+          ) : null}
+        </RBSheet>
+        {/* ********** RN Bottom Sheet ********** */}
 
-              {statusFilterType === 'name' || statusFilterType === 'id' ? (
-                <Search
-                  containerWidth="75%"
-                  placeholder="Search leads here"
-                  searchText={searchText}
-                  setSearchText={(value) => this.setState({ searchText: value })}
-                  showShadow={false}
-                  showClearButton={true}
-                  returnKeyType={'search'}
-                  onSubmitEditing={() => this.fetchLeads()}
-                  autoFocus={true}
-                  closeSearchBar={() => this.clearAndCloseSearch()}
-                />
-              ) : (
-                <DateSearchFilter
-                  applyFilter={this.fetchLeads}
-                  clearFilter={() => this.clearAndCloseSearch()}
-                />
-              )}
-            </View>
-          ) : (
-            <View
-              style={[
-                styles.filterRow,
-                {
-                  paddingHorizontal: 15,
-                  justifyContent: 'space-between',
-                },
-              ]}
-            >
-              <View style={styles.pickerMain}>
-                <PickerComponent
-                  placeholder={'Lead Status'}
-                  data={
-                    hasBooking
-                      ? StaticData.investmentFilterDeals
-                      : hideCloseLostFilter
-                        ? StaticData.investmentFilterLeadsAddTask
-                        : StaticData.investmentFilterLeads
-                  }
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeStatus}
-                  selectedItem={statusFilter}
-                />
-              </View>
+        {/* ******************* TOP FILTER MAIN VIEW START ********** */}
+        <FilterLeadsView
+          statusLead={statusLead}
+          sortLead={sortLead}
+          idLead={idLead}
+          nameLead={nameLead}
+          dateLead={dateLead}
+          countryLead={countryLead}
+          emailLead={emailLead}
+          phoneLead={phoneLead}
+          classificationLead={classificationLead}
+          setBottomSheet={this.setBottomSheet}
+          hasBooking={hasBooking}
+        />
+        {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 
-              {/* <View style={styles.iconRow}>
-                <Ionicons name="funnel-outline" color={AppStyles.colors.primaryColor} size={24} />
-              </View>
-              <View style={styles.pageTypeRow}>
-                <PickerComponent
-                  placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
-                  data={
-                    hasBooking
-                      ? getIsTerminalUser
-                        ? StaticData.filterDealsValueProjectTerminal
-                        : StaticData.filterDealsValueProject
-                      : getIsTerminalUser
-                        ? StaticData.filterLeadsValueProjectTerminal
-                        : StaticData.filterLeadsValueProject
-                  }
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changePageType}
-                  selectedItem={pageType}
-                  showPickerArrow={false}
-                />
-              </View>*/}
-              <View style={styles.verticleLine} />
-
-              <View style={[styles.stylesMainSort, { marginHorizontal: 5 }]}>
-                <TouchableOpacity
-                  style={styles.sortBtn}
-                  onPress={() => {
-                    this.openStatus()
-                  }}
-                >
-                  <Image source={SortImg} style={[styles.sortImg]} />
-                </TouchableOpacity>
-                <Ionicons
-                  style={{ alignSelf: 'center' }}
-                  onPress={() => {
-                    this.setState({ showSearchBar: true }, () => {
-                      this.clearStateValues()
-                    })
-                  }}
-                  name={'ios-search'}
-                  size={26}
-                  color={AppStyles.colors.primaryColor}
-                />
-              </View>
-            </View>
-          )}
-        </View>
         <ReferenceGuideModal
           isReferenceModalVisible={referenceGuide.isReferenceModalVisible}
           hideReferenceGuideModal={() =>
@@ -823,8 +975,8 @@ class InvestLeads extends React.Component {
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
         {(createProjectLead || createBuyRentLead) &&
-          (screen === 'Leads' || screen === 'ProjectLeads') &&
-          !hideCloseLostFilter ? (
+        (screen === 'Leads' || screen === 'ProjectLeads') &&
+        !hideCloseLostFilter ? (
           <FAB.Group
             open={open}
             icon="plus"
@@ -835,6 +987,7 @@ class InvestLeads extends React.Component {
             onStateChange={({ open }) => this.setState({ open })}
           />
         ) : null}
+
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -842,6 +995,13 @@ class InvestLeads extends React.Component {
           doneStatus={activeSortModal}
           sort={sort}
         />
+
+        {activeDate && (
+          <RNDateTimePicker
+            value={dateFromTo ? dateFromTo : new Date()}
+            onChange={this.setDateFromTo}
+          />
+        )}
 
         <MultiplePhoneOptionModal
           modelDataLoading={phoneModelDataLoader}
@@ -863,6 +1023,7 @@ mapStateToProps = (store) => {
     referenceGuide: store.diary.referenceGuide,
     isMultiPhoneModalVisible: store.diary.isMultiPhoneModalVisible,
     getIsTerminalUser: store.user.getIsTerminalUser,
+    countries: store.countries.country,
     leadsDropdown: store.leadsDropdown.leadsDropdown,
   }
 }

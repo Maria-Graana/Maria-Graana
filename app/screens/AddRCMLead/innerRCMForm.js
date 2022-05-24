@@ -232,7 +232,7 @@ class InnerRCMForm extends Component {
             showIconOrImage={false}
             showError={checkValidation === true && formData.customerId === ''}
             errorMessage="Required"
-            disabled={update}
+            disabled={update || this.props.nonEditableClient}
           />
         ) : null}
 

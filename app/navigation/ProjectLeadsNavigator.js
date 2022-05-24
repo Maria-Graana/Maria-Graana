@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import DropdownHeader from '../components/HeaderRight/DropdownHeader'
+import HeaderRight from '../components/HeaderRight/index'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
@@ -26,23 +27,43 @@ const TabBarBadge = ({ count, color, screen }) => {
 }
 
 function ProjectLeadsNavigator(props) {
+
   const { count, user, permissions, route, navigation } = props
   const { screen, screenName, navFrom, hideCloseLostFilter } = route.params
 
   //unmount
 
   useEffect(() => {
+
+
     if (screen == 'ProjectLeads') {
-      navigation.setOptions({
-        headerRight: (props) => (
-          <DropdownHeader
-            leadType={'ProjectLeads'}
-            hasBooking={false}
-            pageType={''}
-            navigation={navigation}
-          />
-        ),
-      })
+
+      if (props.route.params?.client) {
+        navigation.setOptions({
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          title: `${props.route.params?.client?.first_name}'s Leads`,
+          headerTitleAlign: 'center',
+          headerLeft: (props) => (
+            <HeaderLeftLogo
+              navigation={navigation}
+              leftBool={true}
+            />
+          ),
+        })
+
+      }
+      else {
+        navigation.setOptions({
+          headerRight: (props) => (
+            <DropdownHeader
+              leadType={'ProjectLeads'}
+              hasBooking={false}
+              pageType={''}
+              navigation={navigation}
+            />
+          ),
+        })
+      }
     }
 
     if (screen == 'ProjectDeals') {
@@ -115,6 +136,8 @@ function ProjectLeadsNavigator(props) {
           initialParams={{
             screen: props.route.params?.screen,
             hasBooking: props.route.params?.hasBooking,
+            client: props.route.params?.client,
+            clientDetails: props.route.params?.clientDetails
           }}
           component={InvestLeads}
         />
@@ -262,11 +285,11 @@ function ProjectLeadsNavigator(props) {
         PermissionActions.PROJECT_LEADS_PAGE_VIEW,
         permissions
       ) ||
-      getPermissionValue(
-        PermissionFeatures.APP_PAGES,
-        PermissionActions.MY_DEALS_PROJECT,
-        permissions
-      ) ? (
+        getPermissionValue(
+          PermissionFeatures.APP_PAGES,
+          PermissionActions.MY_DEALS_PROJECT,
+          permissions
+        ) ? (
         <Tab.Screen
           name="Invest"
           // options={{
@@ -281,6 +304,8 @@ function ProjectLeadsNavigator(props) {
           initialParams={{
             screen: props.route.params?.screen,
             hasBooking: props.route.params?.hasBooking,
+            client: props.route.params?.client,
+            clientDetails: props.route.params?.clientDetails
           }}
           component={InvestLeads}
         />

@@ -82,6 +82,7 @@ class AssignLead extends React.Component {
     const { navigation, route } = this.props
     const { selectedId } = this.state
     const { leadId, type, screenName } = route.params
+  
     let body = {
       userId: selectedId,
       leadId: [leadId],
@@ -91,6 +92,7 @@ class AssignLead extends React.Component {
       .patch(`/api/leads/assign`, body)
       .then((response) => {
         if (response.status === 200) {
+        
           helper.successToast('LEAD ASSIGNED SUCCESSFULLY')
           navigation.goBack()
         } else {

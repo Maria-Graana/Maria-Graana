@@ -88,7 +88,6 @@ class Client extends React.Component {
     }))
     this.setState({ customers: newCustomers })
   }
-
   fetchCustomer = () => {
     const { customers, searchText, page, pageSize } = this.state
     const { selectedClient, selectedPOC } = this.props.route.params

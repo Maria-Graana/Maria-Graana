@@ -122,15 +122,18 @@ class RentLeads extends React.Component {
 
   componentDidMount() {
     const { hasBooking = false } = this.props.route.params
-    const { dispatch, navigation } = this.props
+    const { dispatch, navigation, route } = this.props
+
+    const { client } = route.params
+
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       dispatch(getListingsCount())
       dispatch(getCountryCode())
       this.getServerTime()
       this.onFocus()
-      this.setFabActions()
     })
 
+    this.setFabActions()
     dispatch(
       setLeadsDropdown(
         hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
@@ -234,9 +237,10 @@ class RentLeads extends React.Component {
     } = this.state
     const { permissions, user } = this.props
     this.setState({ loading: true })
-    const { hasBooking, navFrom } = this.props.route.params
+    const { hasBooking, navFrom, client } = this.props.route.params
     let isAiraPermission = helper.getAiraPermission(permissions)
     let query = ``
+
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
@@ -279,7 +283,10 @@ class RentLeads extends React.Component {
     if (isAiraPermission && user.armsUserRole && !user.armsUserRole.groupManger) {
       query = `${query}&aira=true`
     }
-    // console.log(query)
+    if (client) {
+      query = `${query}&customerId=${client.id}`
+    }
+
     axios
       .get(`${query}`)
       .then((res) => {
@@ -313,9 +320,13 @@ class RentLeads extends React.Component {
       copyClient.id = clientId
     }
     navigation.navigate(page, {
+      noEditableClient: copyClient ? true : false,
       pageName: status,
       client: copyClient,
-      name: copyClient && copyClient.customerName,
+      name:
+        copyClient && copyClient.customerName
+          ? copyClient.customerName
+          : `${copyClient?.first_name} ${copyClient?.last_name}`,
       purpose: 'rent',
     })
   }
@@ -671,13 +682,21 @@ class RentLeads extends React.Component {
 
   setFabActions = () => {
     const { createBuyRentLead, createProjectLead } = this.state
+    const { route } = this.props
+    const { client } = route.params
     let fabActions = []
     if (createBuyRentLead) {
       fabActions.push({
         icon: 'plus',
         label: 'Buy/Rent Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+        onPress: () => {
+          if (client) {
+            this.goToFormPage('AddRCMLead', 'RCM', client, client?.id)
+          } else {
+            this.goToFormPage('AddRCMLead', 'RCM', null)
+          }
+        },
       })
     }
     if (createProjectLead) {
@@ -685,7 +704,13 @@ class RentLeads extends React.Component {
         icon: 'plus',
         label: 'Investment Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+        onPress: () => {
+          if (client) {
+            this.goToFormPage('AddCMLead', 'CM', client, client?.id)
+          } else {
+            this.goToFormPage('AddCMLead', 'CM', null)
+          }
+        },
       })
     }
     this.setState({

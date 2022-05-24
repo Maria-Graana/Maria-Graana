@@ -205,7 +205,7 @@ class AddCMLead extends Component {
       isPriceModalVisible,
     } = this.state
     const { route, investmentProjects, CMFormLoading } = this.props
-    const { update = false } = route.params
+    const { update = false, noEditableClient } = route.params
     return CMFormLoading ? (
       <Loader loading={CMFormLoading} />
     ) : (
@@ -216,6 +216,7 @@ class AddCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <CMLeadFrom
+                    nonEditableClient={noEditableClient ? true : false}
                     navigation={this.props.navigation}
                     formSubmit={this.formSubmit}
                     checkValidation={checkValidation}

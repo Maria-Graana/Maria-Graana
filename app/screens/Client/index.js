@@ -129,6 +129,7 @@ class Client extends React.Component {
   }
 
   navigateTo = (data) => {
+    console.log("data",data)
     const { route, navigation } = this.props
     const {
       isUnitBooking = false,

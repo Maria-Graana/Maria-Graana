@@ -174,10 +174,18 @@ class InvestLeads extends React.Component {
   }
 
   fetchAddedLeads = (client) => {
+    const { route } = this.props
     const { page, leadsData, statusFilter } = this.state
     this.setState({ loading: true })
+    const { clientDetails } = route.params
+    let url
+    if (clientDetails) {
+      url = `/api/leads/projects?customerId=${client.id}&customerLeads=true`
+    } else {
+      url = `/api/leads/projects?customerId=${client.id}`
+    }
     axios
-      .get(`/api/leads/projects?customerId=${client.id}`)
+      .get(url)
       .then((res) => {
         this.setState({
           leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
@@ -285,10 +293,11 @@ class InvestLeads extends React.Component {
       countryFilter,
       classificationValues,
     } = this.state
-    const { hasBooking, navFrom } = this.props.route.params
+    const { hasBooking, navFrom, client } = this.props.route.params
     const { user } = this.props
     this.setState({ loading: true })
     let query = ``
+
     if (showSearchBar) {
       if (statusFilterType === 'name' && searchText !== '') {
         user.armsUserRole && user.armsUserRole.groupManger
@@ -322,6 +331,11 @@ class InvestLeads extends React.Component {
           : (query = `/api/leads/projects?status=${statusFilter}${sort}&pageSize=${pageSize}&page=${page}${pageType}`)
       }
     }
+
+    if (client) {
+      query = `${query}&customerId=${client.id}&customerLeads=true`
+    }
+
     if (countryFilter) {
       query = `${query}&countryCode=${countryFilter}`
     }
@@ -359,7 +373,16 @@ class InvestLeads extends React.Component {
 
   goToFormPage = (page, status, client) => {
     const { navigation } = this.props
-    navigation.navigate(page, { pageName: status, client, name: client && client.customerName })
+
+    navigation.navigate(page, {
+      noEditableClient: client ? true : false,
+      pageName: status,
+      client,
+      name:
+        client && client.customerName
+          ? client.customerName
+          : `${client?.first_name} ${client?.last_name}`,
+    })
   }
 
   changeStatus = (status, name = null) => {
@@ -632,12 +655,16 @@ class InvestLeads extends React.Component {
   setFabActions = () => {
     const { createBuyRentLead, createProjectLead } = this.state
     let fabActions = []
+    const { route } = this.props
+    const { client } = route.params
     if (createBuyRentLead) {
       fabActions.push({
         icon: 'plus',
         label: 'Buy/Rent Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+        onPress: () => {
+          this.goToFormPage('AddRCMLead', 'RCM', client)
+        },
       })
     }
     if (createProjectLead) {
@@ -645,7 +672,7 @@ class InvestLeads extends React.Component {
         icon: 'plus',
         label: 'Investment Lead',
         color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
+        onPress: () => this.goToFormPage('AddCMLead', 'CM', client),
       })
     }
     this.setState({

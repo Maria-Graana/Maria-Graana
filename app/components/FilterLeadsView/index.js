@@ -19,11 +19,18 @@ export default function FilterLeadsView({
   setBottomSheet,
   hasBooking,
   contactScreen,
+  clear,
+  onClear,
 }) {
   return (
     <View style={styles.filterMainView}>
       {contactScreen ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+          {clear ? (
+            <Pressable onPress={() => onClear()} style={styles.clearPressable}>
+              <Text style={styles.clearText}>Clear All</Text>
+            </Pressable>
+          ) : null}
           <Pressable
             onPress={() => setBottomSheet('name')}
             style={[
@@ -67,6 +74,11 @@ export default function FilterLeadsView({
         </ScrollView>
       ) : (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+          {clear ? (
+            <Pressable onPress={() => onClear()} style={styles.clearPressable}>
+              <Text style={styles.clearText}>Clear All</Text>
+            </Pressable>
+          ) : null}
           <Pressable
             onPress={() => setBottomSheet('leadStatus')}
             style={[

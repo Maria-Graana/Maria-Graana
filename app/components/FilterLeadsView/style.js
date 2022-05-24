@@ -1,6 +1,7 @@
 /** @format */
 
 import { StyleSheet } from 'react-native'
+import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   filterPressable: {
@@ -29,5 +30,16 @@ export default styles = StyleSheet.create({
   },
   filterScroll: {
     padding: 10,
+  },
+  clearText: {
+    color: AppStyles.colors.primaryColor,
+  },
+  clearPressable: {
+    paddingVertical: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginLeft: 5,
+    marginRight: 5,
   },
 })

@@ -477,7 +477,7 @@ class InvestLeads extends React.Component {
   }
   navigateTo = (data) => {
     const { screen, navFrom } = this.props.route.params
-    console.log('params', this.props.route.params)
+
     const { navigation, route } = this.props
     const unitData = route.params.unitData
     if (navFrom) {

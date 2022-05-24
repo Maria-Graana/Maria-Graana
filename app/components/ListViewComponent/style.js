@@ -18,4 +18,7 @@ export default styles = StyleSheet.create({
   listButton: {
     justifyContent: 'center',
   },
+  listStyle: {
+    marginBottom: 20,
+  },
 })

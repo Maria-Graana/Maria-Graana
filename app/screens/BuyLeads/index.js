@@ -213,7 +213,6 @@ class BuyLeads extends React.Component {
     })
     this.RBSheet.close()
   }
-
   getServerTime = () => {
     axios
       .get(`/api/user/serverTime?fullTime=true`)

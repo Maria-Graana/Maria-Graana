@@ -114,6 +114,9 @@ class FieldsInventories extends React.Component {
       // Only Status Filter
       query = `/api/inventory/all?propType=fields&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
+    if (this.props.route.params?.client) {
+      query = `${query}&searchBy=customer&q=${this.props.route.params?.client?.first_name} ${this.props.route.params?.client?.last_name}`
+    }
     axios
       .get(query)
       .then((response) => {

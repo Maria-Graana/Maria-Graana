@@ -124,6 +124,7 @@ class GraanaInventories extends React.Component {
       searchText,
       selectedArea,
     } = this.state
+
     let query = ``
     if (showSearchBar && searchBy === 'id' && searchText !== '') {
       if (helper.isANumber(searchText)) {
@@ -141,6 +142,10 @@ class GraanaInventories extends React.Component {
       // Only Status Filter
       query = `/api/inventory/all?propType=graana&propStatus=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
+    if (this.props.route.params?.client) {
+      query = `${query}&searchBy=customer&q=${this.props.route.params?.client?.first_name} ${this.props.route.params?.client?.last_name}`
+    }
+
     axios
       .get(query)
       .then((response) => {
@@ -303,15 +308,15 @@ class GraanaInventories extends React.Component {
     var endpoint = ''
     var body = {
       amount: formData.amount,
-      propertyType: 'graana'
+      propertyType: 'graana',
     }
     if (check === 'amount') {
-      ;(endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`)
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`
     } else {
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`
     }
     formData['amount'] = ''
-    axios.patch(endpoint , body).then((res) => {
+    axios.patch(endpoint, body).then((res) => {
       this.setState(
         {
           forStatusPrice: false,

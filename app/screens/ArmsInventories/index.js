@@ -72,12 +72,8 @@ class ArmsInventories extends React.Component {
           })
         }
       } else if (route.params?.client) {
-  
         this.getPropertyArmsListing()
-
-      }
-
-      else {
+      } else {
         this.getPropertyArmsListing()
       }
     })
@@ -119,17 +115,14 @@ class ArmsInventories extends React.Component {
     } else if (showSearchBar && searchBy === 'area' && selectedArea) {
       // Search By Area
       query = `/api/inventory/all?propType=arms&searchBy=area&q=${selectedArea.id}&pageSize=${pageSize}&page=${page}`
-    }
-    else if (this.props.route.params?.client) {
-      console.log("clientt", this.props.route.params?.client);
-      //add customer query here
-      query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
-    }
-
-    else {
+    } else {
       // Only Status Filter
       query = `/api/inventory/all?propType=arms&status=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
+    if (this.props.route.params?.client) {
+      query = `${query}&searchBy=customer&q=${this.props.route.params?.client?.first_name} ${this.props.route.params?.client?.last_name}`
+    }
+
     axios
       .get(query)
       .then((response) => {
@@ -194,10 +187,10 @@ class ArmsInventories extends React.Component {
     var endpoint = ''
     var body = {
       amount: formData.amount,
-      propertyType: 'arms'
+      propertyType: 'arms',
     }
     if (check === 'amount') {
-      (endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`)
+      endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`
     } else {
       endpoint = `api/inventory/verifyProperty?id=${PropertyData.id}`
     }
@@ -212,7 +205,6 @@ class ArmsInventories extends React.Component {
         () => {
           this.getPropertyArmsListing()
           helper.successToast(res.data)
-
         }
       )
     })

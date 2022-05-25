@@ -852,6 +852,7 @@ class InvestLeads extends React.Component {
       hasBooking = false,
       navFrom = null,
       hideCloseLostFilter,
+      client,
     } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
@@ -941,21 +942,25 @@ class InvestLeads extends React.Component {
         {/* ********** RN Bottom Sheet ********** */}
 
         {/* ******************* TOP FILTER MAIN VIEW START ********** */}
-        <FilterLeadsView
-          statusLead={statusLead}
-          sortLead={sortLead}
-          idLead={idLead}
-          nameLead={nameLead}
-          dateLead={dateLead}
-          countryLead={countryLead}
-          emailLead={emailLead}
-          phoneLead={phoneLead}
-          classificationLead={classificationLead}
-          setBottomSheet={this.setBottomSheet}
-          hasBooking={hasBooking}
-          clear={clear}
-          onClear={this.onClearAll}
-        />
+        {client ? (
+          <View style={styles.filterMainView} />
+        ) : (
+          <FilterLeadsView
+            statusLead={statusLead}
+            sortLead={sortLead}
+            idLead={idLead}
+            nameLead={nameLead}
+            dateLead={dateLead}
+            countryLead={countryLead}
+            emailLead={emailLead}
+            phoneLead={phoneLead}
+            classificationLead={classificationLead}
+            setBottomSheet={this.setBottomSheet}
+            hasBooking={hasBooking}
+            clear={clear}
+            onClear={this.onClearAll}
+          />
+        )}
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 
         <ReferenceGuideModal

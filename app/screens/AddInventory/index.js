@@ -772,7 +772,8 @@ class AddInventory extends Component {
       loading,
       showCustomTitle,
     } = this.state
-
+    const { route } = this.props
+    const { client, noEditableClient } = route.params
     return (
       <StyleProvider style={getTheme(formTheme)}>
         <KeyboardAvoidingView enabled>
@@ -795,6 +796,7 @@ class AddInventory extends Component {
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
               <View style={AppStyles.container}>
                 <DetailForm
+                  nonEditableClient={noEditableClient ? true : false}
                   formSubmit={this.formSubmit}
                   clearGeotaggData={this.clearGeotaggData}
                   checkValidation={checkValidation}

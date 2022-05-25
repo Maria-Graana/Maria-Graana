@@ -800,6 +800,7 @@ class DetailForm extends Component {
           value={clientName}
           showError={checkValidation === true && formData.customer_id === null}
           errorMessage="Required"
+          disabled={this.props.nonEditableClient}
         />
 
         {/* **************************************** */}
@@ -807,6 +808,7 @@ class DetailForm extends Component {
           placeholder="Point of Contact Name"
           onPress={() => handlePointOfContact()}
           value={formData.poc_name}
+          disabled={this.props.nonEditableClient}
         />
 
         {/* **************************************** */}

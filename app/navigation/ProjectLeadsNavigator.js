@@ -2,7 +2,7 @@
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, BackHandler } from 'react-native'
 import DropdownHeader from '../components/HeaderRight/DropdownHeader'
 import HeaderRight from '../components/HeaderRight/index'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
@@ -31,6 +31,22 @@ function ProjectLeadsNavigator(props) {
   const { screen, screenName, navFrom, hideCloseLostFilter } = route.params
 
   //unmount
+
+  function handleBackButtonClick() {
+    if (props.route.params?.client) {
+      navigation.navigate('ClientDetail')
+    } else {
+      navigation.goBack()
+    }
+    return true
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
+    }
+  }, [])
 
   useEffect(() => {
     if (screen == 'ProjectLeads') {

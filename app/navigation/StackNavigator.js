@@ -325,9 +325,7 @@ function MainStack() {
         component={Client}
         options={({ navigation, route }) => ({
           title: 'CLIENTS',
-          headerLeft: (props) => (
-            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
-          ),
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}

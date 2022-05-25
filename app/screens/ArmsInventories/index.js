@@ -365,101 +365,106 @@ class ArmsInventories extends React.Component {
       formData,
     } = this.state
     const { user, route } = this.props
+    const { client } = route.params
+
     let createPermission = this.createPermission()
     return !loading ? (
       <View style={[styles.container, { marginBottom: 25 }]}>
-        {showSearchBar ? (
-          <View
-            style={[
-              styles.filterRow,
-              {
-                paddingBottom: 0,
-                paddingTop: 0,
-                paddingLeft: 0,
-                flexDirection: 'row',
-                alignItems: 'center',
-              },
-            ]}
-          >
-            <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
-              <PickerComponent
-                placeholder={'Search By'}
-                data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
-                customStyle={styles.pickerStyle}
-                customIconStyle={styles.customIconStyle}
-                onValueChange={this.changeSearchBy}
-                selectedItem={searchBy}
-              />
-            </View>
-            {searchBy === 'id' ? (
-              <Search
-                containerWidth={'80%'}
-                placeholder={'Search by ID'}
-                searchText={searchText}
-                setSearchText={(value) => this.setState({ searchText: value })}
-                showShadow={false}
-                showClearButton={true}
-                returnKeyType={'search'}
-                onSubmitEditing={() =>
-                  this.setState({ loading: true }, () => {
-                    this.getPropertyArmsListing()
-                  })
-                }
-                closeSearchBar={() => this.clearAndCloseSearch()}
-              />
-            ) : helper.checkPP(user) ? null : (
-              <View style={styles.searchTextContainerStyle}>
-                <Text
-                  onPress={() => this.handleSearchByArea()}
-                  style={[
-                    AppStyles.formFontSettings,
-                    styles.searchAreaInput,
-                    {
-                      color: isEmpty(selectedArea)
-                        ? AppStyles.colors.subTextColor
-                        : AppStyles.colors.textColor,
-                    },
-                  ]}
-                >
-                  {isEmpty(selectedArea) ? 'Search by Area' : selectedArea.name}
-                </Text>
-                <Ionicons
-                  style={{ width: '10%' }}
-                  onPress={() => this.clearAndCloseSearch()}
-                  name={'ios-close-circle-outline'}
-                  size={24}
-                  color={'grey'}
-                />
+        {!client && (
+          <>
+            {showSearchBar ? (
+              <View
+                style={[
+                  styles.filterRow,
+                  {
+                    paddingBottom: 0,
+                    paddingTop: 0,
+                    paddingLeft: 0,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  },
+                ]}
+              >
+                <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
+                  <PickerComponent
+                    placeholder={'Search By'}
+                    data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.changeSearchBy}
+                    selectedItem={searchBy}
+                  />
+                </View>
+                {searchBy === 'id' ? (
+                  <Search
+                    containerWidth={'80%'}
+                    placeholder={'Search by ID'}
+                    searchText={searchText}
+                    setSearchText={(value) => this.setState({ searchText: value })}
+                    showShadow={false}
+                    showClearButton={true}
+                    returnKeyType={'search'}
+                    onSubmitEditing={() =>
+                      this.setState({ loading: true }, () => {
+                        this.getPropertyArmsListing()
+                      })
+                    }
+                    closeSearchBar={() => this.clearAndCloseSearch()}
+                  />
+                ) : helper.checkPP(user) ? null : (
+                  <View style={styles.searchTextContainerStyle}>
+                    <Text
+                      onPress={() => this.handleSearchByArea()}
+                      style={[
+                        AppStyles.formFontSettings,
+                        styles.searchAreaInput,
+                        {
+                          color: isEmpty(selectedArea)
+                            ? AppStyles.colors.subTextColor
+                            : AppStyles.colors.textColor,
+                        },
+                      ]}
+                    >
+                      {isEmpty(selectedArea) ? 'Search by Area' : selectedArea.name}
+                    </Text>
+                    <Ionicons
+                      style={{ width: '10%' }}
+                      onPress={() => this.clearAndCloseSearch()}
+                      name={'ios-close-circle-outline'}
+                      size={24}
+                      color={'grey'}
+                    />
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+                <View style={styles.pickerMain}>
+                  <PickerComponent
+                    placeholder={'Property Status'}
+                    data={[{ value: 'all', name: 'All' }]}
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.changeStatus}
+                    selectedItem={statusFilter}
+                  />
+                </View>
+                <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+                  <Ionicons
+                    onPress={() => {
+                      this.setState({ showSearchBar: true }, () => {
+                        this.clearStateValues()
+                      })
+                    }}
+                    name={'ios-search'}
+                    size={26}
+                    color={AppStyles.colors.primaryColor}
+                  />
+                </View>
               </View>
             )}
-          </View>
-        ) : (
-          <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-            <View style={styles.pickerMain}>
-              <PickerComponent
-                placeholder={'Property Status'}
-                data={[{ value: 'all', name: 'All' }]}
-                customStyle={styles.pickerStyle}
-                customIconStyle={styles.customIconStyle}
-                onValueChange={this.changeStatus}
-                selectedItem={statusFilter}
-              />
-            </View>
-            <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons
-                onPress={() => {
-                  this.setState({ showSearchBar: true }, () => {
-                    this.clearStateValues()
-                  })
-                }}
-                name={'ios-search'}
-                size={26}
-                color={AppStyles.colors.primaryColor}
-              />
-            </View>
-          </View>
+          </>
         )}
-
         <Fab
           active="true"
           containerStyle={{ zIndex: 20 }}

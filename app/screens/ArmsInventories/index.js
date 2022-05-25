@@ -143,7 +143,16 @@ class ArmsInventories extends React.Component {
   }
 
   goToInventoryForm = () => {
-    RootNavigation.navigate('AddInventory')
+    const { client } = this.props.route.params
+    if (client) {
+      RootNavigation.navigateTo('AddInventory', {
+        noEditableClient: true,
+        client: client,
+        name: `${client?.first_name} ${client?.last_name}`,
+      })
+    } else {
+      RootNavigation.navigate('AddInventory')
+    }
   }
   armsVerifeyModal = (status, id) => {
     const { propertiesList } = this.state

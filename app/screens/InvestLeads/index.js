@@ -132,16 +132,13 @@ class InvestLeads extends React.Component {
       )
     )
 
-    if (client) {
-      this.fetchAddedLeads(client)
-    } else {
-      this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        dispatch(getListingsCount())
-        dispatch(getCountryCode())
-        this.getServerTime()
-        this.onFocus()
-      })
-    }
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      dispatch(getCountryCode())
+      this.getServerTime()
+      this.onFocus()
+    })
+
     this.setFabActions()
   }
 
@@ -205,29 +202,34 @@ class InvestLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const { hasBooking = false, screen } = this.props.route.params // for Deals we need to set filter to closed won
+    const { hasBooking = false, screen, client } = this.props.route.params // for Deals we need to set filter to closed won
     const sortValue = await this.getSortOrderFromStorage()
     let statusValue = ''
-    if (hasBooking) {
-      statusValue = await getItem('statusFilterInvestDeals')
+
+    if (client) {
+      this.fetchAddedLeads(client)
     } else {
-      statusValue = await getItem('statusFilterInvestLeads')
-    }
-    if (statusValue) {
-      this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
-        this.fetchLeads()
-      })
-    } else {
-      if (screen === 'MyDeals') {
-        storeItem('statusFilterInvest', 'all')
-        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+      if (hasBooking) {
+        statusValue = await getItem('statusFilterInvestDeals')
+      } else {
+        statusValue = await getItem('statusFilterInvestLeads')
+      }
+      if (statusValue) {
+        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
           this.fetchLeads()
         })
       } else {
-        storeItem('statusFilterInvest', 'open')
-        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
-          this.fetchLeads()
-        })
+        if (screen === 'MyDeals') {
+          storeItem('statusFilterInvest', 'all')
+          this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+            this.fetchLeads()
+          })
+        } else {
+          storeItem('statusFilterInvest', 'open')
+          this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+            this.fetchLeads()
+          })
+        }
       }
     }
   }

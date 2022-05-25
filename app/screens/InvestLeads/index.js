@@ -104,6 +104,7 @@ class InvestLeads extends React.Component {
       countryFilter: null,
       classificationValues: null,
       activeDate: false,
+      clear: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -139,9 +140,9 @@ class InvestLeads extends React.Component {
         dispatch(getCountryCode())
         this.getServerTime()
         this.onFocus()
-        this.setFabActions()
       })
     }
+    this.setFabActions()
   }
 
   componentWillUnmount() {
@@ -390,12 +391,12 @@ class InvestLeads extends React.Component {
     const { hasBooking = false } = this.props.route?.params
     this.clearStateValues()
     if (hasBooking) {
-      this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
+      this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
         storeItem('statusFilterInvestDeals', status)
         this.fetchLeads()
       })
     } else {
-      this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
+      this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
         storeItem('statusFilterInvestLeads', status)
         this.fetchLeads()
       })
@@ -477,7 +478,7 @@ class InvestLeads extends React.Component {
   }
   navigateTo = (data) => {
     const { screen, navFrom } = this.props.route.params
-    console.log('params', this.props.route.params)
+
     const { navigation, route } = this.props
     const unitData = route.params.unitData
     if (navFrom) {
@@ -531,7 +532,7 @@ class InvestLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status }, () => {
+    this.setState({ sortLead: name, sort: status, clear: true }, () => {
       storeItem('sortInvest', status)
       this.fetchLeads()
     })
@@ -598,7 +599,7 @@ class InvestLeads extends React.Component {
     } else {
       this.setState({ phoneLead: text })
     }
-    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+    this.setState({ statusFilterType: status, showSearchBar: true, clear: true }, () => {
       this.RBSheet.close()
       this.fetchLeads()
     })
@@ -728,7 +729,12 @@ class InvestLeads extends React.Component {
   }
 
   clearSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
+    this.setState({
+      searchText: '',
+      showSearchBar: false,
+      statusFilterType: 'id',
+      statusFilter: '',
+    })
   }
 
   setBottomSheet = (value) => {
@@ -751,7 +757,7 @@ class InvestLeads extends React.Component {
     this.clearStateValues()
     const { dateFromTo } = this.state
     const selectedDate = moment(dateFromTo ? dateFromTo : new Date()).format('YYYY-MM-DD')
-    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+    this.setState({ showSearchBar: true, dateLead: selectedDate, clear: true }, () => {
       this.fetchLeads(selectedDate, selectedDate)
       this.RBSheet.close()
     })
@@ -771,7 +777,7 @@ class InvestLeads extends React.Component {
 
   searchCountry = (value, name) => {
     this.clearStateValues()
-    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [], clear: true }, () => {
       this.fetchLeads()
     })
     this.RBSheet.close()
@@ -779,10 +785,21 @@ class InvestLeads extends React.Component {
 
   setClassification = (value, name) => {
     this.clearStateValues()
-    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
+    this.setState(
+      { classificationLead: name, classificationValues: value, leadsData: [], clear: true },
+      () => {
+        this.fetchLeads()
+      }
+    )
+    this.RBSheet.close()
+  }
+
+  onClearAll = (clear) => {
+    this.clearSearch()
+    this.clearStateValues()
+    this.setState({ clear: false }, () => {
       this.fetchLeads()
     })
-    this.RBSheet.close()
   }
 
   render() {
@@ -817,6 +834,7 @@ class InvestLeads extends React.Component {
       dateLead,
       dateFromTo,
       activeDate,
+      clear,
     } = this.state
     const {
       user,
@@ -939,6 +957,8 @@ class InvestLeads extends React.Component {
             classificationLead={classificationLead}
             setBottomSheet={this.setBottomSheet}
             hasBooking={hasBooking}
+            clear={clear}
+            onClear={this.onClearAll}
           />
         )}
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}

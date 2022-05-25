@@ -101,6 +101,7 @@ class BuyLeads extends React.Component {
       countryFilter: null,
       classificationValues: null,
       activeDate: false,
+      clear: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -207,7 +208,7 @@ class BuyLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status }, () => {
+    this.setState({ sortLead: name, sort: status, clear: true }, () => {
       storeItem('sortBuy', status)
       this.fetchLeads()
     })
@@ -369,7 +370,7 @@ class BuyLeads extends React.Component {
 
   changeStatus = (status, name = null) => {
     this.clearStateValues()
-    this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
+    this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
       storeItem('statusFilterBuy', status)
       this.fetchLeads()
     })
@@ -660,7 +661,7 @@ class BuyLeads extends React.Component {
     } else {
       this.setState({ phoneLead: text })
     }
-    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+    this.setState({ statusFilterType: status, showSearchBar: true, clear: true }, () => {
       this.RBSheet.close()
       this.fetchLeads()
     })
@@ -705,7 +706,12 @@ class BuyLeads extends React.Component {
   }
 
   clearSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
+    this.setState({
+      searchText: '',
+      showSearchBar: false,
+      statusFilterType: 'id',
+      statusFilter: '',
+    })
   }
 
   setBottomSheet = (value) => {
@@ -728,7 +734,7 @@ class BuyLeads extends React.Component {
     this.clearStateValues()
     const { dateFromTo } = this.state
     const selectedDate = moment(dateFromTo ? dateFromTo : new Date()).format('YYYY-MM-DD')
-    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+    this.setState({ showSearchBar: true, dateLead: selectedDate, clear: true }, () => {
       this.fetchLeads(selectedDate, selectedDate)
       this.RBSheet.close()
     })
@@ -748,7 +754,7 @@ class BuyLeads extends React.Component {
 
   searchCountry = (value, name) => {
     this.clearStateValues()
-    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [], clear: true }, () => {
       this.fetchLeads()
     })
     this.RBSheet.close()
@@ -756,10 +762,21 @@ class BuyLeads extends React.Component {
 
   setClassification = (value, name) => {
     this.clearStateValues()
-    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
+    this.setState(
+      { classificationLead: name, classificationValues: value, leadsData: [], clear: true },
+      () => {
+        this.fetchLeads()
+      }
+    )
+    this.RBSheet.close()
+  }
+
+  onClearAll = (clear) => {
+    this.clearSearch()
+    this.clearStateValues()
+    this.setState({ clear: false }, () => {
       this.fetchLeads()
     })
-    this.RBSheet.close()
   }
 
   render() {
@@ -796,6 +813,7 @@ class BuyLeads extends React.Component {
       dateLead,
       dateFromTo,
       activeDate,
+      clear,
     } = this.state
     const {
       leadsDropdown,
@@ -925,6 +943,8 @@ class BuyLeads extends React.Component {
           classificationLead={classificationLead}
           setBottomSheet={this.setBottomSheet}
           hasBooking={hasBooking}
+          clear={clear}
+          onClear={this.onClearAll}
         />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 

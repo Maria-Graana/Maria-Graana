@@ -1,6 +1,7 @@
 /** @format */
 
 import { StyleSheet } from 'react-native'
+import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   filterPressable: {
@@ -12,13 +13,33 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 5,
   },
+  filterPressableForContacts: {
+    borderRadius: 15,
+    paddingVertical: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginLeft: 5,
+    marginRight: 5,
+    width: 168,
+  },
   filterMainView: {
-    marginBottom: 15,
+    marginBottom: 10,
     paddingVertical: 5,
     backgroundColor: 'white',
   },
   filterScroll: {
-    marginVertical: 5,
     padding: 10,
+  },
+  clearText: {
+    color: AppStyles.colors.primaryColor,
+  },
+  clearPressable: {
+    paddingVertical: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginLeft: 5,
+    marginRight: 5,
   },
 })

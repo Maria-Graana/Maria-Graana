@@ -236,14 +236,14 @@ function MainStack() {
         component={Lead}
         options={({ navigation, route }) => ({
           //  headerShown:false,
-         // title: 'LEADS',
-            title: '',
+          // title: 'LEADS',
+          title: '',
           headerLeft: (props) => (
             <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
           ),
-          headerRight: (props) => <DropdownHeader
-            leadType={false}
-            hasBooking={true} navigation={navigation} />,
+          headerRight: (props) => (
+            <DropdownHeader leadType={false} hasBooking={true} navigation={navigation} />
+          ),
 
           headerTitleAlign: 'center',
         })}
@@ -259,11 +259,9 @@ function MainStack() {
             <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
           ),
 
-          headerRight: (props) => <DropdownHeader
-
-            hasBooking={true}
-            leadType={'ProjectLeads'}
-            navigation={navigation} />,
+          headerRight: (props) => (
+            <DropdownHeader hasBooking={true} leadType={'ProjectLeads'} navigation={navigation} />
+          ),
 
           headerTitleAlign: 'left',
         })}
@@ -321,6 +319,20 @@ function MainStack() {
           headerTitleAlign: 'center',
         })}
       />
+
+      <Stack.Screen
+        name="ClientView"
+        component={Client}
+        options={({ navigation, route }) => ({
+          title: 'CLIENTS',
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          ),
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
       <Stack.Screen
         name="AddClient"
         component={AddClient}
@@ -710,4 +722,3 @@ function MainStack() {
 }
 
 export default MainStack
-

@@ -64,6 +64,7 @@ class ArmsInventories extends React.Component {
     const { navigation } = this.props
     this._unsubscribe = navigation.addListener('focus', () => {
       const { route } = this.props
+
       if (route.params && route.params.selectedArea) {
         const { selectedArea } = route.params
         if (selectedArea) {

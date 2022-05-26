@@ -1,6 +1,6 @@
 /** @format */
 
-import Constants from 'expo-constants'
+import * as Updates from 'expo-updates'
 
 const config = {
   development: {
@@ -21,17 +21,13 @@ const config = {
   },
 }
 
-if (Constants.manifest.releaseChannel === undefined) {
+if (Updates.releaseChannel === 'default') {
   module.exports = config['development']
-} else if (Constants.manifest.releaseChannel.indexOf('production') !== -1) {
+} else if (Updates.releaseChannel.indexOf('production') !== -1) {
   module.exports = config['production']
-} else if (Constants.manifest.releaseChannel.indexOf('staging') !== -1) {
+} else if (Updates.releaseChannel.indexOf('staging') !== -1) {
   module.exports = config['staging']
-} else if (Constants.manifest.releaseChannel.indexOf('cta-staging') !== -1) {
-  module.exports = config['staging']
-} else if (Constants.manifest.releaseChannel.indexOf('cta-dev') !== -1) {
-  module.exports = config['development']
-} else if (Constants.manifest.releaseChannel.indexOf('development') !== -1) {
+} else if (Updates.releaseChannel.indexOf('development') !== -1) {
   module.exports = config['development']
 } else {
   module.exports = config['development']

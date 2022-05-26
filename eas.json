@@ -9,9 +9,6 @@
       },
       "ios": {
         "simulator": true
-      },
-      "env": {
-        "apiUrl": "https://dev.arms.graana.rocks"
       }
     },
     "staging": {
@@ -23,16 +20,10 @@
       },
       "ios": {
         "simulator": true
-      },
-      "env": {
-        "apiUrl": "https://stage.arms.graana.rocks"
       }
     },
     "production": {
-      "releaseChannel": "production",
-      "env": {
-        "apiUrl": "https://apiarmsm.graana.com"
-      }
+      "releaseChannel": "production"
     }
   },
   "cli": {

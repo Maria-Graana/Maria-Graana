@@ -11,12 +11,14 @@ export default styles = StyleSheet.create({
   dateElement: {
     fontSize: 18,
     padding: 15,
+    fontWeight: '500',
     color: 'white',
   },
   dateButton: {
     backgroundColor: AppStyles.colors.primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 5,
     marginTop: 10,
   },
 })

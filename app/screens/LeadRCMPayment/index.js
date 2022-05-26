@@ -2268,6 +2268,7 @@ class LeadRCMPayment extends React.Component {
                         readPermission={readPermission}
                         updatePermission={updatePermission}
                         closedLeadEdit={closedLeadEdit}
+                        permissions={permissions}
                       />
                     ) : (
                       <RentPaymentView
@@ -2296,6 +2297,7 @@ class LeadRCMPayment extends React.Component {
                         readPermission={readPermission}
                         updatePermission={updatePermission}
                         closedLeadEdit={closedLeadEdit}
+                        permissions={permissions}
                       />
                     )
                   ) : null}
@@ -2367,7 +2369,9 @@ class LeadRCMPayment extends React.Component {
               leadType={'RCM'}
               closedWon={closedWon}
               onHandleCloseLead={this.onHandleCloseLead}
-              closedWonOptionVisible={true}
+              closedWonOptionVisible={
+                helper.isREA(user, permissions) ? lead.assigned_to_armsuser_id == user.id : true
+              }
               checkCloseWon={this.checkCloseWon()}
               leadData={this.state.leadInfo}
             />

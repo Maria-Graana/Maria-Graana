@@ -436,7 +436,7 @@ const helper = {
   deleteAndUpdateNotification(data, start, id) {
     Notifications.getAllScheduledNotificationsAsync().then((notifications) => {
       this.deleteNotification(notifications, id)
-    //  TimerNotification(data, start)
+      //  TimerNotification(data, start)
     })
   },
   deleteLocalNotification(id) {
@@ -1220,6 +1220,19 @@ const helper = {
       PermissionFeatures.WANTED_LEADS,
       PermissionActions.Assign_Company_Leads,
       permissions
+    )
+  },
+
+  isREA(user = null, permissions) {
+    let userOrg = user && user.organization
+    const isPP = userOrg && (userOrg.isPP || userOrg.name.toLowerCase().trim() === 'agency21')
+
+    return (
+      getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.BUY_RENT_REA_WORKFLOW,
+        permissions
+      ) || isPP
     )
   },
 }

@@ -18,7 +18,7 @@ class HeaderRight extends React.Component {
   }
 
   render() {
-    const { navigation, isInternetConnected, updateLoader, dispatch} = this.props
+    const { navigation, isInternetConnected, updateLoader, dispatch } = this.props
     return (
       <View style={{ flexDirection: 'row' }}>
         {!isInternetConnected ? (

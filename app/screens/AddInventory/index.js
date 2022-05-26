@@ -673,7 +673,7 @@ class AddInventory extends Component {
   handleClientClick = () => {
     const { navigation } = this.props
     const { selectedClient } = this.state
-    navigation.navigate('Client', {
+    navigation.navigate('ClientView', {
       isFromDropDown: true,
       selectedClient,
       isPOC: false,
@@ -684,7 +684,7 @@ class AddInventory extends Component {
   handlePointOfContact = () => {
     const { navigation } = this.props
     const { selectedPOC } = this.state
-    navigation.navigate('Client', {
+    navigation.navigate('ClientView', {
       isFromDropDown: true,
       selectedPOC,
       isPOC: true,

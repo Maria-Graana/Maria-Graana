@@ -1,0 +1,41 @@
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "releaseChannel": "development",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "apiUrl": "https://dev.arms.graana.rocks"
+      }
+    },
+    "staging": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "releaseChannel": "staging",
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "apiUrl": "https://stage.arms.graana.rocks"
+      }
+    },
+    "production": {
+      "releaseChannel": "production",
+      "env": {
+        "apiUrl": "https://apiarmsm.graana.com"
+      }
+    }
+  },
+  "cli": {
+    "version": ">= 0.52.0"
+  }
+}

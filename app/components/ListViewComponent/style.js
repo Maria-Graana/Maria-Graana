@@ -9,7 +9,8 @@ export default styles = StyleSheet.create({
   },
   listTitle: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 20,
+    marginLeft: 10,
   },
   listElement: {
     fontSize: 16,
@@ -20,5 +21,11 @@ export default styles = StyleSheet.create({
   },
   listStyle: {
     marginBottom: 20,
+    marginLeft: 10,
+  },
+  listborder: {
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
+    marginBottom: 10,
   },
 })

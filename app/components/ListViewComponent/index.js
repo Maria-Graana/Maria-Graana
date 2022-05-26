@@ -8,6 +8,7 @@ export default function ({ name, data, onPress, type }) {
   return (
     <View style={styles.listView}>
       {name ? <Text style={styles.listTitle}>{name}</Text> : null}
+      {name ? <View style={styles.listborder}></View> : null}
       <FlatList
         data={data}
         style={styles.listStyle}

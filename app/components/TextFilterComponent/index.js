@@ -19,6 +19,7 @@ export default function TextFilterComponent({
       <TextInput
         mode="outlined"
         activeOutlineColor={AppStyles.colors.primaryColor}
+        style={styles.textBackground}
         label={name}
         value={searchText}
         onChangeText={(text) => setTextSearch(text)}

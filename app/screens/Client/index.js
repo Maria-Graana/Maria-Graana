@@ -138,7 +138,7 @@ class Client extends React.Component {
     if (isFromDropDown) {
       // This is the case for dropdown value selection
       if (isPOC) {
-        navigation.navigate(screenName, { selectedPOC: data })
+        navigation.navigate(screenName, { selectedPOC: data, flowCheck: true })
       } else {
         navigation.navigate(screenName, {
           client: data,

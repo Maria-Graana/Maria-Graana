@@ -85,14 +85,7 @@ export class Contacts extends Component {
     const { searchText, isExpanded } = this.state
     const { armsContacts, armsContactsLoading, permissions } = this.props
     let data = []
-    if (searchText !== '' && data && data.length === 0) {
-      data = fuzzy.filter(searchText, armsContacts, {
-        extract: (e) => (e.firstName ? e.firstName + ' ' + e.lastName : ''),
-      })
-      data = data.map((item) => item.original)
-    } else {
-      data = _.sortBy(armsContacts ? armsContacts : [], 'updatedAt')
-    }
+    data = _.sortBy(armsContacts ? armsContacts : [], 'updatedAt').reverse()
 
     let createUpdatePermission = getPermissionValue(
       PermissionFeatures.CONTACTS,

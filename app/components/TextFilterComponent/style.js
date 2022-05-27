@@ -11,10 +11,13 @@ export default styles = StyleSheet.create({
   textTitle: {
     fontSize: 18,
     marginBottom: 10,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontWeight: '500',
   },
   textElement: {
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontWeight: '300',
     padding: 15,
     color: 'white',
   },

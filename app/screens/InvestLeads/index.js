@@ -66,7 +66,7 @@ class InvestLeads extends React.Component {
       purposeTab: 'invest',
       statusFilter: '',
       open: false,
-      sort: '',
+      sort: '&order=Desc&field=createdAt',
       loading: false,
       activeSortModal: false,
       totalLeads: 0,
@@ -736,6 +736,7 @@ class InvestLeads extends React.Component {
       showSearchBar: false,
       statusFilterType: 'id',
       statusFilter: '',
+      sort: '&order=Desc&field=createdAt',
     })
   }
 

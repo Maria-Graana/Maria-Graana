@@ -273,6 +273,9 @@ class BuyLeads extends React.Component {
       classificationValues,
     } = this.state
     const { permissions, user } = this.props
+    if (statusFilter != 'all' && sort == '&order=sort&field=status') {
+      this.setState({ sort: '' })
+    }
     this.setState({ loading: true })
     const { hasBooking, navFrom, client } = this.props.route.params
     let isAiraPermission = helper.getAiraPermission(permissions)
@@ -721,7 +724,7 @@ class BuyLeads extends React.Component {
         filterType: value,
       },
       () => {
-        this.clearSearch()
+        if (value != 'sort') this.clearSearch()
         if (value == 'date' && Platform.OS == 'android') {
           this.setState({ activeDate: true })
         } else {

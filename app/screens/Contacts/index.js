@@ -131,7 +131,7 @@ export class Contacts extends Component {
     const { searchText, isExpanded, nameFilter, phoneFilter, filterType } = this.state
     const { armsContacts, armsContactsLoading, permissions } = this.props
     let data = []
-    data = _.sortBy(armsContacts ? armsContacts : [], 'updatedAt')
+    data = _.sortBy(armsContacts ? armsContacts : [], 'updatedAt').reverse()
 
     let createUpdatePermission = getPermissionValue(
       PermissionFeatures.CONTACTS,

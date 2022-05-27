@@ -156,6 +156,7 @@ export function updateARMSContact(data) {
     },
     id,
     contactRegistrationId: id,
+    updatedAt: Date.now(),
   }
   return body
 }

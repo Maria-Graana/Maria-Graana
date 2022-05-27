@@ -143,6 +143,7 @@ class Client extends React.Component {
         navigation.navigate(screenName, {
           client: data,
           name: data.firstName + ' ' + data.lastName,
+          flowCheck: true,
         })
       }
     } else if (isUnitBooking) {

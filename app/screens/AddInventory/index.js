@@ -107,11 +107,13 @@ class AddInventory extends Component {
 
   componentDidMount() {
     const { navigation, route } = this.props
-    const { screenName, lead } = route.params
+    const { screenName, lead, name, client } = route.params
+
     if (route.params.update) {
       navigation.setOptions({ title: 'EDIT PROPERTY' })
       this.setEditValues()
     }
+
     // from lead viewing screen, adding a new property for shortlist
     if (screenName && screenName === 'leadViewing' && lead) {
       const { formData } = this.state
@@ -172,19 +174,27 @@ class AddInventory extends Component {
   }
 
   onScreenFocused = () => {
-    const { client, name, selectedCity, selectedPOC, selectedArea } = this.props.route.params
+    const { client, name, flowCheck, selectedCity, selectedPOC, selectedArea, noEditableClient } =
+      this.props.route.params
+
     const { formData } = this.state
     let copyObject = Object.assign({}, formData)
+
     if (client && name) {
-      copyObject.customer_id = client.id
-      copyObject.poc_name = name ? name : null
-      copyObject.poc_phone = client.contact1 ? client.contact1 : null
-      this.setState({
-        formData: copyObject,
-        clientName: name,
-        selectedClient: client,
-        selectedPOC: client,
-      })
+      if (noEditableClient) {
+        this.setState({
+          formData: copyObject,
+          clientName: name,
+          selectedClient: client,
+        })
+      } else {
+        this.setState({
+          formData: copyObject,
+          clientName: name,
+          selectedClient: client,
+          selectedPOC: client,
+        })
+      }
     }
     if (selectedPOC) {
       copyObject.poc_name =
@@ -201,6 +211,15 @@ class AddInventory extends Component {
     if (selectedArea) {
       copyObject.area_id = selectedArea.value
       this.setState({ formData: copyObject, selectedArea })
+    }
+
+    if (noEditableClient && !flowCheck) {
+      let copyObject = Object.assign({}, formData)
+      copyObject.poc_name =
+        client.first_name && client.last_name ? client.first_name + ' ' + client.last_name : null
+      copyObject.poc_phone = client.contact1 ? client.contact1 : null
+
+      this.setState({ formData: copyObject, selectedPOC: client })
     }
   }
 
@@ -287,7 +306,6 @@ class AddInventory extends Component {
         buttonText: 'UPDATE PROPERTY',
       },
       () => {
-        // console.log(this.state.formData)
         this.selectSubtype(property.type)
         this.setFeatures(property.type)
         this.props.dispatch(
@@ -673,6 +691,7 @@ class AddInventory extends Component {
   handleClientClick = () => {
     const { navigation } = this.props
     const { selectedClient } = this.state
+
     navigation.navigate('ClientView', {
       isFromDropDown: true,
       selectedClient,

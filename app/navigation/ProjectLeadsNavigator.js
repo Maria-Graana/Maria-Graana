@@ -53,7 +53,7 @@ function ProjectLeadsNavigator(props) {
       if (props.route.params?.client) {
         navigation.setOptions({
           headerRight: (props) => <HeaderRight navigation={navigation} />,
-          title: `${props.route.params?.client?.first_name}'s Leads`,
+          title: `${props.route.params?.client?.first_name} ${props.route.params?.client?.last_name}'s Leads`,
           headerTitleAlign: 'center',
           headerLeft: (props) => (
             <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />

@@ -131,7 +131,7 @@ class AddCMLead extends Component {
 
   formSubmit = () => {
     const { CMLead, investmentProjects, route } = this.props
-    const { update = false, lead } = route.params
+    const { update = false, lead, noEditableClient, client } = route.params
 
     if (!CMLead.customerId || !CMLead.cityId) {
       this.setState({
@@ -168,7 +168,14 @@ class AddCMLead extends Component {
             .post(`/api/leads/project`, CMLead)
             .then((res) => {
               helper.successToast('Lead created successfully')
-              RootNavigation.navigate('ProjectLeads')
+              if (noEditableClient) {
+                RootNavigation.navigateTo('ProjectLeads', {
+                  client: client,
+                  screen: 'ProjectLeads',
+                })
+              } else {
+                RootNavigation.navigate('ProjectLeads')
+              }
             })
             .catch((error) => {
               console.log(error)

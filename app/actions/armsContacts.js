@@ -6,15 +6,21 @@ import helper from '../helper.js'
 import _ from 'underscore'
 import { Linking } from 'react-native'
 
-export function getARMSContacts() {
+export function getARMSContacts(searchText, statusFilterType) {
   return (dispatch, getsState) => {
-    let endPoint = `/api/contacts/fetch`
+    let endPoint = ''
+    if (statusFilterType === 'name') {
+      endPoint = `/api/contacts/fetch?name=${searchText}`
+    } else if (statusFilterType === 'phone') {
+      endPoint = `/api/contacts/fetch?&phone=${searchText}`
+    } else {
+      endPoint = `/api/contacts/fetch`
+    }
 
     dispatch({
       type: types.SET_ARMS_CONTACTS_LOADER,
       payload: true,
     })
-
     let promise = axios
       .get(endPoint)
       .then((res) => {

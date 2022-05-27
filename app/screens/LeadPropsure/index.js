@@ -630,25 +630,35 @@ class LeadPropsure extends React.Component {
 
   addRemoveReport = (report) => {
     const { selectedReports, propsureReportTypes, pendingPropsures } = this.state
+    const { user } = this.props
     let reports = [...selectedReports]
     let totalReportPrice = 0
     if (report.addItem) return
     if (reports.some((item) => item.title === report.title)) {
-      if (reports && reports.length > 1 && report.title === 'Basic Property Survey Report') return
+      if (user?.organization?.type !== 'Franchise') {
+        if (reports && reports.length > 1 && report.title === 'Basic Property Survey Report') return
+      }
       reports = _.without(reports, report)
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     } else {
-      if (
-        !_.findWhere(reports, { title: 'Basic Property Survey Report' }) &&
-        pendingPropsures.length <= 0
-      ) {
-        let basicReport = _.find(
-          propsureReportTypes,
-          (item) => item.title === 'Basic Property Survey Report'
-        )
-        reports.push(basicReport)
+      if (user?.organization?.type !== 'Franchise') {
+        if (
+          !_.findWhere(reports, { title: 'Basic Property Survey Report' }) &&
+          pendingPropsures.length <= 0
+        ) {
+          let basicReport = _.find(
+            propsureReportTypes,
+            (item) => item.title === 'Basic Property Survey Report'
+          )
+          reports.push(basicReport)
+        }
       }
-      if (report.title !== 'Basic Property Survey Report') reports.push(report)
+      if (user?.organization?.type !== 'Franchise') {
+        if (report.title !== 'Basic Property Survey Report') reports.push(report)
+      } else {
+        reports.push(report)
+      }
+
       totalReportPrice = PaymentMethods.addPropsureReportPrices(reports, pendingPropsures)
     }
     this.setState({ selectedReports: reports, totalReportPrice: totalReportPrice })

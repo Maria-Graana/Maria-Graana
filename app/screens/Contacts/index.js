@@ -17,20 +17,28 @@ import fuzzy from 'fuzzy'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import _ from 'underscore'
+import FilterLeadsView from '../../components/FilterLeadsView'
+import RBSheet from 'react-native-raw-bottom-sheet'
+import TextFilterComponent from '../../components/TextFilterComponent'
 
 export class Contacts extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      searchText: '',
       isExpanded: false,
+      nameFilter: null,
+      phoneFilter: null,
+      filterType: null,
+      searchText: '',
+      statusFilterType: '',
     }
   }
 
   componentDidMount() {
     const { dispatch, navigation } = this.props
+    const { searchText, statusFilterType } = this.state
     this._unsubscribe = navigation.addListener('focus', () => {
-      dispatch(getARMSContacts())
+      dispatch(getARMSContacts(searchText, statusFilterType))
     })
   }
 
@@ -38,6 +46,12 @@ export class Contacts extends Component {
     const { navigation, dispatch } = this.props
     dispatch(setSelectedContact(null, false)).then((res) => {
       navigation.navigate('Dialer')
+    })
+  }
+  clearStateValues = () => {
+    this.setState({
+      nameFilter: null,
+      phoneFilter: null,
     })
   }
 
@@ -58,6 +72,38 @@ export class Contacts extends Component {
         navigation.navigate('ContactFeedback')
       })
     }
+  }
+  clearSearch = () => {
+    this.setState({ searchText: '', statusFilterType: '' })
+  }
+  setBottomSheet = (value) => {
+    this.setState(
+      {
+        filterType: value,
+      },
+      () => {
+        this.clearSearch()
+
+        this.RBSheet.open()
+      }
+    )
+  }
+  setTextSearch = (text) => {
+    this.setState({ searchText: text })
+  }
+  changeStatusType = (status, text) => {
+    const { dispatch } = this.props
+    const { searchText } = this.state
+    this.clearStateValues()
+    if (status == 'name') {
+      this.setState({ nameFilter: text })
+    } else {
+      this.setState({ phoneFilter: text })
+    }
+    this.setState({ statusFilterType: status }, () => {
+      this.RBSheet.close()
+      dispatch(getARMSContacts(searchText, status))
+    })
   }
 
   registerAsClient = () => {
@@ -82,7 +128,7 @@ export class Contacts extends Component {
   }
 
   render() {
-    const { searchText, isExpanded } = this.state
+    const { searchText, isExpanded, nameFilter, phoneFilter, filterType } = this.state
     const { armsContacts, armsContactsLoading, permissions } = this.props
     let data = []
     data = _.sortBy(armsContacts ? armsContacts : [], 'updatedAt').reverse()
@@ -99,11 +145,43 @@ export class Contacts extends Component {
           <Loader loading={armsContactsLoading} />
         ) : (
           <>
-            <Search
+            {/* <Search
               placeholder={'Search Contacts'}
               searchText={searchText}
               setSearchText={(text) => this.setState({ searchText: text })}
+            /> */}
+            <FilterLeadsView
+              nameLead={nameFilter}
+              phoneLead={phoneFilter}
+              setBottomSheet={this.setBottomSheet}
+              contactScreen={true}
+              // hasBooking={true}
             />
+            <RBSheet
+              ref={(ref) => {
+                this.RBSheet = ref
+              }}
+              openDuration={250}
+              closeOnDragDown={true}
+            >
+              {filterType == 'name' ? (
+                <TextFilterComponent
+                  name={'Name'}
+                  type={'name'}
+                  searchText={searchText}
+                  setTextSearch={this.setTextSearch}
+                  changeStatusType={this.changeStatusType}
+                />
+              ) : filterType == 'phone' ? (
+                <TextFilterComponent
+                  name={'Phone #'}
+                  type={'phone'}
+                  searchText={searchText}
+                  setTextSearch={this.setTextSearch}
+                  changeStatusType={this.changeStatusType}
+                />
+              ) : null}
+            </RBSheet>
             <FlatList
               data={data}
               style={{ paddingHorizontal: 5 }}

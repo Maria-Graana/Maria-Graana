@@ -5,7 +5,7 @@ import axios from 'axios'
 import moment from 'moment'
 import { ActionSheet } from 'native-base'
 import React from 'react'
-import { FlatList, Image, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Platform, TouchableOpacity, View } from 'react-native'
 import { setLeadsDropdown } from '../../actions/leadsDropdown'
 import { FAB } from 'react-native-paper'
 import { connect } from 'react-redux'
@@ -66,7 +66,7 @@ class InvestLeads extends React.Component {
       purposeTab: 'invest',
       statusFilter: '',
       open: false,
-      sort: '',
+      sort: '&order=Desc&field=createdAt',
       loading: false,
       activeSortModal: false,
       totalLeads: 0,
@@ -103,6 +103,8 @@ class InvestLeads extends React.Component {
       dateFromTo: null,
       countryFilter: null,
       classificationValues: null,
+      activeDate: false,
+      clear: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -130,17 +132,14 @@ class InvestLeads extends React.Component {
       )
     )
 
-    if (client) {
-      this.fetchAddedLeads(client)
-    } else {
-      this._unsubscribe = this.props.navigation.addListener('focus', () => {
-        dispatch(getListingsCount())
-        dispatch(getCountryCode())
-        this.getServerTime()
-        this.onFocus()
-        this.setFabActions()
-      })
-    }
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      dispatch(getListingsCount())
+      dispatch(getCountryCode())
+      this.getServerTime()
+      this.onFocus()
+    })
+
+    this.setFabActions()
   }
 
   componentWillUnmount() {
@@ -203,29 +202,34 @@ class InvestLeads extends React.Component {
   }
 
   onFocus = async () => {
-    const { hasBooking = false, screen } = this.props.route.params // for Deals we need to set filter to closed won
+    const { hasBooking = false, screen, client } = this.props.route.params // for Deals we need to set filter to closed won
     const sortValue = await this.getSortOrderFromStorage()
     let statusValue = ''
-    if (hasBooking) {
-      statusValue = await getItem('statusFilterInvestDeals')
+
+    if (client) {
+      this.fetchAddedLeads(client)
     } else {
-      statusValue = await getItem('statusFilterInvestLeads')
-    }
-    if (statusValue) {
-      this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
-        this.fetchLeads()
-      })
-    } else {
-      if (screen === 'MyDeals') {
-        storeItem('statusFilterInvest', 'all')
-        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+      if (hasBooking) {
+        statusValue = await getItem('statusFilterInvestDeals')
+      } else {
+        statusValue = await getItem('statusFilterInvestLeads')
+      }
+      if (statusValue) {
+        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
           this.fetchLeads()
         })
       } else {
-        storeItem('statusFilterInvest', 'open')
-        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
-          this.fetchLeads()
-        })
+        if (screen === 'MyDeals') {
+          storeItem('statusFilterInvest', 'all')
+          this.setState({ statusFilter: 'all', sort: sortValue }, () => {
+            this.fetchLeads()
+          })
+        } else {
+          storeItem('statusFilterInvest', 'open')
+          this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+            this.fetchLeads()
+          })
+        }
       }
     }
   }
@@ -389,12 +393,12 @@ class InvestLeads extends React.Component {
     const { hasBooking = false } = this.props.route?.params
     this.clearStateValues()
     if (hasBooking) {
-      this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
+      this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
         storeItem('statusFilterInvestDeals', status)
         this.fetchLeads()
       })
     } else {
-      this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
+      this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
         storeItem('statusFilterInvestLeads', status)
         this.fetchLeads()
       })
@@ -476,7 +480,7 @@ class InvestLeads extends React.Component {
   }
   navigateTo = (data) => {
     const { screen, navFrom } = this.props.route.params
-    console.log('params', this.props.route.params)
+
     const { navigation, route } = this.props
     const unitData = route.params.unitData
     if (navFrom) {
@@ -530,7 +534,7 @@ class InvestLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status }, () => {
+    this.setState({ sortLead: name, sort: status, clear: true }, () => {
       storeItem('sortInvest', status)
       this.fetchLeads()
     })
@@ -597,7 +601,7 @@ class InvestLeads extends React.Component {
     } else {
       this.setState({ phoneLead: text })
     }
-    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+    this.setState({ statusFilterType: status, showSearchBar: true, clear: true }, () => {
       this.RBSheet.close()
       this.fetchLeads()
     })
@@ -727,7 +731,13 @@ class InvestLeads extends React.Component {
   }
 
   clearSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
+    this.setState({
+      searchText: '',
+      showSearchBar: false,
+      statusFilterType: 'id',
+      statusFilter: '',
+      sort: '&order=Desc&field=createdAt',
+    })
   }
 
   setBottomSheet = (value) => {
@@ -737,7 +747,11 @@ class InvestLeads extends React.Component {
       },
       () => {
         this.clearSearch()
-        this.RBSheet.open()
+        if (value == 'date' && Platform.OS == 'android') {
+          this.setState({ activeDate: true })
+        } else {
+          this.RBSheet.open()
+        }
       }
     )
   }
@@ -746,14 +760,18 @@ class InvestLeads extends React.Component {
     this.clearStateValues()
     const { dateFromTo } = this.state
     const selectedDate = moment(dateFromTo ? dateFromTo : new Date()).format('YYYY-MM-DD')
-    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+    this.setState({ showSearchBar: true, dateLead: selectedDate, clear: true }, () => {
       this.fetchLeads(selectedDate, selectedDate)
       this.RBSheet.close()
     })
   }
 
   setDateFromTo = (event, date) => {
-    this.setState({ dateFromTo: date })
+    this.setState({ dateFromTo: date, activeDate: false }, () => {
+      if (Platform.OS == 'android' && event.type == 'set') {
+        this.changeDateFromTo()
+      }
+    })
   }
 
   setTextSearch = (text) => {
@@ -762,7 +780,7 @@ class InvestLeads extends React.Component {
 
   searchCountry = (value, name) => {
     this.clearStateValues()
-    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [], clear: true }, () => {
       this.fetchLeads()
     })
     this.RBSheet.close()
@@ -770,10 +788,21 @@ class InvestLeads extends React.Component {
 
   setClassification = (value, name) => {
     this.clearStateValues()
-    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
+    this.setState(
+      { classificationLead: name, classificationValues: value, leadsData: [], clear: true },
+      () => {
+        this.fetchLeads()
+      }
+    )
+    this.RBSheet.close()
+  }
+
+  onClearAll = (clear) => {
+    this.clearSearch()
+    this.clearStateValues()
+    this.setState({ clear: false }, () => {
       this.fetchLeads()
     })
-    this.RBSheet.close()
   }
 
   render() {
@@ -807,6 +836,8 @@ class InvestLeads extends React.Component {
       classificationLead,
       dateLead,
       dateFromTo,
+      activeDate,
+      clear,
     } = this.state
     const {
       user,
@@ -824,6 +855,7 @@ class InvestLeads extends React.Component {
       hasBooking = false,
       navFrom = null,
       hideCloseLostFilter,
+      client,
     } = this.props.route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
@@ -836,14 +868,17 @@ class InvestLeads extends React.Component {
           }}
           height={
             filterType == 'classification'
-              ? 200
+              ? 250
               : filterType == 'date'
               ? 500
               : filterType == 'country'
               ? 700
+              : filterType == 'leadStatus'
+              ? 350
               : 300
           }
           openDuration={250}
+          closeOnDragDown={true}
         >
           {filterType == 'leadStatus' ? (
             <ListViewComponent
@@ -910,19 +945,25 @@ class InvestLeads extends React.Component {
         {/* ********** RN Bottom Sheet ********** */}
 
         {/* ******************* TOP FILTER MAIN VIEW START ********** */}
-        <FilterLeadsView
-          statusLead={statusLead}
-          sortLead={sortLead}
-          idLead={idLead}
-          nameLead={nameLead}
-          dateLead={dateLead}
-          countryLead={countryLead}
-          emailLead={emailLead}
-          phoneLead={phoneLead}
-          classificationLead={classificationLead}
-          setBottomSheet={this.setBottomSheet}
-          hasBooking={hasBooking}
-        />
+        {client ? (
+          <View style={styles.filterMainView} />
+        ) : (
+          <FilterLeadsView
+            statusLead={statusLead}
+            sortLead={sortLead}
+            idLead={idLead}
+            nameLead={nameLead}
+            dateLead={dateLead}
+            countryLead={countryLead}
+            emailLead={emailLead}
+            phoneLead={phoneLead}
+            classificationLead={classificationLead}
+            setBottomSheet={this.setBottomSheet}
+            hasBooking={hasBooking}
+            clear={clear}
+            onClear={this.onClearAll}
+          />
+        )}
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 
         <ReferenceGuideModal
@@ -974,6 +1015,7 @@ class InvestLeads extends React.Component {
             onStateChange={({ open }) => this.setState({ open })}
           />
         ) : null}
+
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -981,6 +1023,13 @@ class InvestLeads extends React.Component {
           doneStatus={activeSortModal}
           sort={sort}
         />
+
+        {activeDate && (
+          <RNDateTimePicker
+            value={dateFromTo ? dateFromTo : new Date()}
+            onChange={this.setDateFromTo}
+          />
+        )}
 
         <MultiplePhoneOptionModal
           modelDataLoading={phoneModelDataLoader}

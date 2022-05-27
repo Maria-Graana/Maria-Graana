@@ -10,6 +10,7 @@ import {
   FlatList,
   Image,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -70,9 +71,9 @@ class RentLeads extends React.Component {
     this.state = {
       phoneModelDataLoader: false,
       leadsData: [],
-      statusFilter: '',
+      statusFilter: 'all',
       open: false,
-      sort: '',
+      sort: '&order=Desc&field=createdAt',
       loading: false,
       activeSortModal: false,
       totalLeads: 0,
@@ -104,6 +105,8 @@ class RentLeads extends React.Component {
       dateFromTo: null,
       countryFilter: null,
       classificationValues: null,
+      activeDate: false,
+      clear: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -236,6 +239,9 @@ class RentLeads extends React.Component {
       classificationValues,
     } = this.state
     const { permissions, user } = this.props
+    if (statusFilter != 'all' && sort == '&order=sort&field=status') {
+      this.setState({ sort: '' })
+    }
     this.setState({ loading: true })
     const { hasBooking, navFrom, client } = this.props.route.params
     let isAiraPermission = helper.getAiraPermission(permissions)
@@ -332,7 +338,7 @@ class RentLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status }, () => {
+    this.setState({ sortLead: name, sort: status, clear: true }, () => {
       storeItem('sortRent', status)
       this.fetchLeads()
     })
@@ -341,7 +347,7 @@ class RentLeads extends React.Component {
 
   changeStatus = (status, name = null) => {
     this.clearStateValues()
-    this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
+    this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
       storeItem('statusFilterRent', status)
       this.fetchLeads()
     })
@@ -357,7 +363,7 @@ class RentLeads extends React.Component {
 
   searchCountry = (value, name) => {
     this.clearStateValues()
-    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [], clear: true }, () => {
       this.fetchLeads()
     })
     this.RBSheet.close()
@@ -365,9 +371,12 @@ class RentLeads extends React.Component {
 
   setClassification = (value, name) => {
     this.clearStateValues()
-    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
-      this.fetchLeads()
-    })
+    this.setState(
+      { classificationLead: name, classificationValues: value, leadsData: [], clear: true },
+      () => {
+        this.fetchLeads()
+      }
+    )
     this.RBSheet.close()
   }
 
@@ -510,7 +519,13 @@ class RentLeads extends React.Component {
   }
 
   clearSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
+    this.setState({
+      searchText: '',
+      showSearchBar: false,
+      statusFilterType: 'id',
+      statusFilter: 'all',
+      sort: '&order=Desc&field=createdAt',
+    })
   }
 
   updateStatus = (data) => {
@@ -674,7 +689,7 @@ class RentLeads extends React.Component {
     } else {
       this.setState({ phoneLead: text })
     }
-    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+    this.setState({ statusFilterType: status, showSearchBar: true, clear: true }, () => {
       this.RBSheet.close()
       this.fetchLeads()
     })
@@ -723,24 +738,40 @@ class RentLeads extends React.Component {
         filterType: value,
       },
       () => {
-        this.clearSearch()
-        this.RBSheet.open()
+        if (value != 'sort') this.clearSearch()
+        if (value == 'date' && Platform.OS == 'android') {
+          this.setState({ activeDate: true })
+        } else {
+          this.RBSheet.open()
+        }
       }
     )
+  }
+
+  onClearAll = (clear) => {
+    this.clearSearch()
+    this.clearStateValues()
+    this.setState({ clear: false }, () => {
+      this.fetchLeads()
+    })
   }
 
   changeDateFromTo = (name) => {
     this.clearStateValues()
     const { dateFromTo } = this.state
     const selectedDate = moment(dateFromTo ? dateFromTo : new Date()).format('YYYY-MM-DD')
-    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+    this.setState({ showSearchBar: true, dateLead: selectedDate, clear: true }, () => {
       this.fetchLeads(selectedDate, selectedDate)
       this.RBSheet.close()
     })
   }
 
   setDateFromTo = (event, date) => {
-    this.setState({ dateFromTo: date })
+    this.setState({ dateFromTo: date, activeDate: false }, () => {
+      if (Platform.OS == 'android' && event.type == 'set') {
+        this.changeDateFromTo()
+      }
+    })
   }
 
   setTextSearch = (text) => {
@@ -780,6 +811,8 @@ class RentLeads extends React.Component {
       classificationLead,
       dateLead,
       dateFromTo,
+      activeDate,
+      clear,
     } = this.state
     const {
       user,
@@ -819,14 +852,17 @@ class RentLeads extends React.Component {
           }}
           height={
             filterType == 'classification'
-              ? 200
+              ? 250
               : filterType == 'date'
               ? 500
               : filterType == 'country'
               ? 700
+              : filterType == 'leadStatus'
+              ? 350
               : 300
           }
           openDuration={250}
+          closeOnDragDown={true}
         >
           {filterType == 'leadStatus' ? (
             <ListViewComponent
@@ -905,6 +941,8 @@ class RentLeads extends React.Component {
           classificationLead={classificationLead}
           setBottomSheet={this.setBottomSheet}
           hasBooking={hasBooking}
+          clear={clear}
+          onClear={this.onClearAll}
         />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 
@@ -1002,6 +1040,13 @@ class RentLeads extends React.Component {
           showMultiPhoneModal={(value) => this.showMultiPhoneModal(value)}
           navigation={navigation}
         />
+
+        {activeDate && (
+          <RNDateTimePicker
+            value={dateFromTo ? dateFromTo : new Date()}
+            onChange={this.setDateFromTo}
+          />
+        )}
 
         <SortModal
           sendStatus={this.sendStatus}

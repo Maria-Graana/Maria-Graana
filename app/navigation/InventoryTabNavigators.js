@@ -18,7 +18,7 @@ export default function InventoryTabNavigators(props) {
     if (client) {
       props.navigation.setOptions({
         //  headerRight: (props) => <HeaderRight navigation={navigation} />,
-        title: `${client?.first_name}'s Properties`,
+        title: `${client?.first_name} ${client?.last_name}'s Properties`,
         // headerLeft: (props) => (
         //   <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />
         // ),

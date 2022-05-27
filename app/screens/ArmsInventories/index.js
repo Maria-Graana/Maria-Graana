@@ -149,6 +149,7 @@ class ArmsInventories extends React.Component {
       RootNavigation.navigateTo('AddInventory', {
         noEditableClient: true,
         client: client,
+
         name: `${client?.first_name} ${client?.last_name}`,
       })
     } else {

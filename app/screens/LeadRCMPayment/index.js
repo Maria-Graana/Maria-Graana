@@ -1828,7 +1828,7 @@ class LeadRCMPayment extends React.Component {
       if (propsureOutstandingPayment > 0)
         paymentsValidationHtml += `Buyer advisor's propsure outstanding payment is not cleared.\n`
 
-      if (legalBuyListing && legalBuyListing.length && user.organization.type !== 'Franchise')
+      if (legalBuyListing && legalBuyListing.length && user?.organization?.type !== 'Franchise')
         documentsValidationHtml += this.docsValidationHtml(legalBuyListing, "Buyer client's")
     }
 
@@ -1840,7 +1840,11 @@ class LeadRCMPayment extends React.Component {
       if (isSellerPropsureServiceNotClear)
         paymentsValidationHtml += `Seller advisor's propsure payment is not cleared.\n`
 
-      if (legalSellerListing && legalSellerListing.length && user.organization.type !== 'Franchise')
+      if (
+        legalSellerListing &&
+        legalSellerListing.length &&
+        user?.organization?.type !== 'Franchise'
+      )
         documentsValidationHtml += this.docsValidationHtml(legalSellerListing, "Seller client's")
     }
     return { paymentEr: paymentsValidationHtml, documentEr: documentsValidationHtml }

@@ -71,9 +71,9 @@ class RentLeads extends React.Component {
     this.state = {
       phoneModelDataLoader: false,
       leadsData: [],
-      statusFilter: '',
+      statusFilter: 'all',
       open: false,
-      sort: '',
+      sort: '&order=Desc&field=createdAt',
       loading: false,
       activeSortModal: false,
       totalLeads: 0,
@@ -520,7 +520,8 @@ class RentLeads extends React.Component {
       searchText: '',
       showSearchBar: false,
       statusFilterType: 'id',
-      statusFilter: '',
+      statusFilter: 'all',
+      sort: '&order=Desc&field=createdAt',
     })
   }
 

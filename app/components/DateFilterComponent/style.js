@@ -11,8 +11,9 @@ export default styles = StyleSheet.create({
   dateElement: {
     fontSize: 18,
     padding: 15,
-    fontWeight: '500',
+    fontWeight: '300',
     color: 'white',
+    fontFamily: AppStyles.fonts.defaultFont,
   },
   dateButton: {
     backgroundColor: AppStyles.colors.primaryColor,

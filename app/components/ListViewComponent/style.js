@@ -1,6 +1,7 @@
 /** @format */
 
 import { StyleSheet } from 'react-native'
+import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
   listView: {
@@ -11,10 +12,14 @@ export default styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
     marginLeft: 10,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontWeight: '500',
   },
   listElement: {
     fontSize: 16,
     paddingVertical: 10,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontWeight: '300',
   },
   listButton: {
     justifyContent: 'center',

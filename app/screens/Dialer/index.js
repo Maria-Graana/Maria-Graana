@@ -170,7 +170,7 @@ class Dialer extends Component {
       })
       data = data.map((item) => item.original)
     } else {
-      data = contacts ? contacts : []
+      data = contacts ? contacts.sort((a, b) => a.name.localeCompare(b.name)) : []
     }
 
     let createPermission = getPermissionValue(

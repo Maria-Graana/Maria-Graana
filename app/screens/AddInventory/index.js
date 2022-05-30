@@ -188,6 +188,7 @@ class AddInventory extends Component {
           selectedClient: client,
         })
       } else {
+        copyObject.customer_id = client.id
         this.setState({
           formData: copyObject,
           clientName: name,

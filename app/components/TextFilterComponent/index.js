@@ -19,10 +19,11 @@ export default function TextFilterComponent({
       <TextInput
         mode="outlined"
         activeOutlineColor={AppStyles.colors.primaryColor}
-        style={styles.textBackground}
+        outlineColor={AppStyles.colors.primary}
         label={name}
         value={searchText}
         onChangeText={(text) => setTextSearch(text)}
+        theme={{ colors: { text: 'black', background: 'white' } }}
       />
       <Pressable
         onPress={() => {

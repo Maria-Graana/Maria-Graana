@@ -28,7 +28,4 @@ export default styles = StyleSheet.create({
     marginTop: 30,
     borderRadius: 5,
   },
-  textBackground: {
-    backgroundColor: 'white',
-  },
 })

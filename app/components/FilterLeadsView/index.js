@@ -25,7 +25,9 @@ export default function FilterLeadsView({
   return (
     <View style={styles.filterMainView}>
       {contactScreen ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}
+        >
           {clear ? (
             <Pressable onPress={() => onClear()} style={styles.clearPressable}>
               <Text style={styles.clearText}>Clear All</Text>
@@ -71,7 +73,7 @@ export default function FilterLeadsView({
               color={phoneLead ? 'white' : AppStyles.colors.textColor}
             />
           </Pressable>
-        </ScrollView>
+        </View>
       ) : (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
           {clear ? (

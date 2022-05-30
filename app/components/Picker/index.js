@@ -66,7 +66,7 @@ class PickerComponent extends React.Component {
       })
     }
     return (
-      <View style={[styles.pickerMain, { backgroundColor: enabled ? '#fff' : '#ddd', }]}>
+      <View style={[styles.pickerMain, { backgroundColor: enabled ? '#fff' : '#ddd' }]}>
         {showPickerArrow && (
           <Ionicons
             style={[styles.arrowIcon, customIconStyle]}
@@ -80,9 +80,9 @@ class PickerComponent extends React.Component {
           headerStyle={{ backgroundColor: AppStyles.colors.primaryColor, borderColor: '#fff' }}
           headerBackButtonTextStyle={{
             color: '#fff',
-            minWidth: 150
+            minWidth: 150,
           }}
-          headerTitleStyle={{ color: '#fff', }}
+          headerTitleStyle={{ color: '#fff' }}
           textStyle={[AppStyles.formFontSettings]}
           // mode='dialog'
           mode="dropdown"

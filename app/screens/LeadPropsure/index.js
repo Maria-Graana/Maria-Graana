@@ -728,7 +728,7 @@ class LeadPropsure extends React.Component {
   }
 
   onHandleRequestVerification = () => {
-    const { lead } = this.props
+    const { lead, user } = this.props
     const {
       selectedReports,
       selectedPropertyId,
@@ -749,7 +749,11 @@ class LeadPropsure extends React.Component {
         }
       })
       let packageNames = _.pluck(selectedReports, 'title')
-      if (!packageNames.includes('Basic Property Survey Report') && pendingPropsures.length <= 0) {
+      if (
+        !packageNames.includes('Basic Property Survey Report') &&
+        pendingPropsures.length <= 0 &&
+        user?.organization?.type !== 'Franchise'
+      ) {
         let basicReport = _.find(
           propsureReportTypes,
           (item) => item.title === 'Basic Property Survey Report'

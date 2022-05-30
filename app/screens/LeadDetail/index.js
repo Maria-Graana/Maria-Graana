@@ -524,7 +524,7 @@ class LeadDetail extends React.Component {
       ) {
         page = 'Payment'
       }
-      if (helper.isREA(user, permissions)) {
+      if (helper.isREA(user, permissions) && data.assigned_to_armsuser_id != user.id) {
         this.props.navigation.navigate('PropertyTabs', {
           screen: page,
           params: { lead: data },

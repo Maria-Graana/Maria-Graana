@@ -267,7 +267,7 @@ const PaymentHelper = {
           ? null
           : firstFormData.finalPrice,
       installmentAmount: CMPayment.installmentAmount,
-      type: CMPayment.type,
+      type: firstFormData.unitType === 'fullUnit' ? 'regular' : 'pearl',
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
       cnic: firstFormData.cnic,

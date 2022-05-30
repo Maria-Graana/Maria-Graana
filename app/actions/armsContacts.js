@@ -6,7 +6,7 @@ import helper from '../helper.js'
 import _ from 'underscore'
 import { Linking } from 'react-native'
 
-export function getARMSContacts(searchText, statusFilterType) {
+export function getARMSContacts(searchText = '', statusFilterType = '') {
   return (dispatch, getsState) => {
     let endPoint = ''
     if (statusFilterType === 'name') {

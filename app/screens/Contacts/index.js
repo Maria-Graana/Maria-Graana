@@ -31,6 +31,7 @@ export class Contacts extends Component {
       filterType: null,
       searchText: '',
       statusFilterType: '',
+      clear: false,
     }
   }
 
@@ -74,8 +75,16 @@ export class Contacts extends Component {
     }
   }
   clearSearch = () => {
-    this.setState({ searchText: '', statusFilterType: '' })
+    this.setState({ searchText: '', statusFilterType: '', clear: false })
   }
+
+  onClearAll = () => {
+    const { dispatch } = this.props
+    this.clearSearch()
+    this.clearStateValues()
+    dispatch(getARMSContacts())
+  }
+
   setBottomSheet = (value) => {
     this.setState(
       {
@@ -96,9 +105,9 @@ export class Contacts extends Component {
     const { searchText } = this.state
     this.clearStateValues()
     if (status == 'name') {
-      this.setState({ nameFilter: text })
+      this.setState({ nameFilter: text, clear: true })
     } else {
-      this.setState({ phoneFilter: text })
+      this.setState({ phoneFilter: text, clear: true })
     }
     this.setState({ statusFilterType: status }, () => {
       this.RBSheet.close()
@@ -155,6 +164,8 @@ export class Contacts extends Component {
               phoneLead={phoneFilter}
               setBottomSheet={this.setBottomSheet}
               contactScreen={true}
+              clear={this.state.clear}
+              onClear={this.onClearAll}
               // hasBooking={true}
             />
             <RBSheet
@@ -163,6 +174,7 @@ export class Contacts extends Component {
               }}
               openDuration={250}
               closeOnDragDown={true}
+              height={300}
             >
               {filterType == 'name' ? (
                 <TextFilterComponent

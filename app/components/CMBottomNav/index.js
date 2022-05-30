@@ -232,11 +232,11 @@ class CMBottomNav extends React.Component {
 
   navigateToAssignLead = (lead) => {
     const { navigation, screenName } = this.props
-   
 
     navigation.navigate('AssignLead', {
       leadId: lead.id,
-      type: screenName == 'InvestDetailScreen' || screenName=='ProjectDeals' ? 'Investment' : 'sale',
+      type:
+        screenName == 'InvestDetailScreen' || screenName == 'ProjectDeals' ? 'Investment' : 'sale',
       screen: 'LeadDetail',
       purpose: 'reassign',
     })
@@ -714,22 +714,22 @@ class CMBottomNav extends React.Component {
                   onPress={() => {
                     this.canMarkCloseAsLost(lead, lead.armsProjectTypeId ? 'Project' : 'BuyRent')
                       ? dispatch(
-                        getDiaryFeedbacks({
-                          taskType: 'Connect',
-                          leadType: 'Project',
-                          actionType: 'Connect',
-                          section: 'Reject',
-                        })
-                      )
-                        .then((res) => {
-                          this.props.navigation.navigate('DiaryFeedback', {
+                          getDiaryFeedbacks({
+                            taskType: 'Connect',
+                            leadType: 'Project',
                             actionType: 'Connect',
+                            section: 'Reject',
                           })
-                        })
-                        .catch((err) => console.error('An error occurred', err))
+                        )
+                          .then((res) => {
+                            this.props.navigation.navigate('DiaryFeedback', {
+                              actionType: 'Connect',
+                            })
+                          })
+                          .catch((err) => console.error('An error occurred', err))
                       : helper.errorToast(
-                        `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
-                      )
+                          `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
+                        )
                     this.openMenu(false)
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}

@@ -31,8 +31,6 @@ import { setShortlistedData } from '../../actions/drawer'
 const _format = 'YYYY-MM-DD'
 
 class LeadDetail extends React.Component {
-
-
   constructor(props) {
     super(props)
     const { user, lead, permissions, shortlistedData } = this.props
@@ -143,8 +141,8 @@ class LeadDetail extends React.Component {
           purposeTab == 'wanted' && res.data.rows[0].description
             ? res.data.rows[0].description
             : res.data.description && res.data.description !== ''
-              ? res.data.description.replace(regex, '')
-              : null
+            ? res.data.description.replace(regex, '')
+            : null
         let leadData = purposeTab == 'wanted' ? res.data.rows[0] : res.data
         if (
           leadData.added_by_armsuser_id !== user.id &&
@@ -241,7 +239,6 @@ class LeadDetail extends React.Component {
       })
     }
   }
-
 
   goBack = () => {
     const { lead, type, fromScreen } = this.state
@@ -344,12 +341,13 @@ class LeadDetail extends React.Component {
     const { lead } = this.state
     if (lead.origin) {
       if (lead.origin === 'arms') {
-        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${lead.creator
-          ? `(${helper.capitalize(lead.creator.firstName)} ${helper.capitalize(
-            lead.creator.lastName
-          )})`
-          : ''
-          }`
+        return `${lead.origin.split('_').join(' ').toLocaleUpperCase()} ${
+          lead.creator
+            ? `(${helper.capitalize(lead.creator.firstName)} ${helper.capitalize(
+                lead.creator.lastName
+              )})`
+            : ''
+        }`
       } else {
         return `${lead.origin.split('_').join(' ').toLocaleUpperCase()}`
       }
@@ -479,7 +477,7 @@ class LeadDetail extends React.Component {
   }
   navigateToOpenWorkFlow = (data) => {
     const { screen, navFrom } = this.props.route.params
-    const { navigation } = this.props
+    const { navigation, permissions, user } = this.props
 
     this.props.dispatch(setlead(data))
 
@@ -526,7 +524,7 @@ class LeadDetail extends React.Component {
       ) {
         page = 'Payment'
       }
-      if (data && data.requiredProperties) {
+      if (helper.isREA(user, permissions)) {
         this.props.navigation.navigate('PropertyTabs', {
           screen: page,
           params: { lead: data },
@@ -599,11 +597,7 @@ class LeadDetail extends React.Component {
     })
   }
 
-
-
-
   render() {
-
     let { type, loading, editDes, description, closedLeadEdit, callModal, meetings } = this.state
     const { user, route, referenceGuide, dispatch, lead } = this.props
     const { purposeTab, showBottomNav = false } = route.params
@@ -629,14 +623,23 @@ class LeadDetail extends React.Component {
     let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
     let setCustomerName = this.setCustomerName()
 
-  
     return !loading ? (
       <View style={styles.mainContainer}>
-        <View style={[AppStyles.container, styles.container,{paddingBottom: ((purposeTab === 'sale' || purposeTab === 'rent') &&
-          screenName === 'Leads' &&
-          lead.status !== 'closed_lost') || showBottomNav ?65:0,
-         
-           }]}>
+        <View
+          style={[
+            AppStyles.container,
+            styles.container,
+            {
+              paddingBottom:
+                ((purposeTab === 'sale' || purposeTab === 'rent') &&
+                  screenName === 'Leads' &&
+                  lead.status !== 'closed_lost') ||
+                showBottomNav
+                  ? 65
+                  : 0,
+            },
+          ]}
+        >
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.cardContainer}>
               <View style={styles.cardItemGrey}>
@@ -678,8 +681,8 @@ class LeadDetail extends React.Component {
                   {!lead.projectId && type !== 'Investment'
                     ? `${helper.capitalize(lead.subtype)} to ${type}`
                     : lead.projectName
-                      ? `Looking to Invest in ${lead.projectName} `
-                      : `Looking to Invest in Any Project `}
+                    ? `Looking to Invest in ${lead.projectName} `
+                    : `Looking to Invest in Any Project `}
                   {lead.projectId && (lead.projectType ? helper.capitalize(lead.projectType) : '-')}
                 </Text>
               </View>
@@ -687,8 +690,8 @@ class LeadDetail extends React.Component {
               <View style={styles.cardItemGrey}>
                 <Text style={styles.headingText}>Price Range </Text>
                 {!lead.projectId &&
-                  (lead.min_price !== null || lead.min_price !== undefined) &&
-                  (lead.price !== null || lead.price !== undefined) ? (
+                (lead.min_price !== null || lead.min_price !== undefined) &&
+                (lead.price !== null || lead.price !== undefined) ? (
                   <Text style={styles.labelText}>
                     {helper.convertPriceToStringLead(
                       lead.min_price,
@@ -698,8 +701,8 @@ class LeadDetail extends React.Component {
                   </Text>
                 ) : null}
                 {lead.projectId &&
-                  (lead.minPrice !== null || lead.minPrice !== undefined) &&
-                  (lead.maxPrice !== null || lead.maxPrice !== undefined) ? (
+                (lead.minPrice !== null || lead.minPrice !== undefined) &&
+                (lead.maxPrice !== null || lead.maxPrice !== undefined) ? (
                   <Text style={styles.labelText}>
                     {helper.convertPriceToStringLead(
                       lead.minPrice,
@@ -719,15 +722,15 @@ class LeadDetail extends React.Component {
                 ) : (
                   <Text style={styles.labelText}>
                     {!lead.projectId &&
-                      lead.armsLeadAreas &&
-                      lead.armsLeadAreas.length &&
-                      lead.armsLeadAreas[0].area
+                    lead.armsLeadAreas &&
+                    lead.armsLeadAreas.length &&
+                    lead.armsLeadAreas[0].area
                       ? lead.armsLeadAreas[0].area &&
-                      // lead.armsLeadAreas[0].area.name
-                      lead.armsLeadAreas.map((item, index) => {
-                        var comma = index > 0 ? ', ' : ''
-                        return comma + item.area.name
-                      })
+                        // lead.armsLeadAreas[0].area.name
+                        lead.armsLeadAreas.map((item, index) => {
+                          var comma = index > 0 ? ', ' : ''
+                          return comma + item.area.name
+                        })
                       : 'Area not specified'}
                     {!lead.projectId && lead.city && ' - ' + lead.city.name}
                   </Text>
@@ -770,13 +773,14 @@ class LeadDetail extends React.Component {
               ) : null}
             </View>
 
-            <View style={[styles.cardContainer, {elevation:2}]}>
+            <View style={[styles.cardContainer, { elevation: 2 }]}>
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Lead Type</Text>
                 <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
                 <View style={styles.statusView2}>
-                  <Text style={styles.textStyle} 
-                  //numberOfLines={1}
+                  <Text
+                    style={styles.textStyle}
+                    //numberOfLines={1}
                   >
                     {leadStatus}
                   </Text>
@@ -821,8 +825,8 @@ class LeadDetail extends React.Component {
               </View>
 
               {lead.shared_with_armsuser_id &&
-                user.id !== lead.shared_with_armsuser_id &&
-                lead.shareUser ? (
+              user.id !== lead.shared_with_armsuser_id &&
+              lead.shareUser ? (
                 <View style={styles.rowContainerType2}>
                   <Text style={styles.headingTextTypeTwo}>Reffered to</Text>
                   <Text style={styles.labelTextTypeTwo}>
@@ -836,8 +840,8 @@ class LeadDetail extends React.Component {
               ) : null}
 
               {lead.shared_with_armsuser_id &&
-                user.id === lead.shared_with_armsuser_id &&
-                lead.armsuser ? (
+              user.id === lead.shared_with_armsuser_id &&
+              lead.armsuser ? (
                 <View style={styles.rowContainerType2}>
                   <Text style={styles.headingTextTypeTwo}>Reffered by</Text>
                   <Text style={styles.labelTextTypeTwo}>
@@ -875,10 +879,6 @@ class LeadDetail extends React.Component {
                 </View>
               ) : null} */}
 
-            
-
-
-
               {lead && lead.city ? (
                 <View style={styles.rowContainerType2}>
                   <Text style={styles.headingTextTypeTwo}>Lead City </Text>
@@ -893,27 +893,34 @@ class LeadDetail extends React.Component {
                 <Text style={styles.labelTextTypeTwo}>{lead.id ? lead.id : ''} </Text>
               </View>
 
-              {type == 'Investment' ? (<View style={styles.rowContainerType2}>
-                <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
-                <Text style={styles.labelTextTypeTwo}>{lead.cmAssignedBy ? `${lead.cmAssignedBy.firstName} ${lead.cmAssignedBy.lastName}` : '-'} </Text>
-              </View>) :
-
+              {type == 'Investment' ? (
                 <View style={styles.rowContainerType2}>
                   <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
-                  <Text style={styles.labelTextTypeTwo}>{lead.rcmAssignedBy ? `${lead.rcmAssignedBy.firstName} ${lead.rcmAssignedBy.lastName}` : '-'} </Text>
-                </View>}
-
-
-
-
+                  <Text style={styles.labelTextTypeTwo}>
+                    {lead.cmAssignedBy
+                      ? `${lead.cmAssignedBy.firstName} ${lead.cmAssignedBy.lastName}`
+                      : '-'}{' '}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
+                  <Text style={styles.labelTextTypeTwo}>
+                    {lead.rcmAssignedBy
+                      ? `${lead.rcmAssignedBy.firstName} ${lead.rcmAssignedBy.lastName}`
+                      : '-'}{' '}
+                  </Text>
+                </View>
+              )}
 
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Referred By</Text>
-                <Text style={styles.labelTextTypeTwo}>{lead.referredBy ? `${lead.referredBy.firstName} ${lead.referredBy.lastName}` : '-'} </Text>
+                <Text style={styles.labelTextTypeTwo}>
+                  {lead.referredBy
+                    ? `${lead.referredBy.firstName} ${lead.referredBy.lastName}`
+                    : '-'}{' '}
+                </Text>
               </View>
-
-      
-             
 
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Additional Info</Text>

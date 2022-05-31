@@ -26,7 +26,12 @@ export default function FilterLeadsView({
     <View style={styles.filterMainView}>
       {contactScreen ? (
         <View
-          style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            marginTop: 10,
+          }}
         >
           {clear ? (
             <Pressable onPress={() => onClear()} style={styles.clearPressable}>

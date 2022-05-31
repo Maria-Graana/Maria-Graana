@@ -23,6 +23,7 @@ export default function FilterLeadsView({
   clear,
   onClear,
   openStatus,
+  hide,
 }) {
   return (
     <View style={styles.filterMainView}>
@@ -98,28 +99,30 @@ export default function FilterLeadsView({
             </Pressable>
           ) : null}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-            <Pressable
-              onPress={() => setBottomSheet('leadStatus')}
-              style={[
-                styles.filterPressable,
-                {
-                  backgroundColor: statusLead
-                    ? AppStyles.colors.primaryColor
-                    : AppStyles.colors.backgroundColor,
-                },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 12, color: statusLead ? 'white' : AppStyles.colors.textColor }}
+            {!hide && (
+              <Pressable
+                onPress={() => setBottomSheet('leadStatus')}
+                style={[
+                  styles.filterPressable,
+                  {
+                    backgroundColor: statusLead
+                      ? AppStyles.colors.primaryColor
+                      : AppStyles.colors.backgroundColor,
+                  },
+                ]}
               >
-                {statusLead ? statusLead : 'Lead Status'}
-              </Text>
-              <Ionicons
-                name="chevron-down-outline"
-                size={20}
-                color={statusLead ? 'white' : AppStyles.colors.textColor}
-              />
-            </Pressable>
+                <Text
+                  style={{ fontSize: 12, color: statusLead ? 'white' : AppStyles.colors.textColor }}
+                >
+                  {statusLead ? statusLead : 'Lead Status'}
+                </Text>
+                <Ionicons
+                  name="chevron-down-outline"
+                  size={20}
+                  color={statusLead ? 'white' : AppStyles.colors.textColor}
+                />
+              </Pressable>
+            )}
             <Pressable
               onPress={() => setBottomSheet('id')}
               style={[

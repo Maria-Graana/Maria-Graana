@@ -13,7 +13,7 @@ import SortImg from '../../../assets/img/sort.png'
 import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
-import { getItem, storeItem } from '../../actions/user'
+import { getItem, removeItem, storeItem } from '../../actions/user'
 import AppStyles from '../../AppStyles'
 import DateSearchFilter from '../../components/DateSearchFilter'
 import LeadTile from '../../components/LeadTile'
@@ -214,18 +214,21 @@ class InvestLeads extends React.Component {
       } else {
         statusValue = await getItem('statusFilterInvestLeads')
       }
-      if (statusValue) {
+      if (statusValue && String(statusValue) != 'all') {
         this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
           this.fetchLeads()
+          const str = String(statusValue)
+          const capitalized = str.charAt(0).toUpperCase() + str.slice(1)
+          this.setState({ statusLead: capitalized, clear: true })
         })
       } else {
         if (screen === 'MyDeals') {
-          storeItem('statusFilterInvest', 'all')
+          storeItem('statusFilterInvestDeals', 'all')
           this.setState({ statusFilter: 'all', sort: sortValue }, () => {
             this.fetchLeads()
           })
         } else {
-          storeItem('statusFilterInvest', 'all')
+          storeItem('statusFilterInvestLeads', 'all')
           this.setState({ statusFilter: 'all', sort: sortValue }, () => {
             this.fetchLeads()
           })
@@ -534,11 +537,10 @@ class InvestLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status, clear: true }, () => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
       storeItem('sortInvest', status)
       this.fetchLeads()
     })
-    this.RBSheet.close()
   }
 
   setKey = (index) => {
@@ -797,12 +799,18 @@ class InvestLeads extends React.Component {
     this.RBSheet.close()
   }
 
-  onClearAll = (clear) => {
+  onClearAll = async (clear) => {
+    const { hasBooking = false } = this.props.route.params
     this.clearSearch()
     this.clearStateValues()
     this.setState({ clear: false }, () => {
       this.fetchLeads()
     })
+    if (hasBooking) {
+      await removeItem('statusFilterInvestDeals')
+    } else {
+      await removeItem('statusFilterInvestLeads')
+    }
   }
 
   render() {
@@ -962,6 +970,7 @@ class InvestLeads extends React.Component {
             hasBooking={hasBooking}
             clear={clear}
             onClear={this.onClearAll}
+            openStatus={this.openStatus}
           />
         )}
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}

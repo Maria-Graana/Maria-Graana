@@ -948,6 +948,7 @@ class RentLeads extends React.Component {
           clear={clear}
           onClear={this.onClearAll}
           openStatus={this.openStatus}
+          hide={hasBooking ? true : false}
         />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 

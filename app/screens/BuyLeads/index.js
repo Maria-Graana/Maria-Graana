@@ -14,7 +14,7 @@ import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
 import { setPPBuyNotification } from '../../actions/notification'
-import { getItem, storeItem } from '../../actions/user'
+import { getItem, removeItem, storeItem } from '../../actions/user'
 import AppStyles from '../../AppStyles'
 import DateSearchFilter from '../../components/DateSearchFilter'
 import LeadTile from '../../components/LeadTile'
@@ -190,17 +190,21 @@ class BuyLeads extends React.Component {
       const sortValue = await this.getSortOrderFromStorage()
       this.setState({ statusFilter: 'closed_won', sort: sortValue }, () => {
         this.fetchLeads()
+        this.setState({ statusLead: 'Closed Won' })
       })
     } else {
       const sortValue = await this.getSortOrderFromStorage()
       const statusValue = await getItem('statusFilterBuy')
-      if (statusValue) {
+      if (statusValue && String(statusValue) != 'all') {
         this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
           this.fetchLeads()
+          const str = String(statusValue)
+          const capitalized = str.charAt(0).toUpperCase() + str.slice(1)
+          this.setState({ statusLead: capitalized, clear: true })
         })
       } else {
-        storeItem('statusFilterBuy', 'open')
-        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+        storeItem('statusFilterBuy', 'all')
+        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
           this.fetchLeads()
         })
       }
@@ -208,12 +212,12 @@ class BuyLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status, clear: true }, () => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
       storeItem('sortBuy', status)
       this.fetchLeads()
     })
-    this.RBSheet.close()
   }
+
   getServerTime = () => {
     axios
       .get(`/api/user/serverTime?fullTime=true`)
@@ -775,12 +779,13 @@ class BuyLeads extends React.Component {
     this.RBSheet.close()
   }
 
-  onClearAll = (clear) => {
+  onClearAll = async (clear) => {
     this.clearSearch()
     this.clearStateValues()
     this.setState({ clear: false }, () => {
       this.fetchLeads()
     })
+    await removeItem('statusFilterBuy')
   }
 
   render() {
@@ -949,6 +954,7 @@ class BuyLeads extends React.Component {
           hasBooking={hasBooking}
           clear={clear}
           onClear={this.onClearAll}
+          openStatus={this.openStatus}
         />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 

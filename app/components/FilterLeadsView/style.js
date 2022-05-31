@@ -19,8 +19,6 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // marginLeft: 5,
-    // marginRight: 5,
     width: '40%',
   },
   filterMainView: {
@@ -39,7 +37,11 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginLeft: 5,
+    marginLeft: 10,
     marginRight: 5,
+  },
+  sortImg: {
+    resizeMode: 'contain',
+    width: 20,
   },
 })

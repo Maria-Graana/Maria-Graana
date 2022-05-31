@@ -64,7 +64,7 @@ class InvestLeads extends React.Component {
       phoneModelDataLoader: false,
       leadsData: [],
       purposeTab: 'invest',
-      statusFilter: '',
+      statusFilter: 'all',
       open: false,
       sort: '&order=Desc&field=createdAt',
       loading: false,
@@ -225,8 +225,8 @@ class InvestLeads extends React.Component {
             this.fetchLeads()
           })
         } else {
-          storeItem('statusFilterInvest', 'open')
-          this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+          storeItem('statusFilterInvest', 'all')
+          this.setState({ statusFilter: 'all', sort: sortValue }, () => {
             this.fetchLeads()
           })
         }

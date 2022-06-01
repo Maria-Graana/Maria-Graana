@@ -824,36 +824,6 @@ class LeadDetail extends React.Component {
                 </Text>
               </View>
 
-              {lead.shared_with_armsuser_id &&
-              user.id !== lead.shared_with_armsuser_id &&
-              lead.shareUser ? (
-                <View style={styles.rowContainerType2}>
-                  <Text style={styles.headingTextTypeTwo}>Reffered to</Text>
-                  <Text style={styles.labelTextTypeTwo}>
-                    {lead.shareUser.firstName +
-                      ' ' +
-                      lead.shareUser.lastName +
-                      ', ' +
-                      lead.shareUser.phoneNumber}{' '}
-                  </Text>
-                </View>
-              ) : null}
-
-              {lead.shared_with_armsuser_id &&
-              user.id === lead.shared_with_armsuser_id &&
-              lead.armsuser ? (
-                <View style={styles.rowContainerType2}>
-                  <Text style={styles.headingTextTypeTwo}>Reffered by</Text>
-                  <Text style={styles.labelTextTypeTwo}>
-                    {lead.armsuser.firstName +
-                      ' ' +
-                      lead.armsuser.lastName +
-                      ', ' +
-                      (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
-                  </Text>
-                </View>
-              ) : null}
-
               {lead.sharedAt ? (
                 <View style={styles.rowContainerType2}>
                   <Text style={styles.headingTextTypeTwo}>Shared at</Text>

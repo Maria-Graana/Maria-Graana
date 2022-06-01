@@ -477,7 +477,7 @@ class LeadDetail extends React.Component {
   }
   navigateToOpenWorkFlow = (data) => {
     const { screen, navFrom } = this.props.route.params
-    const { navigation } = this.props
+    const { navigation, permissions, user } = this.props
 
     this.props.dispatch(setlead(data))
 
@@ -524,7 +524,7 @@ class LeadDetail extends React.Component {
       ) {
         page = 'Payment'
       }
-      if (data && data.requiredProperties) {
+      if (helper.isREA(user, permissions) && data.assigned_to_armsuser_id != user.id) {
         this.props.navigation.navigate('PropertyTabs', {
           screen: page,
           params: { lead: data },
@@ -622,9 +622,24 @@ class LeadDetail extends React.Component {
     let assignedByName = this.getAssignedByName(lead)
     let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
     let setCustomerName = this.setCustomerName()
+
     return !loading ? (
       <View style={styles.mainContainer}>
-        <View style={[AppStyles.container, styles.container]}>
+        <View
+          style={[
+            AppStyles.container,
+            styles.container,
+            {
+              paddingBottom:
+                ((purposeTab === 'sale' || purposeTab === 'rent') &&
+                  screenName === 'Leads' &&
+                  lead.status !== 'closed_lost') ||
+                showBottomNav
+                  ? 65
+                  : 0,
+            },
+          ]}
+        >
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.cardContainer}>
               <View style={styles.cardItemGrey}>
@@ -758,12 +773,15 @@ class LeadDetail extends React.Component {
               ) : null}
             </View>
 
-            <View style={styles.cardContainer}>
+            <View style={[styles.cardContainer, { elevation: 2 }]}>
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Lead Type</Text>
                 <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>
-                <View style={styles.statusView}>
-                  <Text style={styles.textStyle} numberOfLines={1}>
+                <View style={styles.statusView2}>
+                  <Text
+                    style={styles.textStyle}
+                    //numberOfLines={1}
+                  >
                     {leadStatus}
                   </Text>
                 </View>
@@ -852,14 +870,14 @@ class LeadDetail extends React.Component {
                 </Text>
               </View>
 
-              {assignedByName ? (
+              {/* {assignedByName ? (
                 <View style={styles.rowContainerType2}>
                   <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
                   <Text numberOfLines={1} style={styles.labelTextTypeTwo}>
                     {assignedByName}
                   </Text>
                 </View>
-              ) : null}
+              ) : null} */}
 
               {lead && lead.city ? (
                 <View style={styles.rowContainerType2}>
@@ -873,6 +891,35 @@ class LeadDetail extends React.Component {
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Lead ID</Text>
                 <Text style={styles.labelTextTypeTwo}>{lead.id ? lead.id : ''} </Text>
+              </View>
+
+              {type == 'Investment' ? (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
+                  <Text style={styles.labelTextTypeTwo}>
+                    {lead.cmAssignedBy
+                      ? `${lead.cmAssignedBy.firstName} ${lead.cmAssignedBy.lastName}`
+                      : '-'}{' '}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.rowContainerType2}>
+                  <Text style={styles.headingTextTypeTwo}>Assigned By</Text>
+                  <Text style={styles.labelTextTypeTwo}>
+                    {lead.rcmAssignedBy
+                      ? `${lead.rcmAssignedBy.firstName} ${lead.rcmAssignedBy.lastName}`
+                      : '-'}{' '}
+                  </Text>
+                </View>
+              )}
+
+              <View style={styles.rowContainerType2}>
+                <Text style={styles.headingTextTypeTwo}>Referred By</Text>
+                <Text style={styles.labelTextTypeTwo}>
+                  {lead.referredBy
+                    ? `${lead.referredBy.firstName} ${lead.referredBy.lastName}`
+                    : '-'}{' '}
+                </Text>
               </View>
 
               <View style={styles.rowContainerType2}>

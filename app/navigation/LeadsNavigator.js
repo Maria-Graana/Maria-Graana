@@ -2,7 +2,7 @@
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import React, { useEffect, useLayoutEffect } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, BackHandler } from 'react-native'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
@@ -48,24 +48,50 @@ function LeadsNavigator(props) {
     }
   }, [])
 
+  function handleBackButtonClick() {
+    if (props.route.params?.client) {
+      navigation.navigate('ClientDetail')
+    } else {
+      navigation.goBack()
+    }
+    return true
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
+    }
+  }, [])
+
   useEffect(() => {
     if (
-      screen == 'Leads' &&
+      (screen == 'Buy' || screen == 'Rent' || screen == 'Leads') &&
       navFrom != 'viewing' &&
       navFrom != 'follow_up' &&
       navFrom != 'meeting'
     ) {
-      navigation.setOptions({
-        title: '',
-        headerRight: (props) => (
-          <DropdownHeader
-            leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
-            hasBooking={false}
-            pageType={''}
-            navigation={navigation}
-          />
-        ),
-      })
+      if (props.route.params?.client) {
+        navigation.setOptions({
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          title: `${props.route.params?.client?.first_name} ${props.route.params?.client?.last_name}'s Leads`,
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />
+          ),
+        })
+      } else {
+        navigation.setOptions({
+          title: '',
+          headerRight: (props) => (
+            <DropdownHeader
+              leadType={navFrom == 'meeting' ? 'ProjectLeads' : false}
+              hasBooking={false}
+              pageType={''}
+              navigation={navigation}
+            />
+          ),
+        })
+      }
     }
 
     if (screen == 'MyDeals') {
@@ -353,6 +379,8 @@ function LeadsNavigator(props) {
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
+              client: props.route.params?.client,
+              clientDetails: props.route.params?.clientDetails,
             }}
             component={RentLeads}
           />
@@ -368,6 +396,8 @@ function LeadsNavigator(props) {
             initialParams={{
               screen: props.route.params?.screen,
               hasBooking: props.route.params?.hasBooking,
+              client: props.route.params?.client,
+              clientDetails: props.route.params?.clientDetails,
             }}
             options={{
               tabBarIcon: (props) => (
@@ -430,6 +460,8 @@ function LeadsNavigator(props) {
               initialParams={{
                 screen: props.route.params?.screen,
                 hasBooking: props.route.params?.hasBooking,
+                client: props.route.params?.client,
+                clientDetails: props.route.params?.clientDetails,
               }}
               component={RentLeads}
             />
@@ -449,6 +481,8 @@ function LeadsNavigator(props) {
               initialParams={{
                 screen: props.route.params?.screen,
                 hasBooking: props.route.params?.hasBooking,
+                client: props.route.params?.client,
+                clientDetails: props.route.params?.clientDetails,
               }}
               // options={{
               //   tabBarIcon: (props) => (
@@ -473,6 +507,8 @@ function LeadsNavigator(props) {
               initialParams={{
                 screen: props.route.params?.screen,
                 hasBooking: props.route.params?.hasBooking,
+                client: props.route.params?.client,
+                clientDetails: props.route.params?.clientDetails,
               }}
               // options={{
               //   tabBarIcon: (props) => (

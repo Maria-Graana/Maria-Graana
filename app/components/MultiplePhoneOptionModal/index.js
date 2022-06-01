@@ -1,7 +1,16 @@
 /** @format */
 
-import React, {  useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Linking, ActivityIndicator } from 'react-native'
+import React, { useState } from 'react'
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  Linking,
+  ActivityIndicator,
+} from 'react-native'
 import Modal from 'react-native-modal'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
@@ -23,16 +32,27 @@ const MultiplePhoneOptionModal = ({
   contacts,
   navigation,
   selectedDiary,
+  customerContacts,
+  clientModal,
+  customerName,
 }) => {
-
   const { contactsInformation } = connectFeedback
-  const dispatch = useDispatch()
-  const [loader, setLoader] = useState(true);
 
+  const dispatch = useDispatch()
+  const [loader, setLoader] = useState(true)
 
   const callOnSelectedNumber = (item, calledOn, title = 'ARMS') => {
     let url = null
-    if (selectedDiary) {
+
+    if (clientModal) {
+      url = calledOn === 'phone' ? 'tel:' + item.phone : 'whatsapp://send?phone=' + item.phone
+      if (url && url != 'tel:null') {
+        showMultiPhoneModal(false)
+        Linking.openURL(url)
+      } else {
+        helper.errorToast(`No Phone Number`)
+      }
+    } else if (selectedDiary) {
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -41,9 +61,9 @@ const MultiplePhoneOptionModal = ({
           id: selectedDiary.id,
         })
       )
+
       url = calledOn === 'phone' ? 'tel:' + item.number : 'whatsapp://send?phone=' + item.number
       if (url && url != 'tel:null') {
-        console.log("Can't handle url: " + url)
         if (contacts) {
           let result = helper.contacts(contactsInformation.phone, contacts)
           if (
@@ -89,41 +109,84 @@ const MultiplePhoneOptionModal = ({
             <Image source={close} style={styles.closeImg} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.title}>{contactsInformation ? contactsInformation.name : ''}</Text>
+        <Text style={styles.title}>
+          {clientModal ? customerName : contactsInformation ? contactsInformation.name : ''}
+        </Text>
 
+        {clientModal ? (
+          <>
+            {
+              <FlatList
+                data={customerContacts ? customerContacts : []}
+                keyExtractor={(item, index) => String(index)}
+                renderItem={({ item, index }) => (
+                  <View style={styles.row}>
+                    <TouchableOpacity
+                      onPress={() => callOnSelectedNumber(item, 'whatsapp')}
+                      style={styles.itemRow}
+                    >
+                      <Image style={[styles.whatsapp, { marginRight: 10 }]} source={whatsapp} />
+                    </TouchableOpacity>
 
-        { !contactsInformation?.payload  ? <ActivityIndicator style={{
-           alignSelf: 'center', marginBottom: 20 
-        }} color={AppStyles.colors.primaryColor} size="large" /> :
-          <FlatList
-            data={contactsInformation ? contactsInformation.payload : []}
-            keyExtractor={(item, index) => String(index)}
-            renderItem={({ item, index }) => (
-              <View style={styles.row}>
-                <TouchableOpacity
-                  onPress={() => callOnSelectedNumber(item, 'whatsapp')}
-                  style={styles.itemRow}
-                >
-                  <Image style={[styles.whatsapp, { marginRight: 10 }]} source={whatsapp} />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => callOnSelectedNumber(item, 'phone')}
-                  style={[
-                    styles.itemRow,
-                    { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-                  ]}
-                >
-                  <Image style={[styles.closeImg]} source={phone} />
-                  <Text style={[styles.number]}>{item.number}</Text>
-                </TouchableOpacity>
-                {contactsInformation && contactsInformation.payload.length - 1 !== index && (
-                  <Divider />
+                    <TouchableOpacity
+                      onPress={() => callOnSelectedNumber(item, 'phone')}
+                      style={[
+                        styles.itemRow,
+                        { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+                      ]}
+                    >
+                      <Image style={[styles.closeImg]} source={phone} />
+                      <Text style={[styles.number]}>{item.phone}</Text>
+                    </TouchableOpacity>
+                    {customerContacts && customerContacts.length - 1 !== index && <Divider />}
+                  </View>
                 )}
-              </View>
+              />
+            }
+          </>
+        ) : (
+          <>
+            {!contactsInformation?.payload ? (
+              <ActivityIndicator
+                style={{
+                  alignSelf: 'center',
+                  marginBottom: 20,
+                }}
+                color={AppStyles.colors.primaryColor}
+                size="large"
+              />
+            ) : (
+              <FlatList
+                data={contactsInformation ? contactsInformation.payload : []}
+                keyExtractor={(item, index) => String(index)}
+                renderItem={({ item, index }) => (
+                  <View style={styles.row}>
+                    <TouchableOpacity
+                      onPress={() => callOnSelectedNumber(item, 'whatsapp')}
+                      style={styles.itemRow}
+                    >
+                      <Image style={[styles.whatsapp, { marginRight: 10 }]} source={whatsapp} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => callOnSelectedNumber(item, 'phone')}
+                      style={[
+                        styles.itemRow,
+                        { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+                      ]}
+                    >
+                      <Image style={[styles.closeImg]} source={phone} />
+                      <Text style={[styles.number]}>{item.number}</Text>
+                    </TouchableOpacity>
+                    {contactsInformation && contactsInformation.payload.length - 1 !== index && (
+                      <Divider />
+                    )}
+                  </View>
+                )}
+              />
             )}
-          />
-        }
+          </>
+        )}
       </View>
     </Modal>
   )

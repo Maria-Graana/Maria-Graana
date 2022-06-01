@@ -211,9 +211,6 @@ class Landing extends React.Component {
       const { tile, actions } = oneTile
       let label = tile
       tile = tile.replace(/ /g, '')
-      if (oneTile.tile === 'Contacts') {
-        getPermissionValue(PermissionFeatures.CONTACTS, PermissionActions.READ, permissions)
-      }
       if (oneTile.tile === 'Project Leads') {
         if (
           getPermissionValue(
@@ -310,20 +307,19 @@ class Landing extends React.Component {
           counter++
         }
       } else {
-        // console.log(PermissionFeatures[actions])
-        // console.log(
-        //   getPermissionValue(
-        //     PermissionFeatures[actions],
-        //     PermissionActions.PROJECT_INVENTORY_PAGE_VIEW,
-        //     permissions
-        //   )
-        //)
         if (
           (oneTile.tile !== 'Project Inventory' &&
+            oneTile.tile !== 'Contacts' &&
             getPermissionValue(PermissionFeatures[actions], PermissionActions.READ, permissions)) ||
+          (oneTile.tile === 'Contacts' &&
+            getPermissionValue(
+              PermissionFeatures.APP_PAGES,
+              PermissionActions.CONTACTS,
+              permissions
+            )) ||
           (oneTile.tile === 'Project Inventory' &&
             getPermissionValue(
-              PermissionFeatures[actions],
+              PermissionFeatures.APP_PAGES,
               PermissionActions.PROJECT_INVENTORY_PAGE_VIEW,
               permissions
             ))

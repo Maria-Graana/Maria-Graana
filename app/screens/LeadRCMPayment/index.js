@@ -1791,7 +1791,7 @@ class LeadRCMPayment extends React.Component {
     let isSellerPropsureServiceNotClear = false
     let buyerCommissionPaymentFound = false
     let sellerCommissionPaymentFound = false
-
+    const { user } = this.props
     const { leadInfo, legalSellerListing, legalBuyListing } = this.state
     const { commissions, propsureOutstandingPayment } = leadInfo
     if (commissions && commissions.length) {
@@ -1828,7 +1828,7 @@ class LeadRCMPayment extends React.Component {
       if (propsureOutstandingPayment > 0)
         paymentsValidationHtml += `Buyer advisor's propsure outstanding payment is not cleared.\n`
 
-      if (legalBuyListing && legalBuyListing.length)
+      if (legalBuyListing && legalBuyListing.length && user?.organization?.type !== 'Franchise')
         documentsValidationHtml += this.docsValidationHtml(legalBuyListing, "Buyer client's")
     }
 
@@ -1840,7 +1840,11 @@ class LeadRCMPayment extends React.Component {
       if (isSellerPropsureServiceNotClear)
         paymentsValidationHtml += `Seller advisor's propsure payment is not cleared.\n`
 
-      if (legalSellerListing && legalSellerListing.length)
+      if (
+        legalSellerListing &&
+        legalSellerListing.length &&
+        user?.organization?.type !== 'Franchise'
+      )
         documentsValidationHtml += this.docsValidationHtml(legalSellerListing, "Seller client's")
     }
     return { paymentEr: paymentsValidationHtml, documentEr: documentsValidationHtml }
@@ -2268,6 +2272,7 @@ class LeadRCMPayment extends React.Component {
                         readPermission={readPermission}
                         updatePermission={updatePermission}
                         closedLeadEdit={closedLeadEdit}
+                        permissions={permissions}
                       />
                     ) : (
                       <RentPaymentView
@@ -2296,6 +2301,7 @@ class LeadRCMPayment extends React.Component {
                         readPermission={readPermission}
                         updatePermission={updatePermission}
                         closedLeadEdit={closedLeadEdit}
+                        permissions={permissions}
                       />
                     )
                   ) : null}
@@ -2367,7 +2373,9 @@ class LeadRCMPayment extends React.Component {
               leadType={'RCM'}
               closedWon={closedWon}
               onHandleCloseLead={this.onHandleCloseLead}
-              closedWonOptionVisible={true}
+              closedWonOptionVisible={
+                helper.isREA(user, permissions) ? lead.assigned_to_armsuser_id == user.id : true
+              }
               checkCloseWon={this.checkCloseWon()}
               leadData={this.state.leadInfo}
             />

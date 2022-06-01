@@ -2,8 +2,9 @@
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, BackHandler } from 'react-native'
 import DropdownHeader from '../components/HeaderRight/DropdownHeader'
+import HeaderRight from '../components/HeaderRight/index'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import { connect } from 'react-redux'
 import AppStyles from '../AppStyles'
@@ -31,18 +32,45 @@ function ProjectLeadsNavigator(props) {
 
   //unmount
 
+  function handleBackButtonClick() {
+    if (props.route.params?.client) {
+      navigation.navigate('ClientDetail')
+    } else {
+      navigation.goBack()
+    }
+    return true
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick)
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick)
+    }
+  }, [])
+
   useEffect(() => {
     if (screen == 'ProjectLeads') {
-      navigation.setOptions({
-        headerRight: (props) => (
-          <DropdownHeader
-            leadType={'ProjectLeads'}
-            hasBooking={false}
-            pageType={''}
-            navigation={navigation}
-          />
-        ),
-      })
+      if (props.route.params?.client) {
+        navigation.setOptions({
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          title: `${props.route.params?.client?.first_name} ${props.route.params?.client?.last_name}'s Leads`,
+          headerTitleAlign: 'center',
+          headerLeft: (props) => (
+            <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />
+          ),
+        })
+      } else {
+        navigation.setOptions({
+          headerRight: (props) => (
+            <DropdownHeader
+              leadType={'ProjectLeads'}
+              hasBooking={false}
+              pageType={''}
+              navigation={navigation}
+            />
+          ),
+        })
+      }
     }
 
     if (screen == 'ProjectDeals') {
@@ -115,6 +143,8 @@ function ProjectLeadsNavigator(props) {
           initialParams={{
             screen: props.route.params?.screen,
             hasBooking: props.route.params?.hasBooking,
+            client: props.route.params?.client,
+            clientDetails: props.route.params?.clientDetails,
           }}
           component={InvestLeads}
         />
@@ -281,6 +311,8 @@ function ProjectLeadsNavigator(props) {
           initialParams={{
             screen: props.route.params?.screen,
             hasBooking: props.route.params?.hasBooking,
+            client: props.route.params?.client,
+            clientDetails: props.route.params?.clientDetails,
           }}
           component={InvestLeads}
         />

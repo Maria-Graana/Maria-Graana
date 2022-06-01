@@ -131,7 +131,7 @@ class AddCMLead extends Component {
 
   formSubmit = () => {
     const { CMLead, investmentProjects, route } = this.props
-    const { update = false, lead } = route.params
+    const { update = false, lead, noEditableClient, client } = route.params
 
     if (!CMLead.customerId || !CMLead.cityId) {
       this.setState({
@@ -168,7 +168,14 @@ class AddCMLead extends Component {
             .post(`/api/leads/project`, CMLead)
             .then((res) => {
               helper.successToast('Lead created successfully')
-              RootNavigation.navigate('ProjectLeads')
+              if (noEditableClient) {
+                RootNavigation.navigateTo('ProjectLeads', {
+                  client: client,
+                  screen: 'ProjectLeads',
+                })
+              } else {
+                RootNavigation.navigate('ProjectLeads')
+              }
             })
             .catch((error) => {
               console.log(error)
@@ -205,7 +212,7 @@ class AddCMLead extends Component {
       isPriceModalVisible,
     } = this.state
     const { route, investmentProjects, CMFormLoading } = this.props
-    const { update = false } = route.params
+    const { update = false, noEditableClient } = route.params
     return CMFormLoading ? (
       <Loader loading={CMFormLoading} />
     ) : (
@@ -216,6 +223,7 @@ class AddCMLead extends Component {
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View>
                   <CMLeadFrom
+                    nonEditableClient={noEditableClient ? true : false}
                     navigation={this.props.navigation}
                     formSubmit={this.formSubmit}
                     checkValidation={checkValidation}

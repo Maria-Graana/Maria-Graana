@@ -13,6 +13,9 @@ export default styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  filterMainView: {
+    paddingVertical: 6,
+  },
   pickerMain: {
     width: '70%',
     borderWidth: 1,

@@ -124,6 +124,7 @@ class GraanaInventories extends React.Component {
       searchText,
       selectedArea,
     } = this.state
+
     let query = ``
     if (showSearchBar && searchBy === 'id' && searchText !== '') {
       if (helper.isANumber(searchText)) {
@@ -141,6 +142,10 @@ class GraanaInventories extends React.Component {
       // Only Status Filter
       query = `/api/inventory/all?propType=graana&propStatus=${statusFilter}&pageSize=${pageSize}&page=${page}`
     }
+    if (this.props.route.params?.client) {
+      query = `${query}&searchBy=customer&q=${this.props.route.params?.client?.first_name} ${this.props.route.params?.client?.last_name}`
+    }
+
     axios
       .get(query)
       .then((response) => {
@@ -303,15 +308,15 @@ class GraanaInventories extends React.Component {
     var endpoint = ''
     var body = {
       amount: formData.amount,
-      propertyType: 'graana'
+      propertyType: 'graana',
     }
     if (check === 'amount') {
-      ;(endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`)
+      endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`
     } else {
       endpoint = `api/inventory/verifyProperty?id=${singlePropertyData.id}`
     }
     formData['amount'] = ''
-    axios.patch(endpoint , body).then((res) => {
+    axios.patch(endpoint, body).then((res) => {
       this.setState(
         {
           forStatusPrice: false,
@@ -535,7 +540,8 @@ class GraanaInventories extends React.Component {
       isGraanaPhoneModalVisible,
       contactInformation,
     } = this.state
-    const { user } = this.props
+    const { user, route } = this.props
+    const { client } = route.params
     return !loading ? (
       <View style={[styles.container, { marginBottom: 25 }]}>
         <GeoTaggingModal
@@ -551,100 +557,105 @@ class GraanaInventories extends React.Component {
           propertyGeoTaggingDone={this.propertyGeoTaggingDone}
           goToMapsForGeotagging={this.goToMapsForGeotagging}
         />
-        {showSearchBar ? (
-          <View
-            style={[
-              styles.filterRow,
-              {
-                paddingBottom: 0,
-                paddingTop: 0,
-                paddingLeft: 0,
-                flexDirection: 'row',
-                alignItems: 'center',
-              },
-            ]}
-          >
-            <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
-              <PickerComponent
-                placeholder={'Search By'}
-                data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
-                customStyle={styles.pickerStyle}
-                customIconStyle={styles.customIconStyle}
-                onValueChange={this.changeSearchBy}
-                selectedItem={searchBy}
-              />
-            </View>
-            {searchBy === 'id' ? (
-              <Search
-                containerWidth={'80%'}
-                placeholder={'Search by ID'}
-                searchText={searchText}
-                setSearchText={(value) => this.setState({ searchText: value })}
-                showShadow={false}
-                showClearButton={true}
-                returnKeyType={'search'}
-                onSubmitEditing={() =>
-                  this.setState({ loading: true }, () => {
-                    this.getPropertyGraanaListing()
-                  })
-                }
-                closeSearchBar={() => this.clearAndCloseSearch()}
-              />
-            ) : helper.checkPP(user) ? null : (
-              <View style={styles.searchTextContainerStyle}>
-                <Text
-                  onPress={() => this.handleSearchByArea()}
-                  style={[
-                    AppStyles.formFontSettings,
-                    styles.searchAreaInput,
-                    {
-                      color: isEmpty(selectedArea)
-                        ? AppStyles.colors.subTextColor
-                        : AppStyles.colors.textColor,
-                    },
-                  ]}
-                >
-                  {isEmpty(selectedArea) ? 'Search by Area' : selectedArea.name}
-                </Text>
-                <Ionicons
-                  style={{ width: '10%' }}
-                  onPress={() => this.clearAndCloseSearch()}
-                  name={'ios-close-circle-outline'}
-                  size={24}
-                  color={'grey'}
-                />
+
+        {!client && (
+          <>
+            {showSearchBar ? (
+              <View
+                style={[
+                  styles.filterRow,
+                  {
+                    paddingBottom: 0,
+                    paddingTop: 0,
+                    paddingLeft: 0,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  },
+                ]}
+              >
+                <View style={[styles.pickerMain, { width: '20%', marginLeft: 10 }]}>
+                  <PickerComponent
+                    placeholder={'Search By'}
+                    data={helper.checkPP(user) ? StaticData.searchByIdOnly : StaticData.searchBy}
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.changeSearchBy}
+                    selectedItem={searchBy}
+                  />
+                </View>
+                {searchBy === 'id' ? (
+                  <Search
+                    containerWidth={'80%'}
+                    placeholder={'Search by ID'}
+                    searchText={searchText}
+                    setSearchText={(value) => this.setState({ searchText: value })}
+                    showShadow={false}
+                    showClearButton={true}
+                    returnKeyType={'search'}
+                    onSubmitEditing={() =>
+                      this.setState({ loading: true }, () => {
+                        this.getPropertyGraanaListing()
+                      })
+                    }
+                    closeSearchBar={() => this.clearAndCloseSearch()}
+                  />
+                ) : helper.checkPP(user) ? null : (
+                  <View style={styles.searchTextContainerStyle}>
+                    <Text
+                      onPress={() => this.handleSearchByArea()}
+                      style={[
+                        AppStyles.formFontSettings,
+                        styles.searchAreaInput,
+                        {
+                          color: isEmpty(selectedArea)
+                            ? AppStyles.colors.subTextColor
+                            : AppStyles.colors.textColor,
+                        },
+                      ]}
+                    >
+                      {isEmpty(selectedArea) ? 'Search by Area' : selectedArea.name}
+                    </Text>
+                    <Ionicons
+                      style={{ width: '10%' }}
+                      onPress={() => this.clearAndCloseSearch()}
+                      name={'ios-close-circle-outline'}
+                      size={24}
+                      color={'grey'}
+                    />
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
+                <View style={styles.pickerMain}>
+                  <PickerComponent
+                    placeholder={'Property Status'}
+                    data={
+                      helper.checkPP(user)
+                        ? StaticData.graanaStatusFiltersPP
+                        : StaticData.graanaStatusFilters
+                    }
+                    customStyle={styles.pickerStyle}
+                    customIconStyle={styles.customIconStyle}
+                    onValueChange={this.changeStatus}
+                    selectedItem={statusFilter}
+                  />
+                </View>
+                <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
+                  <Ionicons
+                    onPress={() => {
+                      this.setState({ showSearchBar: true }, () => {
+                        this.clearStateValues()
+                      })
+                    }}
+                    name={'ios-search'}
+                    size={26}
+                    color={AppStyles.colors.primaryColor}
+                  />
+                </View>
               </View>
             )}
-          </View>
-        ) : (
-          <View style={[styles.filterRow, { paddingHorizontal: 15 }]}>
-            <View style={styles.pickerMain}>
-              <PickerComponent
-                placeholder={'Property Status'}
-                data={
-                  helper.checkPP(user)
-                    ? StaticData.graanaStatusFiltersPP
-                    : StaticData.graanaStatusFilters
-                }
-                customStyle={styles.pickerStyle}
-                customIconStyle={styles.customIconStyle}
-                onValueChange={this.changeStatus}
-                selectedItem={statusFilter}
-              />
-            </View>
-            <View style={{ width: '20%', alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons
-                onPress={() => {
-                  this.setState({ showSearchBar: true }, () => {
-                    this.clearStateValues()
-                  })
-                }}
-                name={'ios-search'}
-                size={26}
-                color={AppStyles.colors.primaryColor}
-              />
-            </View>
-          </View>
+          </>
         )}
         {/* ***** Main Tile Wrap */}
         {propertiesList && propertiesList.length > 0 ? (

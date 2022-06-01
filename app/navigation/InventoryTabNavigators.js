@@ -1,7 +1,7 @@
 /** @format */
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dimensions } from 'react-native'
 import AppStyles from '../AppStyles'
 import Armsinventory from '../screens/ArmsInventories'
@@ -11,7 +11,21 @@ const { width } = Dimensions.get('window')
 
 const Tab = createMaterialTopTabNavigator()
 
-export default function InventoryTabNavigators() {
+export default function InventoryTabNavigators(props) {
+  const { route, navigation } = props
+  const { client } = route.params
+  useEffect(() => {
+    if (client) {
+      props.navigation.setOptions({
+        //  headerRight: (props) => <HeaderRight navigation={navigation} />,
+        title: `${client?.first_name} ${client?.last_name}'s Properties`,
+        // headerLeft: (props) => (
+        //   <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />
+        // ),
+      })
+    }
+  }, [navigation])
+
   return (
     <Tab.Navigator
       tabBarOptions={{
@@ -27,9 +41,27 @@ export default function InventoryTabNavigators() {
         // style: { shadowColor: 'transparent', elevation: 0, borderTopColor: "transparent", borderTopWidth: 0 },
       }}
     >
-      <Tab.Screen name="ARMS" component={Armsinventory} />
-      <Tab.Screen name="Field App" component={FieldsInventories} />
-      <Tab.Screen name="Graana.com" component={GraanaInventories} />
+      <Tab.Screen
+        name="ARMS"
+        initialParams={{
+          client: props.route.params?.client,
+        }}
+        component={Armsinventory}
+      />
+      <Tab.Screen
+        name="Field App"
+        initialParams={{
+          client: props.route.params?.client,
+        }}
+        component={FieldsInventories}
+      />
+      <Tab.Screen
+        initialParams={{
+          client: props.route.params?.client,
+        }}
+        name="Graana.com"
+        component={GraanaInventories}
+      />
     </Tab.Navigator>
   )
 }

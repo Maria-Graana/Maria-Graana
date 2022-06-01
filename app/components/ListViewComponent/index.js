@@ -8,8 +8,9 @@ import { TextInput } from 'react-native-paper'
 
 export default function ({ name, data, onPress, type, show }) {
   const [query, setQuery] = useState('')
-  const [fullData, setFullData] = useState(data)
   const [datas, setDatas] = useState(data)
+
+  const fullData = data
 
   const handleSearch = (text) => {
     const formattedQuery = text.toLowerCase()

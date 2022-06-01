@@ -823,7 +823,7 @@ class LeadDetail extends React.Component {
                   {moment(lead.updatedAt).format('MMM DD YYYY, hh:mm A')}{' '}
                 </Text>
               </View>
-
+              {/* 
               {lead.shared_with_armsuser_id &&
               user.id !== lead.shared_with_armsuser_id &&
               lead.shareUser ? (
@@ -837,8 +837,8 @@ class LeadDetail extends React.Component {
                       lead.shareUser.phoneNumber}{' '}
                   </Text>
                 </View>
-              ) : null}
-
+              ) : null} */}
+              {/* 
               {lead.shared_with_armsuser_id &&
               user.id === lead.shared_with_armsuser_id &&
               lead.armsuser ? (
@@ -852,7 +852,7 @@ class LeadDetail extends React.Component {
                       (lead.armsuser.phoneNumber ? lead.armsuser.phoneNumber : '')}{' '}
                   </Text>
                 </View>
-              ) : null}
+              ) : null} */}
 
               {lead.sharedAt ? (
                 <View style={styles.rowContainerType2}>

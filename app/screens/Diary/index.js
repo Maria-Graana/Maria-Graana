@@ -66,6 +66,7 @@ import diaryHelper from './diaryHelper'
 import HistoryModal from '../../components/HistoryModal'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
 import NonLeadTaskModal from '../../components/NonLeadTaskModal'
+import FilterDiaryView from '../../components/FilterDiaryView'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -739,6 +740,10 @@ class Diary extends React.Component {
               />
             </Menu>
           </View>
+        </View>
+
+        <View>
+          <FilterDiaryView agentId={agentId} isOverdue={false} />
         </View>
 
         {agentId !== user.id && name ? (

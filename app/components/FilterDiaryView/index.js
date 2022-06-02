@@ -1,0 +1,601 @@
+/** @format */
+
+import React from 'react'
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Alert,
+  Pressable,
+  Platform,
+} from 'react-native'
+import AppStyles from '../../AppStyles'
+import DateTimePicker from '../../components/DatePicker'
+import PickerComponent from '../../components/Picker'
+import TouchableButton from '../../components/TouchableButton'
+import helper from '../../helper.js'
+import axios from 'axios'
+import Loader from '../../components/loader'
+import _ from 'underscore'
+import StaticData from '../../StaticData'
+import {
+  clearDiaryFilter,
+  getDiaryTasks,
+  setDairyFilterApplied,
+  setDiaryFilter,
+  setDiaryFilterReason,
+} from '../../actions/diary'
+import moment from 'moment'
+import { connect } from 'react-redux'
+import TouchableInput from '../../components/TouchableInput'
+import { Ionicons } from '@expo/vector-icons'
+import RBSheet from 'react-native-raw-bottom-sheet'
+import { getPermissionValue } from '../../hoc/Permissions'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import ListViewComponent from '../../components/ListViewComponent'
+import TextFilterComponent from '../../components/TextFilterComponent'
+import DateFilterComponent from '../../components/DateFilterComponent'
+
+const _format = 'YYYY-MM-DD'
+const _today = moment(new Date()).format(_format)
+class FilterDiaryView extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      loading: false,
+      feedbackReasons: [],
+      clear: false,
+      leadType: '',
+      filterType: '',
+      leadTypeList: [],
+      searchText: '',
+    }
+  }
+
+  componentDidMount() {
+    const { permissions } = this.props
+    const { leadTypeList } = this.state
+    if (
+      getPermissionValue(
+        PermissionFeatures.APP_PAGES,
+        PermissionActions.PROJECT_LEADS_PAGE_VIEW,
+        permissions
+      )
+    ) {
+      leadTypeList.push({ name: 'Project', value: 'Project' })
+    }
+    if (
+      getPermissionValue(
+        PermissionFeatures.APP_PAGES,
+        PermissionActions.BUYRENT_LEADS_PAGE_VIEW,
+        permissions
+      )
+    ) {
+      leadTypeList.push({ name: 'Buy/Rent', value: 'BuyRent' })
+    }
+    if (
+      getPermissionValue(
+        PermissionFeatures.APP_PAGES,
+        PermissionActions.WANTED_LEADS_PAGE_VIEW,
+        permissions
+      )
+    ) {
+      leadTypeList.push({ name: 'Wanted', value: 'Wanted' })
+    }
+  }
+
+  clearFilter = () => {
+    const { dispatch, route, navigation, agentId, isOverdue } = this.props
+    dispatch(setDairyFilterApplied(false)).then((res) => {
+      dispatch(clearDiaryFilter())
+      dispatch(setDiaryFilterReason(null))
+      if (isOverdue) {
+        dispatch(getDiaryTasks({ selectedDate: _today, agentId, overdue: isOverdue }))
+      }
+      this.setState({ clear: false })
+      // navigation.goBack()
+    })
+  }
+
+  onSearchPressed = () => {
+    const { navigation, route, dispatch, agentId, isOverdue = false } = this.props
+    const { filters, feedbackReasonFilter } = this.props
+    const newFormData = {
+      ...filters,
+      reasonTag: feedbackReasonFilter ? feedbackReasonFilter.name : null,
+    }
+    dispatch(setDiaryFilter(newFormData))
+    dispatch(setDairyFilterApplied(true))
+    dispatch(getDiaryTasks({ agentId, overdue: isOverdue }))
+    this.setState({ clear: true })
+    // navigation.goBack()
+  }
+
+  handleForm = (value, name) => {
+    const { dispatch } = this.props
+    const { filters, feedbackReasonFilter } = this.props
+    let newformData = {
+      ...filters,
+    }
+    if (
+      name === 'wantedId' ||
+      name === 'projectId' ||
+      name === 'buyrentId' ||
+      name === 'customerId'
+    ) {
+      if (helper.isANumber(value)) {
+        newformData[name] = value
+      } else {
+        alert('Please enter correct format!')
+      }
+    } else {
+      newformData[name] = value
+    }
+    dispatch(setDiaryFilter(newformData)).then((res) => {
+      this.onSearchPressed()
+      this.RBSheet.close()
+    })
+  }
+
+  setTextSearch = (text) => {
+    this.setState({ searchText: text })
+  }
+
+  goToDiaryReasons = () => {
+    const { navigation, route } = this.props
+    navigation.navigate('DiaryReasons', { screenName: 'DiaryFilter' })
+  }
+
+  setBottomSheet = (value) => {
+    this.setState(
+      {
+        filterType: value,
+      },
+      () => {
+        if (value == 'date' && Platform.OS == 'android') {
+          this.setState({ activeDate: true })
+        } else {
+          this.RBSheet.open()
+        }
+      }
+    )
+  }
+
+  render() {
+    const { filters, route, feedbackReasonFilter, isOverdue } = this.props
+    const { loading, clear, leadType, filterType, leadTypeList, searchText } = this.state
+
+    return loading ? (
+      <Loader loading={loading} />
+    ) : (
+      <View style={styles.container}>
+        {/* ********** RN Bottom Sheet ********** */}
+        <RBSheet
+          ref={(ref) => {
+            this.RBSheet = ref
+          }}
+          height={filterType == 'date' ? 500 : 300}
+          openDuration={250}
+          closeOnDragDown={true}
+        >
+          {filterType == 'leadType' ? (
+            <ListViewComponent
+              name={'Lead Type'}
+              data={leadTypeList}
+              onPress={this.handleForm}
+              custom={true}
+            />
+          ) : filterType == 'projectId' ? (
+            <TextFilterComponent
+              name={'Project ID'}
+              type={'projectId'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.handleForm}
+              numeric={true}
+            />
+          ) : filterType == 'buyrentId' ? (
+            <TextFilterComponent
+              name={'Buy/Rent ID'}
+              type={'buyrentId'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.handleForm}
+              numeric={true}
+            />
+          ) : filterType == 'wantedId' ? (
+            <TextFilterComponent
+              name={'Wanted ID'}
+              type={'wantedId'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.handleForm}
+              numeric={true}
+            />
+          ) : filterType == 'customerName' ? (
+            <TextFilterComponent
+              name={'Client Name'}
+              type={'customerName'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.handleForm}
+            />
+          ) : filterType == 'customerPhoneNumber' ? (
+            <TextFilterComponent
+              name={'Client Phone#'}
+              type={'customerPhoneNumber'}
+              searchText={searchText}
+              setTextSearch={this.setTextSearch}
+              changeStatusType={this.handleForm}
+              numeric={true}
+            />
+          ) : // ) : filterType == 'date' ? (
+          //   <DateFilterComponent
+          //     dateFromTo={dateFromTo}
+          //     setDateFromTo={this.setDateFromTo}
+          //     changeDateFromTo={this.changeDateFromTo}
+          //   />
+          // )
+          null}
+        </RBSheet>
+        {/* ********** RN Bottom Sheet ********** */}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {clear ? (
+            <Pressable onPress={() => this.clearFilter()} style={styles.clearPressable}>
+              <Text style={styles.clearText}>Clear All</Text>
+            </Pressable>
+          ) : null}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+            <Pressable
+              onPress={() => this.setBottomSheet('leadType')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: filters.leadType
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: filters.leadType ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {filters.leadType ? filters.leadType : 'Lead Type'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={filters.leadType ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => this.setBottomSheet('projectId')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: filters.projectId
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: filters.projectId ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {filters.projectId ? filters.projectId : 'Project ID'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={filters.projectId ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => this.setBottomSheet('buyrentId')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: filters.buyrentId
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: filters.buyrentId ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {filters.buyrentId ? filters.buyrentId : 'Buy/Rent ID'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={filters.buyrentId ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => this.setBottomSheet('wantedId')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: filters.wantedId
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: filters.wantedId ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {filters.wantedId ? filters.wantedId : 'Wanted ID'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={filters.wantedId ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => this.setBottomSheet('customerName')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: filters.customerName
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: filters.customerName ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {filters.customerName ? filters.customerName : 'Client Name'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={filters.customerName ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => this.setBottomSheet('customerPhoneNumber')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: filters.customerPhoneNumber
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: filters.customerPhoneNumber ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {filters.customerPhoneNumber ? filters.customerPhoneNumber : 'Client Phone#'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={filters.customerPhoneNumber ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+          </ScrollView>
+        </View>
+        {/* <ScrollView showsVerticalScrollIndicator={false}> */}
+        {/* {isOverdue ? null : (
+            <>
+              <Text style={styles.headingText}>Date:</Text>
+              <DateTimePicker
+                placeholderLabel={'Select Date'}
+                name={'date'}
+                mode={'date'}
+                // showError={checkValidation === true && formData.date === ''}
+                errorMessage={'Required'}
+                iconSource={require('../../../assets/img/calendar.png')}
+                date={new Date()}
+                selectedValue={filters.date ? helper.formatDate(filters.date) : ''}
+                handleForm={(value, name) => this.handleForm(helper.formatDate(value), name)}
+              />
+            </>
+          )}
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText]}>Reason:</Text>
+              <TouchableInput
+                onPress={() => this.goToDiaryReasons()}
+                showIconOrImage={false}
+                value={feedbackReasonFilter ? feedbackReasonFilter.name : ''}
+                placeholder={'Select Reason'}
+              />
+            </View>
+          </View>
+
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Lead Type:</Text>
+              <PickerComponent
+                onValueChange={this.handleForm}
+                selectedItem={filters.leadType}
+                data={StaticData.leadTypes}
+                name={'leadType'}
+                placeholder="Lead Type"
+                customIconStyle={{ marginRight: -6 }}
+              />
+            </View>
+          </View>
+
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Project Lead ID:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Project Lead ID'}
+                keyboardType={'numeric'}
+                value={filters.projectId}
+                onChangeText={(text) => this.handleForm(text, 'projectId')}
+              />
+            </View>
+          </View>
+
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Buy/Rent Lead ID:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Buy/Rent Lead ID'}
+                keyboardType={'numeric'}
+                value={filters.buyrentId}
+                onChangeText={(text) => this.handleForm(text, 'buyrentId')}
+              />
+            </View>
+          </View>
+
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Wanted Lead ID:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Wanted Lead ID'}
+                value={filters.wantedId}
+                onChangeText={(text) => this.handleForm(text, 'wantedId')}
+              />
+            </View>
+          </View>
+
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Client Name:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Client Name'}
+                value={filters.customerName}
+                // editable={formData.status === 'pending'}
+                onChangeText={(text) => this.handleForm(text, 'customerName')}
+              />
+            </View>
+          </View>
+
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <Text style={[styles.headingText, { marginBottom: 10 }]}>Client Contact:</Text>
+              <TextInput
+                placeholderTextColor={'#a8a8aa'}
+                style={[
+                  AppStyles.formControl,
+                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
+                  AppStyles.formFontSettings,
+                ]}
+                placeholder={'Client Contact'}
+                value={filters.customerPhoneNumber}
+                // editable={formData.status === 'pending'}
+                onChangeText={(text) => this.handleForm(text, 'customerPhoneNumber')}
+              />
+            </View>
+          </View>
+        </ScrollView>
+        <View style={[AppStyles.mainInputWrap]}>
+          <TouchableButton
+            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+            label={'SEARCH'}
+            onPress={this.onSearchPressed}
+            // loading={loading}
+            // disabled={currentMeeting && currentMeeting.status === 'completed'}
+          />
+        </View>
+
+        <View style={[AppStyles.mainInputWrap]}>
+          <TouchableButton
+            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
+            label={'CLEAR'}
+            onPress={this.clearFilter}
+            // loading={loading}
+            // disabled={currentMeeting && currentMeeting.status === 'completed'}
+          />
+        </View> */}
+      </View>
+    )
+  }
+}
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 10,
+    paddingVertical: 5,
+    backgroundColor: 'white',
+  },
+  clearPressable: {
+    paddingVertical: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 5,
+  },
+  filterScroll: {
+    padding: 10,
+  },
+  filterPressable: {
+    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginLeft: 5,
+  },
+})
+
+mapStateToProps = (store) => {
+  return {
+    user: store.user.user,
+    filters: store.diary.filters,
+    feedbackReasonFilter: store.diary.feedbackReasonFilter,
+    permissions: store.user.permissions,
+  }
+}
+
+export default connect(mapStateToProps)(FilterDiaryView)

@@ -24,7 +24,7 @@ import SortImg from '../../../assets/img/sort.png'
 import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
-import { getItem, storeItem } from '../../actions/user'
+import { getItem, removeItem, storeItem } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import DateSearchFilter from '../../components/DateSearchFilter'
@@ -179,17 +179,21 @@ class RentLeads extends React.Component {
       const sortValue = await this.getSortOrderFromStorage()
       this.setState({ statusFilter: 'closed_won', sort: sortValue }, () => {
         this.fetchLeads()
+        this.setState({ statusLead: 'Closed Won' })
       })
     } else {
       const sortValue = await this.getSortOrderFromStorage()
       const statusValue = await getItem('statusFilterRent')
-      if (statusValue) {
+      if (statusValue && String(statusValue) != 'all') {
         this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
           this.fetchLeads()
+          const str = String(statusValue)
+          const capitalized = str.charAt(0).toUpperCase() + str.slice(1)
+          this.setState({ statusLead: capitalized, clear: true })
         })
       } else {
-        storeItem('statusFilterRent', 'open')
-        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+        storeItem('statusFilterRent', 'all')
+        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
           this.fetchLeads()
         })
       }
@@ -338,11 +342,10 @@ class RentLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status, clear: true }, () => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
       storeItem('sortRent', status)
       this.fetchLeads()
     })
-    this.RBSheet.close()
   }
 
   changeStatus = (status, name = null) => {
@@ -748,12 +751,13 @@ class RentLeads extends React.Component {
     )
   }
 
-  onClearAll = (clear) => {
+  onClearAll = async (clear) => {
     this.clearSearch()
     this.clearStateValues()
     this.setState({ clear: false }, () => {
       this.fetchLeads()
     })
+    await removeItem('statusFilterRent')
   }
 
   changeDateFromTo = (name) => {
@@ -917,7 +921,12 @@ class RentLeads extends React.Component {
               changeDateFromTo={this.changeDateFromTo}
             />
           ) : filterType == 'country' ? (
-            <ListViewComponent data={countries} onPress={this.searchCountry} type={'country'} />
+            <ListViewComponent
+              data={countries}
+              onPress={this.searchCountry}
+              type={'country'}
+              show={true}
+            />
           ) : filterType == 'classification' ? (
             <ListViewComponent
               name={'Search by Classification Type'}
@@ -943,6 +952,8 @@ class RentLeads extends React.Component {
           hasBooking={hasBooking}
           clear={clear}
           onClear={this.onClearAll}
+          openStatus={this.openStatus}
+          hide={hasBooking ? true : false}
         />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 

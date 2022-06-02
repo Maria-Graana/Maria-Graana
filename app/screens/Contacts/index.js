@@ -75,13 +75,14 @@ export class Contacts extends Component {
     }
   }
   clearSearch = () => {
-    this.setState({ searchText: '', statusFilterType: '', clear: false })
+    this.setState({ searchText: '', statusFilterType: '' })
   }
 
   onClearAll = () => {
     const { dispatch } = this.props
     this.clearSearch()
     this.clearStateValues()
+    this.setState({ clear: false })
     dispatch(getARMSContacts())
   }
 

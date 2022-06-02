@@ -1820,7 +1820,9 @@ class CMPayment extends Component {
           unitPearlDetailsData,
           oneProductData,
           CMPayment,
-          selectedClient
+          selectedClient,
+          addInstrument,
+          isPrimary
         )
         downPayment = body.down_payment
         possessionCharges = body.possession_charges
@@ -2074,7 +2076,6 @@ class CMPayment extends Component {
     const { screenName } = this.props.route.params
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
-
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar

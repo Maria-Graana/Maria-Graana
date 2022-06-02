@@ -4,12 +4,25 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import { Fab } from 'native-base'
 import React, { Component } from 'react'
-import { Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Platform,
+} from 'react-native'
 import { Row, Table } from 'react-native-table-component'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
 import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
+//
+import RBSheet from 'react-native-raw-bottom-sheet'
+import FilterLeadsView from '../../components/FilterLeadsView/InventoryFilter'
+import ListViewComponent from '../../components/ListViewComponent'
+import TextFilterComponent from '../../components/TextFilterComponent'
 import Loader from '../../components/loader'
 import PickerComponent from '../../components/Picker'
 import TouchableButton from '../../components/TouchableButton'
@@ -22,9 +35,12 @@ class AvailableInventory extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      selectedFloorId: null,
+      filterType: null,
       allProjects: [],
       pickerProjects: [],
       selectedProject: null,
+      selectedProjectName: null,
       selectedFloor: null,
       allFloors: [],
       pickerFloors: [],
@@ -58,6 +74,8 @@ class AvailableInventory extends Component {
           {
             pickerProjects: projectArray,
             allProjects: res.data.items,
+            selectedProjectName:
+              projectArray && projectArray.length > 0 ? projectArray[0].name : null,
             selectedProject: projectArray && projectArray.length > 0 ? projectArray[0].value : null,
             projectData: projectArray && projectArray.length > 0 ? projectArray[0] : null,
           },
@@ -201,11 +219,14 @@ class AvailableInventory extends Component {
     }
   }
 
-  handleProjectChange = (item) => {
+  handleProjectChange = (item, name) => {
     const { pickerProjects } = this.state
-    this.setState({ selectedProject: item, selectedFloor: null, loading: true }, () => {
-      this.getFloors(this.state.selectedProject)
-    })
+    this.setState(
+      { selectedProject: item, selectedProjectName: name, selectedFloor: null, loading: true },
+      () => {
+        this.getFloors(this.state.selectedProject)
+      }
+    )
 
     this.setProjectData(item, pickerProjects)
   }
@@ -218,17 +239,10 @@ class AvailableInventory extends Component {
     }
   }
 
-  handleFloorChange = (item) => {
+  handleFloorChange = (item, floorId) => {
     const { selectedProject } = this.state
-    this.setState({ selectedFloor: item, loading: true }, () => {
-      this.getUnits(selectedProject, item)
-    })
-  }
-
-  filterByStatus = (status) => {
-    const { selectedProject, selectedFloor } = this.state
-    this.setState({ defaultUnitStatus: status }, () => {
-      this.getUnits(selectedProject, selectedFloor, status)
+    this.setState({ selectedFloor: item, selectedFloorId: floorId, loading: true }, () => {
+      this.getUnits(selectedProject, floorId)
     })
   }
 
@@ -284,12 +298,53 @@ class AvailableInventory extends Component {
     )
   }
 
+  setBottomSheet = (value) => {
+    this.setState(
+      {
+        filterType: value,
+      },
+      () => {
+        this.RBSheet.open()
+      }
+    )
+  }
+
+  onClearAll = () => {
+    this.setState({ clear: false, selectedFloor: null, status: '', selectedFloorId: null }, () => {
+      this.getAllProjects()
+    })
+  }
+  changeProject = (status, name = null) => {
+    this.handleProjectChange(status, name)
+    this.RBSheet.close()
+  }
+  changeFloors = (status, name = null) => {
+    this.handleFloorChange(name, status)
+    this.RBSheet.close()
+  }
+
+  changeStatus = (status, name = null) => {
+    const { selectedProject } = this.state
+    this.setState({ status: name })
+    this.filterByStatus(name)
+
+    this.RBSheet.close()
+  }
+
+  filterByStatus = (status) => {
+    const { selectedProject, selectedFloorId } = this.state
+    this.setState({ defaultUnitStatus: status }, () => {
+      this.getUnits(selectedProject, selectedFloorId, status)
+    })
+  }
+
   render() {
     const {
       pickerProjects,
       selectedProject,
       pickerFloors,
       selectedFloor,
+      selectedFloorId,
       tableData,
       tableHeaderTitle,
       loading,
@@ -298,6 +353,8 @@ class AvailableInventory extends Component {
       active,
       selectedRow,
       disabled,
+      filterType,
+      selectedProjectName,
     } = this.state
     const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
@@ -313,91 +370,40 @@ class AvailableInventory extends Component {
             showFilterModal={showFilterModal}
             onFilterApplied={() => this.getUnits(selectedProject, selectedFloor, status)}
           />
-          <View style={{ padding: 10 }}>
-            <PickerComponent
-              onValueChange={this.handleProjectChange}
-              data={pickerProjects}
-              name={'project'}
-              placeholder="Project"
-              enabled={!loading}
-              selectedItem={selectedProject ? selectedProject : ''}
-            />
-          </View>
-          <View style={{ padding: 10 }}>
-            <PickerComponent
-              onValueChange={this.handleFloorChange}
-              data={pickerFloors}
-              name={'floor'}
-              enabled={!loading}
-              placeholder="All Units"
-              selectedItem={selectedFloor ? selectedFloor : ''}
-            />
-          </View>
 
-          {/* {showSearchBar ? (
-            <View style={[styles.filterRow]}>
-              <View style={styles.idPicker}>
-                <PickerComponent
-                  placeholder={'Filter Unit by'}
-                  data={StaticData.filterAvailableUnits}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeFilterType}
-                  selectedItem={filterType}
-                />
-              </View>
-
-              {filterType === 'status' ? (
-                <View style={styles.idPicker}>
-                  <PickerComponent
-                    placeholder={'Status'}
-                    data={StaticData.unitStatuses}
-                    customStyle={styles.pickerStyle}
-                    customIconStyle={styles.customIconStyle}
-                    onValueChange={this.filterByStatus}
-                    selectedItem={defaultUnitStatus}
-                  />
-                </View>
-              ) : (
-                <Text>price filter</Text>
-              )}
-
-              <View
-                style={{
-                  width: '15%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Ionicons
-                  onPress={() => {
-                    this.setState({ showSearchBar: false })
-                  }}
-                  name={'ios-close-circle-outline'}
-                  size={26}
-                  color={AppStyles.colors.subTextColor}
-                />
-              </View>
-            </View>
-          ) : (
-            <View
-              style={{
-                alignItems: 'flex-end',
-                paddingHorizontal: 20,
-                width: '100%',
-                justifyContent: 'center',
-              }}
-            >
-              <Ionicons
-                onPress={() => {
-                  this.setState({ showSearchBar: true })
-                }}
-                name={'ios-search'}
-                size={26}
-                color={AppStyles.colors.subTextColor}
+          <RBSheet
+            ref={(ref) => {
+              this.RBSheet = ref
+            }}
+            height={250}
+            openDuration={250}
+            closeOnDragDown={true}
+          >
+            {filterType == 'project' ? (
+              <ListViewComponent
+                name={'Projects'}
+                data={pickerProjects}
+                onPress={this.changeProject}
               />
-            </View>
-          )} */}
+            ) : filterType == 'floors' ? (
+              <ListViewComponent name={'Floors'} data={pickerFloors} onPress={this.changeFloors} />
+            ) : filterType == 'status' ? (
+              <ListViewComponent
+                name={'Status'}
+                data={StaticData.unitStatuses}
+                onPress={this.changeStatus}
+              />
+            ) : null}
+          </RBSheet>
+          <FilterLeadsView
+            enabled={!loading}
+            project={selectedProjectName}
+            selectedFloor={selectedFloor}
+            status={status}
+            setBottomSheet={this.setBottomSheet}
+            clear={true}
+            onClear={this.onClearAll}
+          />
 
           {loading ? (
             <Loader loading={loading} />
@@ -474,7 +480,7 @@ class AvailableInventory extends Component {
               )}
             </>
           )}
-          <Fab
+          {/* <Fab
             active="true"
             containerStyle={{ zIndex: 20 }}
             style={{ backgroundColor: AppStyles.colors.primaryColor }}
@@ -482,7 +488,7 @@ class AvailableInventory extends Component {
             onPress={() => this.toggleFilterModal(true)}
           >
             <Ionicons name="ios-search" color="#ffffff" />
-          </Fab>
+          </Fab> */}
         </View>
         {updatePermission ? (
           <View style={styles.buttonInputWrap}>

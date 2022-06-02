@@ -8,7 +8,7 @@ import { TextInput } from 'react-native-paper'
 
 export default function ({ name, data, onPress, type, show }) {
   const [query, setQuery] = useState('')
-  const [datas, setDatas] = useState(data)
+  const [dataValues, setDataValues] = useState(data)
 
   const fullData = data
 
@@ -17,16 +17,13 @@ export default function ({ name, data, onPress, type, show }) {
     const filteredData = filter(fullData, (data) => {
       return contains(data, formattedQuery)
     })
-    setDatas(filteredData)
+    setDataValues(filteredData)
     setQuery(text)
   }
 
   const contains = ({ name }, query) => {
     const queryName = name.toLowerCase()
-    if (queryName.includes(query)) {
-      return true
-    }
-    return false
+    return queryName.includes(query)
   }
 
   const headerSearch = () => {
@@ -57,7 +54,7 @@ export default function ({ name, data, onPress, type, show }) {
       {name ? <Text style={styles.listTitle}>{name}</Text> : null}
       {name ? <View style={styles.listborder}></View> : null}
       <FlatList
-        data={datas}
+        data={dataValues}
         style={styles.listStyle}
         ListHeaderComponent={show && headerSearch}
         renderItem={({ item, index }) => (

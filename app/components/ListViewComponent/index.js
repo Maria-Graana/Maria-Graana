@@ -26,16 +26,11 @@ export default function ({ name, data, onPress, type, show }) {
     return queryName.includes(query)
   }
 
-  const headerSearch = () => {
-    return (
-      <View
-        style={{
-          backgroundColor: '#fff',
-          padding: 10,
-          marginVertical: 10,
-          borderRadius: 20,
-        }}
-      >
+  return (
+    <View style={styles.listView}>
+      {name ? <Text style={styles.listTitle}>{name}</Text> : null}
+      {name ? <View style={styles.listborder}></View> : null}
+      {show && (
         <TextInput
           mode="outlined"
           activeOutlineColor={AppStyles.colors.primaryColor}
@@ -44,19 +39,12 @@ export default function ({ name, data, onPress, type, show }) {
           onChangeText={(queryText) => handleSearch(queryText)}
           placeholder="Search"
           theme={{ colors: { text: 'black', background: 'white' } }}
+          style={{ marginBottom: 10 }}
         />
-      </View>
-    )
-  }
-
-  return (
-    <View style={styles.listView}>
-      {name ? <Text style={styles.listTitle}>{name}</Text> : null}
-      {name ? <View style={styles.listborder}></View> : null}
+      )}
       <FlatList
         data={dataValues}
         style={styles.listStyle}
-        ListHeaderComponent={show && headerSearch}
         renderItem={({ item, index }) => (
           <Pressable
             key={index}

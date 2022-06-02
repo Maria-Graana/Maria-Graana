@@ -227,6 +227,8 @@ class CMBottomNav extends React.Component {
       } else {
         helper.errorToast('Sorry you are not authorized to assign lead')
       }
+    } else {
+      helper.errorToast('Closed leads cannot be assigned to other agent')
     }
   }
 

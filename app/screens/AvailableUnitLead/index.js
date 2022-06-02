@@ -548,7 +548,7 @@ class AvailableUnitLead extends React.Component {
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
-          {showSearchBar ? (
+          {/* {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
               <View style={styles.idPicker}>
                 <PickerComponent
@@ -614,7 +614,7 @@ class AvailableUnitLead extends React.Component {
                 />
               </View>
             </View>
-          )}
+          )} */}
         </View>
         {leadsData && leadsData.length > 0 ? (
           <FlatList

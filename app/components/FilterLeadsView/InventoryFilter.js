@@ -5,20 +5,17 @@ import styles from './style'
 import AppStyles from '../../AppStyles'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import StaticData from '../../StaticData'
 
-export default function FilterLeadsView({
+export default function InventoryFilter({
   project,
-  sortLead,
-  idLead,
   selectedFloor,
-  dateLead,
-  countryLead,
-  emailLead,
-  phoneLead,
   status,
+  Price,
   setBottomSheet,
-  hasBooking,
-  contactScreen,
+  onModalPriceShowPressed,
+  minPrice,
+  maxPrice,
   clear,
   onClear,
 }) {
@@ -73,34 +70,68 @@ export default function FilterLeadsView({
             color={selectedFloor ? 'white' : AppStyles.colors.textColor}
           />
         </Pressable>
-        {!hasBooking ? (
-          <Pressable
-            onPress={() => setBottomSheet('status')}
-            style={[
-              styles.filterPressable,
-              {
-                backgroundColor: status
-                  ? AppStyles.colors.primaryColor
-                  : AppStyles.colors.backgroundColor,
-                marginRight: 25,
-              },
-            ]}
+
+        <Pressable
+          onPress={() => setBottomSheet('status')}
+          style={[
+            styles.filterPressable,
+            {
+              backgroundColor: status
+                ? AppStyles.colors.primaryColor
+                : AppStyles.colors.backgroundColor,
+            },
+          ]}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              color: status ? 'white' : AppStyles.colors.textColor,
+            }}
           >
-            <Text
-              style={{
-                fontSize: 12,
-                color: status ? 'white' : AppStyles.colors.textColor,
-              }}
-            >
-              {status ? status : 'Status'}
-            </Text>
-            <Ionicons
-              name="chevron-down-outline"
-              size={20}
-              color={status ? 'white' : AppStyles.colors.textColor}
-            />
-          </Pressable>
-        ) : null}
+            {status ? status : 'Status'}
+          </Text>
+          <Ionicons
+            name="chevron-down-outline"
+            size={20}
+            color={status ? 'white' : AppStyles.colors.textColor}
+          />
+        </Pressable>
+        <Pressable
+          onPress={() => setBottomSheet('price')}
+          style={[
+            styles.filterPressable,
+            {
+              backgroundColor: status
+                ? AppStyles.colors.primaryColor
+                : AppStyles.colors.backgroundColor,
+              marginRight: 25,
+            },
+          ]}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              color: status ? 'white' : AppStyles.colors.textColor,
+            }}
+          >
+            {Price
+              ? Price
+              : `Price ${minPrice ? minPrice : ''} - ${
+                  maxPrice
+                    ? maxPrice === StaticData.Constants.any_value && !minPrice
+                      ? ''
+                      : maxPrice === StaticData.Constants.any_value
+                      ? 'Any'
+                      : maxPrice
+                    : ''
+                }`}
+          </Text>
+          <Ionicons
+            name="chevron-down-outline"
+            size={20}
+            color={status ? 'white' : AppStyles.colors.textColor}
+          />
+        </Pressable>
       </ScrollView>
     </View>
   )

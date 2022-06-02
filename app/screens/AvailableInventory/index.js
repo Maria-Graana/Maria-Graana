@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import { Fab } from 'native-base'
 import React, { Component } from 'react'
+import PriceSliderModal from '../../components/PriceSliderModal'
+
 import {
   Image,
   SafeAreaView,
@@ -17,12 +19,11 @@ import { Row, Table } from 'react-native-table-component'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
-import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
-//
+
 import RBSheet from 'react-native-raw-bottom-sheet'
-import FilterLeadsView from '../../components/FilterLeadsView/InventoryFilter'
+import InventoryFilter from '../../components/FilterLeadsView/InventoryFilter'
 import ListViewComponent from '../../components/ListViewComponent'
-import TextFilterComponent from '../../components/TextFilterComponent'
+
 import Loader from '../../components/loader'
 import PickerComponent from '../../components/Picker'
 import TouchableButton from '../../components/TouchableButton'
@@ -35,6 +36,9 @@ class AvailableInventory extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      isPriceModalVisible: false,
+      minPrice: 0,
+      maxPrice: StaticData.Constants.any_value,
       selectedFloorId: null,
       filterType: null,
       allProjects: [],
@@ -116,18 +120,20 @@ class AvailableInventory extends Component {
   }
 
   getUnits = (projectId, floorId) => {
-    const { status } = this.state
+    const { status, minPrice, maxPrice } = this.state
     this.setState({ disabled: true, active: false, selectedRow: null })
     let url = ``
     if (projectId) {
-      url = `/api/project/shops?projectId=${projectId}&status=${status}&currentInventory=true&all=true`
+      url = `/api/project/shops?projectId=${projectId}&status=${status}&currentInventory=true&all=true&minPrice=${minPrice}&maxPrice=${maxPrice}`
     }
     if (projectId && floorId) {
-      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=${status}&currentInventory=true&all=true`
+      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=${status}&currentInventory=true&all=true&minPrice=${minPrice}&maxPrice=${maxPrice}`
     }
+
     axios
       .get(url)
       .then((res) => {
+        console.log('res', res?.data?.total)
         let array = []
         res &&
           res.data.rows.map((item, index) => {
@@ -310,9 +316,19 @@ class AvailableInventory extends Component {
   }
 
   onClearAll = () => {
-    this.setState({ clear: false, selectedFloor: null, status: '', selectedFloorId: null }, () => {
-      this.getAllProjects()
-    })
+    this.setState(
+      {
+        clear: false,
+        selectedFloor: null,
+        status: '',
+        selectedFloorId: null,
+        minPrice: 0,
+        maxPrice: StaticData.Constants.any_value,
+      },
+      () => {
+        this.getAllProjects()
+      }
+    )
   }
   changeProject = (status, name = null) => {
     this.handleProjectChange(status, name)
@@ -338,6 +354,23 @@ class AvailableInventory extends Component {
     })
   }
 
+  onModalPriceDonePressed = (minValue, maxValue) => {
+    const { selectedProject, selectedFloorId, status } = this.state
+
+    this.setState({ isPriceModalVisible: false, minPrice: minValue, maxPrice: maxValue }, () => {
+      this.getUnits(selectedProject, selectedFloorId, status)
+    })
+    this.RBSheet.close()
+  }
+  onModalPriceShowPressed = (minValue, maxValue) => {
+    this.setState({ isPriceModalVisible: true })
+  }
+
+  onModalCancelPressed = (minValue, maxValue) => {
+    this.setState({ isPriceModalVisible: false })
+    this.RBSheet.close()
+  }
+
   render() {
     const {
       pickerProjects,
@@ -355,6 +388,9 @@ class AvailableInventory extends Component {
       disabled,
       filterType,
       selectedProjectName,
+      isPriceModalVisible,
+      minPrice,
+      maxPrice,
     } = this.state
     const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
@@ -363,28 +399,22 @@ class AvailableInventory extends Component {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainContainer}>
-          <AvailableInventoryFilter
-            toggleFilterModal={(value) => this.toggleFilterModal(value)}
-            status={status}
-            changeStatus={(value) => this.setState({ status: value })}
-            showFilterModal={showFilterModal}
-            onFilterApplied={() => this.getUnits(selectedProject, selectedFloor, status)}
-          />
-
           <RBSheet
             ref={(ref) => {
               this.RBSheet = ref
             }}
-            height={250}
+            height={500}
             openDuration={250}
             closeOnDragDown={true}
           >
             {filterType == 'project' ? (
-              <ListViewComponent
-                name={'Projects'}
-                data={pickerProjects}
-                onPress={this.changeProject}
-              />
+              // <SearchableDropdown
+              //   searchable={true}
+              //   name={'Projects'}
+              //   onPress={this.changeProject}
+              //   projectData={pickerProjects}
+              // />
+              <ListViewComponent name={'Floors'} data={pickerFloors} onPress={this.changeFloors} />
             ) : filterType == 'floors' ? (
               <ListViewComponent name={'Floors'} data={pickerFloors} onPress={this.changeFloors} />
             ) : filterType == 'status' ? (
@@ -393,13 +423,27 @@ class AvailableInventory extends Component {
                 data={StaticData.unitStatuses}
                 onPress={this.changeStatus}
               />
+            ) : filterType == 'price' ? (
+              <PriceSliderModal
+                inventoryPrice={true}
+                isVisible={true}
+                initialValue={minPrice}
+                finalValue={maxPrice}
+                onModalPriceDonePressed={this.onModalPriceDonePressed}
+                onModalCancelPressed={this.onModalCancelPressed}
+                arrayValues={StaticData.PricesRent}
+              />
             ) : null}
           </RBSheet>
-          <FilterLeadsView
+          <InventoryFilter
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            onModalPriceShowPressed={this.onModalPriceShowPressed}
             enabled={!loading}
             project={selectedProjectName}
             selectedFloor={selectedFloor}
             status={status}
+            price={10}
             setBottomSheet={this.setBottomSheet}
             clear={true}
             onClear={this.onClearAll}
@@ -480,15 +524,6 @@ class AvailableInventory extends Component {
               )}
             </>
           )}
-          {/* <Fab
-            active="true"
-            containerStyle={{ zIndex: 20 }}
-            style={{ backgroundColor: AppStyles.colors.primaryColor }}
-            position="bottomRight"
-            onPress={() => this.toggleFilterModal(true)}
-          >
-            <Ionicons name="ios-search" color="#ffffff" />
-          </Fab> */}
         </View>
         {updatePermission ? (
           <View style={styles.buttonInputWrap}>
@@ -519,7 +554,6 @@ export default connect(mapStateToProps)(AvailableInventory)
 
 const styles = StyleSheet.create({
   mainContainer: {
-    // padding: 15,
     backgroundColor: '#e7ecf0',
     flex: 1,
   },

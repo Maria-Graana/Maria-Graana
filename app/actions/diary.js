@@ -431,6 +431,7 @@ export function setDiaryFilter(data) {
       type: types.SET_DIARY_FILTER,
       payload: data,
     })
+    return Promise.resolve(true)
   }
 }
 

@@ -6,7 +6,7 @@ import styles from './style'
 import { filter } from 'lodash'
 import { TextInput } from 'react-native-paper'
 
-export default function ({ name, data, onPress, type, show }) {
+export default function ({ name, data, onPress, type, show, custom }) {
   const [query, setQuery] = useState('')
   const [dataValues, setDataValues] = useState(data)
 
@@ -48,7 +48,7 @@ export default function ({ name, data, onPress, type, show }) {
         renderItem={({ item, index }) => (
           <Pressable
             key={index}
-            onPress={() => onPress(type ? item.phone : item.value, item.name)}
+            onPress={() => onPress(type ? item.phone : item.value, custom ? 'leadType' : item.name)}
             style={styles.listButton}
           >
             <Text style={styles.listElement}>{item.name}</Text>

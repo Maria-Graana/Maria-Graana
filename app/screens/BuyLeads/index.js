@@ -657,7 +657,7 @@ class BuyLeads extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  changeStatusType = (status, text) => {
+  changeStatusType = (text, status) => {
     this.clearStateValues()
     if (status == 'id') {
       this.setState({ idLead: text })

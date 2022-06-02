@@ -592,7 +592,7 @@ class InvestLeads extends React.Component {
     }
   }
 
-  changeStatusType = (status, text) => {
+  changeStatusType = (text, status) => {
     this.clearStateValues()
     if (status == 'id') {
       this.setState({ idLead: text })

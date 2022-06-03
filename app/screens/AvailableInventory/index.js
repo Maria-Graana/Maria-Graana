@@ -271,8 +271,8 @@ class AvailableInventory extends Component {
   }
 
   onSelection = (val) => {
-    const { active } = this.state
-    this.setState({ active: true, disabled: false, selectedRow: val })
+    const { active, selectedRow, disabled } = this.state
+    this.setState({ active: !active, disabled: !disabled, selectedRow: val })
   }
 
   updatePermission = () => {
@@ -436,16 +436,16 @@ class AvailableInventory extends Component {
                                     {
                                       backgroundColor:
                                         active && selectedRow == rowData[0]
-                                          ? null
+                                          ? '#0f73ee'
                                           : helper.setBookingStatusColor(rowData),
-                                      borderColor:
-                                        active && selectedRow == rowData[0]
-                                          ? 'black'
-                                          : AppStyles.colors.primaryColor,
-                                      borderWidth: active && selectedRow == rowData[0] ? 1.2 : 0.6,
                                     },
                                   ]}
-                                  textStyle={styles.text}
+                                  textStyle={[
+                                    styles.text,
+                                    {
+                                      color: active && selectedRow == rowData[0] ? '#fff' : 'black',
+                                    },
+                                  ]}
                                 />
                               </TouchableOpacity>
                             ) : (
@@ -549,12 +549,12 @@ const styles = StyleSheet.create({
   dataWrapper: { marginTop: 0 },
   row: {
     height: 40,
-    borderColor: AppStyles.colors.primaryColor,
-    borderWidth: 0.6,
+    borderColor: 'lightgrey',
+    borderBottomWidth: 0.6,
   },
   tableBorder: {
     borderWidth: 1,
-    borderColor: AppStyles.colors.primaryColor,
+    borderColor: 'lightgrey',
   },
   imageStyle: { width: 200, height: 200, alignSelf: 'center', margin: 10 },
   idPicker: {
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderWidth: 1,
     borderRadius: 20,
-    borderColor: '#ebebeb',
+    borderColor: 'lightgrey',
     overflow: 'hidden',
   },
   filterRow: {
@@ -585,5 +585,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginLeft: 15,
     marginRight: 15,
+    marginBottom: 10,
   },
 })

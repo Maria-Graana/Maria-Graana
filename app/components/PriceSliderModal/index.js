@@ -28,7 +28,6 @@ const PriceSliderModal = ({
   arrayValues,
   onModalCancelPressed,
   onModalPriceDonePressed,
-  inventoryPrice,
 }) => {
   const [minValue, setMinValue] = useState(initialValue)
   const [maxValue, setMaxValue] = useState(finalValue)
@@ -144,9 +143,9 @@ const PriceSliderModal = ({
     onModalCancelPressed()
   }
 
-  const InnerView = React.memo(() => {
-    return (
-      <View style={inventoryPrice ? styles.inventoryView : styles.modalMain}>
+  return (
+    <Modal isVisible={isVisible}>
+      <View style={styles.modalMain}>
         <Text style={styles.textStyle}>{rangeString}</Text>
         <PriceSlider
           initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
@@ -180,10 +179,7 @@ const PriceSliderModal = ({
             }
             onChangeText={(text) => handleMinPriceChange(text)}
             placeholderTextColor="#96999E"
-            style={[
-              AppStyles.formControl,
-              inventoryPrice ? styles.inventoryPriceStyle : styles.priceStyle,
-            ]}
+            style={[AppStyles.formControl, styles.priceStyle]}
           />
           <TextInput
             placeholder={'Any'}
@@ -226,185 +222,13 @@ const PriceSliderModal = ({
           />
         </View>
       </View>
-    )
-  })
-  return (
-    <>
-      {inventoryPrice ? (
-        <View style={inventoryPrice ? styles.inventoryView : styles.modalMain}>
-          <Text style={styles.textStyle}>{rangeString}</Text>
-          <PriceSlider
-            initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
-            finalValue={arrayValues.indexOf(getClosestNumber(maxValue, arrayValues))}
-            allowOverlap={minValue !== arrayValues[arrayValues.length - 2]}
-            priceValues={arrayValues}
-            onSliderValueChange={(values) => onSliderValueChange(values)}
-          />
-
-          <View
-            style={[
-              AppStyles.multiFormInput,
-              AppStyles.mainInputWrap,
-              { justifyContent: 'space-between', alignItems: 'center' },
-            ]}
-          >
-            <TextInput
-              placeholder={'Any'}
-              value={stringValues.priceMin}
-              onBlur={() =>
-                setStringValues({
-                  ...stringValues,
-                  priceMin: stringValues.priceMin ? currencyConvert(stringValues.priceMin) : '',
-                })
-              }
-              onFocus={() =>
-                setStringValues({
-                  ...stringValues,
-                  priceMin: stringValues.priceMin ? removeCommas(stringValues.priceMin) : '',
-                })
-              }
-              onChangeText={(text) => handleMinPriceChange(text)}
-              placeholderTextColor="#96999E"
-              style={[
-                AppStyles.formControl,
-                inventoryPrice ? styles.inventoryPriceStyle : styles.priceStyle,
-              ]}
-            />
-            <TextInput
-              placeholder={'Any'}
-              value={stringValues.priceMax}
-              onBlur={() =>
-                setStringValues({
-                  ...stringValues,
-                  priceMax: stringValues.priceMax ? currencyConvert(stringValues.priceMax) : '',
-                })
-              }
-              onFocus={() =>
-                setStringValues({
-                  ...stringValues,
-                  priceMax: stringValues.priceMax ? removeCommas(stringValues.priceMax) : '',
-                })
-              }
-              placeholderTextColor="#96999E"
-              onChangeText={(text) => handleMaxPriceChange(text)}
-              style={[
-                AppStyles.formControl,
-                inventoryPrice ? styles.inventoryPriceStyle : styles.priceStyle,
-              ]}
-            />
-          </View>
-          {errorMessage ? <ErrorMessage errorMessage={errorMessage} /> : null}
-
-          <View style={styles.buttonsContainer}>
-            <TouchableButton
-              containerStyle={[styles.buttonCommonStyle, styles.cancelButton]}
-              containerBackgroundColor={AppStyles.whiteColor.color}
-              label={'Cancel'}
-              fontFamily={AppStyles.fonts.boldFont}
-              textColor={AppStyles.colors.primaryColor}
-              fontSize={18}
-              onPress={() => onModalCancel()}
-            />
-            <TouchableButton
-              containerStyle={[styles.buttonCommonStyle, styles.doneButton]}
-              label={'Done'}
-              fontFamily={AppStyles.fonts.boldFont}
-              fontSize={18}
-              onPress={() => onDonePressed()}
-            />
-          </View>
-        </View>
-      ) : (
-        <Modal isVisible={isVisible}>
-          <View style={inventoryPrice ? styles.inventoryView : styles.modalMain}>
-            <Text style={styles.textStyle}>{rangeString}</Text>
-            <PriceSlider
-              initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
-              finalValue={arrayValues.indexOf(getClosestNumber(maxValue, arrayValues))}
-              allowOverlap={minValue !== arrayValues[arrayValues.length - 2]}
-              priceValues={arrayValues}
-              onSliderValueChange={(values) => onSliderValueChange(values)}
-            />
-
-            <View
-              style={[
-                AppStyles.multiFormInput,
-                AppStyles.mainInputWrap,
-                { justifyContent: 'space-between', alignItems: 'center' },
-              ]}
-            >
-              <TextInput
-                placeholder={'Any'}
-                value={stringValues.priceMin}
-                onBlur={() =>
-                  setStringValues({
-                    ...stringValues,
-                    priceMin: stringValues.priceMin ? currencyConvert(stringValues.priceMin) : '',
-                  })
-                }
-                onFocus={() =>
-                  setStringValues({
-                    ...stringValues,
-                    priceMin: stringValues.priceMin ? removeCommas(stringValues.priceMin) : '',
-                  })
-                }
-                onChangeText={(text) => handleMinPriceChange(text)}
-                placeholderTextColor="#96999E"
-                style={[AppStyles.formControl, styles.priceStyle]}
-              />
-              <TextInput
-                placeholder={'Any'}
-                value={stringValues.priceMax}
-                onBlur={() =>
-                  setStringValues({
-                    ...stringValues,
-                    priceMax: stringValues.priceMax ? currencyConvert(stringValues.priceMax) : '',
-                  })
-                }
-                onFocus={() =>
-                  setStringValues({
-                    ...stringValues,
-                    priceMax: stringValues.priceMax ? removeCommas(stringValues.priceMax) : '',
-                  })
-                }
-                placeholderTextColor="#96999E"
-                onChangeText={(text) => handleMaxPriceChange(text)}
-                style={[AppStyles.formControl, styles.priceStyle]}
-              />
-            </View>
-            {errorMessage ? <ErrorMessage errorMessage={errorMessage} /> : null}
-
-            <View style={styles.buttonsContainer}>
-              <TouchableButton
-                containerStyle={[styles.buttonCommonStyle, styles.cancelButton]}
-                containerBackgroundColor={AppStyles.whiteColor.color}
-                label={'Cancel'}
-                fontFamily={AppStyles.fonts.boldFont}
-                textColor={AppStyles.colors.primaryColor}
-                fontSize={18}
-                onPress={() => onModalCancel()}
-              />
-              <TouchableButton
-                containerStyle={[styles.buttonCommonStyle, styles.doneButton]}
-                label={'Done'}
-                fontFamily={AppStyles.fonts.boldFont}
-                fontSize={18}
-                onPress={() => onDonePressed()}
-              />
-            </View>
-          </View>
-        </Modal>
-      )}
-    </>
+    </Modal>
   )
 }
 
 export default PriceSliderModal
 
 const styles = StyleSheet.create({
-  inventoryView: {
-    padding: 15,
-  },
   modalMain: {
     backgroundColor: '#e7ecf0',
     borderRadius: 7,
@@ -456,10 +280,5 @@ const styles = StyleSheet.create({
   priceStyle: {
     width: '45%',
     textAlign: 'center',
-  },
-  inventoryPriceStyle: {
-    width: '45%',
-    textAlign: 'center',
-    backgroundColor: '#e7ecf0',
   },
 })

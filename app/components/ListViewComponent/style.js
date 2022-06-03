@@ -13,7 +13,7 @@ export default styles = StyleSheet.create({
     marginBottom: 20,
     marginLeft: 10,
     fontFamily: AppStyles.fonts.defaultFont,
-    fontWeight: '500',
+    fontWeight: '900',
   },
   listElement: {
     fontSize: 16,

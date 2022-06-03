@@ -25,8 +25,7 @@ class DiaryReasons extends React.Component {
   }
 
   getFeedbackReasons = () => {
-    const { route } = this.props
-    const { screenName = null } = route.params
+    const { route, screenName = null } = this.props
     let endPoint = ``
     this.setState({ loading: true }, () => {
       endPoint =
@@ -80,17 +79,21 @@ class DiaryReasons extends React.Component {
   }
 
   onReasonSelected = (item) => {
-    const { navigation, dispatch } = this.props
-    dispatch(setDiaryFilterReason(item))
-    navigation.goBack()
+    const { navigation, dispatch, screenName = null, onPress = null } = this.props
+    dispatch(setDiaryFilterReason(item)).then(() => {
+      !screenName && navigation.goBack()
+      screenName && onPress()
+    })
   }
 
   render() {
     const { feedbackReasons, loading } = this.state
-    const { feedbackReasonFilter } = this.props
+    const { feedbackReasonFilter, screenName = null } = this.props
 
     return (
       <View style={[AppStyles.container, { backgroundColor: 'white' }]}>
+        {screenName ? <Text style={styles.listTitle}>Reasons</Text> : null}
+        {screenName ? <View style={styles.listborder}></View> : null}
         {!loading ? (
           <FlatList
             showsVerticalScrollIndicator={false}

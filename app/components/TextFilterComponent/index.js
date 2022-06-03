@@ -13,6 +13,7 @@ export default function TextFilterComponent({
   searchText,
   setTextSearch,
   changeStatusType,
+  numeric,
 }) {
   const [checkValidation, setCheckValidation] = useState(false)
   return (
@@ -25,6 +26,7 @@ export default function TextFilterComponent({
         label={name}
         value={searchText}
         onChangeText={(text) => setTextSearch(text)}
+        keyboardType={numeric ? 'numeric' : 'default'}
         theme={{ colors: { text: 'black', background: 'white' } }}
       />
 
@@ -33,7 +35,7 @@ export default function TextFilterComponent({
       ) : null}
       <Pressable
         onPress={() => {
-          searchText != '' ? changeStatusType(type, searchText) : setCheckValidation(true)
+          searchText != '' ? changeStatusType(searchText, type) : setCheckValidation(true)
         }}
         style={styles.textButton}
       >

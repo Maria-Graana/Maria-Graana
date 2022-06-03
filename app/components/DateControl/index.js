@@ -85,7 +85,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    width: '70%',
+    justifyContent: 'center',
+    width: '85%',
   },
   dateSelected: {
     backgroundColor: AppStyles.colors.primaryColor,

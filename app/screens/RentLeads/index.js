@@ -867,6 +867,9 @@ class RentLeads extends React.Component {
           }
           openDuration={250}
           closeOnDragDown={true}
+          customStyles={{
+            container: { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+          }}
         >
           {filterType == 'leadStatus' ? (
             <ListViewComponent

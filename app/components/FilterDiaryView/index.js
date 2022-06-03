@@ -215,6 +215,9 @@ class FilterDiaryView extends React.Component {
           height={filterType == 'date' ? 500 : 300}
           openDuration={250}
           closeOnDragDown={true}
+          customStyles={{
+            container: { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+          }}
         >
           {filterType == 'leadType' ? (
             <ListViewComponent

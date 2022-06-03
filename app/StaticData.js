@@ -1479,6 +1479,11 @@ export default StaticData = {
     { name: 'Token', value: 'Token' },
     { name: 'Payment', value: 'Payment' },
   ],
+  inventoryStatuses: [
+    { name: 'Available', value: 'Available' },
+    { name: 'Hold', value: 'Hold' },
+    { name: 'Sold', value: 'Sold' },
+  ],
   filterAvailableUnits: [
     { name: 'STATUS', value: 'status' },
     { name: 'PRICE', value: 'price' },

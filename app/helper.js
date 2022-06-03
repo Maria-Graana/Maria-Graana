@@ -1162,10 +1162,10 @@ const helper = {
       } else if (arrayItem.includes('Hold')) {
         return '#FFF8E1'
       } else {
-        return 'white'
+        return '#FFFFFF'
       }
     } else {
-      return 'white'
+      return '#FFFFFF'
     }
   },
   skipShortlistedProperties(matchProperties, shortListedProperties) {

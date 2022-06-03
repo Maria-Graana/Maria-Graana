@@ -25,7 +25,6 @@ import InventoryFilter from '../../components/FilterLeadsView/InventoryFilter'
 import ListViewComponent from '../../components/ListViewComponent'
 
 import Loader from '../../components/loader'
-import PickerComponent from '../../components/Picker'
 import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper.js'
 import { getPermissionValue } from '../../hoc/Permissions'
@@ -440,7 +439,7 @@ class AvailableInventory extends Component {
             ) : filterType == 'status' ? (
               <ListViewComponent
                 name={'Status'}
-                data={StaticData.unitStatuses}
+                data={StaticData.inventoryStatuses}
                 onPress={this.changeStatus}
               />
             ) : filterType == 'price' ? (

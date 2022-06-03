@@ -604,7 +604,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 15,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
     borderColor: AppStyles.colors.primaryColor,
   },
   headerTable: {

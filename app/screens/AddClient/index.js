@@ -1,21 +1,15 @@
 /** @format */
 
 import React, { Component } from 'react'
-import {
-  View,
-  KeyboardAvoidingView,
-
-  Keyboard,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { View, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback } from 'react-native'
 
 import { addEditCMLead, getAllProjects, setDefaultCMPayload } from '../../actions/cmLead'
 import { setSelectedAreas } from './../../actions/areas'
 import TouchableButton from '../../components/TouchableButton'
-import HideWithKeyboard from 'react-native-hide-with-keyboard';
+import HideWithKeyboard from 'react-native-hide-with-keyboard'
 import * as RootNavigation from '../../navigation/RootNavigation'
 import { StyleProvider } from 'native-base'
-import { refreshAddress, refreshMailingAddress, capitalizeFirstLetter } from "./ClientHelper";
+import { refreshAddress, refreshMailingAddress, capitalizeFirstLetter } from './ClientHelper'
 import DetailForm from './detailForm'
 import AppStyles from '../../AppStyles'
 import getTheme from '../../../native-base-theme/components'
@@ -92,7 +86,6 @@ class AddClient extends Component {
         maxPrice: 0,
       },
 
-
       //till
 
       checkValidation: false,
@@ -105,7 +98,7 @@ class AddClient extends Component {
         lastName: '',
         email: '',
         cnic: '',
-        //added 
+        //added
         relationStatus: '',
         relativeName: '',
         profession: '',
@@ -113,19 +106,18 @@ class AddClient extends Component {
         nationality: '',
         dob: null,
         country: '',
-        province: "",
-        district: "",
-        city: "",
-        mCountry: "",
-        mProvince: "",
-        mDistrict: "",
-        mCity: "",
-        mAddress: "",
-        purpose: "Select Lead Type",
+        province: '',
+        district: '',
+        city: '',
+        mCountry: '',
+        mProvince: '',
+        mDistrict: '',
+        mCity: '',
+        mAddress: '',
+        purpose: 'Select Lead Type',
 
         //need to confirm from backend
         clientSource: 'Personal Client',
-
 
         //till
         familyMember: '',
@@ -161,8 +153,6 @@ class AddClient extends Component {
   //Invest Lead
 
   componentDidMount() {
-
-
     const { route, navigation } = this.props
     navigation.setParams({ title: 'ADD CLIENT INFO' })
 
@@ -185,7 +175,7 @@ class AddClient extends Component {
           countryCode2: data.contact2 ? data.contact2.countryCode : defaultCountry.name,
           callingCode2: data.contact2 ? data.contact2.dialCode : defaultCountry.code,
         },
-        () => { }
+        () => {}
       )
     }
     if ('update' in route.params && route.params.update) {
@@ -195,7 +185,7 @@ class AddClient extends Component {
       })
     }
 
-    const { user, } = this.props
+    const { user } = this.props
     const { purpose } = this.props.route.params
     if (purpose) {
       this.setState({ formType: purpose }, () => {
@@ -205,22 +195,15 @@ class AddClient extends Component {
       this.setPriceList()
     }
 
-
-
-
-    const { dispatch, } = this.props
+    const { dispatch } = this.props
     dispatch(getAllProjects())
-
-
 
     navigation.addListener('focus', () => {
       this.onScreenFocused()
-
     })
 
     this.fetchOrganizations()
   }
-
 
   setEditValues = () => {
     const { route, CMLead, dispatch } = this.props
@@ -239,13 +222,10 @@ class AddClient extends Component {
     })
   }
 
-
-
   setClient = () => {
     const { CMLead, route, dispatch } = this.props
     const { client, name } = route.params
     if (client && name) {
-
       let phones = []
       if (client.customerContacts && client.customerContacts.length) {
         client.customerContacts.map((item) => {
@@ -257,25 +237,23 @@ class AddClient extends Component {
         }
       }
       this.setState({ selectedClient: client, clientName: name }, () => {
-        dispatch(addEditCMLead({
-          ...CMLead,
-          phones: phones,
-          customerId: client ? client.id : null
-        }))
+        dispatch(
+          addEditCMLead({
+            ...CMLead,
+            phones: phones,
+            customerId: client ? client.id : null,
+          })
+        )
       })
     }
   }
   handleInvestForm = (value, name) => {
-
-
-
     const { CMLead, dispatch } = this.props
     const { getProductType } = this.state
     let copyObject = { ...CMLead }
-    copyObject[name] = value;
+    copyObject[name] = value
 
     if (name === 'projectId') {
-
       this.getProductType(value)
     }
 
@@ -289,23 +267,19 @@ class AddClient extends Component {
     dispatch(addEditCMLead(copyObject))
   }
 
-
   investSubmitForm = (customerId) => {
-    const { formData, callingCode, callingCode1, callingCode2, } = this.state;
+    const { formData, callingCode, callingCode1, callingCode2 } = this.state
 
     const { CMLead, investmentProjects, dispatch, route } = this.props
 
     const copyObject = { ...CMLead }
     copyObject.customerId = customerId
 
-
     let phone1 = this.checkNum(formData.contactNumber, callingCode)
-
-
 
     let phone2 = this.checkNum(formData.contact1, callingCode1)
     let phone3 = this.checkNum(formData.contact2, callingCode2)
-    let Arr = [phone1.replace(/\s+/g, '')];
+    let Arr = [phone1.replace(/\s+/g, '')]
     if (phone2) {
       Arr.push(phone2.replace(/\s+/g, ''))
     }
@@ -313,16 +287,12 @@ class AddClient extends Component {
       Arr.push(phone3.replace(/\s+/g, ''))
     }
 
-    copyObject.phones = phone1 ? Arr : null,
-
-
-      dispatch(addEditCMLead(copyObject))
+    ;(copyObject.phones = phone1 ? Arr : null), dispatch(addEditCMLead(copyObject))
 
     if (!copyObject.customerId || !copyObject.cityId) {
       this.setState({
         checkValidations: true,
       })
-
     } else {
       if (copyObject.projectId && copyObject.projectId !== '') {
         let project = _.find(investmentProjects, function (item) {
@@ -334,37 +304,30 @@ class AddClient extends Component {
         copyObject.projectName = null
       }
       this.setState({ loading: true }, () => {
-
         // add lead
         axios
           .post(`/api/leads/project`, copyObject)
           .then((res) => {
-
             helper.successToast('Client and Invest lead have been registered successfully.')
 
             RootNavigation.navigateTo('Leads', {
               screen: 'Invest',
-              screenName: 'AddClient'
+              screenName: 'AddClient',
             })
           })
           .catch((error) => {
             console.log(error)
             this.setState({ loading: false })
           })
-
       })
     }
   }
-
-
-
 
   changeStatus = (status) => {
     this.setState({
       formType: status,
     })
   }
-
 
   getProductType = async (id) => {
     const { investmentProjects } = this.props
@@ -382,9 +345,7 @@ class AddClient extends Component {
     return getPro
   }
 
-
   //invest till
-
 
   fetchCountryCode = () => {
     const { countries } = this.state
@@ -520,7 +481,6 @@ class AddClient extends Component {
         ? this.setPhoneNumber(newCallingCode2, client.customerContacts[2].phone)
         : ''
 
-
     let formData = {
       firstName: client.firstName,
       lastName: client.lastName,
@@ -545,8 +505,7 @@ class AddClient extends Component {
       mAddress: client.mAddress,
       nationality: client.nationality,
       dob: client.dob,
-      clientSource:  client.clientSource == null ? 'Personal Client' : client.clientSource,
-
+      clientSource: client.clientSource == null ? 'Personal Client' : client.clientSource,
     }
     this.setState({ formData })
   }
@@ -579,12 +538,10 @@ class AddClient extends Component {
   }
 
   handleForm = (value, name) => {
-
     const { formData } = this.state
     if (name == 'cnic') {
       this.validateCnic(value)
     }
-
 
     if (name == 'country') {
       refreshAddress(formData)
@@ -665,7 +622,6 @@ class AddClient extends Component {
         },
         familyMember: formData.familyMember,
 
-
         //need to confirm about payment
         relationStatus: formData.relationStatus,
         relativeName: formData.relativeName,
@@ -692,14 +648,13 @@ class AddClient extends Component {
       if (!body.contact2.contact2) delete body.contact2
       return body
     } else {
-
       let body = {
         address: formData.address,
         secondary_address: null,
         country: formData.country,
         email: formData.email,
         cnic: formData.cnic,
-        clientSource:formData.clientSource,
+        clientSource: formData.clientSource,
         phone: {
           countryCode: callingCode === '+92' ? 'PK' : countryCode,
           phone: phone1 ? phone1.replace(/\s+/g, '') : null,
@@ -797,8 +752,8 @@ class AddClient extends Component {
           checkForPlus2 == '+'
             ? formData.contact1
             : formData.contact1 != ''
-              ? newCallingCode1 + '' + formData.contact1
-              : null,
+            ? newCallingCode1 + '' + formData.contact1
+            : null,
         dialCode: newCallingCode1,
       },
       contact2: {
@@ -807,8 +762,8 @@ class AddClient extends Component {
           checkForPlus3 == '+'
             ? formData.contact2
             : formData.contact2 != ''
-              ? newCallingCode2 + '' + formData.contact2
-              : null,
+            ? newCallingCode2 + '' + formData.contact2
+            : null,
         dialCode: newCallingCode2,
       },
       // familyMember: formData.familyMember,
@@ -825,7 +780,6 @@ class AddClient extends Component {
       body.customersContacts.push(body.contact2)
     delete body.contact1
     delete body.contact2
-
 
     return body
   }
@@ -853,14 +807,21 @@ class AddClient extends Component {
     return checkOptionalFields
   }
   formSubmit = () => {
-    const { formData, emailValidate, phoneValidate, cnicValidate, investFormData, RCMFormData } = this.state
+    const { formData, emailValidate, phoneValidate, cnicValidate, investFormData, RCMFormData } =
+      this.state
 
     const { user } = this.props
 
-
     const { route, navigation, contacts, armsContacts, CMLead } = this.props
-    const { update, client, isFromDropDown, screenName, isPOC, isFromScreen = null } = route.params
-
+    const {
+      update,
+      client,
+      isFromDropDown,
+      screenName,
+      isPOC,
+      isFromScreen = null,
+      isUnitBooking,
+    } = route.params
 
     if (formData.cnic && formData.cnic !== '') formData.cnic = formData.cnic.replace(/\-/g, '')
     if (
@@ -875,29 +836,21 @@ class AddClient extends Component {
       })
     }
     //validations for rent/invest leads
-
-
     else if (!CMLead.cityId && formData.purpose == 'Invest') {
       this.setState({
         checkValidations: true,
       })
-    }
-
-    else if ((
-
-      !RCMFormData.city_id ||
-      !RCMFormData.leadAreas ||
-      !RCMFormData.type ||
-      !RCMFormData.subtype
-    ) && (formData.purpose == 'Buy' || formData.purpose == 'Rent')) {
-
+    } else if (
+      (!RCMFormData.city_id ||
+        !RCMFormData.leadAreas ||
+        !RCMFormData.type ||
+        !RCMFormData.subtype) &&
+      (formData.purpose == 'Buy' || formData.purpose == 'Rent')
+    ) {
       this.setState({
         checkRentValidation: true,
       })
-    }
-
-
-    else {
+    } else {
       if (emailValidate && !phoneValidate && !cnicValidate) {
         if (formData.cnic === '') formData.cnic = null
         if (!update) {
@@ -908,7 +861,6 @@ class AddClient extends Component {
           axios
             .post(`/api/customer/create`, body)
             .then((res) => {
-            
               //id
               if (res?.status === 200 && res?.data) {
                 if (formData.contactRegistrationId) {
@@ -920,41 +872,42 @@ class AddClient extends Component {
                   }
                 }
                 if (res?.data?.message !== 'CLIENT CREATED') {
-
                   // Error Messages
                   if (res?.data?.message === 'Client already exists') {
                     helper.errorToast(res.data.message)
-                  }
-                  else {
+                  } else {
                     helper.errorToast(res?.data?.message)
                   }
                 } else {
-
-                  if (formData.purpose === 'Select Lead Type') { helper.successToast(res.data.message) }
+                  if (formData.purpose === 'Select Lead Type') {
+                    helper.successToast(res.data.message)
+                  }
                   isFromDropDown
                     ? isPOC
                       ? navigation.navigate(screenName, {
-                        selectedPOC: res.data.id
-                          ? {
-                            ...res.data,
-                            firstName: res.data.first_name ? res.data.first_name : '',
-                            lastName: res.data.last_name ? res.data.last_name : '',
-                          }
-                          : null,
-                      })
+                          selectedPOC: res.data.id
+                            ? {
+                                ...res.data,
+                                firstName: res.data.first_name ? res.data.first_name : '',
+                                lastName: res.data.last_name ? res.data.last_name : '',
+                              }
+                            : null,
+                        })
                       : navigation.navigate(screenName, {
-                        client: res.data.id ? res.data : null,
-                        name: res.data.first_name
-                          ? res.data.first_name + ' ' + res.data.last_name
-                          : null,
-                      })
+                          client: res.data.id ? res.data : null,
+                          name: res.data.first_name
+                            ? res.data.first_name + ' ' + res.data.last_name
+                            : null,
+                        })
                     : isFromScreen
-                      ? navigation.navigate('Contacts')
-                      : formData.purpose === 'Select Lead Type' ? navigation.navigate('Client', {
-                        isUnitBooking: false,
-                      }) : (formData.purpose == 'Buy' || formData.purpose == 'Rent') ? this.RCMFormSubmit(res.data.id) : this.investSubmitForm(res.data.id)
-
-
+                    ? navigation.navigate('Contacts')
+                    : formData.purpose === 'Select Lead Type'
+                    ? navigation.navigate('Client', {
+                        isUnitBooking: isUnitBooking,
+                      })
+                    : formData.purpose == 'Buy' || formData.purpose == 'Rent'
+                    ? this.RCMFormSubmit(res.data.id)
+                    : this.investSubmitForm(res.data.id)
                 }
               }
             })
@@ -1018,7 +971,7 @@ class AddClient extends Component {
     endPoint = `/api/contacts/delete`
     axios
       .delete(endPoint, { data: { id } })
-      .then(function (response) { })
+      .then(function (response) {})
       .catch(function (error) {
         console.log(error)
       })
@@ -1039,20 +992,16 @@ class AddClient extends Component {
     }
   }
 
-
-
-
-
   //rent/buyy
-
-
 
   componentDidUpdate(prevProps, prevState) {
     //Typical usage, don't forget to compare the props
-    if (prevState?.selectedCity && this.state?.selectedCity?.value !== prevState.selectedCity?.value) {
+    if (
+      prevState?.selectedCity &&
+      this.state?.selectedCity?.value !== prevState.selectedCity?.value
+    ) {
       this.clearAreaOnCityChange() // clear area field only when city is changed, doesnot get called if same city is selected again..
     }
-
 
     if (this.state.formData.purpose == 'Invest') {
       const { CMLead, route, dispatch } = this.props
@@ -1068,8 +1017,6 @@ class AddClient extends Component {
     }
   }
 
-
-
   componentWillUnmount() {
     const { dispatch } = this.props
     // selected Areas should be cleared to be used anywhere else
@@ -1078,11 +1025,7 @@ class AddClient extends Component {
     dispatch(setDefaultCMPayload())
   }
 
-
-
   onScreenFocused = () => {
-
-
     const { client, name, selectedCity } = this.props.route.params
     const { RCMFormData } = this.state
     let copyObject = Object.assign({}, RCMFormData)
@@ -1108,7 +1051,6 @@ class AddClient extends Component {
       })
     }, 500)
   }
-
 
   fetchOrganizations = () => {
     axios
@@ -1166,9 +1108,6 @@ class AddClient extends Component {
     dispatch(setSelectedAreas([]))
   }
 
-
-
-
   selectSubtype = (type) => {
     this.setState(
       {
@@ -1193,27 +1132,21 @@ class AddClient extends Component {
   }
 
   RCMFormSubmit = (customerId) => {
+    const {} = this.state
 
-
-    const { } = this.state
-
-    const { RCMFormData, formData, callingCode, callingCode1, callingCode2 } = this.state;
-
+    const { RCMFormData, formData, callingCode, callingCode1, callingCode2 } = this.state
 
     let phone1 = this.checkNum(formData.contactNumber, callingCode)
     let phone2 = this.checkNum(formData.contact1, callingCode1)
     let phone3 = this.checkNum(formData.contact2, callingCode2)
-    let Arr = [phone1.replace(/\s+/g, '')];
+    let Arr = [phone1.replace(/\s+/g, '')]
     if (phone2) {
       Arr.push(phone2.replace(/\s+/g, ''))
     }
     if (phone3) {
       Arr.push(phone3.replace(/\s+/g, ''))
     }
-    RCMFormData.phones = phone1 ? Arr : null,
-
-
-      RCMFormData.customerId = customerId;
+    ;(RCMFormData.phones = phone1 ? Arr : null), (RCMFormData.customerId = customerId)
 
     const { user } = this.props
     if (user.subRole === 'group_management') {
@@ -1230,7 +1163,6 @@ class AddClient extends Component {
         })
       } else this.sendPayload()
     } else {
-
       if (
         !RCMFormData.customerId ||
         !RCMFormData.city_id ||
@@ -1245,11 +1177,7 @@ class AddClient extends Component {
     }
   }
 
-
-
-
   sendPayload = () => {
-
     const { formType, RCMFormData, formData, organizations } = this.state
     const { user } = this.props
     if (RCMFormData.size === '') RCMFormData.size = null
@@ -1282,27 +1210,26 @@ class AddClient extends Component {
         payLoad.org = newOrg.name.toLowerCase()
       }
 
-
       axios
         .post(`/api/leads`, payLoad)
         .then((res) => {
-
-          helper.successToast(`Client and ${capitalizeFirstLetter(payLoad.purpose)} lead have been registered successfully.`)
+          helper.successToast(
+            `Client and ${capitalizeFirstLetter(
+              payLoad.purpose
+            )} lead have been registered successfully.`
+          )
 
           if (payLoad.purpose === 'buy') {
-
             RootNavigation.navigateTo('Leads', {
               screen: 'Buy',
-              screenName: 'AddClient'
+              screenName: 'AddClient',
             })
-          }
-          else {
+          } else {
             RootNavigation.navigateTo('Leads', {
               screen: 'Rent',
-              screenName: 'AddClient'
+              screenName: 'AddClient',
             })
           }
-
         })
         .catch((error) => {
           console.log('error on creating lead')
@@ -1321,8 +1248,6 @@ class AddClient extends Component {
       }
     )
   }
-
-
 
   render() {
     const {
@@ -1344,7 +1269,6 @@ class AddClient extends Component {
       accountsOptionFields,
       selectedClient,
 
-
       //Invest
 
       investFormData,
@@ -1355,7 +1279,6 @@ class AddClient extends Component {
       getProductType,
       loadings,
       isPriceModalVisible,
-
 
       //rent/buy
       organizations,
@@ -1381,16 +1304,15 @@ class AddClient extends Component {
     let btnText = update ? 'UPDATE' : 'Register Client'
 
     return (
-      <View style={[[AppStyles.container,]]}>
+      <View style={[[AppStyles.container]]}>
         <StyleProvider style={getTheme(formTheme)}>
           <>
-            <KeyboardAvoidingView style={{ flex: 1, }} enabled>
+            <KeyboardAvoidingView style={{ flex: 1 }} enabled>
               {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always"> */}
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View style={{ flex: 1 }}>
                   <DetailForm
                     route={this.props.route}
-
                     navigation={this.props.navigation}
                     formSubmit={this.formSubmit}
                     checkValidation={this.state.checkValidation}
@@ -1416,45 +1338,30 @@ class AddClient extends Component {
                     accountsOptionFields={accountsOptionFields}
                     client={client}
                     screenName={screenName}
-
-
-
                     //Invest
                     handleInvestForm={this.handleInvestForm}
                     investFormData={investFormData}
-
                     checkValidations={checkValidations}
                     selectedCity={selectedCity}
                     clientName={clientName}
                     getProductType={getProductType}
                     loadings={loadings}
                     isPriceModalVisible={isPriceModalVisible}
-                    setParentState={(obj) => { this.setState(obj) }}
-
-
-
+                    setParentState={(obj) => {
+                      this.setState(obj)
+                    }}
                     // formSubmit={this.formSubmit}
 
                     //handleForm={this.handleForm}
 
-
-
                     getProject={investmentProjects}
-
-
                     // update={update}
-
-
 
                     //Rent/Buy
 
-
                     sizeUnitList={sizeUnitList}
                     organizations={_.clone(organizations)}
-
-
                     selectedClient={selectedClient}
-
                     // clientName={clientName}
                     //  formSubmit={this.RCMFormSubmit}
                     checkRentValidation={checkRentValidation}
@@ -1463,7 +1370,6 @@ class AddClient extends Component {
                     size={StaticData.oneToTen}
                     sizeUnit={StaticData.sizeUnit}
                     propertyType={StaticData.type}
-
                     formType={formType}
                     subTypeData={selectSubType}
                     handleAreaClick={this.handleAreaClick}
@@ -1473,9 +1379,7 @@ class AddClient extends Component {
                     rentLoading={rentLoading}
                     isBedBathModalVisible={isBedBathModalVisible}
                     modalType={modalType}
-
                     isSizeModalVisible={isSizeModalVisible}
-
                   />
                 </View>
               </TouchableWithoutFeedback>
@@ -1483,17 +1387,15 @@ class AddClient extends Component {
             </KeyboardAvoidingView>
 
             <HideWithKeyboard>
-              <View style={[AppStyles.bottomStickyButton]} >
+              <View style={[AppStyles.bottomStickyButton]}>
                 <TouchableButton
-                  containerStyle={[AppStyles.formBtn,]}
+                  containerStyle={[AppStyles.formBtn]}
                   label={btnText}
                   onPress={() => {
                     this.formSubmit(formData)
-                  }
-                  }
+                  }}
                   loading={loading}
                 />
-
               </View>
             </HideWithKeyboard>
           </>
@@ -1514,7 +1416,6 @@ mapStateToProps = (store) => {
     CMFormLoading: store.cmLead.CMFormLoading,
     investmentProjects: store.cmLead.investmentProjects,
     CMLead: store.cmLead.CMLead,
-
   }
 }
 

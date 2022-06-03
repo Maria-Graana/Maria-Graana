@@ -224,9 +224,11 @@ class CMBottomNav extends React.Component {
       // Lead can only be assigned to someone else if it is assigned to no one or to current user
       if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
         this.navigateToAssignLead(lead)
+      } else {
+        helper.errorToast('Sorry you are not authorized to assign lead')
       }
     } else {
-      helper.errorToast('Sorry you are not authorized to assign lead')
+      helper.errorToast('Closed leads cannot be assigned to other agent')
     }
   }
 

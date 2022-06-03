@@ -401,41 +401,43 @@ function TimeSlotManagement(props) {
       copyData.end = endTime
       copyData.slots = tempSlot
       delete copyData.selectedLead
-      saveOrUpdateDiaryTask(copyData).then((response) => {
-        if (response) {
-          helper.successToast('TASK ADDED SUCCESSFULLY!')
+      saveOrUpdateDiaryTask(props.connectFeedback).then((res) => {
+        // mark previous task as completed and then create the new task
+        saveOrUpdateDiaryTask(copyData).then((response) => {
+          if (response) {
+            helper.successToast('TASK ADDED SUCCESSFULLY!')
 
-          let notificationData
+            let notificationData
 
-          for (let i in response.data[1]) {
-            notificationData = response.data[1][i]
-          }
-
-          let start = new Date(notificationData.start)
-          let end = new Date(notificationData.end)
-
-          let notificationPayload
-          if (notificationData.taskCategory == 'leadTask') {
-            notificationPayload = {
-              clientName: `${data.selectedLead.customer.first_name} ${data.selectedLead.customer.last_name}`,
-              id: notificationData.id,
-              title: diaryHelper.showTaskType(notificationData?.taskType),
-              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+            for (let i in response.data[1]) {
+              notificationData = response.data[1][i]
             }
+
+            let start = new Date(notificationData.start)
+            let end = new Date(notificationData.end)
+
+            let notificationPayload
+            if (notificationData.taskCategory == 'leadTask') {
+              notificationPayload = {
+                clientName: `${data.selectedLead.customer.first_name} ${data.selectedLead.customer.last_name}`,
+                id: notificationData.id,
+                title: diaryHelper.showTaskType(notificationData?.taskType),
+                body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+              }
+            } else {
+              notificationPayload = {
+                id: notificationData.id,
+                title: diaryHelper.showTaskType(notificationData.taskType),
+                body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+              }
+            }
+            // TimerNotification(notificationPayload, start)
+
+            navigation.goBack()
           } else {
-            notificationPayload = {
-              id: notificationData.id,
-              title: diaryHelper.showTaskType(notificationData.taskType),
-              body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
-            }
+            helper.errorToast('SOMETHING WENT WRONG!')
           }
-
-          // TimerNotification(notificationPayload, start)
-
-          navigation.goBack()
-        } else {
-          helper.errorToast('SOMETHING WENT WRONG!')
-        }
+        })
       })
     } else if (data && isBookViewing) {
       let copyData = Object.assign({}, data)
@@ -1192,6 +1194,7 @@ mapStateToProps = (store) => {
     userShifts: store.slotManagement.userTimeShifts,
     slotsDataArray: store.slotManagement.slotsDataPayload,
     allTimeSlot: store.slotManagement.allTimeSlots,
+    connectFeedback: store.diary.connectFeedback,
   }
 }
 

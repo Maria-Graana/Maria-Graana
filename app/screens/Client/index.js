@@ -156,9 +156,10 @@ class Client extends React.Component {
             name: data.firstName + ' ' + data.lastName,
             leadsData: res.rows,
             unitData: unit,
+            projectData: projectData,
           })
         } else {
-          this.leadCreation(data, projectData, navigation, data, unit)
+          this.leadCreation(data, projectData, unit)
         }
       })
     } else {
@@ -167,7 +168,8 @@ class Client extends React.Component {
     }
   }
 
-  leadCreation = async (client, project, navigation, data, unit) => {
+  leadCreation = async (client, project, unit) => {
+    const { dispatch, navigation } = this.props
     const phones =
       client && client.customerContacts && client.customerContacts.map((item) => item.phone)
     const payload = {
@@ -184,31 +186,26 @@ class Client extends React.Component {
     await axios
       .post(`/api/leads/project`, payload)
       .then((response) => {
-        this.newLeadNavigate(response, navigation, data, unit)
+        axios
+          .get(`/api/leads/project/byId?id=${response.data.leadId}`)
+          .then((res) => {
+            dispatch(setlead(res.data))
+            navigation.replace('CMLeadTabs', {
+              screen: 'Payments',
+              params: {
+                lead: res.data,
+                client: client,
+                name: client.firstName + ' ' + client.lastName,
+                unitData: unit,
+              },
+            })
+          })
+          .catch((error) => {
+            console.log('/api/leads/project/byId?id - Error', error)
+          })
       })
       .catch((error) => {
         console.log('/api/leads/project', error)
-      })
-  }
-
-  newLeadNavigate = (response, navigation, data, unit) => {
-    const { dispatch } = this.props
-    axios
-      .get(`/api/leads/project/byId?id=${response.data.leadId}`)
-      .then((res) => {
-        dispatch(setlead(res.data))
-        navigation.replace('CMLeadTabs', {
-          screen: 'Payments',
-          params: {
-            lead: res.data,
-            client: data,
-            name: data.firstName + ' ' + data.lastName,
-            unitData: unit,
-          },
-        })
-      })
-      .catch((error) => {
-        console.log('/api/leads/project/byId?id - Error', error)
       })
   }
 

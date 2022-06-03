@@ -921,7 +921,12 @@ class RentLeads extends React.Component {
               changeDateFromTo={this.changeDateFromTo}
             />
           ) : filterType == 'country' ? (
-            <ListViewComponent data={countries} onPress={this.searchCountry} type={'country'} />
+            <ListViewComponent
+              data={countries}
+              onPress={this.searchCountry}
+              type={'country'}
+              show={true}
+            />
           ) : filterType == 'classification' ? (
             <ListViewComponent
               name={'Search by Classification Type'}

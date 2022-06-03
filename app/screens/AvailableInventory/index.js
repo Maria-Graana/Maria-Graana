@@ -561,7 +561,7 @@ class AvailableInventory extends Component {
           <View style={styles.buttonInputWrap}>
             <TouchableButton
               containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
-              label="Select"
+              label="Book Unit"
               borderColor="white"
               containerBackgroundColor="#0f73ee"
               borderWidth={1}
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   mainContainer: {
-    backgroundColor: '#e7ecf0',
+    backgroundColor: '#E5E5E5',
     flex: 1,
   },
   customIconStyle: {
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
   },
   headerTable: {
     height: 50,
-    backgroundColor: '#f1f8ff',
+    backgroundColor: '#FFFFFF',
     borderColor: AppStyles.colors.primaryColor,
   },
   headerTextStyle: {
@@ -653,15 +653,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   buttonInputWrap: {
-    marginBottom: 15,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'flex-end',
+    paddingVertical: 15,
   },
   timePageBtn: {
     justifyContent: 'center',
-    borderRadius: 4,
+    borderRadius: 8,
     padding: 10,
     marginLeft: 15,
     marginRight: 15,
-    marginBottom: 10,
   },
 })

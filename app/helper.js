@@ -1152,15 +1152,15 @@ const helper = {
   setBookingStatusColor(arrayItem) {
     if (arrayItem && arrayItem.length > 0) {
       if (arrayItem.includes('Available')) {
-        return '#ceecfc'
+        return '#DCECFF'
       } else if (
         arrayItem.includes('Sold') ||
         arrayItem.includes('Token') ||
         arrayItem.includes('Payment')
       ) {
-        return '#fde0e2'
+        return '#FFF0ED'
       } else if (arrayItem.includes('Hold')) {
-        return '#fef3c6'
+        return '#FFF8E1'
       } else {
         return 'white'
       }

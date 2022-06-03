@@ -362,7 +362,6 @@ class AvailableInventory extends Component {
       this.getUnits(selectedProject, selectedFloorId, status)
     })
   }
-
   onModalPriceDonePressed = (minValue, maxValue) => {
     const { selectedProject, selectedFloorId, status } = this.state
 

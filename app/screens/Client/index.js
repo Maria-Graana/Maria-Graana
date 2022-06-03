@@ -211,8 +211,19 @@ class Client extends React.Component {
 
   addClient = () => {
     const { route, navigation } = this.props
-    const { screenName, isFromDropDown = false, isPOC = false } = route.params
-    navigation.navigate('AddClient', { update: false, isFromDropDown, screenName, isPOC })
+    const {
+      screenName,
+      isFromDropDown = false,
+      isPOC = false,
+      isUnitBooking = false,
+    } = route.params
+    navigation.navigate('AddClient', {
+      update: false,
+      isFromDropDown,
+      screenName,
+      isPOC,
+      isUnitBooking,
+    })
   }
 
   handleLongPress = (val) => {

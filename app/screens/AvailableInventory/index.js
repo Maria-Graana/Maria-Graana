@@ -430,7 +430,15 @@ class AvailableInventory extends Component {
             ref={(ref) => {
               this.RBSheet = ref
             }}
-            height={filterType == 'status' ? 260 : filterType == 'price' ? 350 : 700}
+            height={
+              filterType == 'status'
+                ? 260
+                : filterType == 'floors'
+                ? 500
+                : filterType == 'price'
+                ? 350
+                : 700
+            }
             //openDuration={250}
             closeOnDragDown={true}
           >

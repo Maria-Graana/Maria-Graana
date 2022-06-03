@@ -693,8 +693,8 @@ class Diary extends React.Component {
             loading={loading}
           />
 
-          <View style={styles.filterSortView}>
-            {/* <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
+          {/* <View style={styles.filterSortView}> */}
+          {/* <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
               <Image
                 source={
                   !isFilterApplied
@@ -705,41 +705,41 @@ class Diary extends React.Component {
               />
             </TouchableOpacity> */}
 
-            {/* <FontAwesome5
+          {/* <FontAwesome5
               name="sort-amount-down-alt"
               size={24}
               color={sortValue === '' ? 'black' : AppStyles.colors.primaryColor}
               onPress={() => this.showSortModalVisible(true)}
             /> */}
 
-            <Menu
-              visible={isMenuVisible}
-              onDismiss={() => this.setState({ isMenuVisible: false })}
-              anchor={
-                <View style={styles.menuView}>
-                  <Entypo
-                    onPress={() => this.setState({ isMenuVisible: true })}
-                    name="dots-three-vertical"
-                    size={24}
-                  />
-                </View>
-              }
-            >
-              <Menu.Item
-                onPress={() => {
-                  this.setShowDayEnd(!showDayEnd), this.setState({ isMenuVisible: false })
-                }}
-                title="Day End Report"
-              />
+          <Menu
+            visible={isMenuVisible}
+            onDismiss={() => this.setState({ isMenuVisible: false })}
+            anchor={
+              <View style={styles.menuView}>
+                <Entypo
+                  onPress={() => this.setState({ isMenuVisible: true })}
+                  name="dots-three-vertical"
+                  size={24}
+                />
+              </View>
+            }
+          >
+            <Menu.Item
+              onPress={() => {
+                this.setShowDayEnd(!showDayEnd), this.setState({ isMenuVisible: false })
+              }}
+              title="Day End Report"
+            />
 
-              <Menu.Item
-                onPress={() => {
-                  navigation.replace('TeamDiary'), this.setState({ isMenuVisible: false })
-                }}
-                title="View Team Diary"
-              />
-            </Menu>
-          </View>
+            <Menu.Item
+              onPress={() => {
+                navigation.replace('TeamDiary'), this.setState({ isMenuVisible: false })
+              }}
+              title="View Team Diary"
+            />
+          </Menu>
+          {/* </View> */}
         </View>
 
         <FilterDiaryView
@@ -851,7 +851,7 @@ const styles = StyleSheet.create({
   },
   rowOne: {
     flexDirection: 'row',
-    width: '100%',
+    alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#ffffff',
   },
@@ -869,7 +869,8 @@ const styles = StyleSheet.create({
   },
   menuView: {
     marginLeft: 10,
-    // marginRight: 40,
+    marginRight: 10,
+    marginTop: 2,
   },
   teamViewIndicator: {
     margin: 10,

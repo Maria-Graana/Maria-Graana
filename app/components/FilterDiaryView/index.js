@@ -116,7 +116,7 @@ class FilterDiaryView extends React.Component {
     dispatch(setDiaryFilter(newFormData))
     dispatch(setDairyFilterApplied(true))
     dispatch(getDiaryTasks({ agentId, overdue: isOverdue }))
-    this.setState({ clear: true })
+    this.setState({ clear: true, searchText: '' })
     // navigation.goBack()
   }
 

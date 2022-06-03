@@ -80,9 +80,10 @@ class DiaryReasons extends React.Component {
 
   onReasonSelected = (item) => {
     const { navigation, dispatch, screenName = null, onPress = null } = this.props
-    dispatch(setDiaryFilterReason(item))
-    !screenName && navigation.goBack()
-    screenName && onPress()
+    dispatch(setDiaryFilterReason(item)).then(() => {
+      !screenName && navigation.goBack()
+      screenName && onPress()
+    })
   }
 
   render() {

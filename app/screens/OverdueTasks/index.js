@@ -53,6 +53,7 @@ import HistoryModal from '../../components/HistoryModal'
 import MultiplePhoneOptionModal from '../../components/MultiplePhoneOptionModal'
 import diaryHelper from '../Diary/diaryHelper'
 import ReferenceGuideModal from '../../components/ReferenceGuideModal'
+import FilterDiaryView from '../../components/FilterDiaryView'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -383,7 +384,12 @@ class OverdueTasks extends React.Component {
           openPopup={isActivityHistoryModalVisible}
         />
 
-        <View style={styles.rowOne}>
+        <FilterDiaryView
+          agentId={agentId}
+          isOverdue={true}
+          sort={() => this.showSortModalVisible(true)}
+        />
+        {/* <View style={styles.rowOne}>
           <View style={styles.filterSortView}>
             <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
               <Image
@@ -403,7 +409,7 @@ class OverdueTasks extends React.Component {
               onPress={() => this.showSortModalVisible(true)}
             />
           </View>
-        </View>
+        </View> */}
         {loading ? (
           <Loader loading={loading} />
         ) : (
@@ -451,7 +457,6 @@ class OverdueTasks extends React.Component {
               }
             }}
             onEndReachedThreshold={0.5}
-            keyExtractor={(item, index) => item.id.toString()}
           />
         )}
         {<OnLoadMoreComponent onEndReached={onEndReachedLoader} />}

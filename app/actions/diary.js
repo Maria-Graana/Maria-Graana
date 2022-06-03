@@ -324,6 +324,7 @@ export function setDiaryFilterReason(reason) {
       type: types.SET_DIARY_FILTER_REASON,
       payload: reason,
     })
+    return Promise.resolve(true)
   }
 }
 

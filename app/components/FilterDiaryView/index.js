@@ -10,6 +10,8 @@ import {
   Alert,
   Pressable,
   Platform,
+  TouchableOpacity,
+  Image,
 } from 'react-native'
 import AppStyles from '../../AppStyles'
 import DateTimePicker from '../../components/DatePicker'
@@ -39,6 +41,7 @@ import TextFilterComponent from '../../components/TextFilterComponent'
 import DateFilterComponent from '../../components/DateFilterComponent'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
 import DiaryReasons from '../../screens/DiaryReasons'
+import SortImg from '../../../assets/img/sort.png'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -188,7 +191,7 @@ class FilterDiaryView extends React.Component {
   }
 
   render() {
-    const { filters, route, feedbackReasonFilter, isOverdue } = this.props
+    const { filters, route, feedbackReasonFilter, isOverdue, sort } = this.props
     const {
       loading,
       clear,
@@ -203,7 +206,7 @@ class FilterDiaryView extends React.Component {
     return loading ? (
       <Loader loading={loading} />
     ) : (
-      <View style={styles.container}>
+      <View style={styles.listView}>
         {/* ********** RN Bottom Sheet ********** */}
         <RBSheet
           ref={(ref) => {
@@ -290,6 +293,9 @@ class FilterDiaryView extends React.Component {
             alignItems: 'center',
           }}
         >
+          <TouchableOpacity onPress={() => sort()} style={{ marginLeft: 15, marginRight: 5 }}>
+            <Image source={SortImg} style={[styles.sortImg]} />
+          </TouchableOpacity>
           {clear ? (
             <Pressable onPress={() => this.clearFilter()} style={styles.clearPressable}>
               <Text style={styles.clearText}>Clear All</Text>
@@ -496,163 +502,12 @@ class FilterDiaryView extends React.Component {
             </Pressable>
           </ScrollView>
         </View>
-        {/* <ScrollView showsVerticalScrollIndicator={false}> */}
-        {/* {isOverdue ? null : (
-            <>
-              <Text style={styles.headingText}>Date:</Text>
-              <DateTimePicker
-                placeholderLabel={'Select Date'}
-                name={'date'}
-                mode={'date'}
-                // showError={checkValidation === true && formData.date === ''}
-                errorMessage={'Required'}
-                iconSource={require('../../../assets/img/calendar.png')}
-                date={new Date()}
-                selectedValue={filters.date ? helper.formatDate(filters.date) : ''}
-                handleForm={(value, name) => this.handleForm(helper.formatDate(value), name)}
-              />
-            </>
-          )}
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <Text style={[styles.headingText]}>Reason:</Text>
-              <TouchableInput
-                onPress={() => this.goToDiaryReasons()}
-                showIconOrImage={false}
-                value={feedbackReasonFilter ? feedbackReasonFilter.name : ''}
-                placeholder={'Select Reason'}
-              />
-            </View>
-          </View>
-
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <Text style={[styles.headingText, { marginBottom: 10 }]}>Lead Type:</Text>
-              <PickerComponent
-                onValueChange={this.handleForm}
-                selectedItem={filters.leadType}
-                data={StaticData.leadTypes}
-                name={'leadType'}
-                placeholder="Lead Type"
-                customIconStyle={{ marginRight: -6 }}
-              />
-            </View>
-          </View>
-
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <Text style={[styles.headingText, { marginBottom: 10 }]}>Project Lead ID:</Text>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                style={[
-                  AppStyles.formControl,
-                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                  AppStyles.formFontSettings,
-                ]}
-                placeholder={'Project Lead ID'}
-                keyboardType={'numeric'}
-                value={filters.projectId}
-                onChangeText={(text) => this.handleForm(text, 'projectId')}
-              />
-            </View>
-          </View>
-
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <Text style={[styles.headingText, { marginBottom: 10 }]}>Buy/Rent Lead ID:</Text>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                style={[
-                  AppStyles.formControl,
-                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                  AppStyles.formFontSettings,
-                ]}
-                placeholder={'Buy/Rent Lead ID'}
-                keyboardType={'numeric'}
-                value={filters.buyrentId}
-                onChangeText={(text) => this.handleForm(text, 'buyrentId')}
-              />
-            </View>
-          </View>
-
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <Text style={[styles.headingText, { marginBottom: 10 }]}>Wanted Lead ID:</Text>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                style={[
-                  AppStyles.formControl,
-                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                  AppStyles.formFontSettings,
-                ]}
-                placeholder={'Wanted Lead ID'}
-                value={filters.wantedId}
-                onChangeText={(text) => this.handleForm(text, 'wantedId')}
-              />
-            </View>
-          </View>
-
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <Text style={[styles.headingText, { marginBottom: 10 }]}>Client Name:</Text>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                style={[
-                  AppStyles.formControl,
-                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                  AppStyles.formFontSettings,
-                ]}
-                placeholder={'Client Name'}
-                value={filters.customerName}
-                // editable={formData.status === 'pending'}
-                onChangeText={(text) => this.handleForm(text, 'customerName')}
-              />
-            </View>
-          </View>
-
-          <View style={[AppStyles.mainInputWrap]}>
-            <View style={[AppStyles.inputWrap]}>
-              <Text style={[styles.headingText, { marginBottom: 10 }]}>Client Contact:</Text>
-              <TextInput
-                placeholderTextColor={'#a8a8aa'}
-                style={[
-                  AppStyles.formControl,
-                  Platform.OS === 'ios' ? AppStyles.inputPadLeft : { paddingLeft: 10 },
-                  AppStyles.formFontSettings,
-                ]}
-                placeholder={'Client Contact'}
-                value={filters.customerPhoneNumber}
-                // editable={formData.status === 'pending'}
-                onChangeText={(text) => this.handleForm(text, 'customerPhoneNumber')}
-              />
-            </View>
-          </View>
-        </ScrollView>
-        <View style={[AppStyles.mainInputWrap]}>
-          <TouchableButton
-            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={'SEARCH'}
-            onPress={this.onSearchPressed}
-            // loading={loading}
-            // disabled={currentMeeting && currentMeeting.status === 'completed'}
-          />
-        </View>
-
-        <View style={[AppStyles.mainInputWrap]}>
-          <TouchableButton
-            containerStyle={[AppStyles.formBtn, styles.addInvenBtn]}
-            label={'CLEAR'}
-            onPress={this.clearFilter}
-            // loading={loading}
-            // disabled={currentMeeting && currentMeeting.status === 'completed'}
-          />
-        </View> */}
       </View>
     )
   }
 }
 const styles = StyleSheet.create({
-  container: {
+  listView: {
     marginBottom: 10,
     paddingVertical: 5,
     backgroundColor: 'white',
@@ -676,6 +531,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginLeft: 5,
+  },
+  sortImg: {
+    resizeMode: 'contain',
+    width: 20,
   },
 })
 

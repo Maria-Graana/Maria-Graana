@@ -694,7 +694,7 @@ class Diary extends React.Component {
           />
 
           <View style={styles.filterSortView}>
-            <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
+            {/* <TouchableOpacity onPress={() => this.navigateToFiltersScreen()}>
               <Image
                 source={
                   !isFilterApplied
@@ -703,14 +703,14 @@ class Diary extends React.Component {
                 }
                 style={styles.filterImg}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            <FontAwesome5
+            {/* <FontAwesome5
               name="sort-amount-down-alt"
               size={24}
               color={sortValue === '' ? 'black' : AppStyles.colors.primaryColor}
               onPress={() => this.showSortModalVisible(true)}
-            />
+            /> */}
 
             <Menu
               visible={isMenuVisible}
@@ -742,9 +742,11 @@ class Diary extends React.Component {
           </View>
         </View>
 
-        <View>
-          <FilterDiaryView agentId={agentId} isOverdue={false} />
-        </View>
+        <FilterDiaryView
+          agentId={agentId}
+          isOverdue={false}
+          sort={() => this.showSortModalVisible(true)}
+        />
 
         {agentId !== user.id && name ? (
           <View style={styles.teamViewIndicator}>
@@ -867,7 +869,7 @@ const styles = StyleSheet.create({
   },
   menuView: {
     marginLeft: 10,
-    marginRight: 40,
+    // marginRight: 40,
   },
   teamViewIndicator: {
     margin: 10,

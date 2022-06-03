@@ -177,6 +177,12 @@ class AvailableInventory extends Component {
     })
     allUnits &&
       allUnits.map((item) => {
+        let bookingStatus = ''
+        if (item.bookingStatus === 'hold') {
+          bookingStatus = 'Hold'
+        } else {
+          bookingStatus = item.bookingStatus
+        }
         let oneRow = []
         oneRow.push(item.name)
         const { optional_fields } = item
@@ -198,7 +204,7 @@ class AvailableInventory extends Component {
         oneRow.push(this.currencyConvert(item.rate_per_sqft))
         oneRow.push(this.currencyConvert(PaymentMethods.findUnitPrice(item)))
         oneRow.push('---')
-        oneRow.push(item.bookingStatus)
+        oneRow.push(bookingStatus)
         tableData.push(oneRow)
       })
     otherTitles.map((item) => {
@@ -291,8 +297,12 @@ class AvailableInventory extends Component {
   }
 
   onSelection = (val) => {
-    const { active, selectedRow, disabled } = this.state
-    this.setState({ active: !active, disabled: !disabled, selectedRow: val })
+    const { active, disabled, selectedRow } = this.state
+    if (selectedRow == val) {
+      this.setState({ active: false, disabled: true, selectedRow: null })
+    } else {
+      this.setState({ active: true, disabled: false, selectedRow: val })
+    }
   }
 
   updatePermission = () => {

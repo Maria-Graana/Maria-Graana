@@ -11,13 +11,10 @@ export default function InventoryFilter({
   project,
   selectedFloor,
   status,
-  Price,
   setBottomSheet,
-  onModalPriceShowPressed,
-  minPrice,
-  maxPrice,
   clear,
   onClear,
+  priceRange,
 }) {
   return (
     <View style={styles.filterMainView}>
@@ -101,7 +98,7 @@ export default function InventoryFilter({
           style={[
             styles.filterPressable,
             {
-              backgroundColor: status
+              backgroundColor: priceRange
                 ? AppStyles.colors.primaryColor
                 : AppStyles.colors.backgroundColor,
               marginRight: 25,
@@ -111,25 +108,15 @@ export default function InventoryFilter({
           <Text
             style={{
               fontSize: 12,
-              color: status ? 'white' : AppStyles.colors.textColor,
+              color: priceRange ? 'white' : AppStyles.colors.textColor,
             }}
           >
-            {Price
-              ? Price
-              : `Price ${minPrice ? minPrice : ''} - ${
-                  maxPrice
-                    ? maxPrice === StaticData.Constants.any_value && !minPrice
-                      ? ''
-                      : maxPrice === StaticData.Constants.any_value
-                      ? 'Any'
-                      : maxPrice
-                    : ''
-                }`}
+            {priceRange ? `${priceRange}` : 'Price'}
           </Text>
           <Ionicons
             name="chevron-down-outline"
             size={20}
-            color={status ? 'white' : AppStyles.colors.textColor}
+            color={priceRange ? 'white' : AppStyles.colors.textColor}
           />
         </Pressable>
       </ScrollView>

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import { Fab } from 'native-base'
 import React, { Component } from 'react'
-import PriceSliderModal from '../../components/PriceSliderModal'
+import RangeSliderComponent from '../../components/RangeSliderComponent'
 
 import {
   Image,
@@ -36,6 +36,7 @@ class AvailableInventory extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      priceRange: '',
       isPriceModalVisible: false,
       minPrice: 0,
       maxPrice: StaticData.Constants.any_value,
@@ -120,6 +121,7 @@ class AvailableInventory extends Component {
   }
 
   getUnits = (projectId, floorId) => {
+    this.setState({ loading: true })
     const { status, minPrice, maxPrice } = this.state
     this.setState({ disabled: true, active: false, selectedRow: null })
     let url = ``
@@ -133,7 +135,6 @@ class AvailableInventory extends Component {
     axios
       .get(url)
       .then((res) => {
-        console.log('res', res?.data?.total)
         let array = []
         res &&
           res.data.rows.map((item, index) => {
@@ -316,6 +317,7 @@ class AvailableInventory extends Component {
   }
 
   onClearAll = () => {
+    const { pickerProjects } = this.state
     this.setState(
       {
         clear: false,
@@ -324,12 +326,20 @@ class AvailableInventory extends Component {
         selectedFloorId: null,
         minPrice: 0,
         maxPrice: StaticData.Constants.any_value,
+        priceRange: '',
+
+        selectedProjectName:
+          pickerProjects && pickerProjects.length > 0 ? pickerProjects[0].name : null,
+        selectedProject:
+          pickerProjects && pickerProjects.length > 0 ? pickerProjects[0].value : null,
+        projectData: pickerProjects && pickerProjects.length > 0 ? pickerProjects[0] : null,
       },
       () => {
-        this.getAllProjects()
+        this.getFloors(pickerProjects && pickerProjects.length > 0 ? pickerProjects[0].value : null)
       }
     )
   }
+
   changeProject = (status, name = null) => {
     this.handleProjectChange(status, name)
     this.RBSheet.close()
@@ -362,11 +372,16 @@ class AvailableInventory extends Component {
     })
     this.RBSheet.close()
   }
-  onModalPriceShowPressed = (minValue, maxValue) => {
+
+  setPriceRange = (range) => {
+    this.setState({ priceRange: range })
+  }
+
+  onModalPriceShowPressed = () => {
     this.setState({ isPriceModalVisible: true })
   }
 
-  onModalCancelPressed = (minValue, maxValue) => {
+  onModalCancelPressed = () => {
     this.setState({ isPriceModalVisible: false })
     this.RBSheet.close()
   }
@@ -391,6 +406,7 @@ class AvailableInventory extends Component {
       isPriceModalVisible,
       minPrice,
       maxPrice,
+      priceRange,
     } = this.state
     const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
@@ -403,18 +419,22 @@ class AvailableInventory extends Component {
             ref={(ref) => {
               this.RBSheet = ref
             }}
-            height={500}
+            height={filterType == 'status' || filterType == 'price' ? 350 : 500}
             openDuration={250}
             closeOnDragDown={true}
           >
             {filterType == 'project' ? (
-              // <SearchableDropdown
-              //   searchable={true}
-              //   name={'Projects'}
-              //   onPress={this.changeProject}
-              //   projectData={pickerProjects}
-              // />
-              <ListViewComponent name={'Floors'} data={pickerFloors} onPress={this.changeFloors} />
+              <>
+                {pickerProjects?.length != 0 ? (
+                  <ListViewComponent
+                    data={pickerProjects}
+                    onPress={this.changeProject}
+                    show={true}
+                  />
+                ) : (
+                  <Loader loading={true} />
+                )}
+              </>
             ) : filterType == 'floors' ? (
               <ListViewComponent name={'Floors'} data={pickerFloors} onPress={this.changeFloors} />
             ) : filterType == 'status' ? (
@@ -424,7 +444,8 @@ class AvailableInventory extends Component {
                 onPress={this.changeStatus}
               />
             ) : filterType == 'price' ? (
-              <PriceSliderModal
+              <RangeSliderComponent
+                setPriceRange={this.setPriceRange}
                 inventoryPrice={true}
                 isVisible={true}
                 initialValue={minPrice}
@@ -436,6 +457,7 @@ class AvailableInventory extends Component {
             ) : null}
           </RBSheet>
           <InventoryFilter
+            priceRange={priceRange}
             minPrice={minPrice}
             maxPrice={maxPrice}
             onModalPriceShowPressed={this.onModalPriceShowPressed}
@@ -617,6 +639,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   buttonInputWrap: {
+    marginBottom: 15,
     justifyContent: 'flex-end',
   },
   timePageBtn: {

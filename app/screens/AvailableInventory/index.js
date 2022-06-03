@@ -538,10 +538,12 @@ class AvailableInventory extends Component {
                   </ScrollView>
                 </View>
               ) : (
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  style={styles.imageStyle}
-                />
+                <View style={styles.imageStyles}>
+                  <Image
+                    source={require('../../../assets/img/no-result-found.png')}
+                    style={styles.imageStyle}
+                  />
+                </View>
               )}
             </>
           )}
@@ -574,6 +576,10 @@ mapStateToProps = (store) => {
 export default connect(mapStateToProps)(AvailableInventory)
 
 const styles = StyleSheet.create({
+  imageStyles: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   mainContainer: {
     backgroundColor: '#e7ecf0',
     flex: 1,

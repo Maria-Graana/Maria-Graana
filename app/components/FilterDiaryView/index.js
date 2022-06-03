@@ -37,6 +37,8 @@ import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsType
 import ListViewComponent from '../../components/ListViewComponent'
 import TextFilterComponent from '../../components/TextFilterComponent'
 import DateFilterComponent from '../../components/DateFilterComponent'
+import RNDateTimePicker from '@react-native-community/datetimepicker'
+import DiaryReasons from '../../screens/DiaryReasons'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -51,6 +53,8 @@ class FilterDiaryView extends React.Component {
       filterType: '',
       leadTypeList: [],
       searchText: '',
+      dateFromTo: null,
+      activeDate: false,
     }
   }
 
@@ -91,9 +95,9 @@ class FilterDiaryView extends React.Component {
     dispatch(setDairyFilterApplied(false)).then((res) => {
       dispatch(clearDiaryFilter())
       dispatch(setDiaryFilterReason(null))
-      if (isOverdue) {
-        dispatch(getDiaryTasks({ selectedDate: _today, agentId, overdue: isOverdue }))
-      }
+      // if (isOverdue) {
+      dispatch(getDiaryTasks({ selectedDate: _today, agentId, overdue: isOverdue }))
+      // }
       this.setState({ clear: false })
       // navigation.goBack()
     })
@@ -163,9 +167,38 @@ class FilterDiaryView extends React.Component {
     )
   }
 
+  setDateFromTo = (event, date) => {
+    this.setState({ dateFromTo: date, activeDate: false }, () => {
+      if (Platform.OS == 'android' && event.type == 'set') {
+        this.changeDateFromTo()
+      }
+    })
+  }
+
+  changeDateFromTo = () => {
+    const { dateFromTo } = this.state
+    this.handleForm(helper.formatDate(dateFromTo), 'date')
+  }
+
+  onReasonSet = () => {
+    const { clear } = this.state
+    this.setState({ clear: true })
+    this.RBSheet.close()
+    this.onSearchPressed()
+  }
+
   render() {
     const { filters, route, feedbackReasonFilter, isOverdue } = this.props
-    const { loading, clear, leadType, filterType, leadTypeList, searchText } = this.state
+    const {
+      loading,
+      clear,
+      leadType,
+      filterType,
+      leadTypeList,
+      searchText,
+      activeDate,
+      dateFromTo,
+    } = this.state
 
     return loading ? (
       <Loader loading={loading} />
@@ -231,16 +264,25 @@ class FilterDiaryView extends React.Component {
               changeStatusType={this.handleForm}
               numeric={true}
             />
-          ) : // ) : filterType == 'date' ? (
-          //   <DateFilterComponent
-          //     dateFromTo={dateFromTo}
-          //     setDateFromTo={this.setDateFromTo}
-          //     changeDateFromTo={this.changeDateFromTo}
-          //   />
-          // )
-          null}
+          ) : filterType == 'date' ? (
+            <DateFilterComponent
+              dateFromTo={dateFromTo}
+              setDateFromTo={this.setDateFromTo}
+              changeDateFromTo={this.changeDateFromTo}
+            />
+          ) : filterType == 'reasons' ? (
+            <DiaryReasons screenName={'DiaryFilter'} onPress={() => this.onReasonSet()} />
+          ) : null}
         </RBSheet>
         {/* ********** RN Bottom Sheet ********** */}
+
+        {activeDate && (
+          <RNDateTimePicker
+            value={dateFromTo ? dateFromTo : new Date()}
+            onChange={this.setDateFromTo}
+          />
+        )}
+
         <View
           style={{
             flexDirection: 'row',
@@ -277,6 +319,31 @@ class FilterDiaryView extends React.Component {
                 name="chevron-down-outline"
                 size={20}
                 color={filters.leadType ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => this.setBottomSheet('reasons')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: feedbackReasonFilter
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: feedbackReasonFilter ? 'white' : AppStyles.colors.textColor,
+                }}
+              >
+                {feedbackReasonFilter ? feedbackReasonFilter.name : 'Reason'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={feedbackReasonFilter ? 'white' : AppStyles.colors.textColor}
               />
             </Pressable>
             <Pressable
@@ -402,6 +469,29 @@ class FilterDiaryView extends React.Component {
                 name="chevron-down-outline"
                 size={20}
                 color={filters.customerPhoneNumber ? 'white' : AppStyles.colors.textColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => this.setBottomSheet('date')}
+              style={[
+                styles.filterPressable,
+                {
+                  backgroundColor: filters.date
+                    ? AppStyles.colors.primaryColor
+                    : AppStyles.colors.backgroundColor,
+                  marginRight: 25,
+                },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 12, color: filters.date ? 'white' : AppStyles.colors.textColor }}
+              >
+                {filters.date ? helper.formatDate(filters.date) : 'Date'}
+              </Text>
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                color={filters.date ? 'white' : AppStyles.colors.textColor}
               />
             </Pressable>
           </ScrollView>

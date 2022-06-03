@@ -19,4 +19,16 @@ export default styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#eeeeee',
   },
+  listTitle: {
+    fontSize: 18,
+    marginBottom: 20,
+    marginLeft: 10,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontWeight: '500',
+  },
+  listborder: {
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  },
 })

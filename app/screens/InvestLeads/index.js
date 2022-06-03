@@ -46,6 +46,7 @@ import FilterLeadsView from '../../components/FilterLeadsView'
 import ListViewComponent from '../../components/ListViewComponent'
 import TextFilterComponent from '../../components/TextFilterComponent'
 import DateFilterComponent from '../../components/DateFilterComponent'
+import Loader from '../../components/loader'
 
 var BUTTONS = [
   'Assign to team member',
@@ -1013,7 +1014,7 @@ class InvestLeads extends React.Component {
             keyExtractor={(item, index) => this.setKey(index)}
           />
         ) : (
-          <LoadingNoResult loading={loading} />
+          <Loader loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
         {(createProjectLead || createBuyRentLead) &&

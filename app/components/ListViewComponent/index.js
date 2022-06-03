@@ -45,6 +45,7 @@ export default function ({ name, data, onPress, type, show }) {
       <FlatList
         data={dataValues}
         style={styles.listStyle}
+        keyExtractor={(item, index) => 'key' + index}
         renderItem={({ item, index }) => (
           <Pressable
             key={index}

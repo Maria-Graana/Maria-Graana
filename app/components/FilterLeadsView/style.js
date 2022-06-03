@@ -25,6 +25,10 @@ export default styles = StyleSheet.create({
     marginBottom: 10,
     paddingVertical: 5,
     backgroundColor: 'white',
+
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterScroll: {
     padding: 10,

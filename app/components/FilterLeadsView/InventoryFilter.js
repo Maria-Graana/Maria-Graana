@@ -18,12 +18,12 @@ export default function InventoryFilter({
 }) {
   return (
     <View style={styles.filterMainView}>
+      {clear ? (
+        <Pressable onPress={() => onClear()} style={styles.clearPressable}>
+          <Text style={styles.clearText}>Clear All</Text>
+        </Pressable>
+      ) : null}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-        {clear ? (
-          <Pressable onPress={() => onClear()} style={styles.clearPressable}>
-            <Text style={styles.clearText}>Clear All</Text>
-          </Pressable>
-        ) : null}
         <Pressable
           onPress={() => setBottomSheet('project')}
           style={[

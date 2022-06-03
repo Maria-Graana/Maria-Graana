@@ -43,6 +43,7 @@ export default function ({ name, data, onPress, type, show, custom }) {
         />
       )}
       <FlatList
+        keyboardShouldPersistTaps="always"
         data={dataValues}
         style={styles.listStyle}
         keyExtractor={(item, index) => 'key' + index}

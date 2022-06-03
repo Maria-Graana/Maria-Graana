@@ -424,11 +424,14 @@ class AvailableInventory extends Component {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainContainer}>
           <RBSheet
+            customStyles={{
+              container: { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+            }}
             ref={(ref) => {
               this.RBSheet = ref
             }}
-            height={filterType == 'status' || filterType == 'price' ? 350 : 500}
-            openDuration={250}
+            height={filterType == 'status' ? 260 : filterType == 'price' ? 350 : 700}
+            //openDuration={250}
             closeOnDragDown={true}
           >
             {filterType == 'project' ? (

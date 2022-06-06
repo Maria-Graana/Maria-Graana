@@ -193,7 +193,7 @@ class RentLeads extends React.Component {
           this.setState({ statusLead: capitalized, clear: true })
         })
       } else {
-        storeItem('statusFilterRent', 'all')
+        // storeItem('statusFilterRent', 'all')
         this.setState({ statusFilter: 'all', sort: sortValue }, () => {
           this.fetchLeads()
         })

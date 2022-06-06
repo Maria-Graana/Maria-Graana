@@ -196,10 +196,10 @@ class BuyLeads extends React.Component {
     } else {
       const sortValue = await this.getSortOrderFromStorage()
       const statusValue = await getItem('statusFilterBuy')
-      if (statusValue && String(statusValue) != 'all') {
-        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+      if (statusValue && String(statusValue.value) != 'all') {
+        this.setState({ statusFilter: String(statusValue.value), sort: sortValue }, () => {
           this.fetchLeads()
-          const str = String(statusValue)
+          const str = String(statusValue.name)
           const capitalized = str.charAt(0).toUpperCase() + str.slice(1)
           this.setState({ statusLead: capitalized, clear: true })
         })
@@ -379,7 +379,7 @@ class BuyLeads extends React.Component {
   changeStatus = (status, name = null) => {
     this.clearStateValues()
     this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
-      storeItem('statusFilterBuy', status)
+      storeItem('statusFilterBuy', { name: name, value: status })
       this.fetchLeads()
     })
     this.RBSheet.close()

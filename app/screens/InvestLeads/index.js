@@ -215,10 +215,10 @@ class InvestLeads extends React.Component {
       } else {
         statusValue = await getItem('statusFilterInvestLeads')
       }
-      if (statusValue && String(statusValue) != 'all') {
-        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+      if (statusValue && String(statusValue.value) != 'all') {
+        this.setState({ statusFilter: String(statusValue.value), sort: sortValue }, () => {
           this.fetchLeads()
-          const str = String(statusValue)
+          const str = String(statusValue.name)
           const capitalized = str.charAt(0).toUpperCase() + str.slice(1)
           this.setState({ statusLead: capitalized, clear: true })
         })
@@ -398,12 +398,12 @@ class InvestLeads extends React.Component {
     this.clearStateValues()
     if (hasBooking) {
       this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
-        storeItem('statusFilterInvestDeals', status)
+        storeItem('statusFilterInvestDeals', { name: name, value: status })
         this.fetchLeads()
       })
     } else {
       this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
-        storeItem('statusFilterInvestLeads', status)
+        storeItem('statusFilterInvestLeads', { name: name, value: status })
         this.fetchLeads()
       })
     }

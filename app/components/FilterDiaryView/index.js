@@ -5,13 +5,13 @@ import {
   Text,
   View,
   StyleSheet,
-  TextInput,
   ScrollView,
   Alert,
   Pressable,
   Platform,
   TouchableOpacity,
   Image,
+  FlatList,
 } from 'react-native'
 import AppStyles from '../../AppStyles'
 import DateTimePicker from '../../components/DatePicker'
@@ -42,6 +42,8 @@ import DateFilterComponent from '../../components/DateFilterComponent'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
 import DiaryReasons from '../../screens/DiaryReasons'
 import SortImg from '../../../assets/img/sort.png'
+import { TextInput } from 'react-native-paper'
+import OnLoadMoreComponent from '../OnLoadMoreComponent'
 
 const _format = 'YYYY-MM-DD'
 const _today = moment(new Date()).format(_format)
@@ -58,6 +60,13 @@ class FilterDiaryView extends React.Component {
       searchText: '',
       dateFromTo: null,
       activeDate: false,
+      customers: [],
+      totalCustomers: 0,
+      loading: true,
+      page: 1,
+      pageSize: 50,
+      onEndReachedLoader: false,
+      isSelected: false,
     }
   }
 
@@ -91,6 +100,36 @@ class FilterDiaryView extends React.Component {
     ) {
       leadTypeList.push({ name: 'Wanted', value: 'Wanted' })
     }
+
+    this.fetchCustomer()
+  }
+
+  fetchCustomer = () => {
+    const { customers, searchText, page, pageSize } = this.state
+    let url = ''
+    const clientName = searchText.replace(' ', '%20')
+    searchText !== ''
+      ? (url = `/api/customer/find?searchBy=name&q=${clientName}`)
+      : (url = `/api/customer/find?pageSize=${pageSize}&page=${page}`)
+    axios
+      .get(url)
+      .then((res) => {
+        this.setState({
+          customers:
+            searchText !== ''
+              ? res.data.rows
+              : page === 1
+              ? res.data.rows
+              : [...customers, ...res.data.rows],
+          totalCustomers: res.data.count,
+          onEndReachedLoader: false,
+          loading: false,
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+        return null
+      })
   }
 
   clearFilter = () => {
@@ -118,6 +157,7 @@ class FilterDiaryView extends React.Component {
     dispatch(getDiaryTasks({ agentId, overdue: isOverdue }))
     this.setState({ clear: true, searchText: '' })
     // navigation.goBack()
+    this.fetchCustomer()
   }
 
   handleForm = (value, name) => {
@@ -190,6 +230,18 @@ class FilterDiaryView extends React.Component {
     this.onSearchPressed()
   }
 
+  setClientSearch = (value) => {
+    const { page } = this.state
+    this.setState(
+      {
+        searchText: value,
+        page: value === '' ? 1 : page,
+        pageSize: 50,
+      },
+      () => this.fetchCustomer()
+    )
+  }
+
   render() {
     const { filters, route, feedbackReasonFilter, isOverdue, sort } = this.props
     const {
@@ -201,6 +253,10 @@ class FilterDiaryView extends React.Component {
       searchText,
       activeDate,
       dateFromTo,
+      customers,
+      totalCustomers,
+      onEndReachedLoader,
+      page,
     } = this.state
 
     return loading ? (
@@ -212,7 +268,13 @@ class FilterDiaryView extends React.Component {
           ref={(ref) => {
             this.RBSheet = ref
           }}
-          height={filterType == 'date' ? 500 : 300}
+          height={
+            filterType == 'date'
+              ? 500
+              : filterType == 'reasons' || filterType == 'customerName'
+              ? 700
+              : 300
+          }
           openDuration={250}
           closeOnDragDown={true}
           customStyles={{
@@ -254,13 +316,65 @@ class FilterDiaryView extends React.Component {
               numeric={true}
             />
           ) : filterType == 'customerName' ? (
-            <TextFilterComponent
-              name={'Client Name'}
-              type={'customerName'}
-              searchText={searchText}
-              setTextSearch={this.setTextSearch}
-              changeStatusType={this.handleForm}
-            />
+            <View style={{ padding: 20, justifyContent: 'center' }}>
+              <TextInput
+                mode="outlined"
+                activeOutlineColor={AppStyles.colors.primaryColor}
+                outlineColor={AppStyles.colors.primary}
+                value={searchText}
+                onChangeText={(queryText) => this.setClientSearch(queryText)}
+                placeholder="Search"
+                theme={{ colors: { text: 'black', background: 'white' } }}
+                style={{ marginBottom: 10 }}
+              />
+              <FlatList
+                data={customers}
+                style={{ marginBottom: 20, marginLeft: 10 }}
+                renderItem={({ item }, index) => (
+                  <Pressable
+                    style={{ justifyContent: 'center' }}
+                    onPress={() =>
+                      this.handleForm(item.firstName + ' ' + item.lastName, 'customerName')
+                    }
+                    key={index}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        paddingVertical: 10,
+                        fontFamily: AppStyles.fonts.defaultFont,
+                        fontWeight: '300',
+                      }}
+                    >
+                      {item.firstName + ' ' + item.lastName}
+                    </Text>
+                  </Pressable>
+                )}
+                onEndReached={() => {
+                  if (
+                    customers.length < totalCustomers &&
+                    onEndReachedLoader === false &&
+                    searchText === ''
+                  ) {
+                    this.setState(
+                      {
+                        page: this.state.page + 1,
+                        onEndReachedLoader: true,
+                      },
+                      () => {
+                        this.fetchCustomer()
+                      }
+                    )
+                  }
+                }}
+                onEndReachedThreshold={0.5}
+                keyExtractor={(item, index) => item.id.toString()}
+              />
+              <OnLoadMoreComponent
+                style={{ backgroundColor: 'white' }}
+                onEndReached={onEndReachedLoader}
+              />
+            </View>
           ) : filterType == 'customerPhoneNumber' ? (
             <TextFilterComponent
               name={'Client Phone#'}

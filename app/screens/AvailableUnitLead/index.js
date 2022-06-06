@@ -364,7 +364,7 @@ class AvailableUnitLead extends React.Component {
         page = 'Meetings'
       }
 
-      navigation.navigate('CMLeadTabs', {
+      navigation.replace('CMLeadTabs', {
         screen: unitData ? 'Payments' : page,
         params: { lead: data, unitData: unitData, screenName: screen },
       })

@@ -16,14 +16,14 @@ class Loader extends React.Component {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         {loading == true ? (
-          // <ActivityIndicator size={sizeLabel} color={loaderColor} />
-          <LottieView
-            autoPlay
-            loop
-            source={require('../../assets/json/lf30_editor_angaivhu.json')}
-            style={{ height: 100, width: 100 }}
-          />
+          <ActivityIndicator size={sizeLabel} color={loaderColor} />
         ) : (
+          // <LottieView
+          //   autoPlay
+          //   loop
+          //   source={require('../../assets/json/lf30_editor_angaivhu.json')}
+          //   style={{ height: 100, width: 100 }}
+          // />
           // <Image source={require('../../assets/loader.gif')} style={{ width: 60, height: 60 }} />
           <Image
             source={require('../../assets/img/no-result-found.png')}

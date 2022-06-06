@@ -26,6 +26,7 @@ import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
+import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
 import StaticData from '../../StaticData'
 import styles from './style'
 
@@ -576,7 +577,7 @@ class AvailableUnitLead extends React.Component {
       newActionModal,
       isMenuVisible,
     } = this.state
-    const { user, route } = this.props
+    const { user, route, permissions } = this.props
     const { client, projectData, unitData } = route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
@@ -652,17 +653,23 @@ class AvailableUnitLead extends React.Component {
             </View>
           )} */}
         </View>
-        <Fab
-          active="true"
-          containerStyle={{ zIndex: 20 }}
-          style={{ backgroundColor: AppStyles.colors.primaryColor }}
-          position="bottomRight"
-          onPress={() => {
-            this.createNewProjectLead(client, projectData, unitData)
-          }}
-        >
-          <Ionicons name="md-add" color="#ffffff" />
-        </Fab>
+        {getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) && (
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{ backgroundColor: AppStyles.colors.primaryColor }}
+            position="bottomRight"
+            onPress={() => {
+              this.createNewProjectLead(client, projectData, unitData)
+            }}
+          >
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
+        )}
         {leadsData && leadsData.length > 0 ? (
           <FlatList
             data={leadsData}

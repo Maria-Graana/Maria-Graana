@@ -224,12 +224,12 @@ class InvestLeads extends React.Component {
         })
       } else {
         if (screen === 'MyDeals') {
-          storeItem('statusFilterInvestDeals', 'all')
+          // storeItem('statusFilterInvestDeals', 'all')
           this.setState({ statusFilter: 'all', sort: sortValue }, () => {
             this.fetchLeads()
           })
         } else {
-          storeItem('statusFilterInvestLeads', 'all')
+          // storeItem('statusFilterInvestLeads', 'all')
           this.setState({ statusFilter: 'all', sort: sortValue }, () => {
             this.fetchLeads()
           })

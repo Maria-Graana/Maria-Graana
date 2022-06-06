@@ -204,7 +204,7 @@ class BuyLeads extends React.Component {
           this.setState({ statusLead: capitalized, clear: true })
         })
       } else {
-        storeItem('statusFilterBuy', 'all')
+        // storeItem('statusFilterBuy', 'all')
         this.setState({ statusFilter: 'all', sort: sortValue }, () => {
           this.fetchLeads()
         })

@@ -329,7 +329,7 @@ class FilterDiaryView extends React.Component {
               />
               <FlatList
                 data={customers}
-                style={{ marginBottom: 20, marginLeft: 10 }}
+                style={{ marginBottom: 50, marginLeft: 10 }}
                 renderItem={({ item }, index) => (
                   <Pressable
                     style={{ justifyContent: 'center' }}

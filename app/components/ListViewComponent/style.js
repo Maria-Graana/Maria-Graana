@@ -25,7 +25,7 @@ export default styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listStyle: {
-    marginBottom: 20,
+    marginBottom: 50,
     marginLeft: 10,
   },
   listborder: {

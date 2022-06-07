@@ -163,6 +163,7 @@ const PriceSliderModal = ({
           ]}
         >
           <TextInput
+            keyboardType={'phone-pad'}
             placeholder={'Any'}
             value={stringValues.priceMin}
             onBlur={() =>
@@ -182,6 +183,7 @@ const PriceSliderModal = ({
             style={[AppStyles.formControl, styles.priceStyle]}
           />
           <TextInput
+            keyboardType={'phone-pad'}
             placeholder={'Any'}
             value={stringValues.priceMax}
             onBlur={() =>

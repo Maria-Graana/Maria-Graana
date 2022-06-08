@@ -12,7 +12,6 @@ export default AppStyles = {
     paddingHorizontal: wp('2%'),
   },
 
-
   container2: {
     //  flex: 1,
     backgroundColor: '#e7ecf0',
@@ -43,13 +42,13 @@ export default AppStyles = {
   headingText: {
     fontFamily: 'Poppins_regular',
 
-    fontSize: 14
+    fontSize: 14,
   },
 
   boldHeadingText: {
     // fontFamily: 'Poppins_regular',
     fontWeight: 'bold',
-    fontSize: 14
+    fontSize: 14,
   },
   fonts: {
     defaultFont: 'Poppins_regular',
@@ -228,7 +227,6 @@ export default AppStyles = {
     fontSize: 10,
     marginTop: 5,
   },
-
 
   bottomStickyButton: {
     marginBottom: 30,

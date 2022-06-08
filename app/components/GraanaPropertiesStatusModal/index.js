@@ -1,7 +1,9 @@
+/** @format */
+
 import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import styles from './style'
-import Modal from 'react-native-modal';
+import Modal from 'react-native-modal'
 import times from '../../../assets/img/times.png'
 import StaticData from '../../StaticData'
 import SimpleInputText from '../../components/SimpleInputField'
@@ -31,36 +33,49 @@ class GraanaPropertiesStatusModal extends React.Component {
     }
 
     return (
-
       <Modal isVisible={active}>
         <View style={[styles.modalMain]}>
           {
             <View style={styles.topHeader}>
               <Text style={styles.headingText}>Select Status</Text>
-              <TouchableOpacity style={styles.timesBtn} onPress={() => { graanaVerifeyModal(false) }}>
+              <TouchableOpacity
+                style={styles.timesBtn}
+                onPress={() => {
+                  graanaVerifeyModal(false)
+                }}
+              >
                 <Image source={times} style={styles.timesImg} />
               </TouchableOpacity>
             </View>
           }
 
           <View style={styles.MainTileView}>
-            {
-              statusForProperties && statusForProperties.length && statusForProperties.map((item) => {
+            {statusForProperties &&
+              statusForProperties.length &&
+              statusForProperties.map((item, index) => {
                 return (
-                  <TouchableOpacity style={styles.statusButtons} onPress={() => { submitStatus(data, item.value) }}>
+                  <TouchableOpacity
+                    key={index.toString()}
+                    style={styles.statusButtons}
+                    onPress={() => {
+                      submitStatus(data, item.value)
+                    }}
+                  >
                     <Text style={styles.statusBtnText}>{item.label}</Text>
                   </TouchableOpacity>
                 )
-              })
-            }
+              })}
 
-            {
-              forStatusPrice === true &&
+            {forStatusPrice === true && (
               <View style={styles.mainFormView}>
                 <SimpleInputText
                   name={'amount'}
                   placeholder={statusForProperties[1].label}
-                  label={statusForProperties[1].label === 'Sold' ? 'SOLD AMOUNT (Required)' : 'RENT AMOUNT (Required)'}
+                  label={
+                    statusForProperties[1].label === 'Sold'
+                      ? 'SOLD AMOUNT (Required)'
+                      : 'RENT AMOUNT (Required)'
+                  }
                   value={formData.amount}
                   keyboardType={'numeric'}
                   onChangeHandle={handleForm}
@@ -69,21 +84,23 @@ class GraanaPropertiesStatusModal extends React.Component {
                   fromatName={false}
                 />
 
-                {
-                  formData.amount != '' &&
-                  <TouchableOpacity style={styles.statusButtons} onPress={() => { submitGraanaStatusAmount('amount') }}>
+                {formData.amount != '' && (
+                  <TouchableOpacity
+                    style={styles.statusButtons}
+                    onPress={() => {
+                      submitGraanaStatusAmount('amount')
+                    }}
+                  >
                     <Text style={styles.statusBtnText}>SUBMIT AMOUNT</Text>
                   </TouchableOpacity>
-                }
+                )}
               </View>
-            }
+            )}
           </View>
-
-
         </View>
       </Modal>
     )
   }
 }
 
-export default GraanaPropertiesStatusModal;
+export default GraanaPropertiesStatusModal

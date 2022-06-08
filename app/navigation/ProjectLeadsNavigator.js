@@ -93,13 +93,13 @@ function ProjectLeadsNavigator(props) {
         ),
       })
     }
-  }, [navigation])
 
-  if (screen == 'ProjectDeals') {
-    navigation.setOptions({ title: '' })
-  } else if (hideCloseLostFilter) {
-    navigation.setOptions({ title: '' })
-  }
+    if (screen == 'ProjectDeals') {
+      navigation.setOptions({ title: '' })
+    } else if (hideCloseLostFilter) {
+      navigation.setOptions({ title: '' })
+    }
+  }, [navigation])
 
   return user.subRole === 'business_centre_manager' ||
     user.subRole === 'business_centre_agent' ||

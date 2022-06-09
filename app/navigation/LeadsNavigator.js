@@ -114,24 +114,25 @@ function LeadsNavigator(props) {
         ),
       })
     }
+
+    if (screen == 'MyDeals') {
+      navigation.setOptions({ title: '' })
+    } else if (hideCloseLostFilter) {
+      navigation.setOptions({
+        headerRight: (props) => <HeaderRight navigation={navigation} />,
+        title: 'SELECT LEAD',
+        headerLeft: (props) => (
+          <HeaderLeftLogo
+            navigation={navigation} //leftClientScreen={'Client'}
+            leftBool={true}
+          />
+        ),
+      })
+
+      //  navigation.setOptions({ title: 'SELECT LEAD' })
+    }
   }, [navigation])
 
-  if (screen == 'MyDeals') {
-    navigation.setOptions({ title: '' })
-  } else if (hideCloseLostFilter) {
-    navigation.setOptions({
-      headerRight: (props) => <HeaderRight navigation={navigation} />,
-      title: 'SELECT LEAD',
-      headerLeft: (props) => (
-        <HeaderLeftLogo
-          navigation={navigation} //leftClientScreen={'Client'}
-          leftBool={true}
-        />
-      ),
-    })
-
-    //  navigation.setOptions({ title: 'SELECT LEAD' })
-  }
   if (navFrom == 'follow_up' || navFrom == 'meeting') {
     return (
       <Tab.Navigator

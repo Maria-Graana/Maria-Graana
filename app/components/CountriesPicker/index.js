@@ -1,27 +1,30 @@
-import React, { useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import CountryPicker from 'react-native-country-picker-modal';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+/** @format */
+
+import React, { useState } from 'react'
+import { Text, View, StyleSheet } from 'react-native'
+import CountryPicker from 'react-native-country-picker-modal'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import AppStyles from '../../AppStyles'
 
 import { Ionicons } from '@expo/vector-icons'
 
-const CountriesPicker = props => {
+const CountriesPicker = (props) => {
   const [visible, setVisible] = useState(false)
   const onSelect = (country, name) => {
     props.handleForm(country.name, name)
-    setVisible(false);
+    setVisible(false)
   }
 
   return (
-    <View >
-      {visible &&
+    <View>
+      {visible && (
         <CountryPicker
           onSelect={(country) => onSelect(country, props.name)}
           visible={visible}
           onClose={() => setVisible(false)}
           withFilter
-        />}
+        />
+      )}
 
       <Ionicons
         style={[styles.arrowIcon]}
@@ -30,17 +33,12 @@ const CountriesPicker = props => {
         color={AppStyles.colors.subTextColor}
       />
 
-
-      <TouchableOpacity
-
-        style={[props.style, { justifyContent: 'center' }]}
-        onPress={() => setVisible(true)}>
+      <TouchableOpacity style={props.customStyle} onPress={() => setVisible(true)}>
         <Text style={styles.innerText}>{props.country ? props.country : 'Select Country'}</Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
-
 
 const styles = StyleSheet.create({
   innerText: {
@@ -53,12 +51,6 @@ const styles = StyleSheet.create({
     top: 8,
     zIndex: 2,
   },
+})
 
-});
-
-export default CountriesPicker;
-
-
-
-
-
+export default CountriesPicker

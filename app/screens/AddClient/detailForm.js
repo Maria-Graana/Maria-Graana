@@ -19,26 +19,20 @@ import TouchableInput from '../../components/TouchableInput'
 import PickerComponent from '../../components/Picker/index'
 import StaticData from '../../StaticData'
 import DateTimePicker from '../../components/DatePicker'
-import helper from '../../helper';
-import CountriesPicker from "./../../components/CountriesPicker";
+import helper from '../../helper'
+import CountriesPicker from './../../components/CountriesPicker'
 class DetailForm extends Component {
-
-
-
-
   constructor(props) {
     super(props)
-    this.scrollRef = React.createRef();
-    this.AddInfoRef = React.createRef();
+    this.scrollRef = React.createRef()
+    this.AddInfoRef = React.createRef()
     this.state = {
       relationStatus: '',
       openAdditionalInfo: false,
       addLeadRequirements: false,
       phone: '+92432342432334',
-
     }
   }
-
 
   goToFormPage = (page, status, client) => {
     const { navigation } = this.props
@@ -48,12 +42,12 @@ class DetailForm extends Component {
   onPressTouch = () => {
     // console.log("this.AddInfoRef.current?.offsetTop", this.AddInfoRef.current?.offsetTop);
     this.scrollRef.current?.scrollTo({
-      x: 0, y: this.AddInfoRef.current?.offsetTop
+      x: 0,
+      y: this.AddInfoRef.current?.offsetTop,
       //600
-      , animated: true
+      animated: true,
     })
   }
-
 
   render() {
     const {
@@ -79,7 +73,6 @@ class DetailForm extends Component {
       user,
       screenName,
 
-
       //InvestProps
       handleInvestForm,
       investFormData,
@@ -91,7 +84,6 @@ class DetailForm extends Component {
       loadings,
       isPriceModalVisible,
       setParentState,
-
 
       //rent/buy
       formType,
@@ -116,26 +108,18 @@ class DetailForm extends Component {
       modalType,
       showBedBathModal,
 
-
-
       isSizeModalVisible,
-
-
     } = this.props
-
 
     const { route } = this.props
 
-
     const { count, permissions } = this.props
 
-
-
     return (
-
-      <ScrollView stickyHeaderIndices={this.state.addLeadRequirements ? [2] : [1]} style={{ flex: 1 }}// ref={this.scrollRef}
+      <ScrollView
+        stickyHeaderIndices={this.state.addLeadRequirements ? [2] : [1]}
+        style={{ flex: 1 }} // ref={this.scrollRef}
       >
-
         <>
           <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
@@ -176,7 +160,9 @@ class DetailForm extends Component {
             {screenName === 'Payments' ? (
               <View style={[AppStyles.inputWrap]}>
                 <PhoneInputComponent
-                  phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
+                  phoneValue={
+                    formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)
+                  }
                   countryCodeValue={countryCode}
                   containerStyle={AppStyles.phoneInputStyle}
                   setPhone={(value) => validate(value, 'phone')}
@@ -195,7 +181,9 @@ class DetailForm extends Component {
             ) : (
               <View style={[AppStyles.inputWrap]}>
                 <PhoneInputComponent
-                  phoneValue={formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)}
+                  phoneValue={
+                    formData.contactNumber != '' && getTrimmedPhone(formData.contactNumber)
+                  }
                   countryCodeValue={countryCode}
                   containerStyle={AppStyles.phoneInputStyle}
                   setPhone={(value) => validate(value, 'phone')}
@@ -217,13 +205,20 @@ class DetailForm extends Component {
             )}
           </View>
 
+          <Text
+            style={[
+              AppStyles.formFontSettings,
+              AppStyles.inputPadLeft,
+              {
+                color: AppStyles.colors.textColor,
+                fontFamily: 'OpenSans_semi_bold',
+              },
+            ]}
+          >
+            Client Source
+          </Text>
 
-          <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
-            color: AppStyles.colors.textColor,
-            fontFamily: 'OpenSans_semi_bold'
-          },]}>Client Source</Text>
-
-          < View style={[AppStyles.mainInputWrap]}>
+          <View style={[AppStyles.mainInputWrap]}>
             <View style={[AppStyles.inputWrap]}>
               <PickerComponent
                 enabled={update ? false : true}
@@ -232,15 +227,12 @@ class DetailForm extends Component {
                 name={'clientSource'}
                 placeholder="Client Source"
                 selectedItem={formData.clientSource}
-
               />
             </View>
           </View>
         </>
 
-
         {
-
           <View>
             <TouchableInput
               semiBold={true}
@@ -249,29 +241,23 @@ class DetailForm extends Component {
               label={'Additional Info'}
               arrowType={this.state.openAdditionalInfo}
               onPress={() => {
-
                 this.setState({
                   openAdditionalInfo: !this.state.openAdditionalInfo,
-                  addLeadRequirements: false
+                  addLeadRequirements: false,
                 })
                 this.onPressTouch()
               }}
-
               value={'Additional Info'}
-
             />
           </View>
         }
 
-        {
-          this.state.openAdditionalInfo &&
-
+        {this.state.openAdditionalInfo && (
           <ScrollView
-
             horizontal={false}
-
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexGrow: 1, }} keyboardShouldPersistTaps="always"
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="always"
           >
             <View onStartShouldSetResponder={() => true}>
               <View style={[AppStyles.mainInputWrap]}>
@@ -293,7 +279,6 @@ class DetailForm extends Component {
                   )}
                 </View>
               </View>
-
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -367,7 +352,9 @@ class DetailForm extends Component {
                       name={'cnic'}
                       placeholder={'CNIC/NTN'}
                     />
-                    {cnicValidate == true && <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />}
+                    {cnicValidate == true && (
+                      <ErrorMessage errorMessage={'Invalid CNIC/NTN format'} />
+                    )}
                   </View>
                 )}
               </View>
@@ -380,7 +367,6 @@ class DetailForm extends Component {
                     name={'relationStatus'}
                     placeholder="S/O,D/O,W/O"
                     selectedItem={formData.relationStatus}
-
                   />
                 </View>
               </View>
@@ -393,15 +379,16 @@ class DetailForm extends Component {
                     onChangeText={(text) => {
                       handleForm(text, 'relativeName')
                     }}
-
                     style={[AppStyles.formControl, AppStyles.inputPadLeft]}
                     name={'relativeName'}
-                    placeholder={formData.relationStatus ? formData.relationStatus : 'Son / Daughter/ Spouse of'}
+                    placeholder={
+                      formData.relationStatus
+                        ? formData.relationStatus
+                        : 'Son / Daughter/ Spouse of'
+                    }
                   />
                 </View>
               </View>
-
-
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -457,7 +444,6 @@ class DetailForm extends Component {
                 </View>
               </View>
 
-
               <DateTimePicker
                 placeholderLabel={'Date of Birth'}
                 name={'dob'}
@@ -468,50 +454,64 @@ class DetailForm extends Component {
                 handleForm={(value, name) => handleForm(value, name)}
               />
 
-              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
-                color: AppStyles.colors.textColor,
-                fontFamily: 'OpenSans_semi_bold'
-              },]}>Mailing Address</Text>
+              <Text
+                style={[
+                  AppStyles.formFontSettings,
+                  AppStyles.inputPadLeft,
+                  {
+                    color: AppStyles.colors.textColor,
+                    fontFamily: 'OpenSans_semi_bold',
+                  },
+                ]}
+              >
+                Mailing Address
+              </Text>
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
                   <CountriesPicker
                     handleForm={handleForm}
-                    style={[AppStyles.formControl, AppStyles.inputPadLeft,]}
+                    customStyle={[
+                      AppStyles.formControl,
+                      AppStyles.inputPadLeft,
+                      { justifyContent: 'center' },
+                    ]}
                     country={formData.mCountry}
                     name={'mCountry'}
                   />
                 </View>
               </View>
-              {formData.mCountry == 'Pakistan' ? < View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <PickerComponent
-                    onValueChange={handleForm}
-                    data={StaticData.provincePickerData}
-                    name={'mProvince'}
-                    placeholder="Province"
-                    selectedItem={formData.mProvince}
-
-                  />
+              {formData.mCountry == 'Pakistan' ? (
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={[AppStyles.inputWrap]}>
+                    <PickerComponent
+                      onValueChange={handleForm}
+                      data={StaticData.provincePickerData}
+                      name={'mProvince'}
+                      placeholder="Province"
+                      selectedItem={formData.mProvince}
+                    />
+                  </View>
                 </View>
-              </View> : <View style={[AppStyles.mainInputWrap]}>
-                <View style={[AppStyles.inputWrap]}>
-                  <TextInput
-                    placeholderTextColor={'#a8a8aa'}
-                    value={formData.mProvince}
-                    onChangeText={(text) => {
-                      handleForm(text, 'mProvince')
-                    }}
-                    style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                    name={'mProvince'}
-                    placeholder={'Province'}
-                  />
-                  {accountsOptionFields && formData.accountTitle === '' ? (
-                    <ErrorMessage errorMessage={'Required'} />
-                  ) : null}
+              ) : (
+                <View style={[AppStyles.mainInputWrap]}>
+                  <View style={[AppStyles.inputWrap]}>
+                    <TextInput
+                      placeholderTextColor={'#a8a8aa'}
+                      value={formData.mProvince}
+                      onChangeText={(text) => {
+                        handleForm(text, 'mProvince')
+                      }}
+                      style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                      name={'mProvince'}
+                      placeholder={'Province'}
+                    />
+                    {accountsOptionFields && formData.accountTitle === '' ? (
+                      <ErrorMessage errorMessage={'Required'} />
+                    ) : null}
+                  </View>
                 </View>
-              </View>
-              }
+              )}
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -563,24 +563,35 @@ class DetailForm extends Component {
                   value={formData.mAddress}
                 />
               </View>
-              <Text style={[AppStyles.formFontSettings, AppStyles.inputPadLeft, {
-                color: AppStyles.colors.textColor,
-                fontFamily: 'OpenSans_semi_bold'
-              },]}>Permanent Address</Text>
+              <Text
+                style={[
+                  AppStyles.formFontSettings,
+                  AppStyles.inputPadLeft,
+                  {
+                    color: AppStyles.colors.textColor,
+                    fontFamily: 'OpenSans_semi_bold',
+                  },
+                ]}
+              >
+                Permanent Address
+              </Text>
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
-
                   <CountriesPicker
                     handleForm={handleForm}
-                    style={[AppStyles.formControl, AppStyles.inputPadLeft,]}
+                    customStyle={[
+                      AppStyles.formControl,
+                      AppStyles.inputPadLeft,
+                      { justifyContent: 'center' },
+                    ]}
                     country={formData.country}
                     name={'country'}
                   />
                 </View>
               </View>
 
-              {formData.country == 'Pakistan' ?
-                < View style={[AppStyles.mainInputWrap]}>
+              {formData.country == 'Pakistan' ? (
+                <View style={[AppStyles.mainInputWrap]}>
                   <View style={[AppStyles.inputWrap]}>
                     <PickerComponent
                       onValueChange={handleForm}
@@ -588,10 +599,10 @@ class DetailForm extends Component {
                       name={'province'}
                       placeholder="Province"
                       selectedItem={formData.province}
-
                     />
                   </View>
-                </View> :
+                </View>
+              ) : (
                 <View style={[AppStyles.mainInputWrap]}>
                   <View style={[AppStyles.inputWrap]}>
                     <TextInput
@@ -608,7 +619,8 @@ class DetailForm extends Component {
                       <ErrorMessage errorMessage={'Required'} />
                     ) : null}
                   </View>
-                </View>}
+                </View>
+              )}
 
               <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -645,8 +657,6 @@ class DetailForm extends Component {
                   ) : null}
                 </View>
               </View>
-
-
 
               {/* <View style={[AppStyles.mainInputWrap]}>
                 <View style={[AppStyles.inputWrap]}>
@@ -714,44 +724,35 @@ class DetailForm extends Component {
                   value={formData.address}
                 />
               </View>
-
-
-
-
             </View>
-
           </ScrollView>
-        }
+        )}
 
-        < View >
-          {!update && <TouchableInput
-            semiBold={true}
-            arrowType={this.state.addLeadRequirements}
-            placeholder="Add Lead Requirements"
-            label={'Add Lead Requirements'}
-            onPress={() => {
-              this.setState({
-                addLeadRequirements: !this.state.addLeadRequirements,
-                openAdditionalInfo: false
-              })
-            }}
-            value={'Add Lead Requirements'}
+        <View>
+          {!update && (
+            <TouchableInput
+              semiBold={true}
+              arrowType={this.state.addLeadRequirements}
+              placeholder="Add Lead Requirements"
+              label={'Add Lead Requirements'}
+              onPress={() => {
+                this.setState({
+                  addLeadRequirements: !this.state.addLeadRequirements,
+                  openAdditionalInfo: false,
+                })
+              }}
+              value={'Add Lead Requirements'}
+            />
+          )}
 
-          />}
-
-          {((formData.purpose == 'Invest' && checkValidations)
-            || (formData.purpose == 'Rent' && checkRentValidation) ||
-            (formData.purpose == 'Buy' && checkRentValidation))
-            ?
+          {(formData.purpose == 'Invest' && checkValidations) ||
+          (formData.purpose == 'Rent' && checkRentValidation) ||
+          (formData.purpose == 'Buy' && checkRentValidation) ? (
             <ErrorMessage errorMessage={'Please fill out all required fields.'} />
-            : null
+          ) : null}
+        </View>
 
-          }
-        </View >
-
-
-        {
-          this.state.addLeadRequirements &&
+        {this.state.addLeadRequirements && (
           <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
             <View onStartShouldSetResponder={() => true}>
               <View style={[AppStyles.mainInputWrap]}>
@@ -761,46 +762,44 @@ class DetailForm extends Component {
                       handleForm(value, name)
                       if (value == 'Buy') {
                         this.props.changeStatus('buy')
-
-                      }
-                      else if (value == 'Rent') {
+                      } else if (value == 'Rent') {
                         this.props.changeStatus('rent')
-
                       }
                     }}
-                    data={
-                      StaticData.leadTypePickerData.filter(function (el) {
-
-                        if (!getPermissionValue(
+                    data={StaticData.leadTypePickerData.filter(function (el) {
+                      if (
+                        !getPermissionValue(
                           PermissionFeatures.BUY_RENT_LEADS,
                           PermissionActions.CREATE,
                           permissions
-                        ) && !getPermissionValue(
+                        ) &&
+                        !getPermissionValue(
                           PermissionFeatures.PROJECT_LEADS,
                           PermissionActions.CREATE,
                           permissions
-                        )) {
-
-                          return el.name != "Rent" && el.name != "Buy" && el.name != "Invest";
-                        }
-
-                        else {
-                          if (!getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)) {
-                            return el.name != "Invest";
-                          }
-                          else if (!getPermissionValue(
+                        )
+                      ) {
+                        return el.name != 'Rent' && el.name != 'Buy' && el.name != 'Invest'
+                      } else {
+                        if (
+                          !getPermissionValue(
+                            PermissionFeatures.PROJECT_LEADS,
+                            PermissionActions.CREATE,
+                            permissions
+                          )
+                        ) {
+                          return el.name != 'Invest'
+                        } else if (
+                          !getPermissionValue(
                             PermissionFeatures.BUY_RENT_LEADS,
                             PermissionActions.CREATE,
                             permissions
-                          )) {
-                            return el.name != "Rent" && el.name != "Buy";
-                          }
-
-
-                          else return el
-                        }
-                      })
-                    }
+                          )
+                        ) {
+                          return el.name != 'Rent' && el.name != 'Buy'
+                        } else return el
+                      }
+                    })}
                     name={'purpose'}
                     placeholder="Select lead Type"
                     selectedItem={formData.purpose}
@@ -808,7 +807,7 @@ class DetailForm extends Component {
                 </View>
               </View>
 
-              {formData.purpose == 'Invest' &&
+              {formData.purpose == 'Invest' && (
                 <CMLeadFrom
                   screenName={'AddClient'}
                   navigation={this.props.navigation}
@@ -818,8 +817,6 @@ class DetailForm extends Component {
                   checkValidation={checkValidations}
                   handleForm={handleInvestForm}
                   clientName={clientName}
-
-
                   selectedCity={selectedCity}
                   formData={investFormData}
                   getProject={getProject}
@@ -828,13 +825,9 @@ class DetailForm extends Component {
                   isPriceModalVisible={isPriceModalVisible}
                   setParentState={setParentState}
                 />
+              )}
 
-              }
-
-
-              {(formData.purpose == 'Buy' || formData.purpose == 'Rent') &&
-
-
+              {(formData.purpose == 'Buy' || formData.purpose == 'Rent') && (
                 <InnerRCMForm
                   hideClient={true}
                   route={route}
@@ -862,19 +855,11 @@ class DetailForm extends Component {
                   isSizeModalVisible={isSizeModalVisible}
                   setParentState={setParentState}
                 />
-              }
+              )}
             </View>
           </ScrollView>
-
-        }
-
-
-
-
-      </ScrollView >
-
-
-
+        )}
+      </ScrollView>
     )
   }
 }

@@ -10,7 +10,7 @@
     "lint-fix": "./node_modules/.bin/eslint . --fix"
   },
   "dependencies": {
-    "@graana/react-native-graana-maps": "https://github.com/graana/react-native-graana-map",
+    "@graana/react-native-graana-maps": "~1.2.9",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-native-community/datetimepicker": "4.0.0",

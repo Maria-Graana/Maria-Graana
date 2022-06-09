@@ -1,10 +1,8 @@
 /** @format */
+import * as Updates from 'expo-updates'
 
-import Constants from 'expo-constants'
-
-const config = {
+const ENV = {
   development: {
-    //  apiPath: 'https://stage.arms.graana.rocks',
     apiPath: 'https://dev.arms.graana.rocks',
     graanaUrl: 'https://dev.graana.rocks',
     channel: 'development',
@@ -21,18 +19,15 @@ const config = {
   },
 }
 
-if (Constants.manifest.releaseChannel === undefined) {
-  module.exports = config['development']
-} else if (Constants.manifest.releaseChannel.indexOf('production') !== -1) {
-  module.exports = config['production']
-} else if (Constants.manifest.releaseChannel.indexOf('staging') !== -1) {
-  module.exports = config['staging']
-} else if (Constants.manifest.releaseChannel.indexOf('cta-staging') !== -1) {
-  module.exports = config['staging']
-} else if (Constants.manifest.releaseChannel.indexOf('cta-dev') !== -1) {
-  module.exports = config['development']
-} else if (Constants.manifest.releaseChannel.indexOf('development') !== -1) {
-  module.exports = config['development']
-} else {
-  module.exports = config['development']
+function getEnvVars(env = '') {
+  if (env && env.indexOf('staging') !== -1) return ENV.staging
+  else if (env && env.indexOf('production') !== -1) return ENV.production
+  else return ENV.development
+}
+
+const config = getEnvVars(Updates.releaseChannel)
+export default config
+
+export function getEndPoint(endPoint) {
+  return config.apiPath
 }

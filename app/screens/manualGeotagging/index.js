@@ -19,6 +19,7 @@ import Toast from 'react-native-easy-toast'
 import MapView, { Marker } from 'react-native-maps'
 import GpsIcon from './GpsIcon'
 import styles from './style'
+import helper from '../../helper'
 
 const { width, height } = Dimensions.get('screen')
 
@@ -107,7 +108,7 @@ class ManualMap extends Component {
   }
 
   getLocation = async () => {
-    const { status } = await Location.requestBackgroundPermissionsAsync()
+    const { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== 'granted') {
       alert(
         'Permission to access location was denied, please go to phone settings and give permission to ARMS app to continue'

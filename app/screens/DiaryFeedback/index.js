@@ -20,6 +20,7 @@ import {
   saveOrUpdateDiaryTask,
   setConnectFeedback,
   setMultipleModalVisible,
+  setNextTask,
   setSelectedDiary,
 } from '../../actions/diary'
 import TouchableButton from '../../components/TouchableButton'
@@ -65,20 +66,6 @@ class DiaryFeedback extends Component {
           })
         })
       }
-    }
-  }
-
-  componentWillUnmount() {
-    const { diary, route, dispatch, selectedDiary, selectedLead } = this.props
-    const { actionType = null } = route?.params
-    if (
-      actionType &&
-      actionType === 'Done' &&
-      selectedDiary &&
-      selectedDiary.taskType === 'viewing'
-    ) {
-      dispatch(clearDiaryFeedbacks())
-      dispatch(setConnectFeedback({}))
     }
   }
 
@@ -206,33 +193,26 @@ class DiaryFeedback extends Component {
           otherTasksToUpdate: [],
         })
       ).then((res) => {
-        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
-          if (res) {
-            let copyObj = { ...this.props.connectFeedback }
-            copyObj.selectedLead = selectedLead
-            copyObj.status = 'pending'
-            copyObj.reasonId = copyObj.feedbackId
-            copyObj.reasonTag = copyObj.tag
-            copyObj.taskCategory = 'leadTask'
-            copyObj.userId = user.id
-            copyObj.taskType = type === 'set_follow_up' ? 'follow_up' : 'meeting'
-            copyObj.armsLeadId =
-              selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null
-            copyObj.leadId =
-              selectedDiary && selectedDiary.armsProjectLeadId
-                ? selectedDiary.armsProjectLeadId
-                : null
-            delete copyObj.id
-            delete copyObj.feedbackId
-            delete copyObj.feedbackTag
-            navigation.replace('TimeSlotManagement', {
-              data: copyObj,
-              taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
-              isFromConnectFlow: true,
-            })
-            dispatch(setConnectFeedback({}))
-            dispatch(clearDiaryFeedbacks())
-          }
+        let copyObj = { ...this.props.connectFeedback }
+        copyObj.selectedLead = selectedLead
+        copyObj.status = 'pending'
+        copyObj.reasonId = copyObj.feedbackId
+        copyObj.reasonTag = copyObj.tag
+        copyObj.taskCategory = 'leadTask'
+        copyObj.userId = user.id
+        copyObj.taskType = type === 'set_follow_up' ? 'follow_up' : 'meeting'
+        copyObj.armsLeadId =
+          selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null
+        copyObj.leadId =
+          selectedDiary && selectedDiary.armsProjectLeadId ? selectedDiary.armsProjectLeadId : null
+        delete copyObj.id
+        delete copyObj.feedbackId
+        delete copyObj.feedbackTag
+
+        navigation.replace('TimeSlotManagement', {
+          data: copyObj,
+          taskType: type === 'set_follow_up' ? 'follow_up' : 'meeting',
+          isFromConnectFlow: true,
         })
       })
     } else if (type === 'book_a_unit') {
@@ -275,28 +255,23 @@ class DiaryFeedback extends Component {
           feedbackTag: connectFeedback.tag,
         })
       ).then((res) => {
-        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
-          if (res) {
-            navigation.replace('TimeSlotManagement', {
-              data: {
-                userId: user.id,
-                taskCategory: 'leadTask',
-                reasonTag: connectFeedback.tag,
-                reasonId: connectFeedback.feedbackId,
-                makeHistory: true,
-                id: selectedDiary.id,
-                taskType: 'meeting',
-                leadId:
-                  selectedDiary && selectedDiary.armsProjectLeadId
-                    ? selectedDiary.armsProjectLeadId
-                    : null,
-              },
-              taskType: 'meeting',
-              isFromConnectFlow: true,
-            })
-            dispatch(setConnectFeedback({}))
-            dispatch(clearDiaryFeedbacks())
-          }
+        navigation.replace('TimeSlotManagement', {
+          data: {
+            userId: user.id,
+            taskCategory: 'leadTask',
+            reasonTag: connectFeedback.tag,
+            reasonId: connectFeedback.feedbackId,
+            makeHistory: true,
+            id: selectedDiary.id,
+            taskType: 'meeting',
+            leadId:
+              selectedDiary && selectedDiary.armsProjectLeadId
+                ? selectedDiary.armsProjectLeadId
+                : null,
+            selectedLead,
+          },
+          taskType: 'meeting',
+          isFromConnectFlow: true,
         })
       })
     } else if (type === 'reject') {
@@ -325,6 +300,7 @@ class DiaryFeedback extends Component {
         dispatch(clearDiaryFeedbacks())
       })
     } else if (type === 'cancel_meeting') {
+      // Cancel the meeting task and make a followup task as next task
       dispatch(
         setConnectFeedback({
           ...connectFeedback,
@@ -336,28 +312,22 @@ class DiaryFeedback extends Component {
           otherTasksToUpdate: [],
         })
       ).then((res) => {
-        saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
-          dispatch(setConnectFeedback({}))
-          dispatch(clearDiaryFeedbacks())
-          if (res) {
-            navigation.replace('TimeSlotManagement', {
-              data: {
-                userId: user.id,
-                taskCategory: 'leadTask',
-                reasonTag: connectFeedback.tag,
-                reasonId: connectFeedback.feedbackId,
-                taskType: 'follow_up',
-                armsLeadId:
-                  selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
-                leadId:
-                  selectedDiary && selectedDiary.armsProjectLeadId
-                    ? selectedDiary.armsProjectLeadId
-                    : null,
-              },
-              taskType: 'follow_up',
-              isFromConnectFlow: true,
-            })
-          }
+        navigation.replace('TimeSlotManagement', {
+          data: {
+            userId: user.id,
+            taskCategory: 'leadTask',
+            reasonTag: connectFeedback.tag,
+            reasonId: connectFeedback.feedbackId,
+            taskType: 'follow_up',
+            armsLeadId: selectedDiary && selectedDiary.armsLeadId ? selectedDiary.armsLeadId : null,
+            leadId:
+              selectedDiary && selectedDiary.armsProjectLeadId
+                ? selectedDiary.armsProjectLeadId
+                : null,
+            selectedLead,
+          },
+          taskType: 'follow_up',
+          isFromConnectFlow: true,
         })
       })
     } else if (type === 'setup_viewing') {
@@ -432,27 +402,23 @@ class DiaryFeedback extends Component {
         })
       ).then((res) => {
         if (section === 'Follow up') {
-          saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
-            if (res) {
-              const copyObj = { ...this.props.connectFeedback }
-              copyObj.status = 'pending'
-              copyObj.otherTasksToUpdate = []
-              copyObj.reasonId = copyObj.feedbackId
-              copyObj.reasonTag = copyObj.tag
-              copyObj.taskType = 'follow_up'
-              delete copyObj.id
-              delete copyObj.feedbackId
-              delete copyObj.feedbackTag
-              dispatch(setConnectFeedback(copyObj)).then((res) => {
-                navigation.replace('TimeSlotManagement', {
-                  data: { ...this.props.connectFeedback },
-                  taskType: 'follow_up',
-                  isFromConnectFlow: true,
-                })
-              })
-            }
+          const copyObj = { ...this.props.connectFeedback }
+          copyObj.status = 'pending'
+          copyObj.otherTasksToUpdate = []
+          copyObj.reasonId = copyObj.feedbackId
+          copyObj.reasonTag = copyObj.tag
+          copyObj.taskType = 'follow_up'
+          copyObj.selectedLead = selectedLead
+          delete copyObj.id
+          delete copyObj.feedbackId
+          delete copyObj.feedbackTag
+          dispatch(setConnectFeedback(copyObj)).then((res) => {
+            navigation.replace('TimeSlotManagement', {
+              data: { ...this.props.connectFeedback },
+              taskType: 'follow_up',
+              isFromConnectFlow: true,
+            })
           })
-          // dispatch(clearDiaryFeedbacks())
         } else if (section === 'Reject') {
           this.setState({ isRWRModalVisible: true })
         }

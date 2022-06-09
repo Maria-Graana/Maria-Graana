@@ -24,7 +24,7 @@ import SortImg from '../../../assets/img/sort.png'
 import { setCallPayload } from '../../actions/callMeetingFeedback'
 import { setlead } from '../../actions/lead'
 import { getListingsCount } from '../../actions/listings'
-import { getItem, storeItem } from '../../actions/user'
+import { getItem, removeItem, storeItem } from '../../actions/user'
 import AndroidNotifications from '../../AndroidNotifications'
 import AppStyles from '../../AppStyles'
 import DateSearchFilter from '../../components/DateSearchFilter'
@@ -54,6 +54,7 @@ import FilterLeadsView from '../../components/FilterLeadsView'
 import ListViewComponent from '../../components/ListViewComponent'
 import TextFilterComponent from '../../components/TextFilterComponent'
 import DateFilterComponent from '../../components/DateFilterComponent'
+import Loader from '../../components/loader'
 
 var BUTTONS = [
   'Assign to team member',
@@ -71,9 +72,9 @@ class RentLeads extends React.Component {
     this.state = {
       phoneModelDataLoader: false,
       leadsData: [],
-      statusFilter: '',
+      statusFilter: 'all',
       open: false,
-      sort: '',
+      sort: '&order=Desc&field=createdAt',
       loading: false,
       activeSortModal: false,
       totalLeads: 0,
@@ -106,6 +107,7 @@ class RentLeads extends React.Component {
       countryFilter: null,
       classificationValues: null,
       activeDate: false,
+      clear: false,
       createBuyRentLead: getPermissionValue(
         PermissionFeatures.BUY_RENT_LEADS,
         PermissionActions.CREATE,
@@ -178,17 +180,21 @@ class RentLeads extends React.Component {
       const sortValue = await this.getSortOrderFromStorage()
       this.setState({ statusFilter: 'closed_won', sort: sortValue }, () => {
         this.fetchLeads()
+        this.setState({ statusLead: 'Closed Won' })
       })
     } else {
       const sortValue = await this.getSortOrderFromStorage()
       const statusValue = await getItem('statusFilterRent')
-      if (statusValue) {
-        this.setState({ statusFilter: String(statusValue), sort: sortValue }, () => {
+      if (statusValue && String(statusValue.value) != 'all') {
+        this.setState({ statusFilter: String(statusValue.value), sort: sortValue }, () => {
           this.fetchLeads()
+          const str = String(statusValue.name)
+          const capitalized = str.charAt(0).toUpperCase() + str.slice(1)
+          this.setState({ statusLead: capitalized, clear: true })
         })
       } else {
-        storeItem('statusFilterRent', 'open')
-        this.setState({ statusFilter: 'open', sort: sortValue }, () => {
+        // storeItem('statusFilterRent', 'all')
+        this.setState({ statusFilter: 'all', sort: sortValue }, () => {
           this.fetchLeads()
         })
       }
@@ -238,6 +244,9 @@ class RentLeads extends React.Component {
       classificationValues,
     } = this.state
     const { permissions, user } = this.props
+    if (statusFilter != 'all' && sort == '&order=sort&field=status') {
+      this.setState({ sort: '' })
+    }
     this.setState({ loading: true })
     const { hasBooking, navFrom, client } = this.props.route.params
     let isAiraPermission = helper.getAiraPermission(permissions)
@@ -334,17 +343,16 @@ class RentLeads extends React.Component {
   }
 
   sendStatus = (status, name) => {
-    this.setState({ sortLead: name, sort: status }, () => {
+    this.setState({ sort: status, activeSortModal: !this.state.activeSortModal }, () => {
       storeItem('sortRent', status)
       this.fetchLeads()
     })
-    this.RBSheet.close()
   }
 
   changeStatus = (status, name = null) => {
     this.clearStateValues()
-    this.setState({ statusLead: name, statusFilter: status, leadsData: [] }, () => {
-      storeItem('statusFilterRent', status)
+    this.setState({ statusLead: name, statusFilter: status, leadsData: [], clear: true }, () => {
+      storeItem('statusFilterRent', { name: name, value: status })
       this.fetchLeads()
     })
     this.RBSheet.close()
@@ -359,7 +367,7 @@ class RentLeads extends React.Component {
 
   searchCountry = (value, name) => {
     this.clearStateValues()
-    this.setState({ countryLead: name, countryFilter: value, leadsData: [] }, () => {
+    this.setState({ countryLead: name, countryFilter: value, leadsData: [], clear: true }, () => {
       this.fetchLeads()
     })
     this.RBSheet.close()
@@ -367,9 +375,12 @@ class RentLeads extends React.Component {
 
   setClassification = (value, name) => {
     this.clearStateValues()
-    this.setState({ classificationLead: name, classificationValues: value, leadsData: [] }, () => {
-      this.fetchLeads()
-    })
+    this.setState(
+      { classificationLead: name, classificationValues: value, leadsData: [], clear: true },
+      () => {
+        this.fetchLeads()
+      }
+    )
     this.RBSheet.close()
   }
 
@@ -512,7 +523,13 @@ class RentLeads extends React.Component {
   }
 
   clearSearch = () => {
-    this.setState({ searchText: '', showSearchBar: false, statusFilterType: 'id' })
+    this.setState({
+      searchText: '',
+      showSearchBar: false,
+      statusFilterType: 'id',
+      statusFilter: 'all',
+      sort: '&order=Desc&field=createdAt',
+    })
   }
 
   updateStatus = (data) => {
@@ -665,7 +682,7 @@ class RentLeads extends React.Component {
     navigation.navigate('RCMLeadTabs', { screen: 'Viewing' })
   }
 
-  changeStatusType = (status, text) => {
+  changeStatusType = (text, status) => {
     this.clearStateValues()
     if (status == 'id') {
       this.setState({ idLead: text })
@@ -676,7 +693,7 @@ class RentLeads extends React.Component {
     } else {
       this.setState({ phoneLead: text })
     }
-    this.setState({ statusFilterType: status, showSearchBar: true }, () => {
+    this.setState({ statusFilterType: status, showSearchBar: true, clear: true }, () => {
       this.RBSheet.close()
       this.fetchLeads()
     })
@@ -725,7 +742,7 @@ class RentLeads extends React.Component {
         filterType: value,
       },
       () => {
-        this.clearSearch()
+        if (value != 'sort') this.clearSearch()
         if (value == 'date' && Platform.OS == 'android') {
           this.setState({ activeDate: true })
         } else {
@@ -735,11 +752,20 @@ class RentLeads extends React.Component {
     )
   }
 
+  onClearAll = async (clear) => {
+    this.clearSearch()
+    this.clearStateValues()
+    this.setState({ clear: false }, () => {
+      this.fetchLeads()
+    })
+    await removeItem('statusFilterRent')
+  }
+
   changeDateFromTo = (name) => {
     this.clearStateValues()
     const { dateFromTo } = this.state
     const selectedDate = moment(dateFromTo ? dateFromTo : new Date()).format('YYYY-MM-DD')
-    this.setState({ showSearchBar: true, dateLead: selectedDate }, () => {
+    this.setState({ showSearchBar: true, dateLead: selectedDate, clear: true }, () => {
       this.fetchLeads(selectedDate, selectedDate)
       this.RBSheet.close()
     })
@@ -791,6 +817,7 @@ class RentLeads extends React.Component {
       dateLead,
       dateFromTo,
       activeDate,
+      clear,
     } = this.state
     const {
       user,
@@ -841,6 +868,9 @@ class RentLeads extends React.Component {
           }
           openDuration={250}
           closeOnDragDown={true}
+          customStyles={{
+            container: { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+          }}
         >
           {filterType == 'leadStatus' ? (
             <ListViewComponent
@@ -895,7 +925,12 @@ class RentLeads extends React.Component {
               changeDateFromTo={this.changeDateFromTo}
             />
           ) : filterType == 'country' ? (
-            <ListViewComponent data={countries} onPress={this.searchCountry} type={'country'} />
+            <ListViewComponent
+              data={countries}
+              onPress={this.searchCountry}
+              type={'country'}
+              show={true}
+            />
           ) : filterType == 'classification' ? (
             <ListViewComponent
               name={'Search by Classification Type'}
@@ -919,6 +954,10 @@ class RentLeads extends React.Component {
           classificationLead={classificationLead}
           setBottomSheet={this.setBottomSheet}
           hasBooking={hasBooking}
+          clear={clear}
+          onClear={this.onClearAll}
+          openStatus={this.openStatus}
+          hide={hasBooking ? true : false}
         />
         {/* ******************* TOP FILTER MAIN VIEW END ********** */}
 
@@ -995,7 +1034,7 @@ class RentLeads extends React.Component {
             keyExtractor={(item, index) => this.setKey(index)}
           />
         ) : (
-          <LoadingNoResult loading={loading} />
+          <Loader loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
         {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (

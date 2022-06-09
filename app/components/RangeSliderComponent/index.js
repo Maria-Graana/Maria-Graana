@@ -1,7 +1,7 @@
 /** @format */
 
-import React, { useState, useEffect, useRef } from 'react'
-import { StyleSheet, Text, View, TextInput } from 'react-native'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native'
 import PriceSlider from '../PriceSlider'
 import Modal from 'react-native-modal'
 import TouchableButton from '../TouchableButton'
@@ -21,13 +21,15 @@ const currencyConvert = (x) => {
   }
 }
 
-const PriceSliderModal = ({
+const RangeSliderComponent = ({
   isVisible,
   initialValue,
   finalValue,
   arrayValues,
   onModalCancelPressed,
   onModalPriceDonePressed,
+  inventoryPrice,
+  setPriceRange,
 }) => {
   const [minValue, setMinValue] = useState(initialValue)
   const [maxValue, setMaxValue] = useState(finalValue)
@@ -49,6 +51,9 @@ const PriceSliderModal = ({
       priceMax: finalValue === StaticData.Constants.any_value ? null : currencyConvert(finalValue),
     })
     setRangeString(
+      helper.convertPriceToString(initialValue, finalValue, arrayValues[arrayValues.length - 1])
+    )
+    setPriceRange(
       helper.convertPriceToString(initialValue, finalValue, arrayValues[arrayValues.length - 1])
     )
   }, [initialValue, finalValue])
@@ -144,93 +149,97 @@ const PriceSliderModal = ({
   }
 
   return (
-    <Modal isVisible={isVisible}>
-      <View style={styles.modalMain}>
-        <Text style={styles.textStyle}>{rangeString}</Text>
-        <PriceSlider
-          initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
-          finalValue={arrayValues.indexOf(getClosestNumber(maxValue, arrayValues))}
-          allowOverlap={minValue !== arrayValues[arrayValues.length - 2]}
-          priceValues={arrayValues}
-          onSliderValueChange={(values) => onSliderValueChange(values)}
-        />
+    <View style={inventoryPrice ? styles.inventoryView : styles.modalMain}>
+      <Text style={styles.textStyle}>{rangeString}</Text>
+      <PriceSlider
+        initialValue={arrayValues.indexOf(getClosestNumber(minValue, arrayValues))}
+        finalValue={arrayValues.indexOf(getClosestNumber(maxValue, arrayValues))}
+        allowOverlap={minValue !== arrayValues[arrayValues.length - 2]}
+        priceValues={arrayValues}
+        onSliderValueChange={(values) => onSliderValueChange(values)}
+      />
 
-        <View
+      <View
+        style={[
+          AppStyles.multiFormInput,
+          AppStyles.mainInputWrap,
+          { justifyContent: 'space-between', alignItems: 'center' },
+        ]}
+      >
+        <TextInput
+          placeholder={'Any'}
+          value={stringValues.priceMin}
+          onBlur={() =>
+            setStringValues({
+              ...stringValues,
+              priceMin: stringValues.priceMin ? currencyConvert(stringValues.priceMin) : '',
+            })
+          }
+          onFocus={() =>
+            setStringValues({
+              ...stringValues,
+              priceMin: stringValues.priceMin ? removeCommas(stringValues.priceMin) : '',
+            })
+          }
+          onChangeText={(text) => handleMinPriceChange(text)}
+          placeholderTextColor="#96999E"
           style={[
-            AppStyles.multiFormInput,
-            AppStyles.mainInputWrap,
-            { justifyContent: 'space-between', alignItems: 'center' },
+            AppStyles.formControl,
+            inventoryPrice ? styles.inventoryPriceStyle : styles.priceStyle,
           ]}
-        >
-          <TextInput
-            keyboardType={'phone-pad'}
-            placeholder={'Any'}
-            value={stringValues.priceMin}
-            onBlur={() =>
-              setStringValues({
-                ...stringValues,
-                priceMin: stringValues.priceMin ? currencyConvert(stringValues.priceMin) : '',
-              })
-            }
-            onFocus={() =>
-              setStringValues({
-                ...stringValues,
-                priceMin: stringValues.priceMin ? removeCommas(stringValues.priceMin) : '',
-              })
-            }
-            onChangeText={(text) => handleMinPriceChange(text)}
-            placeholderTextColor="#96999E"
-            style={[AppStyles.formControl, styles.priceStyle]}
-          />
-          <TextInput
-            keyboardType={'phone-pad'}
-            placeholder={'Any'}
-            value={stringValues.priceMax}
-            onBlur={() =>
-              setStringValues({
-                ...stringValues,
-                priceMax: stringValues.priceMax ? currencyConvert(stringValues.priceMax) : '',
-              })
-            }
-            onFocus={() =>
-              setStringValues({
-                ...stringValues,
-                priceMax: stringValues.priceMax ? removeCommas(stringValues.priceMax) : '',
-              })
-            }
-            placeholderTextColor="#96999E"
-            onChangeText={(text) => handleMaxPriceChange(text)}
-            style={[AppStyles.formControl, styles.priceStyle]}
-          />
-        </View>
-        {errorMessage ? <ErrorMessage errorMessage={errorMessage} /> : null}
-
-        <View style={styles.buttonsContainer}>
-          <TouchableButton
-            containerStyle={[styles.buttonCommonStyle, styles.cancelButton]}
-            containerBackgroundColor={AppStyles.whiteColor.color}
-            label={'Cancel'}
-            fontFamily={AppStyles.fonts.boldFont}
-            textColor={AppStyles.colors.primaryColor}
-            fontSize={18}
-            onPress={() => onModalCancel()}
-          />
-          <TouchableButton
-            containerStyle={[styles.buttonCommonStyle, styles.doneButton]}
-            label={'Done'}
-            fontFamily={AppStyles.fonts.boldFont}
-            fontSize={18}
-            onPress={() => onDonePressed()}
-          />
-        </View>
+        />
+        <TextInput
+          placeholder={'Any'}
+          value={stringValues.priceMax}
+          onBlur={() =>
+            setStringValues({
+              ...stringValues,
+              priceMax: stringValues.priceMax ? currencyConvert(stringValues.priceMax) : '',
+            })
+          }
+          onFocus={() =>
+            setStringValues({
+              ...stringValues,
+              priceMax: stringValues.priceMax ? removeCommas(stringValues.priceMax) : '',
+            })
+          }
+          placeholderTextColor="#96999E"
+          onChangeText={(text) => handleMaxPriceChange(text)}
+          style={[
+            AppStyles.formControl,
+            inventoryPrice ? styles.inventoryPriceStyle : styles.priceStyle,
+          ]}
+        />
       </View>
-    </Modal>
+      {errorMessage ? <ErrorMessage errorMessage={errorMessage} /> : null}
+
+      <Pressable onPress={() => onDonePressed()} style={styles.textButton}>
+        <Text style={styles.textElement}>Done</Text>
+      </Pressable>
+    </View>
   )
 }
 
-export default PriceSliderModal
+export default RangeSliderComponent
 
 const styles = StyleSheet.create({
+  textElement: {
+    fontSize: 18,
+    fontFamily: AppStyles.fonts.defaultFont,
+    fontWeight: '300',
+    padding: 15,
+    color: 'white',
+  },
+  textButton: {
+    backgroundColor: AppStyles.colors.primaryColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+    borderRadius: 5,
+  },
+  inventoryView: {
+    padding: 15,
+  },
   modalMain: {
     backgroundColor: '#e7ecf0',
     borderRadius: 7,
@@ -258,7 +267,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    // justifyContent: 'flex-end',
     width: '100%',
   },
   buttonCommonStyle: {
@@ -266,8 +275,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     textAlign: 'center',
-    minHeight: 55,
-    width: '30%',
+    // minHeight: 55,
+    // width: '0%',
     marginVertical: 10,
   },
   doneButton: {
@@ -282,5 +291,15 @@ const styles = StyleSheet.create({
   priceStyle: {
     width: '45%',
     textAlign: 'center',
+  },
+  inventoryPriceStyle: {
+    width: '45%',
+    textAlign: 'center',
+    backgroundColor: '#e7ecf0',
+  },
+  inventoryPriceStyle: {
+    width: '45%',
+    textAlign: 'center',
+    backgroundColor: '#e7ecf0',
   },
 })

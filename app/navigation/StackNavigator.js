@@ -2,9 +2,10 @@
 
 import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
-import { Text, TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 import AppStyles from '../AppStyles'
 import { Feather } from '@expo/vector-icons'
+import styles from './style'
 import HeaderLeftLeadDetail from '../components/HeaderLeftLeadDetail'
 import HeaderLeftLogo from '../components/HeaderLeftLogo/index'
 import HeaderRight from '../components/HeaderRight/index'
@@ -65,7 +66,9 @@ import AvailableUnitLead from '../screens/AvailableUnitLead' //ARMS-2293
 import Dialer from '../screens/Dialer'
 import ContactRegistrationFeedback from '../screens/ContactRegistrationFeedback'
 import PropertyList from '../screens/PropertyList'
-import lead from '../reducers/lead'
+import { Ionicons } from '@expo/vector-icons'
+import { clearDiaryFeedbacks, setConnectFeedback } from '../actions/diary'
+import { store } from '../store'
 
 const Stack = createStackNavigator()
 
@@ -109,7 +112,20 @@ function MainStack() {
         component={TimeSlotManagement}
         options={({ navigation, route }) => ({
           title: 'SLOT MANAGEMENT',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: (props) => (
+            <View style={styles.viewWrap}>
+              <Ionicons
+                name="md-arrow-back"
+                size={26}
+                style={styles.iconWrap}
+                onPress={() => {
+                  store.dispatch(setConnectFeedback({}))
+                  store.dispatch(clearDiaryFeedbacks())
+                  navigation.goBack()
+                }}
+              />
+            </View>
+          ),
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
@@ -191,7 +207,20 @@ function MainStack() {
         component={DiaryFeedback}
         options={({ navigation, route }) => ({
           title: 'Connect Feedback',
-          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerLeft: (props) => (
+            <View style={styles.viewWrap}>
+              <Ionicons
+                name="md-arrow-back"
+                size={26}
+                style={styles.iconWrap}
+                onPress={() => {
+                  store.dispatch(setConnectFeedback({}))
+                  store.dispatch(clearDiaryFeedbacks())
+                  navigation.goBack()
+                }}
+              />
+            </View>
+          ),
           headerTitleAlign: 'center',
         })}
       />
@@ -236,14 +265,12 @@ function MainStack() {
         component={Lead}
         options={({ navigation, route }) => ({
           //  headerShown:false,
-         // title: 'LEADS',
-            title: '',
-          headerLeft: (props) => (
-            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          // title: 'LEADS',
+          title: '',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => (
+            <DropdownHeader leadType={false} hasBooking={true} navigation={navigation} />
           ),
-          headerRight: (props) => <DropdownHeader
-            leadType={false}
-            hasBooking={true} navigation={navigation} />,
 
           headerTitleAlign: 'center',
         })}
@@ -255,15 +282,11 @@ function MainStack() {
         options={({ navigation, route }) => ({
           //  title: 'LEADS',
           title: '',
-          headerLeft: (props) => (
-            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+
+          headerRight: (props) => (
+            <DropdownHeader hasBooking={true} leadType={'ProjectLeads'} navigation={navigation} />
           ),
-
-          headerRight: (props) => <DropdownHeader
-
-            hasBooking={true}
-            leadType={'ProjectLeads'}
-            navigation={navigation} />,
 
           headerTitleAlign: 'left',
         })}
@@ -314,13 +337,23 @@ function MainStack() {
         component={Client}
         options={({ navigation, route }) => ({
           title: 'CLIENTS',
-          headerLeft: (props) => (
-            <HeaderLeftLogo navigation={navigation} leftScreen={'Landing'} leftBool={true} />
-          ),
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
           headerRight: (props) => <HeaderRight navigation={navigation} />,
           headerTitleAlign: 'center',
         })}
       />
+
+      <Stack.Screen
+        name="ClientView"
+        component={Client}
+        options={({ navigation, route }) => ({
+          title: 'CLIENTS',
+          headerLeft: (props) => <HeaderLeftLogo navigation={navigation} leftBool={true} />,
+          headerRight: (props) => <HeaderRight navigation={navigation} />,
+          headerTitleAlign: 'center',
+        })}
+      />
+
       <Stack.Screen
         name="AddClient"
         component={AddClient}
@@ -710,4 +743,3 @@ function MainStack() {
 }
 
 export default MainStack
-

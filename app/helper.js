@@ -436,7 +436,7 @@ const helper = {
   deleteAndUpdateNotification(data, start, id) {
     Notifications.getAllScheduledNotificationsAsync().then((notifications) => {
       this.deleteNotification(notifications, id)
-    //  TimerNotification(data, start)
+      //  TimerNotification(data, start)
     })
   },
   deleteLocalNotification(id) {
@@ -1152,20 +1152,20 @@ const helper = {
   setBookingStatusColor(arrayItem) {
     if (arrayItem && arrayItem.length > 0) {
       if (arrayItem.includes('Available')) {
-        return '#ceecfc'
+        return '#DCECFF'
       } else if (
         arrayItem.includes('Sold') ||
         arrayItem.includes('Token') ||
         arrayItem.includes('Payment')
       ) {
-        return '#fde0e2'
+        return '#FFF0ED'
       } else if (arrayItem.includes('Hold')) {
-        return '#fef3c6'
+        return '#FFF8E1'
       } else {
-        return 'white'
+        return '#FFFFFF'
       }
     } else {
-      return 'white'
+      return '#FFFFFF'
     }
   },
   skipShortlistedProperties(matchProperties, shortListedProperties) {
@@ -1220,6 +1220,19 @@ const helper = {
       PermissionFeatures.WANTED_LEADS,
       PermissionActions.Assign_Company_Leads,
       permissions
+    )
+  },
+
+  isREA(user = null, permissions) {
+    let userOrg = user && user.organization
+    const isPP = userOrg && (userOrg.isPP || userOrg.name.toLowerCase().trim() === 'agency21')
+
+    return (
+      getPermissionValue(
+        PermissionFeatures.BUY_RENT_LEADS,
+        PermissionActions.BUY_RENT_REA_WORKFLOW,
+        permissions
+      ) || isPP
     )
   },
 }

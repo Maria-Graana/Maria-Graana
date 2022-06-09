@@ -84,6 +84,7 @@ class CMPayment extends Component {
       meetings: [],
       pickerUnits: [],
       firstFormData: {
+        perUnitType: 'null',
         parkingAvailable:
           lead.project && lead.project.parkingAvailable ? lead.project.parkingAvailable : 'no',
         parkingCharges:
@@ -287,10 +288,12 @@ class CMPayment extends Component {
 
   fetchProducts = (lead) => {
     const { paidProject, project } = lead
+    const { firstFormData } = this.state
     let projectID =
       paidProject && paidProject.id ? paidProject.id : project && project.id ? project.id : null
+
     axios
-      .get(`/api/project/products?projectId=${projectID}`)
+      .get(`/api/project/products?projectId=${projectID}&unitType=${firstFormData.perUnitType}`)
       .then((res) => {
         this.setState({
           projectProducts: res.data,
@@ -475,7 +478,7 @@ class CMPayment extends Component {
   }
 
   getUnits = (projectId, floorId) => {
-    let url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&quota=true&status=Available&type=regular&all=true`
+    let url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available,Hold&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
     axios
       .get(url)
       .then((res) => {
@@ -508,7 +511,7 @@ class CMPayment extends Component {
 
   generateUnitsTableData = (project) => {
     const { allUnits } = this.state
-    let headerTitle = ['Unit']
+    let headerTitle = ['Unit', 'Unit Type']
     let otherTitles = ['Size(Sqft)', 'Rate/Sqft', 'Unit Price', 'Image']
     let projectKeys = []
     let tableData = []
@@ -521,6 +524,7 @@ class CMPayment extends Component {
       allUnits.map((item) => {
         let oneRow = []
         oneRow.push(item.name)
+        oneRow.push(item.unitType)
         const { optional_fields } = item
         let unitOptionalFields = JSON.parse(optional_fields)
         projectKeys &&
@@ -1312,6 +1316,8 @@ class CMPayment extends Component {
       newData['pearl'] = null
       value = oneUnit.id
       newData['unitName'] = oneUnit.name
+      newData['perUnitType'] = oneUnit.unitType
+      this.fetchProducts(lead)
     }
 
     if (name === 'paymentPlan' && value === 'Sold on Investment Plan') {
@@ -1814,7 +1820,9 @@ class CMPayment extends Component {
           unitPearlDetailsData,
           oneProductData,
           CMPayment,
-          selectedClient
+          selectedClient,
+          addInstrument,
+          isPrimary
         )
         downPayment = body.down_payment
         possessionCharges = body.possession_charges
@@ -2068,7 +2076,6 @@ class CMPayment extends Component {
     const { screenName } = this.props.route.params
     let readPermission = this.readPermission()
     let updatePermission = this.updatePermission()
-
     return (
       <View style={{ flex: 1 }}>
         <ProgressBar

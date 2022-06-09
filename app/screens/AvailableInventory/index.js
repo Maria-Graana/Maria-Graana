@@ -4,14 +4,27 @@ import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
 import { Fab } from 'native-base'
 import React, { Component } from 'react'
-import { Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import RangeSliderComponent from '../../components/RangeSliderComponent'
+
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Platform,
+} from 'react-native'
 import { Row, Table } from 'react-native-table-component'
 import { connect } from 'react-redux'
 import _ from 'underscore'
 import AppStyles from '../../AppStyles'
-import AvailableInventoryFilter from '../../components/AvailableInventoryFilter'
+
+import RBSheet from 'react-native-raw-bottom-sheet'
+import InventoryFilter from '../../components/FilterLeadsView/InventoryFilter'
+import ListViewComponent from '../../components/ListViewComponent'
+
 import Loader from '../../components/loader'
-import PickerComponent from '../../components/Picker'
 import TouchableButton from '../../components/TouchableButton'
 import helper from '../../helper.js'
 import { getPermissionValue } from '../../hoc/Permissions'
@@ -22,9 +35,16 @@ class AvailableInventory extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      priceRange: '',
+      isPriceModalVisible: false,
+      minPrice: 0,
+      maxPrice: StaticData.Constants.any_value,
+      selectedFloorId: null,
+      filterType: null,
       allProjects: [],
       pickerProjects: [],
       selectedProject: null,
+      selectedProjectName: null,
       selectedFloor: null,
       allFloors: [],
       pickerFloors: [],
@@ -58,6 +78,8 @@ class AvailableInventory extends Component {
           {
             pickerProjects: projectArray,
             allProjects: res.data.items,
+            selectedProjectName:
+              projectArray && projectArray.length > 0 ? projectArray[0].name : null,
             selectedProject: projectArray && projectArray.length > 0 ? projectArray[0].value : null,
             projectData: projectArray && projectArray.length > 0 ? projectArray[0] : null,
           },
@@ -98,15 +120,17 @@ class AvailableInventory extends Component {
   }
 
   getUnits = (projectId, floorId) => {
-    const { status } = this.state
+    this.setState({ loading: true })
+    const { status, minPrice, maxPrice } = this.state
     this.setState({ disabled: true, active: false, selectedRow: null })
     let url = ``
     if (projectId) {
-      url = `/api/project/shops?projectId=${projectId}&status=${status}&currentInventory=true&all=true`
+      url = `/api/project/shops?projectId=${projectId}&status=${status}&currentInventory=true&all=true&minPrice=${minPrice}&maxPrice=${maxPrice}`
     }
     if (projectId && floorId) {
-      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=${status}&currentInventory=true&all=true`
+      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=${status}&currentInventory=true&all=true&minPrice=${minPrice}&maxPrice=${maxPrice}`
     }
+
     axios
       .get(url)
       .then((res) => {
@@ -153,6 +177,12 @@ class AvailableInventory extends Component {
     })
     allUnits &&
       allUnits.map((item) => {
+        let bookingStatus = ''
+        if (item.bookingStatus === 'hold') {
+          bookingStatus = 'Hold'
+        } else {
+          bookingStatus = item.bookingStatus
+        }
         let oneRow = []
         oneRow.push(item.name)
         const { optional_fields } = item
@@ -174,7 +204,7 @@ class AvailableInventory extends Component {
         oneRow.push(this.currencyConvert(item.rate_per_sqft))
         oneRow.push(this.currencyConvert(PaymentMethods.findUnitPrice(item)))
         oneRow.push('---')
-        oneRow.push(item.bookingStatus)
+        oneRow.push(bookingStatus)
         tableData.push(oneRow)
       })
     otherTitles.map((item) => {
@@ -201,11 +231,14 @@ class AvailableInventory extends Component {
     }
   }
 
-  handleProjectChange = (item) => {
+  handleProjectChange = (item, name) => {
     const { pickerProjects } = this.state
-    this.setState({ selectedProject: item, selectedFloor: null, loading: true }, () => {
-      this.getFloors(this.state.selectedProject)
-    })
+    this.setState(
+      { selectedProject: item, selectedProjectName: name, selectedFloor: null, loading: true },
+      () => {
+        this.getFloors(this.state.selectedProject)
+      }
+    )
 
     this.setProjectData(item, pickerProjects)
   }
@@ -218,17 +251,10 @@ class AvailableInventory extends Component {
     }
   }
 
-  handleFloorChange = (item) => {
+  handleFloorChange = (item, floorId) => {
     const { selectedProject } = this.state
-    this.setState({ selectedFloor: item, loading: true }, () => {
-      this.getUnits(selectedProject, item)
-    })
-  }
-
-  filterByStatus = (status) => {
-    const { selectedProject, selectedFloor } = this.state
-    this.setState({ defaultUnitStatus: status }, () => {
-      this.getUnits(selectedProject, selectedFloor, status)
+    this.setState({ selectedFloor: item, selectedFloorId: floorId, loading: true }, () => {
+      this.getUnits(selectedProject, floorId)
     })
   }
 
@@ -271,8 +297,12 @@ class AvailableInventory extends Component {
   }
 
   onSelection = (val) => {
-    const { active } = this.state
-    this.setState({ active: true, disabled: false, selectedRow: val })
+    const { active, disabled, selectedRow } = this.state
+    if (selectedRow == val) {
+      this.setState({ active: false, disabled: true, selectedRow: null })
+    } else {
+      this.setState({ active: true, disabled: false, selectedRow: val })
+    }
   }
 
   updatePermission = () => {
@@ -284,12 +314,93 @@ class AvailableInventory extends Component {
     )
   }
 
+  setBottomSheet = (value) => {
+    this.setState(
+      {
+        filterType: value,
+      },
+      () => {
+        this.RBSheet.open()
+      }
+    )
+  }
+
+  onClearAll = () => {
+    const { pickerProjects } = this.state
+    this.setState(
+      {
+        clear: false,
+        selectedFloor: null,
+        status: '',
+        selectedFloorId: null,
+        minPrice: 0,
+        maxPrice: StaticData.Constants.any_value,
+        priceRange: '',
+
+        selectedProjectName:
+          pickerProjects && pickerProjects.length > 0 ? pickerProjects[0].name : null,
+        selectedProject:
+          pickerProjects && pickerProjects.length > 0 ? pickerProjects[0].value : null,
+        projectData: pickerProjects && pickerProjects.length > 0 ? pickerProjects[0] : null,
+      },
+      () => {
+        this.getFloors(pickerProjects && pickerProjects.length > 0 ? pickerProjects[0].value : null)
+      }
+    )
+  }
+
+  changeProject = (status, name = null) => {
+    this.handleProjectChange(status, name)
+    this.RBSheet.close()
+  }
+  changeFloors = (status, name = null) => {
+    this.handleFloorChange(name, status)
+    this.RBSheet.close()
+  }
+
+  changeStatus = (status, name = null) => {
+    const { selectedProject } = this.state
+    this.setState({ status: name })
+    this.filterByStatus(name)
+
+    this.RBSheet.close()
+  }
+
+  filterByStatus = (status) => {
+    const { selectedProject, selectedFloorId } = this.state
+    this.setState({ defaultUnitStatus: status }, () => {
+      this.getUnits(selectedProject, selectedFloorId, status)
+    })
+  }
+  onModalPriceDonePressed = (minValue, maxValue) => {
+    const { selectedProject, selectedFloorId, status } = this.state
+
+    this.setState({ isPriceModalVisible: false, minPrice: minValue, maxPrice: maxValue }, () => {
+      this.getUnits(selectedProject, selectedFloorId, status)
+    })
+    this.RBSheet.close()
+  }
+
+  setPriceRange = (range) => {
+    this.setState({ priceRange: range })
+  }
+
+  onModalPriceShowPressed = () => {
+    this.setState({ isPriceModalVisible: true })
+  }
+
+  onModalCancelPressed = () => {
+    this.setState({ isPriceModalVisible: false })
+    this.RBSheet.close()
+  }
+
   render() {
     const {
       pickerProjects,
       selectedProject,
       pickerFloors,
       selectedFloor,
+      selectedFloorId,
       tableData,
       tableHeaderTitle,
       loading,
@@ -298,6 +409,12 @@ class AvailableInventory extends Component {
       active,
       selectedRow,
       disabled,
+      filterType,
+      selectedProjectName,
+      isPriceModalVisible,
+      minPrice,
+      maxPrice,
+      priceRange,
     } = this.state
     const { navigation } = this.props
     let widthArr = this.setTableRowWidth()
@@ -306,98 +423,72 @@ class AvailableInventory extends Component {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.mainContainer}>
-          <AvailableInventoryFilter
-            toggleFilterModal={(value) => this.toggleFilterModal(value)}
-            status={status}
-            changeStatus={(value) => this.setState({ status: value })}
-            showFilterModal={showFilterModal}
-            onFilterApplied={() => this.getUnits(selectedProject, selectedFloor, status)}
-          />
-          <View style={{ padding: 10 }}>
-            <PickerComponent
-              onValueChange={this.handleProjectChange}
-              data={pickerProjects}
-              name={'project'}
-              placeholder="Project"
-              enabled={!loading}
-              selectedItem={selectedProject ? selectedProject : ''}
-            />
-          </View>
-          <View style={{ padding: 10 }}>
-            <PickerComponent
-              onValueChange={this.handleFloorChange}
-              data={pickerFloors}
-              name={'floor'}
-              enabled={!loading}
-              placeholder="All Units"
-              selectedItem={selectedFloor ? selectedFloor : ''}
-            />
-          </View>
-
-          {/* {showSearchBar ? (
-            <View style={[styles.filterRow]}>
-              <View style={styles.idPicker}>
-                <PickerComponent
-                  placeholder={'Filter Unit by'}
-                  data={StaticData.filterAvailableUnits}
-                  customStyle={styles.pickerStyle}
-                  customIconStyle={styles.customIconStyle}
-                  onValueChange={this.changeFilterType}
-                  selectedItem={filterType}
-                />
-              </View>
-
-              {filterType === 'status' ? (
-                <View style={styles.idPicker}>
-                  <PickerComponent
-                    placeholder={'Status'}
-                    data={StaticData.unitStatuses}
-                    customStyle={styles.pickerStyle}
-                    customIconStyle={styles.customIconStyle}
-                    onValueChange={this.filterByStatus}
-                    selectedItem={defaultUnitStatus}
+          <RBSheet
+            customStyles={{
+              container: { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+            }}
+            ref={(ref) => {
+              this.RBSheet = ref
+            }}
+            height={
+              filterType == 'status'
+                ? 260
+                : filterType == 'floors'
+                ? 500
+                : filterType == 'price'
+                ? 350
+                : 700
+            }
+            //openDuration={250}
+            closeOnDragDown={true}
+          >
+            {filterType == 'project' ? (
+              <>
+                {pickerProjects?.length != 0 ? (
+                  <ListViewComponent
+                    data={pickerProjects}
+                    onPress={this.changeProject}
+                    show={true}
                   />
-                </View>
-              ) : (
-                <Text>price filter</Text>
-              )}
-
-              <View
-                style={{
-                  width: '15%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Ionicons
-                  onPress={() => {
-                    this.setState({ showSearchBar: false })
-                  }}
-                  name={'ios-close-circle-outline'}
-                  size={26}
-                  color={AppStyles.colors.subTextColor}
-                />
-              </View>
-            </View>
-          ) : (
-            <View
-              style={{
-                alignItems: 'flex-end',
-                paddingHorizontal: 20,
-                width: '100%',
-                justifyContent: 'center',
-              }}
-            >
-              <Ionicons
-                onPress={() => {
-                  this.setState({ showSearchBar: true })
-                }}
-                name={'ios-search'}
-                size={26}
-                color={AppStyles.colors.subTextColor}
+                ) : (
+                  <Loader loading={true} />
+                )}
+              </>
+            ) : filterType == 'floors' ? (
+              <ListViewComponent name={'Floors'} data={pickerFloors} onPress={this.changeFloors} />
+            ) : filterType == 'status' ? (
+              <ListViewComponent
+                name={'Status'}
+                data={StaticData.inventoryStatuses}
+                onPress={this.changeStatus}
               />
-            </View>
-          )} */}
+            ) : filterType == 'price' ? (
+              <RangeSliderComponent
+                setPriceRange={this.setPriceRange}
+                inventoryPrice={true}
+                isVisible={true}
+                initialValue={minPrice}
+                finalValue={maxPrice}
+                onModalPriceDonePressed={this.onModalPriceDonePressed}
+                onModalCancelPressed={this.onModalCancelPressed}
+                arrayValues={StaticData.PricesRent}
+              />
+            ) : null}
+          </RBSheet>
+          <InventoryFilter
+            priceRange={priceRange}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            onModalPriceShowPressed={this.onModalPriceShowPressed}
+            enabled={!loading}
+            project={selectedProjectName}
+            selectedFloor={selectedFloor}
+            status={status}
+            price={10}
+            setBottomSheet={this.setBottomSheet}
+            clear={true}
+            onClear={this.onClearAll}
+          />
 
           {loading ? (
             <Loader loading={loading} />
@@ -436,16 +527,16 @@ class AvailableInventory extends Component {
                                     {
                                       backgroundColor:
                                         active && selectedRow == rowData[0]
-                                          ? null
+                                          ? '#0f73ee'
                                           : helper.setBookingStatusColor(rowData),
-                                      borderColor:
-                                        active && selectedRow == rowData[0]
-                                          ? 'black'
-                                          : AppStyles.colors.primaryColor,
-                                      borderWidth: active && selectedRow == rowData[0] ? 1.2 : 0.6,
                                     },
                                   ]}
-                                  textStyle={styles.text}
+                                  textStyle={[
+                                    styles.text,
+                                    {
+                                      color: active && selectedRow == rowData[0] ? '#fff' : 'black',
+                                    },
+                                  ]}
                                 />
                               </TouchableOpacity>
                             ) : (
@@ -467,28 +558,21 @@ class AvailableInventory extends Component {
                   </ScrollView>
                 </View>
               ) : (
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  style={styles.imageStyle}
-                />
+                <View style={styles.imageStyles}>
+                  <Image
+                    source={require('../../../assets/img/no-result-found.png')}
+                    style={styles.imageStyle}
+                  />
+                </View>
               )}
             </>
           )}
-          <Fab
-            active="true"
-            containerStyle={{ zIndex: 20 }}
-            style={{ backgroundColor: AppStyles.colors.primaryColor }}
-            position="bottomRight"
-            onPress={() => this.toggleFilterModal(true)}
-          >
-            <Ionicons name="ios-search" color="#ffffff" />
-          </Fab>
         </View>
         {updatePermission ? (
           <View style={styles.buttonInputWrap}>
             <TouchableButton
               containerStyle={[styles.timePageBtn, { opacity: disabled ? 0.5 : 1 }]}
-              label="Select"
+              label="Book Unit"
               borderColor="white"
               containerBackgroundColor="#0f73ee"
               borderWidth={1}
@@ -512,9 +596,12 @@ mapStateToProps = (store) => {
 export default connect(mapStateToProps)(AvailableInventory)
 
 const styles = StyleSheet.create({
+  imageStyles: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   mainContainer: {
-    // padding: 15,
-    backgroundColor: '#e7ecf0',
+    backgroundColor: '#E5E5E5',
     flex: 1,
   },
   customIconStyle: {
@@ -525,12 +612,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 15,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
     borderColor: AppStyles.colors.primaryColor,
   },
   headerTable: {
     height: 50,
-    backgroundColor: '#f1f8ff',
+    backgroundColor: '#FFFFFF',
     borderColor: AppStyles.colors.primaryColor,
   },
   headerTextStyle: {
@@ -549,12 +637,12 @@ const styles = StyleSheet.create({
   dataWrapper: { marginTop: 0 },
   row: {
     height: 40,
-    borderColor: AppStyles.colors.primaryColor,
-    borderWidth: 0.6,
+    borderColor: 'lightgrey',
+    borderBottomWidth: 0.6,
   },
   tableBorder: {
     borderWidth: 1,
-    borderColor: AppStyles.colors.primaryColor,
+    borderColor: 'lightgrey',
   },
   imageStyle: { width: 200, height: 200, alignSelf: 'center', margin: 10 },
   idPicker: {
@@ -565,7 +653,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderWidth: 1,
     borderRadius: 20,
-    borderColor: '#ebebeb',
+    borderColor: 'lightgrey',
     overflow: 'hidden',
   },
   filterRow: {
@@ -577,11 +665,13 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   buttonInputWrap: {
+    backgroundColor: '#FFFFFF',
     justifyContent: 'flex-end',
+    paddingVertical: 15,
   },
   timePageBtn: {
     justifyContent: 'center',
-    borderRadius: 4,
+    borderRadius: 8,
     padding: 10,
     marginLeft: 15,
     marginRight: 15,

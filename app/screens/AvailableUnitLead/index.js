@@ -2,7 +2,7 @@
 
 import { Ionicons } from '@expo/vector-icons'
 import axios from 'axios'
-import { ActionSheet } from 'native-base'
+import { ActionSheet, Fab } from 'native-base'
 import React from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
 import { FAB } from 'react-native-paper'
@@ -26,10 +26,10 @@ import StatusFeedbackModal from '../../components/StatusFeedbackModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
 import helper from '../../helper'
 import Ability from '../../hoc/Ability'
-import StaticData from '../../StaticData'
-import styles from './style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import StaticData from '../../StaticData'
+import styles from './style'
 
 var BUTTONS = [
   'Assign to team member',
@@ -91,22 +91,62 @@ class AvailableUnitLead extends React.Component {
     this.clearStateValues()
   }
 
+  createNewProjectLead = async (client, project, unit) => {
+    const { dispatch, navigation } = this.props
+    const phones =
+      client && client.customerContacts && client.customerContacts.map((item) => item.phone)
+    const payload = {
+      customerId: client && client.id,
+      cityId: 3,
+      projectId: project.value,
+      projectName: project.name,
+      projectType: unit.project.type,
+      description: unit.name,
+      phones: phones,
+      minPrice: StaticData.PricesProject[0],
+      maxPrice: StaticData.PricesProject[StaticData.PricesProject.length - 1],
+    }
+    await axios
+      .post(`/api/leads/project`, payload)
+      .then((response) => {
+        axios
+          .get(`/api/leads/project/byId?id=${response.data.leadId}`)
+          .then((res) => {
+            dispatch(setlead(res.data))
+            navigation.replace('CMLeadTabs', {
+              screen: 'Payments',
+              params: {
+                lead: res.data,
+                client: client,
+                name: client.firstName + ' ' + client.lastName,
+                unitData: unit,
+              },
+            })
+          })
+          .catch((error) => {
+            console.log('/api/leads/project/byId?id - Error', error)
+          })
+      })
+      .catch((error) => {
+        console.log('/api/leads/project', error)
+      })
+  }
+
   fetchAddedLeads = (client) => {
     const { page, leadsData, statusFilter } = this.state
     const { clientDetails } = this.props.route.params
     this.setState({ loading: true })
 
-    let url;
+    let url
     if (clientDetails) {
-      url = `/api/leads/projects?customerId=${client.id}&customerLeads=true`;
+      url = `/api/leads/projects?customerId=${client.id}&customerLeads=true`
     } else {
-      url = `/api/leads/projects?customerId=${client.id}&status=open`;
+      url = `/api/leads/projects?customerId=${client.id}&status=open`
     }
 
     axios
       .get(url)
       .then((res) => {
-        
         this.setState({
           leadsData: page === 1 ? res.data.rows : [...leadsData, ...res.data.rows],
           loading: false,
@@ -115,7 +155,7 @@ class AvailableUnitLead extends React.Component {
           statusFilter: statusFilter,
         })
       })
-      .catch((res) => {
+      .catch(() => {
         this.setState({
           loading: false,
         })
@@ -220,7 +260,7 @@ class AvailableUnitLead extends React.Component {
           }
         )
       })
-      .catch((res) => {
+      .catch(() => {
         this.setState({
           loading: false,
         })
@@ -326,7 +366,7 @@ class AvailableUnitLead extends React.Component {
         page = 'Meetings'
       }
 
-      navigation.navigate('CMLeadTabs', {
+      navigation.replace('CMLeadTabs', {
         screen: unitData ? 'Payments' : page,
         params: { lead: data, unitData: unitData, screenName: screen },
       })
@@ -427,14 +467,14 @@ class AvailableUnitLead extends React.Component {
   }
 
   rejectLead = (body) => {
-    const { navigation, lead } = this.props
+    const { navigation } = this.props
     const { selectedLead } = this.state
     if (selectedLead) {
       var leadId = []
       leadId.push(selectedLead.id)
       axios
         .patch(`/api/leads/project`, body, { params: { id: leadId } })
-        .then((res) => {
+        .then(() => {
           helper.successToast(`Lead Closed`)
           navigation.navigate('Leads')
           this.fetchLeads()
@@ -518,7 +558,6 @@ class AvailableUnitLead extends React.Component {
   render() {
     const {
       leadsData,
-      open,
       statusFilter,
       loading,
       activeSortModal,
@@ -536,19 +575,18 @@ class AvailableUnitLead extends React.Component {
       selectedClientContacts,
       isMultiPhoneModalVisible,
       statusFilterType,
-      comment,
       newActionModal,
       isMenuVisible,
     } = this.state
-    const { user, permissions } = this.props
-    const screen = this.props.route.params.screen
+    const { user, route, permissions } = this.props
+    const { client, projectData, unitData } = route.params
     let buyRentFilterType = StaticData.buyRentFilterType
 
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
         {/* ******************* TOP FILTER MAIN VIEW ********** */}
         <View style={{ marginBottom: 15 }}>
-          {showSearchBar ? (
+          {/* {showSearchBar ? (
             <View style={[styles.filterRow, { paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }]}>
               <View style={styles.idPicker}>
                 <PickerComponent
@@ -614,8 +652,25 @@ class AvailableUnitLead extends React.Component {
                 />
               </View>
             </View>
-          )}
+          )} */}
         </View>
+        {getPermissionValue(
+          PermissionFeatures.PROJECT_LEADS,
+          PermissionActions.CREATE,
+          permissions
+        ) && (
+          <Fab
+            active="true"
+            containerStyle={{ zIndex: 20 }}
+            style={{ backgroundColor: AppStyles.colors.primaryColor }}
+            position="bottomRight"
+            onPress={() => {
+              this.createNewProjectLead(client, projectData, unitData)
+            }}
+          >
+            <Ionicons name="md-add" color="#ffffff" />
+          </Fab>
+        )}
         {leadsData && leadsData.length > 0 ? (
           <FlatList
             data={leadsData}
@@ -658,39 +713,7 @@ class AvailableUnitLead extends React.Component {
           <LoadingNoResult loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {/* {getPermissionValue(
-          PermissionFeatures.PROJECT_LEADS,
-          PermissionActions.CREATE,
-          permissions
-        ) ||
-        getPermissionValue(
-          PermissionFeatures.BUY_RENT_LEADS,
-          PermissionActions.CREATE,
-          permissions
-        ) ? (
-          <FAB.Group
-            open={open}
-            icon="plus"
-            style={{ marginBottom: 16 }}
-            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-            color={AppStyles.bgcWhite.backgroundColor}
-            actions={[
-              {
-                icon: 'plus',
-                label: 'Buy/Rent Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
-              },
-              {
-                icon: 'plus',
-                label: 'Investment Lead',
-                color: AppStyles.colors.primaryColor,
-                onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
-              },
-            ]}
-            onStateChange={({ open }) => this.setState({ open })}
-          />
-        ) : null} */}
+
         <SortModal
           sendStatus={this.sendStatus}
           openStatus={this.openStatus}
@@ -733,8 +756,8 @@ class AvailableUnitLead extends React.Component {
             modalMode === 'call'
               ? StaticData.commentsFeedbackCall
               : modalMode === 'meeting'
-                ? StaticData.commentsFeedbackMeeting
-                : StaticData.leadClosedCommentsFeedback
+              ? StaticData.commentsFeedbackMeeting
+              : StaticData.leadClosedCommentsFeedback
           }
           modalMode={modalMode}
           rejectLead={(body) => this.rejectLead(body)}

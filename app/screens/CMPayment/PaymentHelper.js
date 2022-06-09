@@ -267,7 +267,7 @@ const PaymentHelper = {
           ? null
           : firstFormData.finalPrice,
       installmentAmount: CMPayment.installmentAmount,
-      type: CMPayment.type,
+      type: firstFormData.unitType === 'fullUnit' ? 'regular' : 'pearl',
       pearl:
         firstFormData.pearl === null || firstFormData.pearl === '' ? null : firstFormData.pearl,
       cnic: firstFormData.cnic,
@@ -519,7 +519,9 @@ const PaymentHelper = {
     unitPearlDetailsData,
     oneProductData,
     CMPayment,
-    selectedClient
+    selectedClient,
+    addInstrument,
+    isPrimary
   ) {
     const { projectProduct } = oneProductData
     let body = PaymentHelper.createPearl({
@@ -549,7 +551,7 @@ const PaymentHelper = {
         firstFormData.finalPrice === null || firstFormData.finalPrice === ''
           ? null
           : firstFormData.finalPrice - CMPayment.installmentAmount,
-      instrumentId: instrument.id,
+      instrumentId: addInstrument.id,
       isPrimary,
       possessionCharges:
         firstFormData.paymentPlan === 'installments'

@@ -224,19 +224,21 @@ class CMBottomNav extends React.Component {
       // Lead can only be assigned to someone else if it is assigned to no one or to current user
       if (lead.assigned_to_armsuser_id === null || user.id === lead.assigned_to_armsuser_id) {
         this.navigateToAssignLead(lead)
+      } else {
+        helper.errorToast('Sorry you are not authorized to assign lead')
       }
     } else {
-      helper.errorToast('Sorry you are not authorized to assign lead')
+      helper.errorToast('Closed leads cannot be assigned to other agent')
     }
   }
 
   navigateToAssignLead = (lead) => {
     const { navigation, screenName } = this.props
-   
 
     navigation.navigate('AssignLead', {
       leadId: lead.id,
-      type: screenName == 'InvestDetailScreen' || screenName=='ProjectDeals' ? 'Investment' : 'sale',
+      type:
+        screenName == 'InvestDetailScreen' || screenName == 'ProjectDeals' ? 'Investment' : 'sale',
       screen: 'LeadDetail',
       purpose: 'reassign',
     })
@@ -714,22 +716,22 @@ class CMBottomNav extends React.Component {
                   onPress={() => {
                     this.canMarkCloseAsLost(lead, lead.armsProjectTypeId ? 'Project' : 'BuyRent')
                       ? dispatch(
-                        getDiaryFeedbacks({
-                          taskType: 'Connect',
-                          leadType: 'Project',
-                          actionType: 'Connect',
-                          section: 'Reject',
-                        })
-                      )
-                        .then((res) => {
-                          this.props.navigation.navigate('DiaryFeedback', {
+                          getDiaryFeedbacks({
+                            taskType: 'Connect',
+                            leadType: 'Project',
                             actionType: 'Connect',
+                            section: 'Reject',
                           })
-                        })
-                        .catch((err) => console.error('An error occurred', err))
+                        )
+                          .then((res) => {
+                            this.props.navigation.navigate('DiaryFeedback', {
+                              actionType: 'Connect',
+                            })
+                          })
+                          .catch((err) => console.error('An error occurred', err))
                       : helper.errorToast(
-                        `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
-                      )
+                          `This lead cannot be Closed as Lost as it has some payments. Delete all payments before closing this lead.`
+                        )
                     this.openMenu(false)
                   }}
                   // icon={require('../../../assets/img/callIcon.png')}

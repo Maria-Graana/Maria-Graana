@@ -49,7 +49,7 @@ function LeadsNavigator(props) {
   }, [])
 
   function handleBackButtonClick() {
-    if (props.route.params?.client) {
+    if (props.route?.params?.client) {
       navigation.navigate('ClientDetail')
     } else {
       navigation.goBack()
@@ -71,10 +71,15 @@ function LeadsNavigator(props) {
       navFrom != 'follow_up' &&
       navFrom != 'meeting'
     ) {
-      if (props.route.params?.client) {
+      if (props.route?.params?.client) {
+        const { route } = props
+        const { params } = route
+
         navigation.setOptions({
           headerRight: (props) => <HeaderRight navigation={navigation} />,
-          title: `${props.route.params?.client?.first_name} ${props.route.params?.client?.last_name}'s Leads`,
+          title: `${props.route?.params?.client?.first_name} ${
+            params.client && params.client.last_name ? params.client.last_name : ''
+          }'s Leads`,
           headerLeft: (props) => (
             <HeaderLeftLogo navigation={navigation} leftScreen={'ClientDetail'} leftBool={true} />
           ),

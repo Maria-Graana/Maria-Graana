@@ -271,11 +271,13 @@ const helper = {
     })
   },
   leadAiraToast(lead) {
-    Toast.show({
-      text: `You are viewing ${lead.firstName}${lead.lastName}’s lead. You can perform activities on ${lead.firstName}${lead.lastName}’s behalf.`,
-      duration: 3000,
-      type: 'danger',
-    })
+    if (lead && lead.armsuser) {
+      Toast.show({
+        text: `You are viewing ${lead.armsuser.firstName} ${lead.armsuser.lastName}’s lead. You can perform activities on ${lead.armsuser.firstName} ${lead.armsuser.lastName}’s behalf.`,
+        duration: 3000,
+        type: 'danger',
+      })
+    }
   },
   checkPrice(price, showPkr = false) {
     if (price === null || price === 0) {
@@ -482,7 +484,7 @@ const helper = {
   checkAssignedSharedStatus(user, lead, permissions, shortlistedData) {
     if (user && lead) {
       if (helper.getAiraPermission(permissions) && user.id !== lead.assigned_to_armsuser_id) {
-        this.leadAiraToast(lead.armsuser)
+        this.leadAiraToast(lead)
         return true
       }
       if (

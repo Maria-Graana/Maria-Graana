@@ -1338,7 +1338,8 @@ class LegalAttachment extends Component {
                   }}
                 />
               </View>
-              {leadPurpose === 'sale' &&
+
+              {leadPurpose === 'buy' &&
               addedBy !== 'seller' &&
               firstFormData.legalService === 'internal' ? (
                 <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
@@ -1354,81 +1355,78 @@ class LegalAttachment extends Component {
                       isLeadClosed={isLeadClosed}
                     />
                   ) : null}
-                  {mailCheck ? (
-                    <View style={styles.transferView}>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
-                        <Text
-                          style={[
-                            styles.mandatoryText,
-                            { fontFamily: AppStyles.fonts.semiBoldFont },
-                          ]}
-                        >
-                          PKR{' '}
-                          <Text style={styles.mandatoryText}>
-                            {legalServicesFee && legalServicesFee.fee}
-                          </Text>
+                  {/* {mailCheck ? ( */}
+                  <View style={styles.transferView}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
+                      <Text
+                        style={[styles.mandatoryText, { fontFamily: AppStyles.fonts.semiBoldFont }]}
+                      >
+                        PKR{' '}
+                        <Text style={styles.mandatoryText}>
+                          {legalServicesFee && legalServicesFee.fee}
                         </Text>
-                      </View>
-                      <View style={[styles.datePicker]}>
-                        <DateTimePicker
-                          disabled={checkListDoc && checkListDoc.fileKey !== null ? true : false}
-                          placeholderLabel={'Select Transfer date'}
-                          name={'date'}
-                          mode={'date'}
-                          errorMessage={'Required'}
-                          iconSource={require('../../../assets/img/calendar.png')}
-                          date={transferDate ? new Date(transferDate) : new Date()}
-                          selectedValue={transferDate ? helper.formatDate(transferDate) : ''}
-                          handleForm={(value, name) => {
-                            if (updatePermission && closedLeadEdit)
-                              this.setTransferDate(value, 'transferDate')
-                          }}
-                        />
-                      </View>
-                      <View style={styles.pad15}>
-                        {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
-                          <RCMBTN
-                            onClick={() => {
-                              if (updatePermission && closedLeadEdit)
-                                this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
-                            }}
-                            btnImage={RoundPlus}
-                            btnText={'ADD LEGAL SERVICES PAYMENT'}
-                            checkLeadClosedOrNot={false}
-                            hiddenBtn={false}
-                            addBorder={true}
-                            isLeadClosed={isLeadClosed}
-                          />
-                        ) : null}
-                        {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
-                          <CommissionTile
-                            updatePermission={updatePermission}
-                            data={legalPaymentObj}
-                            editTile={this.setCommissionEditData}
-                            onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
-                            commissionEdit={onReadOnly}
-                            title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
-                            call={this.fetchPhoneNumbers}
-                            showAccountPhone={true}
-                          />
-                        ) : null}
-                      </View>
-                      {checkListDoc && checkListDoc.fileKey !== null ? (
-                        <View>{this.legalDownLoadTile(checkListDoc)}</View>
-                      ) : (
-                        <LegalTile
-                          data={checkListDoc}
-                          index={null}
-                          submitMenu={() => {}}
-                          getAttachmentFromStorage={() => {}}
-                          downloadLegalDocs={() => {}}
-                          isLeadClosed={isLeadClosed}
-                          addBorder={true}
-                        />
-                      )}
+                      </Text>
                     </View>
-                  ) : null}
+                    <View style={[styles.datePicker]}>
+                      <DateTimePicker
+                        disabled={checkListDoc && checkListDoc.fileKey !== null ? true : false}
+                        placeholderLabel={'Select Transfer date'}
+                        name={'date'}
+                        mode={'date'}
+                        errorMessage={'Required'}
+                        iconSource={require('../../../assets/img/calendar.png')}
+                        date={transferDate ? new Date(transferDate) : new Date()}
+                        selectedValue={transferDate ? helper.formatDate(transferDate) : ''}
+                        handleForm={(value, name) => {
+                          if (updatePermission && closedLeadEdit)
+                            this.setTransferDate(value, 'transferDate')
+                        }}
+                      />
+                    </View>
+                    <View style={styles.pad15}>
+                      {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
+                        <RCMBTN
+                          onClick={() => {
+                            if (updatePermission && closedLeadEdit)
+                              this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
+                          }}
+                          btnImage={RoundPlus}
+                          btnText={'ADD LEGAL SERVICES PAYMENT'}
+                          checkLeadClosedOrNot={false}
+                          hiddenBtn={false}
+                          addBorder={true}
+                          isLeadClosed={isLeadClosed}
+                        />
+                      ) : null}
+                      {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
+                        <CommissionTile
+                          updatePermission={updatePermission}
+                          data={legalPaymentObj}
+                          editTile={this.setCommissionEditData}
+                          onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
+                          commissionEdit={onReadOnly}
+                          title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
+                          call={this.fetchPhoneNumbers}
+                          showAccountPhone={true}
+                        />
+                      ) : null}
+                    </View>
+                    {checkListDoc && checkListDoc.fileKey !== null ? (
+                      <View>{this.legalDownLoadTile(checkListDoc)}</View>
+                    ) : (
+                      <LegalTile
+                        data={checkListDoc}
+                        index={null}
+                        submitMenu={() => {}}
+                        getAttachmentFromStorage={() => {}}
+                        downloadLegalDocs={() => {}}
+                        isLeadClosed={isLeadClosed}
+                        addBorder={true}
+                      />
+                    )}
+                  </View>
+                  {/* ) : null} */}
                 </View>
               ) : null}
             </View>

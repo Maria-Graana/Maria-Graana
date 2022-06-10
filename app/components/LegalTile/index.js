@@ -94,7 +94,7 @@ class LegalTile extends React.Component {
           </View>
         </View>
 
-        {formData.category == data.category && (
+        {formData?.category == data?.category && (
           <View style={styles.bottomView}>
             <TouchableOpacity onPress={() => alert(formData.fileName)} style={styles.fileName}>
               <Text style={{ color: AppStyles.colors.primaryColor }}>{formData.fileName}</Text>

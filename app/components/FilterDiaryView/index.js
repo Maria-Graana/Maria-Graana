@@ -259,9 +259,7 @@ class FilterDiaryView extends React.Component {
       page,
     } = this.state
 
-    return loading ? (
-      <Loader loading={loading} />
-    ) : (
+    return (
       <View style={styles.listView}>
         {/* ********** RN Bottom Sheet ********** */}
         <RBSheet

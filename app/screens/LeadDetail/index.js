@@ -797,7 +797,7 @@ class LeadDetail extends React.Component {
                       { color: AppStyles.colors.primaryColor, fontSize: 12 },
                     ]}
                   >
-                    This client has {otherLeadsCount - 1} other leads, can be viewied on client
+                    This client has {otherLeadsCount - 1} other leads, can be viewed on client
                     details.
                   </Text>
                 </View>

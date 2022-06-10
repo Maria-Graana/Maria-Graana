@@ -46,10 +46,13 @@ class LegalTile extends React.Component {
     const {
       data,
       index,
+      cancelFileUploading,
       getAttachmentFromStorage,
       addBorder = false,
       isLeadClosed,
       isLeadSCA,
+      submitUploadedAttachment,
+      formData,
     } = this.props
     let newStyle = {}
     if (addBorder) {
@@ -58,35 +61,57 @@ class LegalTile extends React.Component {
         borderWidth: 1,
       }
     }
+
     return (
       <TouchableOpacity
         onPress={() => {
           getAttachmentFromStorage(data)
         }}
-        style={[styles.legalBtnView, newStyle]}
+        style={[styles.legalBtnViewleft, newStyle]}
         disabled={isLeadClosed}
       >
-        <View style={{ flexDirection: 'row', flex: 1 }}>
-          {/* {index && (
+        <View style={styles.legalBtnViewRight}>
+          <View style={{ flexDirection: 'row', flex: 1 }}>
+            {/* {index && (
             <View style={styles.badgeView}>
               <Text style={styles.badgeText}>{index}</Text>
             </View>
           )} */}
-          <Text numberOfLines={1} style={styles.tileTitle}>
-            {data.name === 'Cnic'
-              ? data.name.toUpperCase()
-              : isLeadSCA
-              ? 'Service Charge Agreement'
-              : data.name}
-          </Text>
+            <Text numberOfLines={1} style={styles.tileTitle}>
+              {data.name === 'Cnic'
+                ? data.name.toUpperCase()
+                : isLeadSCA
+                ? 'Service Charge Agreement'
+                : data.name}
+            </Text>
+          </View>
+          <View style={{ justifyContent: 'center' }}>
+            <Text style={[styles.tileStatus, styles.statusYellow]}>
+              {data.status === 'pending_upload_by_legal'
+                ? 'PENDING UPLOAD BY LEGAL'
+                : 'PENDING UPLOAD'}
+            </Text>
+          </View>
         </View>
-        <View style={{ justifyContent: 'center' }}>
-          <Text style={[styles.tileStatus, styles.statusYellow]}>
-            {data.status === 'pending_upload_by_legal'
-              ? 'PENDING UPLOAD BY LEGAL'
-              : 'PENDING UPLOAD'}
-          </Text>
-        </View>
+
+        {formData.category == data.category && (
+          <View style={styles.bottomView}>
+            <TouchableOpacity onPress={() => alert(formData.fileName)} style={styles.fileName}>
+              <Text style={{ color: AppStyles.colors.primaryColor }}>{formData.fileName}</Text>
+            </TouchableOpacity>
+            <View style={styles.bottomViewInner}>
+              <TouchableOpacity onPress={() => cancelFileUploading()} style={styles.uplodBtn}>
+                <Text style={{ color: AppStyles.colors.primaryColor }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => submitUploadedAttachment(formData)}
+                style={styles.uplodBtn}
+              >
+                <Text style={{ color: AppStyles.colors.primaryColor }}>Upload</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </TouchableOpacity>
     )
   }
@@ -121,7 +146,7 @@ class LegalTile extends React.Component {
     return (
       <TouchableOpacity
         onPress={() => downloadLegalDocs(data)}
-        style={[styles.legalBtnView, newStyle]}
+        style={[styles.legalBtnView, newStyle, { height: 100 }]}
         disabled={isLeadClosed}
       >
         <AntDesign
@@ -145,6 +170,7 @@ class LegalTile extends React.Component {
                   ? 'Service Charge Agreement'
                   : data.name}
               </Text>
+
               {data.status === 'rejected' && (
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
               )}
@@ -158,15 +184,19 @@ class LegalTile extends React.Component {
                 <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
               )}
             </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View>
+                <Text style={styles.uploadedText}>
+                  UPLOADED{' '}
+                  <Text style={styles.dateText}>
+                    @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
+                  </Text>
+                </Text>
+              </View>
+            </View>
             {data.name === 'Police Verification Report Optional' && (
               <Text style={[styles.uploadedText, { color: 'black' }]}>(Optional)</Text>
             )}
-            <Text style={styles.uploadedText}>
-              UPLOADED{' '}
-              <Text style={styles.dateText}>
-                @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
-              </Text>
-            </Text>
           </View>
           {!checkList ? (
             <View

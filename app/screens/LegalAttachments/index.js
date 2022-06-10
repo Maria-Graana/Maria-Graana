@@ -284,6 +284,24 @@ class LegalAttachment extends Component {
   }
 
   handleForm = (formData) => {
+    console.log('formData', formData)
+    const { currentItem } = this.state
+    formData.category = currentItem.category
+    this.setState(
+      {
+        formData: formData,
+        showAction: false,
+        //   loading: true,
+      },
+      () => {
+        // this.uploadAttachment(this.state.formData)
+        ///View Doc
+        //this.uploadAttachment(formData)
+      }
+    )
+  }
+
+  submitForm = (formData) => {
     const { currentItem } = this.state
     formData.category = currentItem.category
     this.setState(
@@ -294,6 +312,7 @@ class LegalAttachment extends Component {
       },
       () => {
         // this.uploadAttachment(this.state.formData)
+        ///View Doc
         this.uploadAttachment(formData)
       }
     )
@@ -413,29 +432,29 @@ class LegalAttachment extends Component {
     }
   }
 
-  saveFile = async (fileUri, doc) => {
-    const { status } = await MediaLibrary.requestPermissionsAsync()
-    if (status === 'granted') {
-      const asset = await MediaLibrary.createAssetAsync(fileUri)
-      MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
-        helper.successToast('File Downloaded!')
-        FileSystem.getContentUriAsync(fileUri).then((cUri) => {
-          let fileType = doc.fileName.split('.').pop()
-          if (fileType.includes('jpg') || fileType.includes('png') || fileType.includes('jpeg')) {
-            this.viewAttachments(doc)
-          } else {
-            if (fileType.includes('pdf')) fileType = 'application/pdf'
-            else fileType = fileType
-            IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-              data: cUri,
-              flags: 1,
-              type: fileType,
-            })
-          }
-        })
-      })
-    }
-  }
+  // saveFile = async (fileUri, doc) => {
+  //   const { status } = await MediaLibrary.requestPermissionsAsync()
+  //   if (status === 'granted') {
+  //     const asset = await MediaLibrary.createAssetAsync(fileUri)
+  //     MediaLibrary.createAlbumAsync('ARMS', asset, false).then((res) => {
+  //       helper.successToast('File Downloaded!')
+  //       FileSystem.getContentUriAsync(fileUri).then((cUri) => {
+  //         let fileType = doc.fileName.split('.').pop()
+  //         if (fileType.includes('jpg') || fileType.includes('png') || fileType.includes('jpeg')) {
+  //           this.viewAttachments(doc)
+  //         } else {
+  //           if (fileType.includes('pdf')) fileType = 'application/pdf'
+  //           else fileType = fileType
+  //           IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+  //             data: cUri,
+  //             flags: 1,
+  //             type: fileType,
+  //           })
+  //         }
+  //       })
+  //     })
+  //   }
+  // }
 
   // *******  View Documents  *************
   viewAttachments = (data) => {
@@ -516,8 +535,10 @@ class LegalAttachment extends Component {
   downloadLegalDocs = async (doc) => {
     if (doc) {
       helper.warningToast('File Downloading...')
+
       axios
-        .get(`/api/leads/legalDocument?id=${doc.id}`, {
+        ///api/legal/document?legalId=21544
+        .get(`/api/legal/document?legalId=${doc.id}`, {
           responseType: 'arraybuffer',
           headers: {
             Accept: doc.fileType,
@@ -537,6 +558,7 @@ class LegalAttachment extends Component {
 
   downloadBufferFile = async (buff, doc) => {
     let fileUri = FileSystem.documentDirectory + doc.fileName
+
     FileSystem.writeAsStringAsync(fileUri, buff, { encoding: FileSystem.EncodingType.Base64 })
       .then((uri) => {
         FileSystem.getInfoAsync(fileUri).then((res) => {
@@ -1158,6 +1180,12 @@ class LegalAttachment extends Component {
     )
   }
 
+  cancelFileUploading = () => {
+    this.setState({
+      formData: { fileName: '', size: '', uri: '', category: '' },
+    })
+  }
+
   render() {
     const {
       legalListing,
@@ -1186,6 +1214,7 @@ class LegalAttachment extends Component {
       transferDate,
       viewCommentsCheck,
       closedLeadEdit,
+      formData,
     } = this.state
     const { lead, route, contacts } = this.props
     const { leadPurpose, addedBy } = route.params
@@ -1287,6 +1316,9 @@ class LegalAttachment extends Component {
                   data={legalListing}
                   renderItem={({ item, index }) => (
                     <LegalTile
+                      cancelFileUploading={this.cancelFileUploading}
+                      formData={formData}
+                      submitUploadedAttachment={this.submitForm}
                       data={item}
                       index={index + 1}
                       submitMenu={(value, data) => {

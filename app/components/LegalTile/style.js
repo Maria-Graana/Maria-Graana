@@ -40,6 +40,44 @@ export default styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 7,
   },
+  legalBtnViewleft: {
+    //flexDirection: 'row',
+    // flex: 1,
+    height: 90,
+    backgroundColor: '#fff',
+    marginVertical: 10,
+    marginHorizontal: 15,
+    //paddingHorizontal: 10,
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4.65,
+    elevation: 7,
+  },
+  legalBtnViewRight: {
+    flexDirection: 'row',
+    // flex: 1,
+
+    // backgroundColor: '#fff',
+    marginVertical: 10,
+    marginHorizontal: 15,
+    paddingHorizontal: 10,
+  },
+
+  bottomView: {
+    flexDirection: 'row',
+    // alignSelf: 'flex-end',
+    marginHorizontal: 15,
+    justifyContent: 'space-between',
+  },
+  bottomViewInner: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+  },
   tileTitle: {
     fontSize: 14,
     alignSelf: 'center',
@@ -69,6 +107,26 @@ export default styles = StyleSheet.create({
     color: AppStyles.colors.primaryColor,
     padding: 2,
     fontSize: 12,
+  },
+  uplodBtn: {
+    width: 70,
+    marginHorizontal: 5,
+    color: AppStyles.colors.primaryColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    padding: 3,
+    borderColor: AppStyles.colors.primaryColor,
+    borderWidth: 0.8,
+    borderRadius: 9,
+  },
+  fileName: {
+    // width: 70,
+    marginHorizontal: 5,
+    color: AppStyles.colors.primaryColor,
+
+    paddingHorizontal: 5,
+    padding: 3,
   },
   dateText: {
     color: AppStyles.colors.textColor,

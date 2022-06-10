@@ -369,14 +369,14 @@ class CMBottomNav extends React.Component {
         },
       })
     } else if (screenName === 'Leads') {
-      navigation.navigate('Leads', {
+      navigation.push('Leads', {
         screen: screenName,
         hasBooking: false,
         client: client,
         clientDetails: true,
       })
     } else if (screenName === 'ProjectLeads') {
-      navigation.navigate('ProjectLeads', {
+      navigation.push('ProjectLeads', {
         screen: screenName,
         hasBooking: false,
         client: client,

@@ -118,7 +118,8 @@ class ClientDetail extends React.Component {
         return client.clientSource == null ? 'Personal Client' : client.clientSource
       else return client.assigned_to_organization ? client.assigned_to_organization : ''
     } else {
-      if (client.originalOwner.id === user.id) client.clientSource == null ? 'Personal Client' : client.clientSource
+      if (client.originalOwner.id === user.id)
+        client.clientSource == null ? 'Personal Client' : client.clientSource
       else {
         if (client.originalOwner.organization) return client.originalOwner.organization.name
         else return client.originalOwner.firstName + ' ' + client.originalOwner.lastName
@@ -173,11 +174,15 @@ class ClientDetail extends React.Component {
         style={[
           AppStyles.container,
           styles.container,
-          { backgroundColor: AppStyles.colors.backgroundColor, paddingHorizontal: 0, backgroundColor:'#fff' },
+          {
+            backgroundColor: AppStyles.colors.backgroundColor,
+            paddingHorizontal: 0,
+            backgroundColor: '#fff',
+          },
         ]}
       >
-        <ScrollView >
-          <View style={[styles.outerContainer, {paddingBottom:65}]}>
+        <ScrollView>
+          <View style={[styles.outerContainer, { paddingBottom: 65 }]}>
             <View style={styles.innerContainer}>
               <Text style={styles.headingText}>First Name</Text>
               <Text style={styles.labelText}>{client.first_name}</Text>
@@ -293,21 +298,13 @@ class ClientDetail extends React.Component {
           />
         ) : null} */}
 
-
-        <View style={[AppStyles.mainCMBottomNav,]}>
+        <View style={[AppStyles.mainCMBottomNav]}>
           <CMBottomNav
             client={client}
-            // navigateFromMenu={this.navigateFromMenu}
-            // navigateToAddDiary={this.navigateToAddDiary}
             navigation={this.props.navigation}
-            // guideReference={lead && lead.guideReference}
             screenName={'clientDetails'}
-          // closedLeadEdit={closedLeadEdit}
-          // navigateToOpenWorkFlow={this.navigateToOpenWorkFlow}
-          // requiredProperties={route.params.lead.requiredProperties}
           />
         </View>
-
       </View>
     ) : (
       <Loader loading={loading} />

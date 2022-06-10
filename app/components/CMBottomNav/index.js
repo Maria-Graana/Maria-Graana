@@ -503,7 +503,7 @@ class CMBottomNav extends React.Component {
                 style={styles.bottomNavImg}
                 source={require('../../../assets/img/tasks.png')}
               />
-              <Text style={styles.followText}>Tasks</Text>
+              <Text style={styles.followText}>Diary</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -575,7 +575,7 @@ class CMBottomNav extends React.Component {
                 style={styles.bottomNavImg}
                 source={require('../../../assets/img/tasks.png')}
               />
-              <Text style={styles.followText}>Tasks</Text>
+              <Text style={styles.followText}>Diary</Text>
             </View>
           </TouchableOpacity>
         ) : screenName === 'InvestDetailScreen' ? (
@@ -594,7 +594,7 @@ class CMBottomNav extends React.Component {
                 style={styles.bottomNavImg}
                 source={require('../../../assets/img/tasks.png')}
               />
-              <Text style={styles.followText}>Tasks</Text>
+              <Text style={styles.followText}>Diary</Text>
             </View>
           </TouchableOpacity>
         ) : (

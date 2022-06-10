@@ -107,7 +107,7 @@ class LegalTile extends React.Component {
                 onPress={() => submitUploadedAttachment(formData)}
                 style={styles.uplodBtn}
               >
-                <Text style={{ color: AppStyles.colors.primaryColor }}>Upload</Text>
+                <Text style={{ color: AppStyles.colors.primaryColor }}>Submit</Text>
               </TouchableOpacity>
             </View>
           </View>

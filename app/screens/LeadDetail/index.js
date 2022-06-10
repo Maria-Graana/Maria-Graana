@@ -45,6 +45,7 @@ class LeadDetail extends React.Component {
       mainButtonText: `Let’s Earn`,
       fromScreen: null,
       closedLeadEdit: helper.checkAssignedSharedStatus(user, lead, permissions, shortlistedData),
+      otherLeadsCount: null,
     }
   }
 
@@ -56,12 +57,26 @@ class LeadDetail extends React.Component {
         this.setState({ mainButtonText: `Let's Earn`, fromScreen: null })
       }
       this.purposeTab()
+      this.getDuplicateLeadForClient()
     })
   }
   componentDidUpdate(prevProps, prevState) {
     if (this.props.referenceGuide !== prevProps.referenceGuide) {
       // reload page when reference guide is added
       this.purposeTab()
+    }
+  }
+  getDuplicateLeadForClient = () => {
+    const { route } = this.props
+    const { lead } = route.params
+    if (lead && lead.customer) {
+      axios
+        .get(
+          `/api/leads/count?leadTypes[]=buyrent&leadTypes[]=project&leadTypes[]=wanted&customerId=${lead.customer.id}`
+        )
+        .then((res) => {
+          this.setState({ otherLeadsCount: res.data.leadCount })
+        })
     }
   }
   purposeTab = () => {
@@ -598,7 +613,7 @@ class LeadDetail extends React.Component {
   }
 
   render() {
-    let { type, loading, editDes, description, closedLeadEdit, callModal, meetings } = this.state
+    let { type, loading, editDes, description, closedLeadEdit, otherLeadsCount } = this.state
     const { user, route, referenceGuide, dispatch, lead } = this.props
     const { purposeTab, showBottomNav = false } = route.params
     const { screenName } = route.params
@@ -668,7 +683,7 @@ class LeadDetail extends React.Component {
                       activeOpacity={0.6}
                       disabled={route.params.lead.requiredProperties}
                     >
-                      <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
+                      <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Client Details</Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -774,6 +789,20 @@ class LeadDetail extends React.Component {
             </View>
 
             <View style={[styles.cardContainer, { elevation: 2 }]}>
+              {otherLeadsCount && otherLeadsCount > 0 ? (
+                <View style={styles.rowContainerType2}>
+                  <Text
+                    style={[
+                      styles.labelTextTypeTwo,
+                      { color: AppStyles.colors.primaryColor, fontSize: 12 },
+                    ]}
+                  >
+                    This client has {otherLeadsCount - 1} other leads, can be viewied on client
+                    details.
+                  </Text>
+                </View>
+              ) : null}
+
               <View style={styles.rowContainerType2}>
                 <Text style={styles.headingTextTypeTwo}>Lead Type</Text>
                 <Text style={[styles.labelTextTypeTwo, { width: '35%' }]}>{type} </Text>

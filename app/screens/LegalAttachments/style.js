@@ -4,6 +4,13 @@ import { StyleSheet } from 'react-native'
 import AppStyles from '../../AppStyles'
 
 export default styles = StyleSheet.create({
+  timePageBtn: {
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 10,
+    marginLeft: 15,
+    marginRight: 15,
+  },
   mandatoryText: {
     color: AppStyles.colors.primaryColor,
     fontFamily: AppStyles.fonts.boldFont,

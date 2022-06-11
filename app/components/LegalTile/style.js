@@ -120,8 +120,16 @@ export default styles = StyleSheet.create({
     borderWidth: 0.8,
     borderRadius: 9,
   },
+  timePageBtn: {
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    marginBottom: 20,
+  },
   fileName: {
-    // width: 70,
+    width: 120,
     marginHorizontal: 5,
     color: AppStyles.colors.primaryColor,
 

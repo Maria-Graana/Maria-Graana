@@ -530,23 +530,6 @@ class LegalAttachment extends Component {
     })
   }
 
-  // *******  Assign To Legal  *************
-  submitToAssignLegal = (data, comment) => {
-    const { lead } = this.props
-    this.toggleComments(data, false)
-    axios
-      .patch(`/api/legal/document?documentId=${data.id}&leadId=${lead.id}`, {
-        status: 'pending_legal',
-        remarks: comment,
-      })
-      .then((res) => {
-        this.fetchLead()
-      })
-      .catch((error) => {
-        console.log(`ERROR: /api/leads/legalDocument?id=${data.id}`, error)
-      })
-  }
-
   // *******  DownLoad Legal Documents Functions  *************
   downloadLegalDocs = async (doc) => {
     if (doc) {
@@ -1202,20 +1185,66 @@ class LegalAttachment extends Component {
     })
   }
 
-  filterByID(item) {
-    if (item.status == 'pending_upload') {
-      return true
+  filterByID(item, filterKey) {
+    if (item.status == filterKey) {
+      return false
+    } else {
+      return item
+    }
+  }
+  filterByStatus(item, filterKey) {
+    if (item.status == filterKey) {
+      return item
+    } else {
+      return false
     }
   }
   submitAllToAssignLegal = () => {
     const { legalListing } = this.state
-    let arrByID = legalListing.filter(this.filterByID)
 
-    if (arrByID?.length != 0) {
-      alert('You need to upload all required documents before submitting to legal.')
+    let arrByID = legalListing.filter((item) => this.filterByID(item, 'pending_upload'))
+
+    if (arrByID?.length == 0) {
+      helper.errorToast('You need to upload all required documents before submitting to legal.')
     } else {
-      alert('submit')
+      const { lead } = this.props
+
+      let uploadedObjArray = legalListing.filter((item) => this.filterByStatus(item, 'uploaded'))
+
+      if (uploadedObjArray?.length == 0) {
+        helper.warningToast('All Documents Already Uploaded')
+      } else {
+        const mappedArrayData = uploadedObjArray.map(({ id }) => {
+          return { documentId: id, status: 'pending_legal' }
+        })
+
+        axios
+          .patch(`/api/legal/documents?leadId=${lead.id}`, mappedArrayData)
+          .then((res) => {
+            this.fetchLead()
+          })
+          .catch((error) => {
+            console.log(`ERROR: /api/leads/?id=${data.id}`, error)
+          })
+      }
     }
+  }
+
+  // *******  Assign To Legal  *************
+  submitToAssignLegal = (data, comment) => {
+    const { lead } = this.props
+    this.toggleComments(data, false)
+    axios
+      .patch(`/api/legal/document?documentId=${data.id}&leadId=${lead.id}`, {
+        status: 'pending_legal',
+        remarks: comment,
+      })
+      .then((res) => {
+        this.fetchLead()
+      })
+      .catch((error) => {
+        console.log(`ERROR: /api/leads/legalDocument?id=${data.id}`, error)
+      })
   }
 
   render() {
@@ -1371,10 +1400,7 @@ class LegalAttachment extends Component {
                 />
 
                 <TouchableButton
-                  containerStyle={[
-                    styles.timePageBtn,
-                    //  { opacity: disabled ? 0.5 : 1 }
-                  ]}
+                  containerStyle={[styles.timePageBtn, { marginVertical: 10 }]}
                   label="+ Add Documents"
                   borderColor="white"
                   containerBackgroundColor="#0f73ee"
@@ -1388,10 +1414,7 @@ class LegalAttachment extends Component {
                 />
               </View>
               <TouchableButton
-                containerStyle={[
-                  styles.timePageBtn,
-                  //  { opacity: disabled ? 0.5 : 1 }
-                ]}
+                containerStyle={[styles.timePageBtn, { marginVertical: 10 }]}
                 label="Submit To Legal"
                 borderColor="white"
                 containerBackgroundColor="#0f73ee"

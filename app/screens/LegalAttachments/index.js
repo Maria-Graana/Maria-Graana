@@ -37,6 +37,7 @@ import {
   getInstrumentDetails,
   setInstrumentInformation,
 } from '../../actions/addInstrument'
+import TouchableButton from '../../components/TouchableButton'
 import style from '../../components/LegalTile/style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
@@ -49,6 +50,7 @@ class LegalAttachment extends Component {
     super(props)
     const { lead, user, permissions, shortlistedData } = this.props
     this.state = {
+      otherDoc: false,
       isVisible: false,
       checkValidation: false,
       title: '',
@@ -284,7 +286,6 @@ class LegalAttachment extends Component {
   }
 
   handleForm = (formData) => {
-    console.log('formData', formData)
     const { currentItem } = this.state
     formData.category = currentItem.category
     this.setState(
@@ -294,9 +295,12 @@ class LegalAttachment extends Component {
         //   loading: true,
       },
       () => {
+        if (this.state.otherDoc) {
+          this.uploadAttachment(formData)
+        }
         // this.uploadAttachment(this.state.formData)
         ///View Doc
-        //this.uploadAttachment(formData)
+        //
       }
     )
   }
@@ -358,6 +362,11 @@ class LegalAttachment extends Component {
 
   uploadAttachment = (legalAttachment) => {
     const { route, lead } = this.props
+    const propertyID =
+      lead && lead.paymentProperty.origin === 'arms'
+        ? lead.paymentProperty.arms_id
+        : lead.paymentProperty.graana_id
+
     const { checkListDoc, currentItem } = this.state
     let attachment = {
       uri: legalAttachment.uri,
@@ -371,6 +380,13 @@ class LegalAttachment extends Component {
     let url = `/api/legal/document?legalId=${currentItem.id}`
     if (legalAttachment.category === 'legal_checklist')
       url = `/api/leads/checklist?id=${checkListDoc.id}&addedBy=${route.params.addedBy}`
+    else if (!legalAttachment?.category) {
+      url = `/api/legal/document?legalId=&scaflow=true&propertyId=${propertyID}&leadId=${lead.id}&docCategory=other&addedBy=${route.params.addedBy}`
+      this.setState({
+        otherDoc: false,
+      })
+    }
+
     axios
       .post(url, fd)
       .then((res) => {
@@ -1186,6 +1202,22 @@ class LegalAttachment extends Component {
     })
   }
 
+  filterByID(item) {
+    if (item.status == 'pending_upload') {
+      return true
+    }
+  }
+  submitAllToAssignLegal = () => {
+    const { legalListing } = this.state
+    let arrByID = legalListing.filter(this.filterByID)
+
+    if (arrByID?.length != 0) {
+      alert('You need to upload all required documents before submitting to legal.')
+    } else {
+      alert('submit')
+    }
+  }
+
   render() {
     const {
       legalListing,
@@ -1337,8 +1369,36 @@ class LegalAttachment extends Component {
                     item.id.toString()
                   }}
                 />
-              </View>
 
+                <TouchableButton
+                  containerStyle={[
+                    styles.timePageBtn,
+                    //  { opacity: disabled ? 0.5 : 1 }
+                  ]}
+                  label="+ Add Documents"
+                  borderColor="white"
+                  containerBackgroundColor="#0f73ee"
+                  borderWidth={1}
+                  onPress={() =>
+                    this.setState({
+                      showAction: true,
+                      otherDoc: true,
+                    })
+                  }
+                />
+              </View>
+              <TouchableButton
+                containerStyle={[
+                  styles.timePageBtn,
+                  //  { opacity: disabled ? 0.5 : 1 }
+                ]}
+                label="Submit To Legal"
+                borderColor="white"
+                containerBackgroundColor="#0f73ee"
+                borderWidth={1}
+                // disabled={disabled}
+                onPress={() => this.submitAllToAssignLegal()}
+              />
               {leadPurpose === 'buy' &&
               addedBy !== 'seller' &&
               firstFormData.legalService === 'internal' ? (

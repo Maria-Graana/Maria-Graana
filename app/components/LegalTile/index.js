@@ -4,6 +4,7 @@ import axios from 'axios'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { AntDesign, Entypo } from '@expo/vector-icons'
+import TouchableButton from '../../components/TouchableButton'
 import moment from 'moment-timezone'
 import { connect } from 'react-redux'
 import { Menu } from 'react-native-paper'
@@ -97,7 +98,9 @@ class LegalTile extends React.Component {
         {formData?.category == data?.category && (
           <View style={styles.bottomView}>
             <TouchableOpacity onPress={() => alert(formData.fileName)} style={styles.fileName}>
-              <Text style={{ color: AppStyles.colors.primaryColor }}>{formData.fileName}</Text>
+              <Text style={{ color: AppStyles.colors.primaryColor }} numberOfLines={1}>
+                {formData.fileName}
+              </Text>
             </TouchableOpacity>
             <View style={styles.bottomViewInner}>
               <TouchableOpacity onPress={() => cancelFileUploading()} style={styles.uplodBtn}>
@@ -144,159 +147,161 @@ class LegalTile extends React.Component {
       }
     }
     return (
-      <TouchableOpacity
-        onPress={() => downloadLegalDocs(data)}
-        style={[styles.legalBtnView, newStyle, { height: 100 }]}
-        disabled={isLeadClosed}
-      >
-        <AntDesign
-          style={styles.checkCircle}
-          name="checkcircle"
-          size={20}
-          color={AppStyles.colors.primaryColor}
-        />
-        <View style={styles.menuTileInner}>
-          <View style={[styles.contentCenter, { flex: 1 }]}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text
-                numberOfLines={1}
-                style={checkList ? style.hyperLinkPadding : styles.textPadding}
-              >
-                {data.name === 'Cnic'
-                  ? data.name.toUpperCase()
-                  : data.name === 'Police Verification Report Optional'
-                  ? data.name.replace(' Optional', '')
-                  : isLeadSCA
-                  ? 'Service Charge Agreement'
-                  : data.name}
-              </Text>
-
-              {data.status === 'rejected' && (
-                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
-              )}
-              {data.status === 'uploaded' && (
-                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
-              )}
-              {data.status === 'pending_legal' && (
-                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
-              )}
-              {data.status === 'approved' && (
-                <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
-              )}
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <View>
-                <Text style={styles.uploadedText}>
-                  UPLOADED{' '}
-                  <Text style={styles.dateText}>
-                    @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
-                  </Text>
+      <>
+        <TouchableOpacity
+          onPress={() => downloadLegalDocs(data)}
+          style={[styles.legalBtnView, newStyle, { height: 100 }]}
+          disabled={isLeadClosed}
+        >
+          <AntDesign
+            style={styles.checkCircle}
+            name="checkcircle"
+            size={20}
+            color={AppStyles.colors.primaryColor}
+          />
+          <View style={styles.menuTileInner}>
+            <View style={[styles.contentCenter, { flex: 1 }]}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text
+                  numberOfLines={1}
+                  style={checkList ? style.hyperLinkPadding : styles.textPadding}
+                >
+                  {data.name === 'Cnic'
+                    ? data.name.toUpperCase()
+                    : data.name === 'Police Verification Report Optional'
+                    ? data.name.replace(' Optional', '')
+                    : isLeadSCA
+                    ? 'Service Charge Agreement'
+                    : data.name}
                 </Text>
+
+                {data.status === 'rejected' && (
+                  <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+                )}
+                {data.status === 'uploaded' && (
+                  <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+                )}
+                {data.status === 'pending_legal' && (
+                  <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+                )}
+                {data.status === 'approved' && (
+                  <Text style={[styles.tileStatus, statusColor]}>{showStatus.name}</Text>
+                )}
               </View>
-            </View>
-            {data.name === 'Police Verification Report Optional' && (
-              <Text style={[styles.uploadedText, { color: 'black' }]}>(Optional)</Text>
-            )}
-          </View>
-          {!checkList ? (
-            <View
-              style={[
-                data.status === 'rejected' ||
-                data.status === 'pending_legal' ||
-                data.status === 'approved'
-                  ? { paddingTop: 20 }
-                  : styles.contentCenter,
-              ]}
-            >
-              <Menu
-                visible={menuToggle}
-                onDismiss={() => this.toggleMenu()}
-                anchor={
-                  <Entypo
-                    onPress={() => this.toggleMenu()}
-                    onDismiss={this.toggleMenu}
-                    name="dots-three-vertical"
-                    size={20}
-                    color={menuToggle ? AppStyles.colors.primaryColor : 'black'}
-                  />
-                }
-              >
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View>
-                  {data.status === 'pending_legal' || data.status === 'approved' ? (
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          submitMenu('view_legal', data)
-                          this.toggleMenu()
-                        }}
-                        title="View Comments"
-                        titleStyle={styles.assignText}
-                      />
-                    </View>
-                  ) : null}
-                  {data.status === 'rejected' ? (
-                    <View>
-                      <Menu.Item
-                        onPress={() => {
-                          submitMenu('edit', data)
-                          this.toggleMenu()
-                        }}
-                        title="Upload Different File"
-                      />
-                      <Menu.Item
-                        onPress={() => {
-                          submitMenu('view_legal', data)
-                          this.toggleMenu()
-                        }}
-                        title="View Comments"
-                        titleStyle={styles.assignText}
-                      />
-                      <Menu.Item
-                        onPress={() => {
-                          submitMenu('submit_to_legal', data)
-                          this.toggleMenu()
-                        }}
-                        title="Submit to Legal"
-                        titleStyle={styles.assignText}
-                      />
-                    </View>
-                  ) : (
-                    <>
-                      {data.status !== 'pending_legal' && data.status !== 'approved' ? (
-                        <View>
-                          <Menu.Item
-                            onPress={() => {
-                              submitMenu('edit', data)
-                              this.toggleMenu()
-                            }}
-                            title="Upload Different File"
-                          />
-                          <Menu.Item
-                            onPress={() => {
-                              submitMenu('view_legal', data)
-                              this.toggleMenu()
-                            }}
-                            title="View Comments"
-                            titleStyle={styles.assignText}
-                          />
-                          <Menu.Item
-                            onPress={() => {
-                              submitMenu('submit_to_legal', data)
-                              this.toggleMenu()
-                            }}
-                            title="Submit to Legal"
-                            titleStyle={styles.assignText}
-                          />
-                        </View>
-                      ) : null}
-                    </>
-                  )}
+                  <Text style={styles.uploadedText}>
+                    UPLOADED{' '}
+                    <Text style={styles.dateText}>
+                      @{moment(new Date(data.updatedAt)).format('hh:mm A, MMM DD')}
+                    </Text>
+                  </Text>
                 </View>
-              </Menu>
+              </View>
+              {data.name === 'Police Verification Report Optional' && (
+                <Text style={[styles.uploadedText, { color: 'black' }]}>(Optional)</Text>
+              )}
             </View>
-          ) : null}
-        </View>
-      </TouchableOpacity>
+            {!checkList ? (
+              <View
+                style={[
+                  data.status === 'rejected' ||
+                  data.status === 'pending_legal' ||
+                  data.status === 'approved'
+                    ? { paddingTop: 20 }
+                    : styles.contentCenter,
+                ]}
+              >
+                <Menu
+                  visible={menuToggle}
+                  onDismiss={() => this.toggleMenu()}
+                  anchor={
+                    <Entypo
+                      onPress={() => this.toggleMenu()}
+                      onDismiss={this.toggleMenu}
+                      name="dots-three-vertical"
+                      size={20}
+                      color={menuToggle ? AppStyles.colors.primaryColor : 'black'}
+                    />
+                  }
+                >
+                  <View>
+                    {data.status === 'pending_legal' || data.status === 'approved' ? (
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            submitMenu('view_legal', data)
+                            this.toggleMenu()
+                          }}
+                          title="View Comments"
+                          titleStyle={styles.assignText}
+                        />
+                      </View>
+                    ) : null}
+                    {data.status === 'rejected' ? (
+                      <View>
+                        <Menu.Item
+                          onPress={() => {
+                            submitMenu('edit', data)
+                            this.toggleMenu()
+                          }}
+                          title="Upload Different File"
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            submitMenu('view_legal', data)
+                            this.toggleMenu()
+                          }}
+                          title="View Comments"
+                          titleStyle={styles.assignText}
+                        />
+                        <Menu.Item
+                          onPress={() => {
+                            submitMenu('submit_to_legal', data)
+                            this.toggleMenu()
+                          }}
+                          title="Submit to Legal"
+                          titleStyle={styles.assignText}
+                        />
+                      </View>
+                    ) : (
+                      <>
+                        {data.status !== 'pending_legal' && data.status !== 'approved' ? (
+                          <View>
+                            <Menu.Item
+                              onPress={() => {
+                                submitMenu('edit', data)
+                                this.toggleMenu()
+                              }}
+                              title="Upload Different File"
+                            />
+                            <Menu.Item
+                              onPress={() => {
+                                submitMenu('view_legal', data)
+                                this.toggleMenu()
+                              }}
+                              title="View Comments"
+                              titleStyle={styles.assignText}
+                            />
+                            <Menu.Item
+                              onPress={() => {
+                                submitMenu('submit_to_legal', data)
+                                this.toggleMenu()
+                              }}
+                              title="Submit to Legal"
+                              titleStyle={styles.assignText}
+                            />
+                          </View>
+                        ) : null}
+                      </>
+                    )}
+                  </View>
+                </Menu>
+              </View>
+            ) : null}
+          </View>
+        </TouchableOpacity>
+      </>
     )
   }
 
@@ -355,24 +360,26 @@ class LegalTile extends React.Component {
   }
 
   render() {
-    const { data } = this.props
+    const { data, otherDoc } = this.props
     return (
-      <View>
-        {data && data.fileKey === null ? <View>{this.UploadTile()}</View> : null}
-        {data && data.status !== 'pending' && data.fileKey !== null ? (
-          <View>{this.MenuTile()}</View>
-        ) : null}
-        {data &&
-        data.status &&
-        data.status !== 'approved' &&
-        data.status !== 'pending_legal' &&
-        data.status !== 'uploaded' &&
-        data.status !== 'pending' &&
-        data.status !== 'rejected' &&
-        data.fileKey !== null ? (
-          <View>{this.StatusTile()}</View>
-        ) : null}
-      </View>
+      <>
+        <View>
+          {data && data.fileKey === null ? <View>{this.UploadTile()}</View> : null}
+          {data && data.status !== 'pending' && data.fileKey !== null ? (
+            <View>{this.MenuTile()}</View>
+          ) : null}
+          {data &&
+          data.status &&
+          data.status !== 'approved' &&
+          data.status !== 'pending_legal' &&
+          data.status !== 'uploaded' &&
+          data.status !== 'pending' &&
+          data.status !== 'rejected' &&
+          data.fileKey !== null ? (
+            <View>{this.StatusTile()}</View>
+          ) : null}
+        </View>
+      </>
     )
   }
 }

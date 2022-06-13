@@ -88,4 +88,12 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: '3%',
   },
+  fab: {
+    backgroundColor: AppStyles.colors.primaryColor,
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
+  },
 })

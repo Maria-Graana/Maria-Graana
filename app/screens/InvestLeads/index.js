@@ -48,13 +48,8 @@ import TextFilterComponent from '../../components/TextFilterComponent'
 import DateFilterComponent from '../../components/DateFilterComponent'
 import Loader from '../../components/loader'
 
-var BUTTONS = [
-  'Assign to team member',
-  'Share lead with other agent',
-  'Create new Investment lead for this client',
-  'Cancel',
-]
-var CANCEL_INDEX = 3
+var BUTTONS = ['Assign to team member', 'Share lead with other agent', 'Cancel']
+var CANCEL_INDEX = BUTTONS.length - 1
 
 class InvestLeads extends React.Component {
   constructor(props) {
@@ -90,7 +85,6 @@ class InvestLeads extends React.Component {
       comment: null,
       newActionModal: false,
       isMenuVisible: false,
-      fabActions: [],
       filterType: null,
       statusLead: null,
       sortLead: null,
@@ -139,8 +133,6 @@ class InvestLeads extends React.Component {
       this.getServerTime()
       this.onFocus()
     })
-
-    this.setFabActions()
   }
 
   componentWillUnmount() {
@@ -443,8 +435,6 @@ class InvestLeads extends React.Component {
         if (buttonIndex === 1) {
           //Share
           this.navigateToShareScreen(val)
-        } else if (buttonIndex === 2) {
-          this.goToFormPage('AddCMLead', 'CM', val && val.customer ? val.customer : null)
         } else if (buttonIndex === 0) {
           this.checkAssignedLead(val)
         }
@@ -615,76 +605,13 @@ class InvestLeads extends React.Component {
     navigation.navigate('CMLeadTabs', { screen: 'Payments' })
   }
 
-  createProjectLead = () => {
-    const { permissions } = this.props
-    const { fabActions } = this.state
-    if (
-      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions)
-    ) {
-      this.setState({
-        fabActions: [
-          {
-            icon: 'plus',
-            label: 'Investment Lead',
-            color: AppStyles.colors.primaryColor,
-            onPress: () => {
-              if (createProjectLead) this.goToFormPage('AddCMLead', 'CM', null)
-            },
-          },
-        ],
-      })
-      return true
-    }
-  }
-
-  createBuyRentLead = () => {
-    const { permissions } = this.props
-    const { fabActions } = this.state
-    if (
-      getPermissionValue(PermissionFeatures.BUY_RENT_LEADS, PermissionActions.CREATE, permissions)
-    ) {
-      this.setState({
-        fabActions: [
-          {
-            icon: 'plus',
-            label: 'Buy/Rent Lead',
-            color: AppStyles.colors.primaryColor,
-            onPress: () => {
-              if (createBuyRentLead) this.goToFormPage('AddRCMLead', 'RCM', null)
-            },
-          },
-        ],
-      })
-      return true
-    }
-  }
-
-  setFabActions = () => {
-    const { createBuyRentLead, createProjectLead } = this.state
-    let fabActions = []
+  onFabIconPress = () => {
     const { route } = this.props
     const { client } = route.params
-    if (createBuyRentLead) {
-      fabActions.push({
-        icon: 'plus',
-        label: 'Buy/Rent Lead',
-        color: AppStyles.colors.primaryColor,
-        onPress: () => {
-          this.goToFormPage('AddRCMLead', 'RCM', client)
-        },
-      })
-    }
+    const { createProjectLead } = this.state
     if (createProjectLead) {
-      fabActions.push({
-        icon: 'plus',
-        label: 'Investment Lead',
-        color: AppStyles.colors.primaryColor,
-        onPress: () => this.goToFormPage('AddCMLead', 'CM', client),
-      })
+      this.goToFormPage('AddCMLead', 'CM', client)
     }
-    this.setState({
-      fabActions: fabActions,
-    })
   }
 
   openStatus = () => {
@@ -829,7 +756,6 @@ class InvestLeads extends React.Component {
       serverTime,
       statusFilterType,
       isMenuVisible,
-      fabActions,
       createBuyRentLead,
       createProjectLead,
       pageType,
@@ -870,6 +796,16 @@ class InvestLeads extends React.Component {
 
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
+        {(createProjectLead || createBuyRentLead) &&
+        (screen === 'Leads' || screen === 'ProjectLeads') &&
+        !hideCloseLostFilter ? (
+          <FAB
+            icon="plus"
+            style={styles.fab}
+            color={AppStyles.bgcWhite.backgroundColor}
+            onPress={() => this.onFabIconPress()}
+          />
+        ) : null}
         {/* ********** RN Bottom Sheet ********** */}
         <RBSheet
           ref={(ref) => {
@@ -1020,19 +956,6 @@ class InvestLeads extends React.Component {
           <Loader loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) &&
-        (screen === 'Leads' || screen === 'ProjectLeads') &&
-        !hideCloseLostFilter ? (
-          <FAB.Group
-            open={open}
-            icon="plus"
-            style={{ marginBottom: 16 }}
-            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-            color={AppStyles.bgcWhite.backgroundColor}
-            actions={fabActions}
-            onStateChange={({ open }) => this.setState({ open })}
-          />
-        ) : null}
 
         <SortModal
           sendStatus={this.sendStatus}

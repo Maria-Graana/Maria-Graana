@@ -56,13 +56,8 @@ import TextFilterComponent from '../../components/TextFilterComponent'
 import DateFilterComponent from '../../components/DateFilterComponent'
 import Loader from '../../components/loader'
 
-var BUTTONS = [
-  'Assign to team member',
-  'Share lead with other agent',
-  'Create new Rent lead for this client',
-  'Cancel',
-]
-var CANCEL_INDEX = 3
+var BUTTONS = ['Assign to team member', 'Share lead with other agent', 'Cancel']
+var CANCEL_INDEX = BUTTONS.length - 1
 
 class RentLeads extends React.Component {
   constructor(props) {
@@ -92,7 +87,6 @@ class RentLeads extends React.Component {
       isMultiPhoneModalVisible: false,
       statusFilterType: 'id',
       comment: null,
-      fabActions: [],
       filterType: null,
       statusLead: null,
       sortLead: null,
@@ -137,7 +131,6 @@ class RentLeads extends React.Component {
       this.onFocus()
     })
 
-    this.setFabActions()
     dispatch(
       setLeadsDropdown(
         hasBooking ? '&pageType=myDeals&hasBooking=true' : '&pageType=myLeads&hasBooking=false'
@@ -463,13 +456,6 @@ class RentLeads extends React.Component {
         if (buttonIndex === 1) {
           //Share
           this.navigateToShareScreen(val)
-        } else if (buttonIndex === 2) {
-          this.goToFormPage(
-            'AddRCMLead',
-            'RCM',
-            val && val.customer ? val.customer : null,
-            val.customer_id
-          )
         } else if (buttonIndex === 0) {
           this.checkAssignedLead(val)
         }
@@ -699,42 +685,17 @@ class RentLeads extends React.Component {
     })
   }
 
-  setFabActions = () => {
-    const { createBuyRentLead, createProjectLead } = this.state
+  onFabIconPress = () => {
     const { route } = this.props
     const { client } = route.params
-    let fabActions = []
+    const { createBuyRentLead } = this.state
     if (createBuyRentLead) {
-      fabActions.push({
-        icon: 'plus',
-        label: 'Buy/Rent Lead',
-        color: AppStyles.colors.primaryColor,
-        onPress: () => {
-          if (client) {
-            this.goToFormPage('AddRCMLead', 'RCM', client, client?.id)
-          } else {
-            this.goToFormPage('AddRCMLead', 'RCM', null)
-          }
-        },
-      })
+      if (client) {
+        this.goToFormPage('AddRCMLead', 'RCM', client, client?.id)
+      } else {
+        this.goToFormPage('AddRCMLead', 'RCM', null)
+      }
     }
-    if (createProjectLead) {
-      fabActions.push({
-        icon: 'plus',
-        label: 'Investment Lead',
-        color: AppStyles.colors.primaryColor,
-        onPress: () => {
-          if (client) {
-            this.goToFormPage('AddCMLead', 'CM', client, client?.id)
-          } else {
-            this.goToFormPage('AddCMLead', 'CM', null)
-          }
-        },
-      })
-    }
-    this.setState({
-      fabActions: fabActions,
-    })
   }
   setBottomSheet = (value) => {
     this.setState(
@@ -800,7 +761,6 @@ class RentLeads extends React.Component {
       popupLoading,
       serverTime,
       statusFilterType,
-      fabActions,
       createBuyRentLead,
       createProjectLead,
       pageType,
@@ -840,6 +800,14 @@ class RentLeads extends React.Component {
 
     return (
       <View style={[AppStyles.container, { marginBottom: 25, paddingHorizontal: 0 }]}>
+        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
+          <FAB
+            icon="plus"
+            style={styles.fab}
+            color={AppStyles.bgcWhite.backgroundColor}
+            onPress={() => this.onFabIconPress()}
+          />
+        ) : null}
         {user.organization && user.organization.isPP && (
           <AndroidNotifications navigation={navigation} />
         )}
@@ -1001,7 +969,6 @@ class RentLeads extends React.Component {
                     data={{ ...item }}
                     navigateTo={this.navigateTo}
                     callNumber={(data) => {
-                      console.log(data)
                       dispatch(callNumberFromLeads(data, 'BuyRent')).then((res) => {
                         if (res !== null) {
                           this.showMultiPhoneModal(true)
@@ -1037,17 +1004,6 @@ class RentLeads extends React.Component {
           <Loader loading={loading} />
         )}
         <OnLoadMoreComponent onEndReached={onEndReachedLoader} />
-        {(createProjectLead || createBuyRentLead) && screen === 'Leads' && !hideCloseLostFilter ? (
-          <FAB.Group
-            open={open}
-            icon="plus"
-            style={{ marginBottom: 16 }}
-            fabStyle={{ backgroundColor: AppStyles.colors.primaryColor }}
-            color={AppStyles.bgcWhite.backgroundColor}
-            actions={fabActions}
-            onStateChange={({ open }) => this.setState({ open })}
-          />
-        ) : null}
 
         <MultiplePhoneOptionModal
           modelDataLoading={phoneModelDataLoader}

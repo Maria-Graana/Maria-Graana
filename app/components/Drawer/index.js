@@ -231,6 +231,16 @@ class CustomDrawerContent extends React.Component {
             )}
           </View>
 
+          <DrawerIconItem
+            screen={'Home'}
+            navigateTo={() => {
+              RootNavigation.popToTop()
+              setTimeout(() => {
+                this.props.navigation.closeDrawer()
+              }, 500)
+            }}
+          />
+
           {getPermissionValue(PermissionFeatures.DIARY, PermissionActions.READ, permissions) && (
             <DrawerIconItem
               screen={'Diary'}

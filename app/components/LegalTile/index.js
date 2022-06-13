@@ -150,7 +150,7 @@ class LegalTile extends React.Component {
       <>
         <TouchableOpacity
           onPress={() => downloadLegalDocs(data)}
-          style={[styles.legalBtnView, newStyle, { height: 100 }]}
+          style={[styles.legalBtnView, newStyle, { height: 80 }]}
           disabled={isLeadClosed}
         >
           <AntDesign
@@ -167,7 +167,7 @@ class LegalTile extends React.Component {
                   style={checkList ? style.hyperLinkPadding : styles.textPadding}
                 >
                   {data.name === 'Cnic'
-                    ? data.name.toUpperCase()
+                    ? 'Cnic Front'
                     : data.name === 'Police Verification Report Optional'
                     ? data.name.replace(' Optional', '')
                     : isLeadSCA

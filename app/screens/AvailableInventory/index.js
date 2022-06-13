@@ -475,88 +475,91 @@ class AvailableInventory extends Component {
               />
             ) : null}
           </RBSheet>
-          <InventoryFilter
-            priceRange={priceRange}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            onModalPriceShowPressed={this.onModalPriceShowPressed}
-            enabled={!loading}
-            project={selectedProjectName}
-            selectedFloor={selectedFloor}
-            status={status}
-            price={10}
-            setBottomSheet={this.setBottomSheet}
-            clear={true}
-            onClear={this.onClearAll}
-          />
 
           {loading ? (
             <Loader loading={loading} />
           ) : (
             <>
               {tableData && tableData.length > 0 ? (
-                <View style={styles.container}>
-                  <ScrollView horizontal>
-                    <View>
-                      <Table borderStyle={styles.tableBorder}>
-                        <Row
-                          data={tableHeaderTitle}
-                          widthArr={widthArr}
-                          style={styles.headerTable}
-                          textStyle={styles.headerTextStyle}
-                        />
-                      </Table>
-
-                      <ScrollView style={styles.dataWrapper}>
+                <>
+                  <InventoryFilter
+                    priceRange={priceRange}
+                    minPrice={minPrice}
+                    maxPrice={maxPrice}
+                    onModalPriceShowPressed={this.onModalPriceShowPressed}
+                    enabled={!loading}
+                    project={selectedProjectName}
+                    selectedFloor={selectedFloor}
+                    status={status}
+                    price={10}
+                    setBottomSheet={this.setBottomSheet}
+                    clear={true}
+                    onClear={this.onClearAll}
+                  />
+                  <View style={styles.container}>
+                    <ScrollView horizontal>
+                      <View>
                         <Table borderStyle={styles.tableBorder}>
-                          {tableData.map((rowData, index) =>
-                            rowData[rowData.length - 1] == 'Available' ? (
-                              <TouchableOpacity
-                                activeOpacity={0.6}
-                                onPress={() => {
-                                  if (updatePermission) this.onSelection(rowData[0])
-                                }}
-                                key={index}
-                              >
+                          <Row
+                            data={tableHeaderTitle}
+                            widthArr={widthArr}
+                            style={styles.headerTable}
+                            textStyle={styles.headerTextStyle}
+                          />
+                        </Table>
+
+                        <ScrollView style={styles.dataWrapper}>
+                          <Table borderStyle={styles.tableBorder}>
+                            {tableData.map((rowData, index) =>
+                              rowData[rowData.length - 1] == 'Available' ? (
+                                <TouchableOpacity
+                                  activeOpacity={0.6}
+                                  onPress={() => {
+                                    if (updatePermission) this.onSelection(rowData[0])
+                                  }}
+                                  key={index}
+                                >
+                                  <Row
+                                    key={index}
+                                    data={rowData}
+                                    widthArr={widthArr}
+                                    style={[
+                                      styles.row,
+                                      {
+                                        backgroundColor:
+                                          active && selectedRow == rowData[0]
+                                            ? '#0f73ee'
+                                            : helper.setBookingStatusColor(rowData),
+                                      },
+                                    ]}
+                                    textStyle={[
+                                      styles.text,
+                                      {
+                                        color:
+                                          active && selectedRow == rowData[0] ? '#fff' : 'black',
+                                      },
+                                    ]}
+                                  />
+                                </TouchableOpacity>
+                              ) : (
                                 <Row
                                   key={index}
                                   data={rowData}
                                   widthArr={widthArr}
                                   style={[
                                     styles.row,
-                                    {
-                                      backgroundColor:
-                                        active && selectedRow == rowData[0]
-                                          ? '#0f73ee'
-                                          : helper.setBookingStatusColor(rowData),
-                                    },
+                                    { backgroundColor: helper.setBookingStatusColor(rowData) },
                                   ]}
-                                  textStyle={[
-                                    styles.text,
-                                    {
-                                      color: active && selectedRow == rowData[0] ? '#fff' : 'black',
-                                    },
-                                  ]}
+                                  textStyle={styles.text}
                                 />
-                              </TouchableOpacity>
-                            ) : (
-                              <Row
-                                key={index}
-                                data={rowData}
-                                widthArr={widthArr}
-                                style={[
-                                  styles.row,
-                                  { backgroundColor: helper.setBookingStatusColor(rowData) },
-                                ]}
-                                textStyle={styles.text}
-                              />
-                            )
-                          )}
-                        </Table>
-                      </ScrollView>
-                    </View>
-                  </ScrollView>
-                </View>
+                              )
+                            )}
+                          </Table>
+                        </ScrollView>
+                      </View>
+                    </ScrollView>
+                  </View>
+                </>
               ) : (
                 <View style={styles.imageStyles}>
                   <Image

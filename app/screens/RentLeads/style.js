@@ -103,4 +103,12 @@ export default styles = StyleSheet.create({
     marginVertical: 5,
     padding: 10,
   },
+  fab: {
+    backgroundColor: AppStyles.colors.primaryColor,
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
+  },
 })

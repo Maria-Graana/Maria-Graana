@@ -637,6 +637,7 @@ class LeadDetail extends React.Component {
     let assignedByName = this.getAssignedByName(lead)
     let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
     let setCustomerName = this.setCustomerName()
+    console.log(otherLeadsCount)
 
     return !loading ? (
       <View style={styles.mainContainer}>
@@ -789,7 +790,7 @@ class LeadDetail extends React.Component {
             </View>
 
             <View style={[styles.cardContainer, { elevation: 2 }]}>
-              {otherLeadsCount && otherLeadsCount > 0 ? (
+              {otherLeadsCount && otherLeadsCount > 1 ? (
                 <View style={styles.rowContainerType2}>
                   <Text
                     style={[

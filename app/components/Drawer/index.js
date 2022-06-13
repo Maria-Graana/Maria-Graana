@@ -139,69 +139,7 @@ class CustomDrawerContent extends React.Component {
                         }}
                       >
                         <View style={styles.optionInnerView}>
-                          <Text style={styles.textColor}>Register Client</Text>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-                  )}
-                <Divider color={'#F1F1F1'} />
-                {getPermissionValue(
-                  PermissionFeatures.PROJECT_LEADS,
-                  PermissionActions.CREATE,
-                  permissions
-                ) &&
-                  drawerMenuOptions && (
-                    <View style={styles.optionView}>
-                      <TouchableWithoutFeedback
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          this.goToFormPage('AddCMLead', 'CM', null)
-                        }}
-                      >
-                        <View style={styles.optionInnerView}>
-                          <Text style={styles.textColor}>Add Project Lead</Text>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-                  )}
-                <Divider color={'#F1F1F1'} />
-
-                {getPermissionValue(
-                  PermissionFeatures.BUY_RENT_LEADS,
-                  PermissionActions.CREATE,
-                  permissions
-                ) &&
-                  drawerMenuOptions && (
-                    <View style={styles.optionView}>
-                      <TouchableWithoutFeedback
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          this.goToFormPage('AddRCMLead', 'RCM', null)
-                        }}
-                      >
-                        <View style={styles.optionInnerView}>
-                          <Text style={styles.textColor}>Add Buy/Rent Lead</Text>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-                  )}
-                <Divider color={'#F1F1F1'} />
-
-                {getPermissionValue(
-                  PermissionFeatures.DIARY,
-                  PermissionActions.CREATE,
-                  permissions
-                ) &&
-                  drawerMenuOptions && (
-                    <View style={styles.optionView}>
-                      <TouchableWithoutFeedback
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          this.goToAddEditDiaryScreen()
-                        }}
-                      >
-                        <View style={styles.optionInnerView}>
-                          <Text style={styles.textColor}>Add Diary Task</Text>
+                          <Text style={styles.textColor}>Client Registration</Text>
                         </View>
                       </TouchableWithoutFeedback>
                     </View>
@@ -222,7 +160,50 @@ class CustomDrawerContent extends React.Component {
                         }}
                       >
                         <View style={styles.optionInnerView}>
-                          <Text style={styles.textColor}>Add Property</Text>
+                          <Text style={styles.textColor}>Property Registration</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+
+                <Divider color={'#F1F1F1'} />
+
+                {getPermissionValue(
+                  PermissionFeatures.DIARY,
+                  PermissionActions.CREATE,
+                  permissions
+                ) &&
+                  drawerMenuOptions && (
+                    <View style={styles.optionView}>
+                      <TouchableWithoutFeedback
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          this.goToAddEditDiaryScreen()
+                        }}
+                      >
+                        <View style={styles.optionInnerView}>
+                          <Text style={styles.textColor}>Diary Task</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                  )}
+                <Divider color={'#F1F1F1'} />
+
+                {getPermissionValue(
+                  PermissionFeatures.CLIENTS,
+                  PermissionActions.READ,
+                  permissions
+                ) &&
+                  drawerMenuOptions && (
+                    <View style={styles.optionView}>
+                      <TouchableWithoutFeedback
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          this.navigateTo('Client')
+                        }}
+                      >
+                        <View style={styles.optionInnerView}>
+                          <Text style={styles.textColor}>Existing Client</Text>
                         </View>
                       </TouchableWithoutFeedback>
                     </View>

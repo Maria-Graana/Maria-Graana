@@ -637,7 +637,6 @@ class LeadDetail extends React.Component {
     let assignedByName = this.getAssignedByName(lead)
     let checkAssignedShared = helper.checkAssignedSharedWithoutMsg()
     let setCustomerName = this.setCustomerName()
-    console.log(otherLeadsCount)
 
     return !loading ? (
       <View style={styles.mainContainer}>

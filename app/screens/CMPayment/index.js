@@ -205,6 +205,7 @@ class CMPayment extends Component {
       selectedYear: date.getFullYear(),
       selectedMonth: date.getMonth() + 1,
       siteData: [],
+      tableDataLoading: false,
     }
   }
 
@@ -478,7 +479,12 @@ class CMPayment extends Component {
   }
 
   getUnits = (projectId, floorId) => {
-    let url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available,Hold&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
+    let url = ``
+    if (floorId == '') {
+      url = `/api/project/shops?projectId=${projectId}&status=Available,Hold&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
+    } else {
+      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available,Hold&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
+    }
     axios
       .get(url)
       .then((res) => {
@@ -520,30 +526,33 @@ class CMPayment extends Component {
       headerTitle.push(item.fieldName)
       projectKeys.push(item.fieldName)
     })
-    allUnits &&
-      allUnits.map((item) => {
-        let oneRow = []
-        oneRow.push(item.name)
-        oneRow.push(item.unitType)
-        const { optional_fields } = item
-        let unitOptionalFields = JSON.parse(optional_fields)
-        projectKeys &&
-          projectKeys.length &&
-          projectKeys.map((key) => {
-            unitOptionalFields[key] && oneRow.push(unitOptionalFields[key].data)
-          })
-        oneRow.push(item.area)
-        oneRow.push(item.rate_per_sqft)
-        oneRow.push(PaymentMethods.findUnitPrice(item))
-        oneRow.push('---')
-        tableData.push(oneRow)
+    this.setState({ tableDataLoading: true }, () => {
+      allUnits &&
+        allUnits.map((item) => {
+          let oneRow = []
+          oneRow.push(item.name)
+          oneRow.push(item.unitType)
+          const { optional_fields } = item
+          let unitOptionalFields = JSON.parse(optional_fields)
+          projectKeys &&
+            projectKeys.length &&
+            projectKeys.map((key) => {
+              unitOptionalFields[key] && oneRow.push(unitOptionalFields[key].data)
+            })
+          oneRow.push(item.area)
+          oneRow.push(item.rate_per_sqft)
+          oneRow.push(PaymentMethods.findUnitPrice(item))
+          oneRow.push('---')
+          tableData.push(oneRow)
+        })
+      otherTitles.map((item) => {
+        headerTitle.push(item)
       })
-    otherTitles.map((item) => {
-      headerTitle.push(item)
-    })
-    this.setState({
-      tableHeaderTitle: headerTitle,
-      tableData: tableData,
+      this.setState({
+        tableHeaderTitle: headerTitle,
+        tableData: tableData,
+        tableDataLoading: false,
+      })
     })
   }
 
@@ -2071,6 +2080,7 @@ class CMPayment extends Component {
       selectedMonth,
       selectedYear,
       siteData,
+      tableDataLoading,
     } = this.state
     const { lead, navigation, contacts, route, CMPayment, dispatch } = this.props
     const { screenName } = this.props.route.params
@@ -2134,6 +2144,7 @@ class CMPayment extends Component {
             selectUnit={this.selectUnitTable}
             handleFirstForm={this.handleFirstForm}
             formData={firstFormData}
+            tableDataLoading={tableDataLoading}
           />
           {allFloors != '' && allFloors.length && allProjects != '' && allProjects.length ? (
             <FirstScreenConfirmModal

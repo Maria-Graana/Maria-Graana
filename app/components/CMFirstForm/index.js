@@ -123,7 +123,7 @@ class CMFirstForm extends Component {
             name={'project'}
             placeholder="Project"
             selectedItem={firstFormData.project}
-            enabled={updatePermission}
+            enabled={updatePermission && pickerProjects && pickerProjects.length > 0}
           />
           {firstFormValidate === true && !firstFormData.project && firstFormData.project === '' && (
             <ErrorMessage errorMessage={'Required'} />
@@ -136,7 +136,7 @@ class CMFirstForm extends Component {
             name={'floor'}
             placeholder="Floor"
             selectedItem={firstFormData.floor}
-            enabled={updatePermission}
+            enabled={updatePermission && firstFormData.project && pickerFloors}
           />
           {firstFormValidate === true && !firstFormData.floor && firstFormData.floor === '' && (
             <ErrorMessage errorMessage={'Required'} />
@@ -149,7 +149,7 @@ class CMFirstForm extends Component {
             name={'unitType'}
             placeholder="Unit Type"
             selectedItem={firstFormData.unitType}
-            enabled={updatePermission}
+            enabled={updatePermission && firstFormData.project}
           />
           {firstFormValidate === true && !firstFormData.floor && firstFormData.floor === '' && (
             <ErrorMessage errorMessage={'Required'} />
@@ -258,7 +258,7 @@ class CMFirstForm extends Component {
           editable={false}
           keyboardType={'numeric'}
         />
-        {!noProduct ? (
+        {!noProduct && firstFormData.unitName ? (
           <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
             <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
               <PickerComponent

@@ -14,6 +14,7 @@ import { Row, Table } from 'react-native-table-component'
 import { connect } from 'react-redux'
 import BackButton from '../../components/BackButton'
 import helper from '../../helper'
+import Loader from '../loader'
 import styles from './style'
 
 class UnitsTable extends React.Component {
@@ -34,8 +35,16 @@ class UnitsTable extends React.Component {
   }
 
   render() {
-    let { active, data, toggleSchedulePayment, lead, tableHeaderTitle, handleFirstForm, formData } =
-      this.props
+    let {
+      active,
+      data,
+      toggleSchedulePayment,
+      lead,
+      tableHeaderTitle,
+      handleFirstForm,
+      formData,
+      tableDataLoading,
+    } = this.props
     let headerName = lead.customer && lead.customer.customerName && lead.customer.customerName
     if (!headerName && headerName === '') headerName = lead.customer && lead.customer.phone
     let widthArr = this.setTableRowWidth()
@@ -62,7 +71,9 @@ class UnitsTable extends React.Component {
                 {formData.projectName} {'>>'} {formData.floorName}
               </Text>
             </View>
-            {data && data.length ? (
+            {tableDataLoading ? (
+              <Loader loading={tableDataLoading} />
+            ) : data && data.length ? (
               <View style={styles.container}>
                 <ScrollView horizontal={true}>
                   <View>

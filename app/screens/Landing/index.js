@@ -437,32 +437,18 @@ class Landing extends React.Component {
       getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.CREATE, permissions) &&
         fabActions.push({
           icon: 'plus',
-          label: 'Register Client',
+          label: 'Client Registration',
           color: AppStyles.colors.primaryColor,
           onPress: () => navigation.navigate('AddClient', { update: false }),
         })
     }
     {
-      getPermissionValue(PermissionFeatures.PROJECT_LEADS, PermissionActions.CREATE, permissions) &&
+      getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
         fabActions.push({
           icon: 'plus',
-          label: 'Add Project Lead',
+          label: 'Property Registration',
           color: AppStyles.colors.primaryColor,
-          onPress: () => this.goToFormPage('AddCMLead', 'CM', null),
-        })
-    }
-
-    {
-      getPermissionValue(
-        PermissionFeatures.BUY_RENT_LEADS,
-        PermissionActions.CREATE,
-        permissions
-      ) &&
-        fabActions.push({
-          icon: 'plus',
-          label: 'Add Buy/Rent Lead',
-          color: AppStyles.colors.primaryColor,
-          onPress: () => this.goToFormPage('AddRCMLead', 'RCM', null),
+          onPress: () => navigation.navigate('AddInventory', { update: false }),
         })
     }
 
@@ -470,19 +456,19 @@ class Landing extends React.Component {
       getPermissionValue(PermissionFeatures.DIARY, PermissionActions.CREATE, permissions) &&
         fabActions.push({
           icon: 'plus',
-          label: 'Add Diary Task',
+          label: 'Diary Task',
           color: AppStyles.colors.primaryColor,
           onPress: () => this.goToAddEditDiaryScreen(),
         })
     }
 
     {
-      getPermissionValue(PermissionFeatures.PROPERTIES, PermissionActions.CREATE, permissions) &&
+      getPermissionValue(PermissionFeatures.CLIENTS, PermissionActions.READ, permissions) &&
         fabActions.push({
           icon: 'plus',
-          label: 'Add Property',
+          label: 'Existing Client',
           color: AppStyles.colors.primaryColor,
-          onPress: () => navigation.navigate('AddInventory', { update: false }),
+          onPress: () => navigation.navigate('Client', { screen: 'Client' }),
         })
     }
 

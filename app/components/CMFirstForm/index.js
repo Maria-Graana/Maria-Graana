@@ -178,13 +178,9 @@ class CMFirstForm extends Component {
                   errorMessage={`Cannot be greater than ${unitPearlDetailsData.pearlArea} sqft `}
                 />
               ) : null}
-              {firstFormData.pearl && firstFormData.pearl !== '' && firstFormData.pearl < 50 ? (
-                <ErrorMessage errorMessage={'Must be greater than or equal to 50 sqft'} />
-              ) : null}
-              {leftPearlSqft < 50 && leftPearlSqft > 0 ? (
-                <ErrorMessage
-                  errorMessage={`Remaining area (${leftPearlSqft} sqft) must be 0 or greater than or equal to 50 sqft`}
-                />
+              {firstFormData.pearl &&
+              (firstFormData.pearl === '' || Number(firstFormData.pearl) === 0) ? (
+                <ErrorMessage errorMessage={'Must be greater than 0 sqft'} />
               ) : null}
             </View>
             <View style={styles.mainDetailViewBtn}>
@@ -193,7 +189,7 @@ class CMFirstForm extends Component {
                 onPress={() => {
                   firstFormData.pearl != null &&
                     firstFormData.pearl != '' &&
-                    firstFormData.pearl >= 50 &&
+                    firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
                     openUnitDetailsModal()
                 }}
               >

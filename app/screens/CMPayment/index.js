@@ -1340,7 +1340,25 @@ class CMPayment extends Component {
     if (name === 'cnic') {
       value ? this.validateCnic(value) : null
     }
-    if (name === 'pearl') this.pearlCalculations(oneFloor, value)
+    if (name === 'pearl') {
+      this.pearlCalculations(oneFloor, value)
+      if (oneUnit) {
+        if (copyPearlUnit) oneUnit = PaymentHelper.createPearlObject(oneFloor, value)
+        newData['finalPrice'] = Math.ceil(
+          PaymentMethods.findFinalPrice(
+            newData['parkingAvailable'] === 'yes' &&
+              newData['parkingCharges'] != '' &&
+              newData['parkingCharges'] != null
+              ? newData['parkingCharges']
+              : 0,
+            oneUnit,
+            newData['approvedDiscountPrice'],
+            newData['fullPaymentDiscountPrice'],
+            true
+          )
+        )
+      }
+    }
     newData[name] = value
     if (
       name === 'productId' ||

@@ -382,7 +382,6 @@ const PaymentHelper = {
       if (firstFormData.pearl != null) {
         if (
           (firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
-            firstFormData.pearl >= 50 &&
             firstFormData.cnic != null &&
             firstFormData.cnic != '' &&
             firstFormData.projectSiteId != null &&
@@ -390,7 +389,6 @@ const PaymentHelper = {
             firstFormData.paymentPlan === 'full_payment' &&
             firstFormData.productId) ||
           (firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
-            firstFormData.pearl >= 50 &&
             firstFormData.cnic != null &&
             firstFormData.cnic != '' &&
             cnicValidate === false &&
@@ -403,16 +401,9 @@ const PaymentHelper = {
             firstFormData.installmentFrequency &&
             firstFormData.paymentPlanDuration)
         ) {
-          if (leftPearlSqft < 50 && leftPearlSqft > 0) {
-            return {
-              firstFormValidate: true,
-              openFirstScreenModal: false,
-            }
-          } else {
-            return {
-              firstFormValidate: false,
-              openFirstScreenModal: true,
-            }
+          return {
+            firstFormValidate: false,
+            openFirstScreenModal: true,
           }
         } else {
           return {
@@ -462,23 +453,15 @@ const PaymentHelper = {
       if (firstFormData.pearl != null) {
         if (
           firstFormData.pearl <= unitPearlDetailsData.pearlArea &&
-          firstFormData.pearl >= 50 &&
           firstFormData.cnic != null &&
           firstFormData.cnic != '' &&
           firstFormData.projectSiteId != null &&
           cnicValidate === false &&
           firstFormData.paymentPlan != 'no'
         ) {
-          if (leftPearlSqft < 50 && leftPearlSqft > 0) {
-            return {
-              firstFormValidate: true,
-              openFirstScreenModal: false,
-            }
-          } else {
-            return {
-              firstFormValidate: false,
-              openFirstScreenModal: true,
-            }
+          return {
+            firstFormValidate: false,
+            openFirstScreenModal: true,
           }
         } else {
           return {

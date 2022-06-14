@@ -28,6 +28,7 @@ import {
   setDairyFilterApplied,
   setDiaryFilter,
   setDiaryFilterReason,
+  clearLeadID,
 } from '../../actions/diary'
 import moment from 'moment'
 import { connect } from 'react-redux'
@@ -160,6 +161,12 @@ class FilterDiaryView extends React.Component {
     this.fetchCustomer()
   }
 
+  clearOtherId = (name) => {
+    const { dispatch } = this.props
+    if (name === 'wantedId' || name === 'projectId' || name === 'buyrentId') {
+      dispatch(clearLeadID(name))
+    }
+  }
   handleForm = (value, name) => {
     const { dispatch } = this.props
     const { filters, feedbackReasonFilter } = this.props
@@ -181,6 +188,9 @@ class FilterDiaryView extends React.Component {
       newformData[name] = value
     }
     dispatch(setDiaryFilter(newformData)).then((res) => {
+      if (name === 'wantedId' || name === 'projectId' || name === 'buyrentId') {
+        this.clearOtherId(name)
+      }
       this.onSearchPressed()
       this.RBSheet.close()
     })
@@ -258,6 +268,7 @@ class FilterDiaryView extends React.Component {
       onEndReachedLoader,
       page,
     } = this.state
+    console.log('filters', filters)
 
     return (
       <View style={styles.listView}>

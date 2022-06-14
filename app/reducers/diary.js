@@ -33,6 +33,16 @@ let referenceGuideData = {
   referenceErrorMessage: null,
 }
 
+const CheckLeadID = (payload, filters) => {
+  if (payload === 'wantedId') {
+    return { ...filters, projectId: null, buyrentId: null }
+  } else if (payload === 'projectId') {
+    return { ...filters, wantedId: null, buyrentId: null }
+  } else if (payload === 'buyrentId') {
+    return { ...filters, wantedId: null, projectId: null }
+  }
+}
+
 const diary = (state = diaryData, action) => {
   switch (action.type) {
     case types.SET_DIARY_LOADER:
@@ -140,6 +150,8 @@ const filters = (state = filtersData, action) => {
       return action.payload
     case types.CLEAR_DIARY_FILTER:
       return filtersData
+    case types.CLEAR_LEAD_ID:
+      return CheckLeadID(action.payload, state)
     default:
       return state
   }

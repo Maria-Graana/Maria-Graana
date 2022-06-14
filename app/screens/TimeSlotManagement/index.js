@@ -22,7 +22,7 @@ import {
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
-import { saveOrUpdateDiaryTask } from '../../actions/diary'
+import { clearDiaryFeedbacks, saveOrUpdateDiaryTask, setConnectFeedback } from '../../actions/diary'
 import helper from '../../helper'
 import diaryHelper from '../Diary/diaryHelper'
 import axios from 'axios'
@@ -472,7 +472,8 @@ function TimeSlotManagement(props) {
                   body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
                 }
               }
-              // TimerNotification(notificationPayload, start)
+              dispatch(setConnectFeedback({}))
+              dispatch(clearDiaryFeedbacks())
 
               navigation.goBack()
             } else {

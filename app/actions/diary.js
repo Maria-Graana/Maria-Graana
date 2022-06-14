@@ -444,6 +444,15 @@ export function clearDiaryFilter() {
   }
 }
 
+export function clearLeadID(payload) {
+  return (dispatch, getsState) => {
+    dispatch({
+      type: types.CLEAR_LEAD_ID,
+      payload,
+    })
+  }
+}
+
 export function setMultipleModalVisible(value) {
   return (dispatch, getsState) => {
     dispatch({

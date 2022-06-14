@@ -268,7 +268,6 @@ class FilterDiaryView extends React.Component {
       onEndReachedLoader,
       page,
     } = this.state
-    console.log('filters', filters)
 
     return (
       <View style={styles.listView}>

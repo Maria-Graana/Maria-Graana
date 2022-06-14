@@ -1422,24 +1422,13 @@ class LegalAttachment extends Component {
                 // disabled={disabled}
                 onPress={() => this.submitAllToAssignLegal()}
               />
-              {leadPurpose === 'buy' &&
+
+              {(leadPurpose === 'buy' || leadPurpose === 'sale') &&
               addedBy !== 'seller' &&
               firstFormData.legalService === 'internal' ? (
                 <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
-                  {!mailCheck ? (
-                    <RCMBTN
-                      onClick={() => {
-                        if (updatePermission && closedLeadEdit) this.showLegalRequestConfirmation()
-                      }}
-                      btnText={'REQUEST TRANSFER SERVICES'}
-                      checkLeadClosedOrNot={false}
-                      hiddenBtn={false}
-                      addBorder={true}
-                      isLeadClosed={isLeadClosed}
-                    />
-                  ) : null}
                   {/* {mailCheck ? ( */}
-                  <View style={styles.transferView}>
+                  <View style={[styles.transferView, { marginBottom: 10 }]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                       <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
                       <Text
@@ -1509,6 +1498,18 @@ class LegalAttachment extends Component {
                       />
                     )}
                   </View>
+                  {!mailCheck ? (
+                    <RCMBTN
+                      onClick={() => {
+                        if (updatePermission && closedLeadEdit) this.showLegalRequestConfirmation()
+                      }}
+                      btnText={'REQUEST TRANSFER SERVICES'}
+                      checkLeadClosedOrNot={false}
+                      hiddenBtn={false}
+                      addBorder={true}
+                      isLeadClosed={isLeadClosed}
+                    />
+                  ) : null}
                   {/* ) : null} */}
                 </View>
               ) : null}

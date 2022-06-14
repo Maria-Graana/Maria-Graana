@@ -105,11 +105,11 @@ class DropdownHeader extends React.Component {
                       dispatch(setLeadsDropdown(value))
                     }}
                     selectedItem={leadsDropdown}
-                    showPickerArrow={Platform.OS === 'ios' ? false : true}
+                    showPickerArrow={false}
                   />
                 ) : (
                   <PickerComponent
-                    showPickerArrow={Platform.OS === 'ios' ? false : true}
+                    showPickerArrow={false}
                     hidePlaceholder={true}
                     data={
                       hasBooking

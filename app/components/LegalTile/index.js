@@ -164,7 +164,10 @@ class LegalTile extends React.Component {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text
                   numberOfLines={1}
-                  style={checkList ? style.hyperLinkPadding : styles.textPadding}
+                  style={[
+                    checkList ? style.hyperLinkPadding : styles.textPadding,
+                    { width: '46%' },
+                  ]}
                 >
                   {data.name === 'Cnic'
                     ? 'Cnic Front'
@@ -208,7 +211,7 @@ class LegalTile extends React.Component {
                   data.status === 'rejected' ||
                   data.status === 'pending_legal' ||
                   data.status === 'approved'
-                    ? { paddingTop: 20 }
+                    ? { paddingTop: 30 }
                     : styles.contentCenter,
                 ]}
               >

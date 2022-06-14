@@ -22,7 +22,7 @@ import {
 } from '../../actions/slotManagement'
 import moment from 'moment'
 import _ from 'underscore'
-import { saveOrUpdateDiaryTask } from '../../actions/diary'
+import { clearDiaryFeedbacks, saveOrUpdateDiaryTask, setConnectFeedback } from '../../actions/diary'
 import helper from '../../helper'
 import diaryHelper from '../Diary/diaryHelper'
 import axios from 'axios'
@@ -391,7 +391,12 @@ function TimeSlotManagement(props) {
       sortedAray && sortedAray[sortedAray.length - 1].endTime
     )
 
-    const { data = null, isFromConnectFlow = false, isBookViewing = false } = route.params
+    const {
+      data = null,
+      isFromConnectFlow = false,
+      isBookViewing = false,
+      isViewingDone = false,
+    } = route.params
     if (data && isFromConnectFlow) {
       let copyData = Object.assign({}, data)
       copyData.date = startTime
@@ -401,9 +406,9 @@ function TimeSlotManagement(props) {
       copyData.end = endTime
       copyData.slots = tempSlot
       delete copyData.selectedLead
-      saveOrUpdateDiaryTask(props.connectFeedback).then((res) => {
-        // mark previous task as completed and then create the new task
+      if (isViewingDone) {
         saveOrUpdateDiaryTask(copyData).then((response) => {
+          // viewing done case
           if (response) {
             helper.successToast('TASK ADDED SUCCESSFULLY!')
 
@@ -431,14 +436,52 @@ function TimeSlotManagement(props) {
                 body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
               }
             }
-            // TimerNotification(notificationPayload, start)
-
             navigation.goBack()
           } else {
             helper.errorToast('SOMETHING WENT WRONG!')
           }
         })
-      })
+      } else {
+        saveOrUpdateDiaryTask(props.connectFeedback).then((res) => {
+          // mark previous task as completed and then create the new task
+          saveOrUpdateDiaryTask(copyData).then((response) => {
+            if (response) {
+              helper.successToast('TASK ADDED SUCCESSFULLY!')
+
+              let notificationData
+
+              for (let i in response.data[1]) {
+                notificationData = response.data[1][i]
+              }
+
+              let start = new Date(notificationData.start)
+              let end = new Date(notificationData.end)
+
+              let notificationPayload
+              if (notificationData.taskCategory == 'leadTask') {
+                notificationPayload = {
+                  clientName: `${data.selectedLead.customer.first_name} ${data.selectedLead.customer.last_name}`,
+                  id: notificationData.id,
+                  title: diaryHelper.showTaskType(notificationData?.taskType),
+                  body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+                }
+              } else {
+                notificationPayload = {
+                  id: notificationData.id,
+                  title: diaryHelper.showTaskType(notificationData.taskType),
+                  body: moment(start).format('hh:mm A') + ' - ' + moment(end).format('hh:mm A'),
+                }
+              }
+              dispatch(setConnectFeedback({}))
+              dispatch(clearDiaryFeedbacks())
+
+              navigation.goBack()
+            } else {
+              helper.errorToast('SOMETHING WENT WRONG!')
+            }
+          })
+        })
+      }
     } else if (data && isBookViewing) {
       let copyData = Object.assign({}, data)
       copyData.date = startTime
@@ -448,19 +491,7 @@ function TimeSlotManagement(props) {
       copyData.end = endTime
       copyData.slots = tempSlot
 
-      // let copy2Data = Object.assign({}, copyData)
-      // delete copy2Data.leadId
-      // copy2Data.armsLeadId = copyData.leadId
-
       if (copyData && !copyData.id) createViewing(copyData)
-      // saveOrUpdateDiaryTask(copy2Data).then((response) => {
-      //   if (response) {
-      //     helper.successToast('TASK ADDED SUCCESSFULLY!')
-      //     navigation.goBack()
-      //   } else {
-      //     helper.errorToast('SOMETHING WENT WRONG!')
-      //   }
-      // })
     } else {
       if (sortedAray) {
         dispatch(setSlotData(date, startTime, endTime, slots))

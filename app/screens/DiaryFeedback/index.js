@@ -412,11 +412,14 @@ class DiaryFeedback extends Component {
           delete copyObj.id
           delete copyObj.feedbackId
           delete copyObj.feedbackTag
-          dispatch(setConnectFeedback(copyObj)).then((res) => {
-            navigation.replace('TimeSlotManagement', {
-              data: { ...this.props.connectFeedback },
-              taskType: 'follow_up',
-              isFromConnectFlow: true,
+          saveOrUpdateDiaryTask(this.props.connectFeedback).then((res) => {
+            dispatch(setConnectFeedback(copyObj)).then((res) => {
+              navigation.replace('TimeSlotManagement', {
+                data: { ...this.props.connectFeedback },
+                taskType: 'follow_up',
+                isFromConnectFlow: true,
+                isViewingDone: true,
+              })
             })
           })
         } else if (section === 'Reject') {

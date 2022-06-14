@@ -946,9 +946,10 @@ class LeadMatch extends React.Component {
               </View>
               {matchData.data.length ? (
                 <FlatList
+                  style={{ flex: 1 }}
                   data={matchData.data}
                   renderItem={(item, index) => (
-                    <View style={{ marginVertical: 2, marginHorizontal: 8 }}>
+                    <View style={{ marginHorizontal: 8 }}>
                       {this.ownProperty(item.item) ? (
                         <MatchTile
                           data={_.clone(item.item)}

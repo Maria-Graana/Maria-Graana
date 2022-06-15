@@ -62,7 +62,6 @@ class LegalTile extends React.Component {
         borderWidth: 1,
       }
     }
-
     return (
       <TouchableOpacity
         onPress={() => {
@@ -80,7 +79,9 @@ class LegalTile extends React.Component {
           )} */}
             <Text numberOfLines={1} style={styles.tileTitle}>
               {data.name === 'Cnic'
-                ? data.name.toUpperCase()
+                ? 'CNIC Front'
+                : data.name === 'cnic_back'
+                ? 'CNIC Back'
                 : isLeadSCA
                 ? 'Service Charge Agreement'
                 : data.name}
@@ -170,7 +171,9 @@ class LegalTile extends React.Component {
                   ]}
                 >
                   {data.name === 'Cnic'
-                    ? 'Cnic Front'
+                    ? 'CNIC Front'
+                    : data.name === 'cnic_back'
+                    ? 'CNIC Back'
                     : data.name === 'Police Verification Report Optional'
                     ? data.name.replace(' Optional', '')
                     : isLeadSCA
@@ -210,8 +213,9 @@ class LegalTile extends React.Component {
                 style={[
                   data.status === 'rejected' ||
                   data.status === 'pending_legal' ||
-                  data.status === 'approved'
-                    ? { paddingTop: 30 }
+                  data.status === 'approved' ||
+                  data.status === 'uploaded'
+                    ? { paddingTop: 20 }
                     : styles.contentCenter,
                 ]}
               >
@@ -342,7 +346,9 @@ class LegalTile extends React.Component {
           <View style={[styles.contentSpace, { flexDirection: 'row' }]}>
             <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
               {data.name === 'Cnic'
-                ? data.name.toUpperCase()
+                ? 'CNIC Front'
+                : data.name === 'cnic_back'
+                ? 'CNIC Back'
                 : isLeadSCA
                 ? 'Service Charge Agreement'
                 : data.name}

@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native'
-import { CheckBox, ListItem, Body, Switch } from 'native-base'
+import { ListItem, Body, Switch } from 'native-base'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal'
@@ -25,7 +25,6 @@ class AddTokenModal extends React.Component {
       firstScreenValidate,
       addPaymentLoading,
       tokenModalToggle,
-      remarks,
       tokenNotZero,
     } = this.props
     return (

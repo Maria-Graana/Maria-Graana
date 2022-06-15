@@ -7,7 +7,7 @@ import Modal from 'react-native-modal'
 import AppStyles from '../../AppStyles'
 import ErrorMessage from '../ErrorMessage'
 import TouchableButton from '../TouchableButton'
-import { CheckBox } from 'native-base'
+import MyCheckBox from '../MyCheckBox'
 
 const RWRModal = ({ isVisible, selectedReason = '', showHideModal, rejectLead, message = '' }) => {
   // const [validate, checkValidation] = useState(false)
@@ -46,10 +46,8 @@ const RWRModal = ({ isVisible, selectedReason = '', showHideModal, rejectLead, m
             {selectedReason === '' && <ErrorMessage errorMessage={'Required*'} />}
           </View>
           <TouchableOpacity onPress={() => setIsBlacklist(!isRated)} style={styles.checkBoxRow}>
-            <CheckBox
-              color={AppStyles.colors.primaryColor}
-              checked={isBlacklist ? true : false}
-              style={styles.checkBox}
+            <MyCheckBox
+              status={isBlacklist ? true : false}
               onPress={() => setIsBlacklist(!isBlacklist)}
             />
             <Text style={styles.checkBoxText}>Blacklist</Text>

@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
-import { CheckBox, ListItem, Body, Switch } from 'native-base'
+import { ListItem, Body, Switch } from 'native-base'
 import styles from './style'
 import AppStyles from '../../AppStyles'
 import Modal from 'react-native-modal'
@@ -28,8 +28,6 @@ class AddPaymentModal extends React.Component {
       secondCheckValidation,
       modalLoading,
       addPaymentLoading,
-      attechmentModalToggle,
-      formData,
       goToPayAttachments,
       secondFormLeadData,
       remarks,
@@ -71,9 +69,6 @@ class AddPaymentModal extends React.Component {
                         secondHandleForm(!secondFormData.taxIncluded, 'taxIncluded')
                       }}
                     >
-                      {/* <CheckBox color={AppStyles.colors.primaryColor}
-                      checked={secondFormData.taxIncluded}
-                    /> */}
                       <Switch
                         value={secondFormData.taxIncluded}
                         trackColor={{ true: AppStyles.colors.primaryColor, false: 'grey' }}

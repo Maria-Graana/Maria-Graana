@@ -5,8 +5,9 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import Modal from 'react-native-modal'
 import AppStyles from '../../AppStyles'
 import ErrorMessage from '../ErrorMessage'
-import { CheckBox, Textarea } from 'native-base'
+import { Textarea } from 'native-base'
 import TouchableButton from '../TouchableButton'
+import MyCheckBox from '../MyCheckBox'
 
 const AppRatingModalPP = ({ isVisible, submitRating }) => {
   const [isRated, setIsRated] = useState(false)
@@ -16,12 +17,7 @@ const AppRatingModalPP = ({ isVisible, submitRating }) => {
       <View style={styles.modalMain}>
         <Text style={styles.title}>Graana App Feedback</Text>
         <TouchableOpacity onPress={() => setIsRated(!isRated)} style={styles.checkBoxRow}>
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={isRated ? true : false}
-            style={styles.checkBox}
-            onPress={() => setIsRated(!isRated)}
-          />
+          <MyCheckBox status={isRated ? true : false} onPress={() => setIsRated(!isRated)} />
           <Text style={styles.checkBoxText}>Has PP downloaded and rated Graana App?</Text>
         </TouchableOpacity>
         <View style={[AppStyles.mainInputWrap]}>

@@ -1,7 +1,6 @@
 /** @format */
 
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons'
-import { CheckBox } from 'native-base'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Menu } from 'react-native-paper'
@@ -9,6 +8,7 @@ import { connect } from 'react-redux'
 import AppStyles from '../../AppStyles'
 import helper from '../../helper'
 import { formatPrice } from '../../PriceFormate'
+import MyCheckBox from '../MyCheckBox'
 import styles from './style'
 
 class PropAgentTile extends React.Component {
@@ -305,12 +305,11 @@ class PropAgentTile extends React.Component {
               ) : null}
               {showCheckBoxes ? (
                 <View style={{ marginTop: 5, marginRight: 15 }}>
-                  <CheckBox
+                  <MyCheckBox
                     onPress={() => {
                       this.props.addProperty(data)
                     }}
-                    color={AppStyles.colors.primaryColor}
-                    checked={data.checkBox}
+                    status={data.checkBox}
                   />
                 </View>
               ) : null}

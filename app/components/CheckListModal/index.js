@@ -13,13 +13,14 @@ import {
   KeyboardAvoidingView,
 } from 'react-native'
 import AppStyles from '../../AppStyles'
-import { CheckBox, Textarea } from 'native-base'
+import { Textarea } from 'native-base'
 import { AntDesign } from '@expo/vector-icons'
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen'
 import TouchableButton from '../TouchableButton'
+import MyCheckBox from '../MyCheckBox'
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 
@@ -67,11 +68,9 @@ const CheckListModal = ({
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => setSelected(item)}>
                   <View style={styles.itemRow}>
-                    <CheckBox
+                    <MyCheckBox
                       onPress={() => setSelected(item)}
-                      color={AppStyles.colors.primaryColor}
-                      style={styles.checkBox}
-                      checked={selectedCheckList.includes(item) ? true : false}
+                      status={selectedCheckList.includes(item) ? true : false}
                     />
                     <Text style={styles.labelStyle}>{item}</Text>
                   </View>

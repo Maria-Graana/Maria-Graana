@@ -659,12 +659,12 @@ class LeadDetail extends React.Component {
             <View style={styles.cardContainer}>
               <View style={styles.cardItemGrey}>
                 <View style={styles.rowContainer}>
-                  <View>
+                  <View style={{ width: '70%' }}>
                     <Text style={styles.headingText}>Client Name </Text>
                     {route.params.lead.requiredProperties ? (
                       <Text style={styles.labelText}>---</Text>
                     ) : screenName === 'diary' ? (
-                      <Text style={styles.labelText}>
+                      <Text style={styles.labelText} numberOfLines={1}>
                         {setCustomerName === 'undefined'
                           ? setCustomerName
                           : lead.customer && lead.customer.customerName}
@@ -683,7 +683,7 @@ class LeadDetail extends React.Component {
                       activeOpacity={0.6}
                       disabled={route.params.lead.requiredProperties}
                     >
-                      <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Client Details</Text>
+                      <Text style={[AppStyles.btnText, { fontSize: 16 }]}>Details</Text>
                     </TouchableOpacity>
                   )}
                 </View>

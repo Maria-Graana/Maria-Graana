@@ -287,20 +287,14 @@ class LegalAttachment extends Component {
 
   handleForm = (formData) => {
     const { currentItem } = this.state
-    formData.category = currentItem.category
+    formData.category = this.state.otherDoc ? 'other' : currentItem.category
     this.setState(
       {
-        formData: formData,
         showAction: false,
-        //   loading: true,
+        formData: formData,
       },
       () => {
-        if (this.state.otherDoc) {
-          this.uploadAttachment(formData)
-        }
-        // this.uploadAttachment(this.state.formData)
-        ///View Doc
-        //
+        this.uploadAttachment(formData)
       }
     )
   }

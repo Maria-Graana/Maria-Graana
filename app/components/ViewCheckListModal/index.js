@@ -13,7 +13,6 @@ import {
   KeyboardAvoidingView,
 } from 'react-native'
 import AppStyles from '../../AppStyles'
-import { CheckBox, Textarea } from 'native-base'
 import { AntDesign, Ionicons, Octicons } from '@expo/vector-icons'
 import {
   heightPercentageToDP as hp,

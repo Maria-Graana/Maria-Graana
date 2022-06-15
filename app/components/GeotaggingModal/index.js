@@ -6,8 +6,8 @@ import Modal from 'react-native-modal'
 import AppStyles from '../../AppStyles'
 import TouchableButton from '../TouchableButton'
 import LocationImg from '../../../assets/img/location.png'
-import { CheckBox } from 'native-base'
 import { apps } from 'firebase'
+import MyCheckBox from '../MyCheckBox'
 
 const GeoTaggingModal = ({
   isGeoTaggingModalVisible,
@@ -30,10 +30,8 @@ const GeoTaggingModal = ({
           onPress={() => handleMarkProperty(!locate_manually)}
           style={styles.checkBoxRow}
         >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={locate_manually ? true : false}
-            style={styles.checkBox}
+          <MyCheckBox
+            status={locate_manually ? true : false}
             onPress={() => handleMarkProperty(!locate_manually)}
           />
           <Text

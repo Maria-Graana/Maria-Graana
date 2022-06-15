@@ -1,7 +1,6 @@
 /** @format */
 
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons'
-import { CheckBox } from 'native-base'
 import React from 'react'
 import { Image, Text, TouchableOpacity, View, TouchableHighlight } from 'react-native'
 import { Menu } from 'react-native-paper'
@@ -12,6 +11,7 @@ import { formatPrice } from '../../PriceFormate'
 import styles from './style'
 import { getPermissionValue } from '../../hoc/Permissions'
 import { PermissionActions, PermissionFeatures } from '../../hoc/PermissionsTypes'
+import MyCheckBox from '../MyCheckBox'
 
 class MatchTile extends React.Component {
   _renderItem = (item) => {
@@ -199,14 +199,7 @@ class MatchTile extends React.Component {
             this.props.addProperty(data)
         }}
       >
-        <View
-          style={[
-            styles.tileContainer,
-            data.checkBox && screen === 'match'
-              ? { backgroundColor: AppStyles.colors.primaryColor }
-              : null,
-          ]}
-        >
+        <View style={[styles.tileContainer]}>
           <View style={[styles.pad5]}>
             {imagesList.length ? (
               <Image source={{ uri: imagesList[0] }} style={styles.noImage} />
@@ -233,33 +226,16 @@ class MatchTile extends React.Component {
             ]}
           >
             <View style={styles.textPadTop}>
-              <Text
-                style={[
-                  styles.priceText,
-                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
-                ]}
-              >
+              <Text style={[styles.priceText]}>
                 {' '}
                 {data && data.price === 0 ? '0' : formatPrice(data && data.price && data.price)}
               </Text>
-              <Text
-                numberOfLines={1}
-                style={[
-                  styles.marlaText,
-                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
-                ]}
-              >
+              <Text numberOfLines={1} style={[styles.marlaText]}>
                 {' '}
                 {data.size} {data.size_unit} {data.subtype && helper.capitalize(data.subtype)} For{' '}
                 {data.purpose && helper.capitalize(data.purpose)}{' '}
               </Text>
-              <Text
-                numberOfLines={1}
-                style={[
-                  styles.addressText,
-                  data.checkBox && screen === 'match' ? { color: '#fff' } : null,
-                ]}
-              >
+              <Text numberOfLines={1} style={[styles.addressText]}>
                 {' '}
                 {data.area ? data.area.name : null}
               </Text>
@@ -275,15 +251,7 @@ class MatchTile extends React.Component {
                     }
                   />
                 ) : null}
-                <Text
-                  style={[
-                    { fontSize: 18 },
-                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
-                  ]}
-                >
-                  {' '}
-                  {data.bed}{' '}
-                </Text>
+                <Text style={[{ fontSize: 18 }]}> {data.bed} </Text>
               </View>
               <View style={[styles.iconInner, { paddingBottom: 0 }]}>
                 {data.bath && Number(data.bath) > 0 ? (
@@ -295,15 +263,7 @@ class MatchTile extends React.Component {
                     }
                   />
                 ) : null}
-                <Text
-                  style={[
-                    { fontSize: 18 },
-                    data.checkBox && screen === 'match' ? { color: '#fff' } : null,
-                  ]}
-                >
-                  {' '}
-                  {data.bath}{' '}
-                </Text>
+                <Text style={[{ fontSize: 18 }]}> {data.bath} </Text>
               </View>
             </View>
           </View>
@@ -669,7 +629,7 @@ class MatchTile extends React.Component {
             ) : null}
             {showCheckBoxes ? (
               <View style={{ marginRight: 15, marginTop: 5 }}>
-                <CheckBox
+                <MyCheckBox
                   onPress={() => {
                     if (
                       getPermissionValue(
@@ -681,8 +641,7 @@ class MatchTile extends React.Component {
                     )
                       this.props.addProperty(data)
                   }}
-                  style={[!data.checkBox ? styles.notCheckBox : styles.checkBox]}
-                  checked={data.checkBox}
+                  status={data.checkBox}
                 />
               </View>
             ) : (

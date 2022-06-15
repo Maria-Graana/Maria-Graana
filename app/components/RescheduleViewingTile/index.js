@@ -13,7 +13,6 @@ import {
 } from 'react-native'
 import helper from '../../helper.js'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
-import { CheckBox } from 'native-base'
 import { formatPrice } from '../../PriceFormate'
 import AppStyles from '../../AppStyles'
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons'
@@ -21,6 +20,7 @@ import moment from 'moment'
 import _, { filter } from 'underscore'
 import { useDispatch } from 'react-redux'
 import { setConnectFeedback } from '../../actions/diary.js'
+import MyCheckBox from '../MyCheckBox/index.js'
 
 const RescheduleViewingTile = ({
   data,
@@ -151,7 +151,7 @@ const RescheduleViewingTile = ({
                 </Text>
                 {showCheckboxes ? (
                   <View style={{ width: '5%' }}>
-                    <CheckBox
+                    <MyCheckBox
                       disabled={
                         selectedDiary && selectedDiary.propertyId
                           ? data.id == selectedDiary.propertyId
@@ -181,7 +181,6 @@ const RescheduleViewingTile = ({
                               })
                             )
                           } else {
-                            console.log('i am here for checking')
                             // done viewing
                             dispatch(
                               setConnectFeedback({
@@ -224,7 +223,6 @@ const RescheduleViewingTile = ({
                             )
                           } else {
                             // viewing done case
-                            console.log('i am here for unchecking')
                             let copyArray = [...connectFeedback.otherTasksToUpdate]
                             copyArray = _.filter(
                               copyArray,
@@ -244,9 +242,7 @@ const RescheduleViewingTile = ({
                           }
                         }
                       }}
-                      color={AppStyles.colors.primaryColor}
-                      style={[!data.checkBox ? styles.notCheckBox : styles.checkBox]}
-                      checked={data.checkBox}
+                      status={data.checkBox}
                     />
                   </View>
                 ) : null}

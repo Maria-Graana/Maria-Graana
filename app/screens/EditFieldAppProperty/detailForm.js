@@ -13,8 +13,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native'
-import { Button, Textarea, CheckBox, Body } from 'native-base'
-// import { Checkbox } from 'react-native-paper'
+import { Button, Textarea, Body } from 'native-base'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import PickerComponent from '../../components/Picker/index'
 import styles from './style'
@@ -28,6 +27,7 @@ import TouchableButton from '../../components/TouchableButton'
 import PhoneInputComponent from '../../components/PhoneCountry/PhoneInput'
 import { connect } from 'react-redux'
 import { LogBox } from 'react-native'
+import MyCheckBox from '../../components/MyCheckBox'
 const { width } = Dimensions.get('window')
 
 LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
@@ -68,15 +68,8 @@ class DetailForm extends Component {
   }
 
   _renderAdditionalView = () => {
-    const {
-      formData,
-      handleForm,
-      features,
-      utilities,
-      facing,
-      selectedFeatures,
-      handleFeatures,
-    } = this.props
+    const { formData, handleForm, features, utilities, facing, selectedFeatures, handleFeatures } =
+      this.props
     let _renderFeatures = () => {
       return features.map((item) => {
         return (
@@ -85,10 +78,10 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox color={AppStyles.colors.primaryColor}
+            <MyCheckBox
               onPress={() => handleFeatures(item)}
-              style={styles.checkBox}
-              checked={selectedFeatures.includes(item) ? true : false} />
+              status={selectedFeatures.includes(item) ? true : false}
+            />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
@@ -146,10 +139,10 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox color={AppStyles.colors.primaryColor}
+            <MyCheckBox
               onPress={() => handleFeatures(item)}
-              style={styles.checkBox}
-              checked={selectedFeatures.includes(item) ? true : false} />
+              status={selectedFeatures.includes(item) ? true : false}
+            />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
@@ -166,10 +159,10 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox color={AppStyles.colors.primaryColor}
+            <MyCheckBox
               onPress={() => handleFeatures(item)}
-              style={styles.checkBox}
-              checked={selectedFeatures.includes(item) ? true : false} />
+              status={selectedFeatures.includes(item) ? true : false}
+            />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
             </Body>
@@ -304,7 +297,6 @@ class DetailForm extends Component {
       handleMarkProperty,
     } = this.props
 
-
     const { size_unit } = this.props.formData
     return (
       <View>
@@ -379,10 +371,8 @@ class DetailForm extends Component {
           onPress={() => handleMarkProperty(!formData.show_address)}
           style={styles.checkBoxRow}
         >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={formData.locate_manually ? true : false}
-            style={styles.checkBox}
+          <MyCheckBox
+            status={formData.locate_manually ? true : false}
             onPress={() => handleMarkProperty(!formData.locate_manually)}
           />
           <Text style={{ marginHorizontal: 15 }}>Mark property manually</Text>
@@ -390,14 +380,14 @@ class DetailForm extends Component {
 
         {/* **************************************** */}
 
-        {
-          formData.locate_manually ? <View style={AppStyles.latLngMain}>
+        {formData.locate_manually ? (
+          <View style={AppStyles.latLngMain}>
             <View
               style={[
                 AppStyles.mainInputWrap,
                 AppStyles.noMargin,
                 AppStyles.borderrightLat,
-                { width: '50%' }
+                { width: '50%' },
               ]}
             >
               <View style={[AppStyles.inputWrap]}>
@@ -432,32 +422,29 @@ class DetailForm extends Component {
             <TouchableOpacity style={AppStyles.locationBtn} onPress={() => getCurrentLocation()}>
               <Image source={LocationImg} style={AppStyles.locationIcon} />
             </TouchableOpacity>
-
           </View>
-            :
-
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableButton
-                containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
-                containerBackgroundColor={'white'}
-                textColor={AppStyles.colors.primaryColor}
-                label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
-                iconName="ios-checkmark-circle-outline"
-                showIcon={formData.propsure_id ? true : false}
-                onPress={() => {
-                  this.props.navigation.navigate('MapContainer', {
-                    mapValues: { lat: formData.lat, lng: formData.lon, propsure_id: formData.propsure_id },
-                    screenName: 'EditFieldAppProperty',
-                  })
-                }}
-              />
-            </View>
-
-        }
-
-
-
-
+        ) : (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableButton
+              containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
+              containerBackgroundColor={'white'}
+              textColor={AppStyles.colors.primaryColor}
+              label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
+              iconName="ios-checkmark-circle-outline"
+              showIcon={formData.propsure_id ? true : false}
+              onPress={() => {
+                this.props.navigation.navigate('MapContainer', {
+                  mapValues: {
+                    lat: formData.lat,
+                    lng: formData.lon,
+                    propsure_id: formData.propsure_id,
+                  },
+                  screenName: 'EditFieldAppProperty',
+                })
+              }}
+            />
+          </View>
+        )}
 
         {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>
@@ -561,7 +548,9 @@ class DetailForm extends Component {
           onPress={showCustomTitleField}
           style={[AppStyles.mainInputWrap, styles.additonalViewContainer]}
         >
-          <Text style={styles.additionalInformationText}>{showCustomTitle ? 'Use System Generated Title' : 'Add a Custom Title'}</Text>
+          <Text style={styles.additionalInformationText}>
+            {showCustomTitle ? 'Use System Generated Title' : 'Add a Custom Title'}
+          </Text>
           <View style={styles.additionalDetailsIconView}>
             <Ionicons
               name={showCustomTitle ? 'ios-close-circle-outline' : 'ios-add-circle-outline'}
@@ -571,19 +560,21 @@ class DetailForm extends Component {
           </View>
         </TouchableOpacity>
 
-        {showCustomTitle ? <View style={[AppStyles.mainInputWrap]}>
-          <View style={[AppStyles.inputWrap]}>
-            <TextInput
-              onChangeText={(text) => {
-                handleForm(text, 'custom_title')
-              }}
-              placeholderTextColor={'#a8a8aa'}
-              value={formData.custom_title}
-              style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-              placeholder={'Enter Custom title'}
-            />
+        {showCustomTitle ? (
+          <View style={[AppStyles.mainInputWrap]}>
+            <View style={[AppStyles.inputWrap]}>
+              <TextInput
+                onChangeText={(text) => {
+                  handleForm(text, 'custom_title')
+                }}
+                placeholderTextColor={'#a8a8aa'}
+                value={formData.custom_title}
+                style={[AppStyles.formControl, AppStyles.inputPadLeft]}
+                placeholder={'Enter Custom title'}
+              />
+            </View>
           </View>
-        </View> : null}
+        ) : null}
 
         {/* **************************************** */}
         <View style={[AppStyles.mainInputWrap]}>
@@ -616,19 +607,19 @@ class DetailForm extends Component {
               }
             </View>
           ) : (
-              <View style={styles.uploadImg}>
-                <Button
-                  style={[AppStyles.formBtn, styles.buttonWidth]}
-                  onPress={getImagesFromGallery}
-                >
-                  <Text style={AppStyles.btnText}>Upload From Gallery</Text>
-                </Button>
-                <Text style={{ marginVertical: 15 }}>OR</Text>
-                <Button style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
-                  <Text style={AppStyles.btnText}>Take Photos</Text>
-                </Button>
-              </View>
-            )}
+            <View style={styles.uploadImg}>
+              <Button
+                style={[AppStyles.formBtn, styles.buttonWidth]}
+                onPress={getImagesFromGallery}
+              >
+                <Text style={AppStyles.btnText}>Upload From Gallery</Text>
+              </Button>
+              <Text style={{ marginVertical: 15 }}>OR</Text>
+              <Button style={[AppStyles.formBtn, styles.buttonWidth]} onPress={takePhotos}>
+                <Text style={AppStyles.btnText}>Take Photos</Text>
+              </Button>
+            </View>
+          )}
         </View>
 
         {/* **************************************** */}
@@ -695,19 +686,24 @@ class DetailForm extends Component {
           <View style={[AppStyles.inputWrap]}>
             <Text style={AppStyles.mainInputWrap}>Owner Phone</Text>
             <PhoneInputComponent
-              phoneValue={(formData.owner_phone != '' && formData.owner_phone != null) && getTrimmedPhone(formData.owner_phone.replace('+92', ''))}
+              phoneValue={
+                formData.owner_phone != '' &&
+                formData.owner_phone != null &&
+                getTrimmedPhone(formData.owner_phone.replace('+92', ''))
+              }
               countryCodeValue={countryCode}
-              setFlagObject={(object) => { setFlagObject(object, 'owner_phone') }}
+              setFlagObject={(object) => {
+                setFlagObject(object, 'owner_phone')
+              }}
               onChangeHandle={handleForm}
               name={'owner_phone'}
               placeholder={'Owner Phone*'}
             />
-            {
-              phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-            }
-            {
-              phoneValidate == false && checkValidation === true && formData.owner_phone === '' && formData.owner_phone === null && <ErrorMessage errorMessage={'Required'} />
-            }
+            {phoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />}
+            {phoneValidate == false &&
+              checkValidation === true &&
+              formData.owner_phone === '' &&
+              formData.owner_phone === null && <ErrorMessage errorMessage={'Required'} />}
           </View>
         </View>
 
@@ -731,23 +727,29 @@ class DetailForm extends Component {
           <View style={[AppStyles.inputWrap]}>
             <Text style={AppStyles.mainInputWrap}>Point of Contact Phone</Text>
             <PhoneInputComponent
-              phoneValue={(formData.poc_phone != '' && formData.poc_phone != null) && getTrimmedPhone(formData.poc_phone.replace('+92', ''))}
+              phoneValue={
+                formData.poc_phone != '' &&
+                formData.poc_phone != null &&
+                getTrimmedPhone(formData.poc_phone.replace('+92', ''))
+              }
               countryCodeValue={countryCode1}
-              setFlagObject={(object) => { setFlagObject(object, 'poc_phone') }}
+              setFlagObject={(object) => {
+                setFlagObject(object, 'poc_phone')
+              }}
               onChangeHandle={handleForm}
               name={'poc_phone'}
               placeholder={'Point of Contact Phone'}
             />
-            {
-              pocPhoneValidate == true && <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
-            }
+            {pocPhoneValidate == true && (
+              <ErrorMessage errorMessage={'Enter a Valid Phone Number'} />
+            )}
 
-            {
-              pocPhoneValidate == false && checkValidation === true && formData.poc_phone === '' && formData.poc_phone === null && <ErrorMessage errorMessage={'Required'} />
-            }
+            {pocPhoneValidate == false &&
+              checkValidation === true &&
+              formData.poc_phone === '' &&
+              formData.poc_phone === null && <ErrorMessage errorMessage={'Required'} />}
           </View>
         </View>
-
 
         {/* **************************************** */}
         {/* **************************************** */}
@@ -755,10 +757,8 @@ class DetailForm extends Component {
           onPress={() => handleWaterMark(!formData.showWaterMark)}
           style={[styles.checkBoxRow]}
         >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={formData.showWaterMark ? true : false}
-            style={styles.checkBox}
+          <MyCheckBox
+            status={formData.showWaterMark ? true : false}
             onPress={() => handleWaterMark(!formData.showWaterMark)}
           />
           <Text style={{ marginHorizontal: 15 }}>Show Watermark on Images</Text>

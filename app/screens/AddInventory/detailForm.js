@@ -1,8 +1,7 @@
 /** @format */
 
-// import { Checkbox } from 'react-native-paper'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
-import { Body, Button, CheckBox, Textarea } from 'native-base'
+import { Body, Button, Textarea } from 'native-base'
 import React, { Component } from 'react'
 import {
   Dimensions,
@@ -28,6 +27,7 @@ import TouchableButton from '../../components/TouchableButton'
 import TouchableInput from '../../components/TouchableInput'
 import { formatPrice } from '../../PriceFormate'
 import styles from './style'
+import MyCheckBox from '../../components/MyCheckBox'
 const { width } = Dimensions.get('window')
 
 LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
@@ -54,68 +54,6 @@ class DetailForm extends Component {
 
   geotaggingComponent = () => {
     const { formData } = this.props
-    // return formData.propsure_id ? (
-    //   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-    //     <TouchableOpacity
-    //       style={styles.geotaggedBtn}
-    //       onPress={() => {
-    //         this.props.navigation.navigate({
-    //           name: 'MapContainer',
-    //           params: {
-    //             mapValues: {
-    //               lat: formData.lat,
-    //               lng: formData.lng,
-    //               propsure_id: formData.propsure_id,
-    //             },
-    //             geotaggingType: 'Propsure',
-    //           },
-    //         })
-    //       }}
-    //     >
-    //       <Text style={styles.geotaggedText}>PROPSURE GEOTAGGED</Text>
-    //       <Image source={WhiteCheck} style={styles.whiteCheckImg} />
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       style={styles.editIconContainer}
-    //       onPress={
-    //         () => clearGeotaggData() //handleMarkProperty(!formData.locate_manually)
-    //       }
-    //     >
-    //       <Image source={EditIcon} style={styles.editIcon} />
-    //     </TouchableOpacity>
-    //   </View>
-    // ) : formData.locate_manually ? (
-    //   <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-    //     <TouchableOpacity
-    //       style={styles.geotaggedBtn}
-    //       onPress={() => {
-    //         this.props.navigation.navigate({
-    //           name: 'MapContainer',
-    //           params: {
-    //             mapValues: {
-    //               lat: formData.lat,
-    //               lng: formData.lng,
-    //               propsure_id: formData.propsure_id,
-    //             },
-    //             geotaggingType: 'Manual',
-    //             screenName: 'AddProperty',
-    //           },
-    //         })
-    //       }}
-    //     >
-    //       <Text style={styles.geotaggedText}>MANUALLY GEOTAGGED</Text>
-    //       <Image source={WhiteCheck} style={styles.whiteCheckImg} />
-    //     </TouchableOpacity>
-    //     <TouchableOpacity
-    //       style={styles.editIconContainer}
-    //       onPress={
-    //         () => clearGeotaggData() // handleMarkProperty(!formData.locate_manually)
-    //       }
-    //     >
-    //       <Image source={EditIcon} style={styles.editIcon} />
-    //     </TouchableOpacity>
-    //   </View>
-    // ) : (
     return (
       <View style={styles.propsureManualBtnContainer}>
         <TouchableOpacity
@@ -198,11 +136,9 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox
-              color={AppStyles.colors.primaryColor}
+            <MyCheckBox
               onPress={() => handleFeatures(item)}
-              checked={selectedFeatures.includes(item) ? true : false}
-              style={styles.checkBox}
+              status={selectedFeatures.includes(item) ? true : false}
             />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text numberOfLines={1} style={{ marginLeft: 10 }}>
@@ -263,11 +199,9 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox
-              color={AppStyles.colors.primaryColor}
+            <MyCheckBox
               onPress={() => handleFeatures(item)}
-              style={styles.checkBox}
-              checked={selectedFeatures.includes(item) ? true : false}
+              status={selectedFeatures.includes(item) ? true : false}
             />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
@@ -285,11 +219,9 @@ class DetailForm extends Component {
             onPress={() => handleFeatures(item)}
             style={styles.featureOpacity}
           >
-            <CheckBox
-              color={AppStyles.colors.primaryColor}
+            <MyCheckBox
               onPress={() => handleFeatures(item)}
-              style={styles.checkBox}
-              checked={selectedFeatures.includes(item) ? true : false}
+              status={selectedFeatures.includes(item) ? true : false}
             />
             <Body style={{ alignItems: 'flex-start' }}>
               <Text style={{ marginLeft: 10 }}>{item}</Text>
@@ -491,89 +423,8 @@ class DetailForm extends Component {
           </View>
         </View>
         {/* **************************************** */}
-        {/* <TouchableOpacity
-          onPress={() => handleMarkProperty(!formData.locate_manually)}
-          style={styles.checkBoxRow}
-        >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={formData.locate_manually ? true : false}
-            style={styles.checkBox}
-            onPress={() => handleMarkProperty(!formData.locate_manually)}
-          />
-          <Text style={{ marginHorizontal: 15 }}>Mark property manually</Text>
-        </TouchableOpacity> */}
-        {/* **************************************** */}
         {this.geotaggingComponent()}
-        {/* {formData.locate_manually ? (
-          <View style={AppStyles.latLngMain}>
-            <View
-              style={[
-                AppStyles.mainInputWrap,
-                AppStyles.noMargin,
-                AppStyles.borderrightLat,
-                { width: '50%' },
-              ]}
-            >
-              <View style={[AppStyles.inputWrap]}>
-                <TextInput
-                  placeholderTextColor={'#a8a8aa'}
-                  onChangeText={(text) => {
-                    handleForm(text, 'lat')
-                  }}
-                  value={latitude === null ? '' : latitude ? Number(latitude).toFixed(7) : ''}
-                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                  keyboardType="numeric"
-                  placeholder={'Latitude'}
-                  editable={false}
-                />
-              </View>
-            </View>
 
-            <View style={[AppStyles.mainInputWrap, AppStyles.noMargin, { width: '50%' }]}>
-              <View style={[AppStyles.inputWrap]}>
-                <TextInput
-                  placeholderTextColor={'#a8a8aa'}
-                  onChangeText={(text) => {
-                    handleForm(text, 'lng')
-                  }}
-                  value={longitude === null ? '' : longitude ? Number(longitude).toFixed(7) : ''}
-                  style={[AppStyles.formControl, AppStyles.inputPadLeft]}
-                  keyboardType="numeric"
-                  placeholder={'Longitude'}
-                  editable={false}
-                />
-              </View>
-            </View>
-            <TouchableOpacity style={AppStyles.locationBtn} onPress={() => getCurrentLocation()}>
-              <Image source={LocationImg} style={AppStyles.locationIcon} />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TouchableButton
-              containerStyle={[AppStyles.mainInputWrap, styles.geotagButton, { width: '100%' }]}
-              containerBackgroundColor={'white'}
-              textColor={AppStyles.colors.primaryColor}
-              label={formData.propsure_id ? 'GEO TAGGED' : 'GEO TAGGING'}
-              iconName="ios-checkmark-circle-outline"
-              showIcon={formData.propsure_id ? true : false}
-              onPress={() => {
-                this.props.navigation.navigate('MapContainer', {
-                  mapValues: {
-                    lat: formData.lat,
-                    lng: formData.lng,
-                    propsure_id: formData.propsure_id,
-                  },
-                  geotaggingType: 'Manual',
-                  screenName: 'AddInventory',
-                })
-              }}
-            />
-          </View>
-        )} */}
-
-        {/* **************************************** */}
         <View style={AppStyles.multiFormInput}>
           {/* **************************************** */}
           <View style={[AppStyles.mainInputWrap, AppStyles.flexOne]}>

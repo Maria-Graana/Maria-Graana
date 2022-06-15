@@ -14,10 +14,11 @@ export default styles = StyleSheet.create({
     marginRight: 25,
   },
   closeStyle: {
-    position: 'absolute',
-    right: 15,
-    top: Platform.OS == 'android' ? 10 : 40,
-    paddingVertical: 5,
+    alignSelf: 'flex-end',
+    width: 30,
+    height: 30,
+    marginRight: 15,
+    marginTop: 10,
   },
   buttonExtraStyle: {
     marginHorizontal: 15,
@@ -58,6 +59,7 @@ export default styles = StyleSheet.create({
   listView: {
     flexDirection: 'row',
     flex: 0.8,
+    marginHorizontal: 10,
   },
   notCheckBox: {
     justifyContent: 'center',

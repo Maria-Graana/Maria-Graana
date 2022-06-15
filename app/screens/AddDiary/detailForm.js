@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react'
 import { View, Text, TextInput, Platform, TouchableOpacity } from 'react-native'
-import { Button, Toast, Textarea, CheckBox } from 'native-base'
+import { Button, Toast, Textarea } from 'native-base'
 import PickerComponent from '../../components/Picker/index'
 import AppStyles from '../../AppStyles'
 import { connect } from 'react-redux'
@@ -15,6 +15,7 @@ import Ability from '../../hoc/Ability'
 import TouchableInput from '../../components/TouchableInput'
 import styles from './style.js'
 import DiaryHelper from '../Diary/diaryHelper.js'
+import MyCheckBox from '../../components/MyCheckBox'
 
 class DetailForm extends Component {
   constructor(props) {
@@ -271,10 +272,8 @@ class DetailForm extends Component {
             onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
             style={styles.checkBoxRow}
           >
-            <CheckBox
-              color={AppStyles.colors.primaryColor}
-              checked={isRecurring}
-              style={styles.checkBox}
+            <MyCheckBox
+              status={isRecurring}
               onPress={() => this.handleForm(!isRecurring, 'isRecurring')}
             />
             <Text style={styles.checkBoxText}>Recurring Task</Text>

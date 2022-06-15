@@ -1,12 +1,13 @@
 /** @format */
 
 import { AntDesign } from '@expo/vector-icons'
-import { Button, CheckBox } from 'native-base'
+import { Button } from 'native-base'
 import React from 'react'
 import { FlatList, Modal, SafeAreaView, Text, View } from 'react-native'
 import { Divider } from 'react-native-paper'
 import AppStyles from '../../AppStyles'
 import { formatPrice } from '../../PriceFormate'
+import MyCheckBox from '../MyCheckBox'
 import styles from './styles'
 
 const PropsureReportsPopup = (props) => {
@@ -38,21 +39,15 @@ const PropsureReportsPopup = (props) => {
             <View>
               <View style={styles.reportRow}>
                 <View style={[styles.listView]}>
-                  <CheckBox
-                    checked={
+                  <MyCheckBox
+                    status={
                       !item.addItem
                         ? selectedReports.some((report) => item.title === report.title)
                         : true
                     }
-                    style={
-                      selectedReports.some((report) => item.title === report.title)
-                        ? styles.checkBox
-                        : styles.notCheckBox
-                    }
                     onPress={() => {
                       if (!item.addItem) addRemoveReport(item)
                     }}
-                    color={AppStyles.colors.primaryColor}
                   />
                   <Text
                     onPress={() => {

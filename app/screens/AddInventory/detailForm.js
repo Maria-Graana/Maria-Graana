@@ -667,10 +667,8 @@ class DetailForm extends Component {
           onPress={() => handleWaterMark(!formData.showWaterMark)}
           style={[styles.checkBoxRow]}
         >
-          <CheckBox
-            color={AppStyles.colors.primaryColor}
-            checked={formData.showWaterMark ? true : false}
-            style={styles.checkBox}
+          <MyCheckBox
+            status={formData.showWaterMark ? true : false}
             onPress={() => handleWaterMark(!formData.showWaterMark)}
           />
           <Text style={{ marginHorizontal: 15 }}>Show Watermark on Images</Text>

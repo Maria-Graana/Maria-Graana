@@ -80,7 +80,7 @@ class LegalTile extends React.Component {
             <Text numberOfLines={1} style={styles.tileTitle}>
               {data.name === 'Cnic'
                 ? 'CNIC Front'
-                : data.name === 'cnic_back'
+                : data.category === 'cnic_back'
                 ? 'CNIC Back'
                 : isLeadSCA
                 ? 'Service Charge Agreement'
@@ -172,7 +172,7 @@ class LegalTile extends React.Component {
                 >
                   {data.name === 'Cnic'
                     ? 'CNIC Front'
-                    : data.name === 'cnic_back'
+                    : data.category === 'cnic_back'
                     ? 'CNIC Back'
                     : data.name === 'Police Verification Report Optional'
                     ? data.name.replace(' Optional', '')
@@ -347,7 +347,7 @@ class LegalTile extends React.Component {
             <Text numberOfLines={1} style={checkList ? style.hyperLinkPadding : styles.textPadding}>
               {data.name === 'Cnic'
                 ? 'CNIC Front'
-                : data.name === 'cnic_back'
+                : data.category === 'cnic_back'
                 ? 'CNIC Back'
                 : isLeadSCA
                 ? 'Service Charge Agreement'

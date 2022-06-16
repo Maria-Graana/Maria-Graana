@@ -287,16 +287,23 @@ class LegalAttachment extends Component {
 
   handleForm = (formData) => {
     const { currentItem } = this.state
-    formData.category = this.state.otherDoc ? 'other' : currentItem.category
-    this.setState(
-      {
+    formData.category = this.state.otherDoc ? null : currentItem.category
+    if (this.state.otherDoc) {
+      this.setState(
+        {
+          showAction: false,
+          formData: formData,
+        },
+        () => {
+          this.uploadAttachment(formData)
+        }
+      )
+    } else {
+      this.setState({
         showAction: false,
         formData: formData,
-      },
-      () => {
-        this.uploadAttachment(formData)
-      }
-    )
+      })
+    }
   }
 
   submitForm = (formData) => {
@@ -389,6 +396,7 @@ class LegalAttachment extends Component {
         }
       })
       .catch((error) => {
+        console.log(error)
         console.log('Attachment Error: ', error)
         helper.errorToast('Attachment Error: ', error)
       })

@@ -1223,6 +1223,13 @@ class LegalAttachment extends Component {
       }
     }
   }
+  isBeforeToday(date) {
+    const today = new Date()
+
+    today.setHours(0, 0, 0, 0)
+
+    return date < today
+  }
 
   // *******  Assign To Legal  *************
   submitToAssignLegal = (data, comment) => {
@@ -1421,77 +1428,99 @@ class LegalAttachment extends Component {
               addedBy !== 'seller' &&
               firstFormData.legalService === 'internal' ? (
                 <View style={[AppStyles.mb1, styles.pad15, styles.padV15]}>
-                  {/* {mailCheck ? ( */}
-                  <View style={[styles.transferView, { marginBottom: 10 }]}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                      <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
-                      <Text
-                        style={[styles.mandatoryText, { fontFamily: AppStyles.fonts.semiBoldFont }]}
-                      >
-                        PKR{' '}
-                        <Text style={styles.mandatoryText}>
-                          {legalServicesFee && legalServicesFee.fee}
+                  {mailCheck ? (
+                    <View style={[styles.transferView, { marginBottom: 10 }]}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={styles.mandatoryText}>TRANSFER SERVICES</Text>
+                        <Text
+                          style={[
+                            styles.mandatoryText,
+                            { fontFamily: AppStyles.fonts.semiBoldFont },
+                          ]}
+                        >
+                          PKR{' '}
+                          <Text style={styles.mandatoryText}>
+                            {legalServicesFee && legalServicesFee.fee}
+                          </Text>
                         </Text>
-                      </Text>
-                    </View>
-                    <View style={[styles.datePicker]}>
-                      <DateTimePicker
-                        disabled={checkListDoc && checkListDoc.fileKey !== null ? true : false}
-                        placeholderLabel={'Select Transfer date'}
-                        name={'date'}
-                        mode={'date'}
-                        errorMessage={'Required'}
-                        iconSource={require('../../../assets/img/calendar.png')}
-                        date={transferDate ? new Date(transferDate) : new Date()}
-                        selectedValue={transferDate ? helper.formatDate(transferDate) : ''}
-                        handleForm={(value, name) => {
-                          if (updatePermission && closedLeadEdit)
-                            this.setTransferDate(value, 'transferDate')
-                        }}
-                      />
-                    </View>
-                    <View style={styles.pad15}>
-                      {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
-                        <RCMBTN
-                          onClick={() => {
-                            if (updatePermission && closedLeadEdit)
-                              this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
+                      </View>
+                      <View style={[styles.datePicker]}>
+                        <DateTimePicker
+                          disabled={checkListDoc && checkListDoc.fileKey !== null ? true : false}
+                          placeholderLabel={'Select Transfer date'}
+                          name={'date'}
+                          mode={'date'}
+                          errorMessage={'Required'}
+                          iconSource={require('../../../assets/img/calendar.png')}
+                          date={transferDate ? new Date(transferDate) : new Date()}
+                          selectedValue={transferDate ? helper.formatDate(transferDate) : ''}
+                          handleForm={(value, name) => {
+                            if (this.isBeforeToday(value)) {
+                              Alert.alert(
+                                '',
+                                `Are you sure you want to select past date.`,
+                                [
+                                  { text: 'No', style: 'cancel' },
+                                  {
+                                    text: 'Yes',
+                                    onPress: async () => {
+                                      if (updatePermission && closedLeadEdit)
+                                        this.setTransferDate(value, 'transferDate')
+                                    },
+                                  },
+                                ],
+                                { cancelable: false }
+                              )
+                            } else {
+                              if (updatePermission && closedLeadEdit)
+                                this.setTransferDate(value, 'transferDate')
+                            }
                           }}
-                          btnImage={RoundPlus}
-                          btnText={'ADD LEGAL SERVICES PAYMENT'}
-                          checkLeadClosedOrNot={false}
-                          hiddenBtn={false}
-                          addBorder={true}
+                        />
+                      </View>
+                      <View style={styles.pad15}>
+                        {!legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
+                          <RCMBTN
+                            onClick={() => {
+                              if (updatePermission && closedLeadEdit)
+                                this.onAddCommissionPayment(route.params.addedBy, 'legal_payment')
+                            }}
+                            btnImage={RoundPlus}
+                            btnText={'ADD LEGAL SERVICES PAYMENT'}
+                            checkLeadClosedOrNot={false}
+                            hiddenBtn={false}
+                            addBorder={true}
+                            isLeadClosed={isLeadClosed}
+                          />
+                        ) : null}
+                        {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
+                          <CommissionTile
+                            updatePermission={updatePermission}
+                            data={legalPaymentObj}
+                            editTile={this.setCommissionEditData}
+                            onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
+                            commissionEdit={onReadOnly}
+                            title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
+                            call={this.fetchPhoneNumbers}
+                            showAccountPhone={true}
+                          />
+                        ) : null}
+                      </View>
+                      {checkListDoc && checkListDoc.fileKey !== null ? (
+                        <View>{this.legalDownLoadTile(checkListDoc)}</View>
+                      ) : (
+                        <LegalTile
+                          data={checkListDoc}
+                          index={null}
+                          submitMenu={() => {}}
+                          getAttachmentFromStorage={() => {}}
+                          downloadLegalDocs={() => {}}
                           isLeadClosed={isLeadClosed}
+                          addBorder={true}
                         />
-                      ) : null}
-                      {legalPaymentObj && legalServicesFee && legalServicesFee.fee > 0 ? (
-                        <CommissionTile
-                          updatePermission={updatePermission}
-                          data={legalPaymentObj}
-                          editTile={this.setCommissionEditData}
-                          onPaymentLongPress={() => this.onPaymentLongPress(legalPaymentObj)}
-                          commissionEdit={onReadOnly}
-                          title={legalPaymentObj ? 'LEGAL PAYMENT' : ''}
-                          call={this.fetchPhoneNumbers}
-                          showAccountPhone={true}
-                        />
-                      ) : null}
+                      )}
                     </View>
-                    {checkListDoc && checkListDoc.fileKey !== null ? (
-                      <View>{this.legalDownLoadTile(checkListDoc)}</View>
-                    ) : (
-                      <LegalTile
-                        data={checkListDoc}
-                        index={null}
-                        submitMenu={() => {}}
-                        getAttachmentFromStorage={() => {}}
-                        downloadLegalDocs={() => {}}
-                        isLeadClosed={isLeadClosed}
-                        addBorder={true}
-                      />
-                    )}
-                  </View>
+                  ) : null}
                   {!mailCheck ? (
                     <RCMBTN
                       onClick={() => {

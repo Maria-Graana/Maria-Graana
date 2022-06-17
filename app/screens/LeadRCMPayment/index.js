@@ -8,6 +8,7 @@ import * as IntentLauncher from 'expo-intent-launcher'
 import * as MediaLibrary from 'expo-media-library'
 import { ActionSheet } from 'native-base'
 import * as React from 'react'
+import NoRecordFound from './../../components/NoRecordFound'
 import {
   Alert,
   FlatList,
@@ -2311,11 +2312,7 @@ class LeadRCMPayment extends React.Component {
             />
           ) : (
             <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
+              <NoRecordFound />
             </>
           )}
 

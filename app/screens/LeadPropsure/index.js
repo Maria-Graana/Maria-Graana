@@ -29,6 +29,7 @@ import PropsureReportsPopup from '../../components/PropsureReportsPopup/index'
 import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
+import NoRecordFound from './../../components/NoRecordFound'
 import styles from './styles'
 import * as MediaLibrary from 'expo-media-library'
 import * as FileSystem from 'expo-file-system'
@@ -1658,11 +1659,7 @@ class LeadPropsure extends React.Component {
               />
             ) : (
               <>
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ alignSelf: 'center', width: 300, height: 300 }}
-                />
+                <NoRecordFound />
               </>
             )}
           </View>

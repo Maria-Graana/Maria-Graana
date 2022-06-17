@@ -23,6 +23,8 @@ import config from '../../config'
 import helper from '../../helper'
 import StaticData from '../../StaticData'
 import styles from './styles'
+
+import NoRecordFound from './../../components/NoRecordFound'
 class LeadOffer extends React.Component {
   constructor(props) {
     super(props)
@@ -835,11 +837,7 @@ class LeadOffer extends React.Component {
             />
           ) : (
             <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
+              <NoRecordFound />
             </>
           )}
         </View>

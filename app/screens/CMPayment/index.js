@@ -493,7 +493,6 @@ class CMPayment extends Component {
       url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
     }
     url = url + status
-    console.log(url)
     axios
       .get(url)
       .then((res) => {

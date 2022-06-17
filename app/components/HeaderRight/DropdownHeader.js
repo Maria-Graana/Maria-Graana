@@ -99,8 +99,8 @@ class DropdownHeader extends React.Component {
                         ? StaticData.filterLeadsValueProjectTerminal
                         : StaticData.filterLeadsValueProject
                     }
-                    customStyle={[styles.pickerStyle]}
-                    customIconStyle={styles.customIconStyle}
+                    // customStyle={[styles.pickerStyle]}
+                    // customIconStyle={styles.customIconStyle}
                     onValueChange={(value) => {
                       dispatch(setLeadsDropdown(value))
                     }}
@@ -120,8 +120,8 @@ class DropdownHeader extends React.Component {
                         ? StaticData.filterLeadsValueTerminal
                         : StaticData.filterLeadsValue
                     }
-                    customStyle={styles.pickerStyle}
-                    customIconStyle={styles.customIconStyle}
+                    // customStyle={styles.pickerStyle}
+                    // customIconStyle={styles.customIconStyle}
                     placeholder={hasBooking ? 'Deal Filter' : 'Lead Filter'}
                     onValueChange={(value) => {
                       dispatch(setLeadsDropdown(value))

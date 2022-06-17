@@ -51,6 +51,7 @@ export default class App extends React.Component {
     )
     this.state = {
       isReady: false,
+      fontLoaded: false,
     }
   }
 
@@ -120,20 +121,15 @@ export default class App extends React.Component {
       Poppins_light: require('./assets/fonts/Poppins-Light.ttf'),
       Poppins_semi_bold: require('./assets/fonts/Poppins-SemiBold.ttf'),
       ...Ionicons.font,
+    }).then(() => {
+      this.setState({ fontLoaded: true })
     })
+
     const customTextProps = {
       allowFontScaling: false,
-      // style: {
-      //   fontSize: 18,
-      //   fontFamily: 'OpenSans',
-      //   color: '#333',
-      // },
     }
     const customTextInputProps = {
       allowFontScaling: false,
-      // style: {
-      //   fontSize: 18
-      // }
     }
     setCustomText(customTextProps)
     setCustomTextInput(customTextInputProps)
@@ -333,7 +329,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (!this.state.isReady) {
+    if (!this.state.isReady && !this.state.fontLoaded) {
       return <AppLoading />
     }
     return (

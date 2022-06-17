@@ -3,7 +3,7 @@ import * as Updates from 'expo-updates'
 
 const ENV = {
   development: {
-    apiPath: 'https://dev.arms.graana.rocks',
+    apiPath: 'https://stage.arms.graana.rocks',
     graanaUrl: 'https://dev.graana.rocks',
     channel: 'development',
   },

@@ -254,7 +254,7 @@ class CMFirstForm extends Component {
           editable={false}
           keyboardType={'numeric'}
         />
-        {!noProduct && firstFormData.unitName ? (
+        {!noProduct ? (
           <View style={{ paddingVertical: 10, flexDirection: 'row' }}>
             <View style={[AppStyles.inputWrap, styles.unitDetailInput]}>
               <PickerComponent

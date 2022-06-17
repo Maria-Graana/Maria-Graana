@@ -480,11 +480,20 @@ class CMPayment extends Component {
 
   getUnits = (projectId, floorId) => {
     let url = ``
-    if (floorId == '') {
-      url = `/api/project/shops?projectId=${projectId}&status=Available,Hold&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
+    let status = ``
+    const { route } = this.props
+    if (route.params.unitData) {
+      status = '&status=Available,Hold'
     } else {
-      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&status=Available,Hold&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
+      status = '&status=Available'
     }
+    if (floorId == '') {
+      url = `/api/project/shops?projectId=${projectId}&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
+    } else {
+      url = `/api/project/shops?projectId=${projectId}&floorId=${floorId}&resaleType=fresh,resale&offset=0&all=true&type[]=available for pearls&type[]=regular`
+    }
+    url = url + status
+    console.log(url)
     axios
       .get(url)
       .then((res) => {

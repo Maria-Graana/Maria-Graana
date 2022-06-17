@@ -26,6 +26,7 @@ import StaticData from '../../StaticData'
 import styles from './style'
 import MeetingFollowupModal from '../../components/MeetingFollowupModal'
 import SubmitFeedbackOptionsModal from '../../components/SubmitFeedbackOptionsModal'
+import NoRecordFound from '../../components/NoRecordFound'
 
 class LeadMatch extends React.Component {
   constructor(props) {
@@ -978,11 +979,7 @@ class LeadMatch extends React.Component {
                   keyExtractor={(item, index) => item.id.toString()}
                 />
               ) : (
-                <Image
-                  source={require('../../../assets/img/no-result-found.png')}
-                  resizeMode={'center'}
-                  style={{ flex: 1, alignSelf: 'center', width: 300, height: 300 }}
-                />
+                <NoRecordFound />
               )}
             </View>
             {displayButton ? (

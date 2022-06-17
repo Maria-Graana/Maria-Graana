@@ -37,6 +37,7 @@ import {
   setSlotDiaryData,
   setTimeSlots,
 } from '../../actions/slotManagement'
+import NoRecordFound from '../../components/NoRecordFound'
 
 const _today = moment(new Date()).format('YYYY-MM-DD')
 
@@ -1196,11 +1197,7 @@ class LeadViewing extends React.Component {
             />
           ) : (
             <>
-              <Image
-                source={require('../../../assets/img/no-result-found.png')}
-                resizeMode={'center'}
-                style={{ alignSelf: 'center', width: 300, height: 300 }}
-              />
+              <NoRecordFound />
             </>
           )}
         </View>

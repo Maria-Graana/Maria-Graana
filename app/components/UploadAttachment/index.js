@@ -20,8 +20,17 @@ export default class UploadAttachment extends React.Component {
     }
   }
 
+  empty = () => {
+    this.state = {
+      formData: { title: '', fileName: '', size: '', uri: '', category: '' },
+    }
+  }
   openActionSheet = () => {
     const { onCancelPressed } = this.props
+    const { formData } = this.state
+
+    var newFormData = { ...formData }
+
     ActionSheet.show(
       {
         options: BUTTONS,
@@ -32,9 +41,10 @@ export default class UploadAttachment extends React.Component {
         if (buttonIndex === 1) {
           this.takePhotos()
         } else if (buttonIndex === 2) {
-          onCancelPressed ? onCancelPressed() : null
+          this.props.cancelFileUploading
+          //onCancelPressed ? empty() : null
         } else if (buttonIndex === 0) {
-          this.getAttachmentFromStorage()
+          this.getAttachmentFromStorage(this.props.cat)
         }
       }
     )
@@ -80,13 +90,17 @@ export default class UploadAttachment extends React.Component {
       uri: manipResult.uri,
       fileName: name,
       title: '',
+      category: this.props.cat,
+      documentID: this.props.documentID,
     }
+
     submitUploadedAttachment(image)
   }
 
   // ************* Upload Attachment From Gallery *****************
-  getAttachmentFromStorage = () => {
+  getAttachmentFromStorage = (data) => {
     const { formData } = this.state
+
     const { submitUploadedAttachment } = this.props
     var newFormData = { ...formData }
 
@@ -105,6 +119,9 @@ export default class UploadAttachment extends React.Component {
             newFormData.fileName = item.name
             newFormData.size = item.size
             newFormData.uri = item.uri
+            newFormData.category = this.props.cat
+            newFormData.documentID = this.props.documentID
+
             submitUploadedAttachment(newFormData)
           }
         }

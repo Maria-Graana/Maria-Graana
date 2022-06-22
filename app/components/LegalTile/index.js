@@ -62,10 +62,14 @@ class LegalTile extends React.Component {
         borderWidth: 1,
       }
     }
+
     return (
       <TouchableOpacity
         onPress={() => {
           getAttachmentFromStorage(data)
+
+          this.props.setParentState({ cat: data.category })
+          this.props.setParentState({ documentID: data.id })
         }}
         style={[styles.legalBtnViewleft, newStyle]}
         disabled={isLeadClosed}

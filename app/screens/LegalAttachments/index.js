@@ -53,6 +53,9 @@ class LegalAttachment extends Component {
       otherDoc: false,
       isVisible: false,
       checkValidation: false,
+      cat: '',
+      documentID: '',
+      clear: false,
       title: '',
       formData: { fileName: '', size: '', uri: '', category: '' },
       showDoc: false,
@@ -287,7 +290,7 @@ class LegalAttachment extends Component {
 
   handleForm = (formData) => {
     const { currentItem } = this.state
-    formData.category = this.state.otherDoc ? null : currentItem.category
+    // formData.category = this.state.otherDoc ? null : currentItem.category
     if (this.state.otherDoc) {
       this.setState(
         {
@@ -308,7 +311,8 @@ class LegalAttachment extends Component {
 
   submitForm = (formData) => {
     const { currentItem } = this.state
-    formData.category = currentItem.category
+    // formData.category = currentItem.category
+
     this.setState(
       {
         formData: formData,
@@ -316,8 +320,9 @@ class LegalAttachment extends Component {
         loading: true,
       },
       () => {
-        // this.uploadAttachment(this.state.formData)
+        //  this.uploadAttachment(this.state.formData)
         ///View Doc
+
         this.uploadAttachment(formData)
       }
     )
@@ -326,7 +331,7 @@ class LegalAttachment extends Component {
   toggleActionSheet = (data) => {
     this.setState({
       showAction: true,
-      currentItem: data,
+      //  currentItem: data,
     })
   }
 
@@ -369,6 +374,7 @@ class LegalAttachment extends Component {
         : lead.paymentProperty.graana_id
 
     const { checkListDoc, currentItem } = this.state
+
     let attachment = {
       uri: legalAttachment.uri,
       type: 'file/' + legalAttachment.fileName.split('.').pop(),
@@ -378,7 +384,9 @@ class LegalAttachment extends Component {
     let fd = new FormData()
     fd.append('file', attachment)
     // ====================== API call for Attachments base on Payment ID
-    let url = `/api/legal/document?legalId=${currentItem.id}`
+    // let url = `/api/legal/document?legalId=${currentItem.id}`
+    let url = `/api/legal/document?legalId=${legalAttachment.documentID}`
+
     if (legalAttachment.category === 'legal_checklist')
       url = `/api/leads/checklist?id=${checkListDoc.id}&addedBy=${route.params.addedBy}`
     else if (!legalAttachment?.category) {
@@ -1298,7 +1306,12 @@ class LegalAttachment extends Component {
 
     return (
       <View style={[AppStyles.mb1]}>
-        <UploadAttachment showAction={showAction} submitUploadedAttachment={this.handleForm} />
+        <UploadAttachment
+          cat={this.state.cat}
+          documentID={this.state.documentID}
+          showAction={showAction}
+          submitUploadedAttachment={this.handleForm}
+        />
         <AddLegalPaymentModal
           onModalCloseClick={this.onModalCloseClick}
           handleCommissionChange={this.handleCommissionChange}
@@ -1386,6 +1399,9 @@ class LegalAttachment extends Component {
                   data={legalListing}
                   renderItem={({ item, index }) => (
                     <LegalTile
+                      setParentState={(obj) => {
+                        this.setState(obj)
+                      }}
                       cancelFileUploading={this.cancelFileUploading}
                       formData={formData}
                       submitUploadedAttachment={this.submitForm}
